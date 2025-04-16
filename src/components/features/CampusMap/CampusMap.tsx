@@ -1,7 +1,7 @@
 // src/components/features/CampusMap/CampusMap.tsx
 import React from "react";
 import { Link } from "react-router-dom";
-import { Location } from "../../../types/location";
+import { Location } from "../../../hooks/useLocations";
 import styles from "./CampusMap.module.css";
 
 interface CampusMapProps {
@@ -22,7 +22,7 @@ const CampusMap: React.FC<CampusMapProps> = ({
         className={styles.svgMap}
         aria-label="宇部高専祭キャンパスマップ"
       >
-        {/* Base map elements - grounds, paths, etc. */}
+        {/* ベースマップの要素 - 地面、通路など */}
         <rect width="800" height="600" fill="var(--color-bg-secondary)" />
         <path
           d="M100,100 L700,100 L700,500 L100,500 Z"
@@ -31,7 +31,7 @@ const CampusMap: React.FC<CampusMapProps> = ({
           strokeWidth="2"
         />
 
-        {/* Paths */}
+        {/* 通路 */}
         <path
           d="M400,100 L400,500"
           stroke="var(--color-border-secondary)"
@@ -45,7 +45,7 @@ const CampusMap: React.FC<CampusMapProps> = ({
           strokeLinecap="round"
         />
 
-        {/* Map locations */}
+        {/* 会場の場所 */}
         {locations.map((location) => (
           <g
             key={location.id}
@@ -56,7 +56,7 @@ const CampusMap: React.FC<CampusMapProps> = ({
             onMouseLeave={() => onLocationHover(null)}
           >
             <Link to={`/detail/location/${location.id}`}>
-              {/* Location shape based on type */}
+              {/* ロケーションタイプに基づく形状 */}
               {location.shape === "rect" ? (
                 <rect
                   x={location.x}
@@ -77,7 +77,7 @@ const CampusMap: React.FC<CampusMapProps> = ({
                 <polygon points={location.points} fill={location.color} />
               )}
 
-              {/* Location label */}
+              {/* ロケーションラベル */}
               <text
                 x={location.labelX || location.x}
                 y={location.labelY || location.y}

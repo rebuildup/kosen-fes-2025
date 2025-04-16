@@ -3,22 +3,22 @@ import React, { useState } from "react";
 import { format, isEqual } from "date-fns";
 import { ja } from "date-fns/locale";
 import { useEvents } from "../../hooks/useEvents";
-import TimelineEvent from "../../components/features/TimelineEvent";
+import TimelineEvent from "../../components/features/TimelineEvent/TimelineEvent";
 import styles from "./Timetable.module.css";
 
 const Timetable: React.FC = () => {
   const { events, loading } = useEvents();
   const [selectedDay, setSelectedDay] = useState(0); // 0 = day 1, 1 = day 2
 
-  // Get unique event dates
+  // イベント日付を取得（ユニークな日付の配列）
   const eventDates = [...new Set(events.map((event) => event.date))].sort();
 
-  // Filter events by selected day
+  // 選択された日付のイベントをフィルタリング
   const dayEvents = events.filter((event) =>
     isEqual(new Date(event.date), new Date(eventDates[selectedDay] || ""))
   );
 
-  // Group events by hour for the timeline
+  // 時間帯ごとにイベントをグループ化
   const groupedEvents = dayEvents.reduce((acc, event) => {
     const hour = event.time.split(":")[0];
     if (!acc[hour]) {
@@ -28,7 +28,7 @@ const Timetable: React.FC = () => {
     return acc;
   }, {} as Record<string, typeof events>);
 
-  // Sort hours for the timeline
+  // 時間帯を昇順でソート
   const sortedHours = Object.keys(groupedEvents).sort(
     (a, b) => parseInt(a) - parseInt(b)
   );

@@ -1,7 +1,7 @@
 // src/components/features/LocationCard/LocationCard.tsx
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { Location } from "../../../types/location";
+import { Location } from "../../../hooks/useLocations";
 import styles from "./LocationCard.module.css";
 
 interface LocationCardProps {

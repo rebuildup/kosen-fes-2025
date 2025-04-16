@@ -1,0 +1,302 @@
+/* src/pages/Detail/Detail.module.css */
+.detailPage {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-6);
+}
+
+.breadcrumbs {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  font-size: 0.9rem;
+  color: var(--color-text-secondary);
+  margin-bottom: var(--spacing-4);
+}
+
+.breadcrumbs a {
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+.breadcrumbs a:hover {
+  color: var(--color-kosen-primary);
+}
+
+.separator {
+  color: var(--color-text-tertiary);
+}
+
+.currentPage {
+  color: var(--color-text-primary);
+  font-weight: 500;
+}
+
+.itemHeader {
+  margin-bottom: var(--spacing-4);
+}
+
+.title {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: var(--spacing-3);
+  line-height: 1.3;
+}
+
+.badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-2);
+}
+
+.badge {
+  background-color: var(--color-bg-secondary);
+  border: 1px solid var(--color-border-primary);
+  border-radius: var(--radius-full);
+  padding: var(--spacing-1) var(--spacing-3);
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.badge.category {
+  background-color: var(--color-kosen-primary);
+  color: white;
+  border-color: var(--color-kosen-primary);
+}
+
+/* カテゴリーごとの色 */
+.ceremony {
+  background-color: #ff9800 !important;
+  border-color: #ff9800 !important;
+}
+
+.performance {
+  background-color: #2196f3 !important;
+  border-color: #2196f3 !important;
+}
+
+.workshop {
+  background-color: #4caf50 !important;
+  border-color: #4caf50 !important;
+}
+
+.food {
+  background-color: #f44336 !important;
+  border-color: #f44336 !important;
+}
+
+.exhibition {
+  background-color: #9c27b0 !important;
+  border-color: #9c27b0 !important;
+}
+
+.competition {
+  background-color: #ff5722 !important;
+  border-color: #ff5722 !important;
+}
+
+.film {
+  background-color: #607d8b !important;
+  border-color: #607d8b !important;
+}
+
+.mainContent {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-6);
+}
+
+.detailsContainer {
+  display: grid;
+  grid-template-columns: 1fr 350px;
+  gap: var(--spacing-6);
+  margin-bottom: var(--spacing-4);
+}
+
+.imageContainer {
+  aspect-ratio: 16 / 9;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.infoContainer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4);
+  padding: var(--spacing-4);
+  background-color: var(--color-bg-secondary);
+  border-radius: var(--radius-lg);
+}
+
+.infoRow {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+}
+
+.infoLabel {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  color: var(--color-text-secondary);
+  font-weight: 500;
+  width: 70px;
+}
+
+.infoIcon {
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
+}
+
+.infoValue {
+  font-weight: 500;
+}
+
+.locationLink {
+  color: var(--color-kosen-primary);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color var(--transition-fast);
+}
+
+.locationLink:hover {
+  text-decoration: underline;
+}
+
+.descriptionContainer {
+  padding: var(--spacing-4);
+  background-color: var(--color-bg-secondary);
+  border-radius: var(--radius-lg);
+}
+
+.sectionTitle {
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-bottom: var(--spacing-3);
+  padding-bottom: var(--spacing-2);
+  border-bottom: 2px solid var(--color-kosen-primary);
+}
+
+.description {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--color-text-primary);
+}
+
+.locationMapContainer {
+  padding: var(--spacing-4);
+  background-color: var(--color-bg-secondary);
+  border-radius: var(--radius-lg);
+}
+
+.locationMapWrapper {
+  height: 400px;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.relatedContainer {
+  padding: var(--spacing-4);
+  background-color: var(--color-bg-secondary);
+  border-radius: var(--radius-lg);
+}
+
+.relatedGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--spacing-4);
+}
+
+.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  gap: var(--spacing-4);
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid var(--color-border-primary);
+  border-top: 4px solid var(--color-kosen-primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.errorContainer {
+  text-align: center;
+  padding: var(--spacing-8);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-4);
+}
+
+.errorTitle {
+  font-size: 2rem;
+  color: var(--color-kosen-primary);
+}
+
+.errorMessage {
+  color: var(--color-text-secondary);
+  margin-bottom: var(--spacing-4);
+}
+
+.homeLink {
+  display: inline-block;
+  padding: var(--spacing-2) var(--spacing-4);
+  background-color: var(--color-kosen-primary);
+  color: white;
+  text-decoration: none;
+  border-radius: var(--radius-full);
+  font-weight: 500;
+  transition: background-color var(--transition-normal);
+}
+
+.homeLink:hover {
+  background-color: var(--color-kosen-secondary);
+}
+
+/* メディアクエリ */
+@media (max-width: 992px) {
+  .detailsContainer {
+    grid-template-columns: 1fr;
+  }
+
+  .locationMapWrapper {
+    height: 350px;
+  }
+}
+
+@media (max-width: 768px) {
+  .title {
+    font-size: 1.6rem;
+  }
+
+  .relatedGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .locationMapWrapper {
+    height: 300px;
+  }
+}

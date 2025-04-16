@@ -3,7 +3,6 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { format } from "date-fns";
 import { ja } from "date-fns/locale";
-import { useBookmark } from "../../../hooks/useBookmark";
 import styles from "./EventCard.module.css";
 
 interface EventCardProps {
@@ -29,15 +28,7 @@ const EventCard: React.FC<EventCardProps> = ({
   type,
   compact = false,
 }) => {
-  const { isBookmarked, toggleBookmark } = useBookmark(type, id);
-
   const formattedDate = format(new Date(date), "MM月dd日(EEE)", { locale: ja });
-
-  const handleBookmarkClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    toggleBookmark();
-  };
 
   return (
     <Link
@@ -49,20 +40,6 @@ const EventCard: React.FC<EventCardProps> = ({
         <span className={`${styles.category} ${styles[category]}`}>
           {category}
         </span>
-
-        <button
-          className={`${styles.bookmarkButton} ${
-            isBookmarked ? styles.bookmarked : ""
-          }`}
-          onClick={handleBookmarkClick}
-          aria-label={
-            isBookmarked ? "ブックマークから削除" : "ブックマークに追加"
-          }
-        >
-          <svg className={styles.bookmarkIcon} viewBox="0 0 24 24">
-            <path d="M17 3H7c-1.1 0-2 .9-2 2v16l7-3 7 3V5c0-1.1-.9-2-2-2z" />
-          </svg>
-        </button>
       </div>
 
       <div className={styles.content}>

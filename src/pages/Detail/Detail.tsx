@@ -3,10 +3,10 @@ import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { format } from "date-fns";
 import { ja } from "date-fns/locale";
-import { useBookmark } from "../../hooks/useBookmark";
-import RelatedItems from "../../components/features/RelatedItems";
-import LocationMap from "../../components/features/LocationMap";
-import { useItemDetail } from "../../hooks/useItemDetail";
+import { useEvents } from "../../hooks/useEvents";
+import { useLocations } from "../../hooks/useLocations";
+import EventCard from "../../components/features/EventCard/EventCard";
+import CampusMap from "../../components/features/CampusMap/CampusMap";
 import styles from "./Detail.module.css";
 
 type DetailParams = {
@@ -16,11 +16,91 @@ type DetailParams = {
 
 const Detail: React.FC = () => {
   const { type, id } = useParams<DetailParams>();
-  const { item, loading, error, relatedItems } = useItemDetail(type, id);
-  const { isBookmarked, toggleBookmark } = useBookmark(type, id);
+  const { events, loading: eventsLoading } = useEvents();
+  const { locations, loading: locationsLoading } = useLocations();
 
-  // If the item is not found or loading fails
-  if (error) {
+  const [item, setItem] = useState<any>(null);
+  const [relatedItems, setRelatedItems] = useState<any[]>([]);
+  const [activeLocation, setActiveLocation] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const findItem = () => {
+      setLoading(true);
+      setError(null);
+
+      try {
+        let foundItem;
+
+        // 種類によって検索対象を変える
+        if (type === "event" || type === "exhibit") {
+          foundItem = events.find(
+            (event) => event.id.toString() === id && event.type === type
+          );
+        } else if (type === "location") {
+          foundItem = locations.find((location) => location.id === id);
+        }
+
+        if (foundItem) {
+          setItem(foundItem);
+
+          // 関連アイテムを設定
+          let related = [];
+          if (type === "event" || type === "exhibit") {
+            // 同じカテゴリーの他のイベント/展示を取得
+            related = events
+              .filter(
+                (event) =>
+                  event.id.toString() !== id &&
+                  event.category === foundItem.category &&
+                  event.type === foundItem.type
+              )
+              .slice(0, 3);
+          } else if (type === "location") {
+            // この会場で行われる他のイベントを取得
+            const locationEvents = foundItem.events
+              .map((eventRef: any) => {
+                return events.find(
+                  (event) => event.id.toString() === eventRef.id.toString()
+                );
+              })
+              .filter(Boolean);
+            related = locationEvents;
+          }
+
+          setRelatedItems(related);
+        } else {
+          setError("指定された項目が見つかりませんでした。");
+        }
+      } catch (err) {
+        setError("データの読み込み中にエラーが発生しました。");
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    // イベントとロケーションの両方が読み込まれたら実行
+    if (!eventsLoading && !locationsLoading) {
+      findItem();
+    }
+  }, [id, type, events, locations, eventsLoading, locationsLoading]);
+
+  const handleLocationHover = (locationId: string | null) => {
+    setActiveLocation(locationId);
+  };
+
+  if (loading) {
+    return (
+      <div className={styles.loading}>
+        <div className={styles.spinner}></div>
+        <p>読み込み中...</p>
+      </div>
+    );
+  }
+
+  if (error || !item) {
     return (
       <div className={styles.errorContainer}>
         <h1 className={styles.errorTitle}>ページが見つかりません</h1>
@@ -28,15 +108,6 @@ const Detail: React.FC = () => {
         <Link to="/" className={styles.homeLink}>
           ホームに戻る
         </Link>
-      </div>
-    );
-  }
-
-  if (loading || !item) {
-    return (
-      <div className={styles.loading}>
-        <div className={styles.spinner}></div>
-        <p>読み込み中...</p>
       </div>
     );
   }
@@ -62,11 +133,11 @@ const Detail: React.FC = () => {
             : "会場"}
         </Link>
         <span className={styles.separator}>/</span>
-        <span className={styles.currentPage}>{item.title}</span>
+        <span className={styles.currentPage}>{item.title || item.name}</span>
       </div>
 
       <div className={styles.itemHeader}>
-        <h1 className={styles.title}>{item.title}</h1>
+        <h1 className={styles.title}>{item.title || item.name}</h1>
 
         <div className={styles.badges}>
           <span
@@ -74,33 +145,26 @@ const Detail: React.FC = () => {
               styles[item.category]
             }`}
           >
-            {item.category}
+            {item.category || item.type}
           </span>
 
-          {item.tags.map((tag) => (
-            <span key={tag} className={styles.badge}>
-              {tag}
-            </span>
-          ))}
+          {item.tags &&
+            item.tags.map((tag: string) => (
+              <span key={tag} className={styles.badge}>
+                {tag}
+              </span>
+            ))}
         </div>
-
-        <button
-          className={`${styles.bookmarkButton} ${
-            isBookmarked ? styles.bookmarked : ""
-          }`}
-          onClick={toggleBookmark}
-        >
-          <svg className={styles.bookmarkIcon} viewBox="0 0 24 24">
-            <path d="M17 3H7c-1.1 0-2 .9-2 2v16l7-3 7 3V5c0-1.1-.9-2-2-2z" />
-          </svg>
-          <span>{isBookmarked ? "ブックマーク済み" : "ブックマークする"}</span>
-        </button>
       </div>
 
       <div className={styles.mainContent}>
         <div className={styles.detailsContainer}>
           <div className={styles.imageContainer}>
-            <img src={item.image} alt={item.title} className={styles.image} />
+            <img
+              src={item.image}
+              alt={item.title || item.name}
+              className={styles.image}
+            />
           </div>
 
           <div className={styles.infoContainer}>
@@ -143,12 +207,16 @@ const Detail: React.FC = () => {
                 会場
               </div>
               <div className={styles.infoValue}>
-                <Link
-                  to={`/detail/location/${item.locationId}`}
-                  className={styles.locationLink}
-                >
-                  {item.location}
-                </Link>
+                {type === "location" ? (
+                  item.name
+                ) : (
+                  <Link
+                    to={`/detail/location/${item.locationId}`}
+                    className={styles.locationLink}
+                  >
+                    {item.location}
+                  </Link>
+                )}
               </div>
             </div>
 
@@ -173,15 +241,44 @@ const Detail: React.FC = () => {
 
         <div className={styles.locationMapContainer}>
           <h2 className={styles.sectionTitle}>会場マップ</h2>
-          <LocationMap locationId={item.locationId} />
+          <div className={styles.locationMapWrapper}>
+            <CampusMap
+              locations={locations}
+              activeLocation={
+                activeLocation ||
+                (type === "location" ? item.id : item.locationId)
+              }
+              onLocationHover={handleLocationHover}
+            />
+          </div>
         </div>
 
         {relatedItems.length > 0 && (
           <div className={styles.relatedContainer}>
             <h2 className={styles.sectionTitle}>
-              関連{type === "event" ? "イベント" : "展示／露店"}
+              関連
+              {type === "event"
+                ? "イベント"
+                : type === "exhibit"
+                ? "展示／露店"
+                : "イベント・展示"}
             </h2>
-            <RelatedItems items={relatedItems} />
+            <div className={styles.relatedGrid}>
+              {relatedItems.map((related) => (
+                <EventCard
+                  key={related.id}
+                  id={related.id}
+                  title={related.title}
+                  image={related.image}
+                  date={related.date}
+                  time={related.time}
+                  location={related.location}
+                  category={related.category}
+                  type={related.type}
+                  compact
+                />
+              ))}
+            </div>
           </div>
         )}
       </div>

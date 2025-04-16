@@ -1,0 +1,67 @@
+/* src/components/features/CampusMap/CampusMap.module.css */
+.mapWrapper {
+  position: relative;
+  width: 100%;
+  background-color: var(--color-bg-secondary);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+.svgMap {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.mapLocation {
+  cursor: pointer;
+  transition: all var(--transition-normal);
+}
+
+.mapLocation:hover {
+  filter: brightness(1.1);
+}
+
+.mapLocation.active {
+  filter: brightness(1.2);
+}
+
+.mapLocation rect,
+.mapLocation circle,
+.mapLocation polygon {
+  transition: all var(--transition-normal);
+}
+
+.mapLocation:hover rect,
+.mapLocation:hover circle,
+.mapLocation:hover polygon,
+.mapLocation.active rect,
+.mapLocation.active circle,
+.mapLocation.active polygon {
+  stroke: white;
+  stroke-width: 2;
+}
+
+.locationLabel {
+  pointer-events: none;
+  transition: font-size var(--transition-normal);
+}
+
+.mapLocation:hover .locationLabel,
+.mapLocation.active .locationLabel {
+  font-size: 14px;
+}
+
+/* アクセシビリティのための視覚的に隠された説明 */
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}

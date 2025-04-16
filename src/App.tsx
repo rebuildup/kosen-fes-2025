@@ -1,60 +1,39 @@
-// src/contexts/AppContext.tsx
-import React, { createContext, useContext, useReducer, ReactNode } from "react";
+// src/App.tsx
+import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Layout from "./components/layout/Layout/Layout";
 
-interface AppState {
-  searchQuery: string;
-  activeCategory: string;
-  loading: boolean;
-}
+// ページのインポート
+import Home from "./pages/Home/Home";
+import Events from "./pages/Events/Events";
+import Exhibits from "./pages/Exhibits/Exhibits";
+import Timetable from "./pages/Timetable/Timetable";
+import Map from "./pages/Map/Map";
+import Search from "./pages/Search/Search";
+import Detail from "./pages/Detail/Detail";
 
-type AppAction =
-  | { type: "SET_SEARCH_QUERY"; payload: string }
-  | { type: "SET_ACTIVE_CATEGORY"; payload: string }
-  | { type: "SET_LOADING"; payload: boolean };
+// 必要なグローバルスタイルをインポート
+import "./styles/global.css";
+import "./styles/variables.css";
 
-const initialState: AppState = {
-  searchQuery: "",
-  activeCategory: "all",
-  loading: false,
-};
-
-const AppContext = createContext<
-  | {
-      state: AppState;
-      dispatch: React.Dispatch<AppAction>;
-    }
-  | undefined
->(undefined);
-
-function appReducer(state: AppState, action: AppAction): AppState {
-  switch (action.type) {
-    case "SET_SEARCH_QUERY":
-      return { ...state, searchQuery: action.payload };
-    case "SET_ACTIVE_CATEGORY":
-      return { ...state, activeCategory: action.payload };
-    case "SET_LOADING":
-      return { ...state, loading: action.payload };
-    default:
-      return state;
-  }
-}
-
-export const AppProvider: React.FC<{ children: ReactNode }> = ({
-  children,
-}) => {
-  const [state, dispatch] = useReducer(appReducer, initialState);
-
+const App: React.FC = () => {
   return (
-    <AppContext.Provider value={{ state, dispatch }}>
-      {children}
-    </AppContext.Provider>
+    <Router>
+      <Layout>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/events" element={<Events />} />
+          <Route path="/exhibits" element={<Exhibits />} />
+          <Route path="/timetable" element={<Timetable />} />
+          <Route path="/map" element={<Map />} />
+          <Route path="/search" element={<Search />} />
+          <Route path="/detail/:type/:id" element={<Detail />} />
+          {/* 404ページはHomeにリダイレクト */}
+          <Route path="*" element={<Home />} />
+        </Routes>
+      </Layout>
+    </Router>
   );
 };
 
-export const useAppContext = () => {
-  const context = useContext(AppContext);
-  if (context === undefined) {
-    throw new Error("useAppContext must be used within an AppProvider");
-  }
-  return context;
-};
+export default App;

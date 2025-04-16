@@ -1,7 +1,6 @@
 // src/components/features/TimelineEvent/TimelineEvent.tsx
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { useBookmark } from "../../../hooks/useBookmark";
 import styles from "./TimelineEvent.module.css";
 
 interface TimelineEventProps {
@@ -26,16 +25,9 @@ const TimelineEvent: React.FC<TimelineEventProps> = ({
   type,
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
-  const { isBookmarked, toggleBookmark } = useBookmark(type, id);
 
   const handleToggleExpand = () => {
     setIsExpanded(!isExpanded);
-  };
-
-  const handleBookmarkClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    toggleBookmark();
   };
 
   return (
@@ -74,21 +66,6 @@ const TimelineEvent: React.FC<TimelineEventProps> = ({
           </div>
 
           <div className={styles.actions}>
-            <button
-              className={`${styles.bookmarkButton} ${
-                isBookmarked ? styles.bookmarked : ""
-              }`}
-              onClick={handleBookmarkClick}
-              aria-label={
-                isBookmarked ? "ブックマークから削除" : "ブックマークに追加"
-              }
-            >
-              <svg className={styles.actionIcon} viewBox="0 0 24 24">
-                <path d="M17 3H7c-1.1 0-2 .9-2 2v16l7-3 7 3V5c0-1.1-.9-2-2-2z" />
-              </svg>
-              <span>{isBookmarked ? "保存済み" : "保存する"}</span>
-            </button>
-
             <Link
               to={`/detail/${type}/${id}`}
               className={styles.detailsLink}

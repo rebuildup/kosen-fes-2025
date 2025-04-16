@@ -1,12 +1,12 @@
 // src/pages/Home/Home.tsx
-import React, { useEffect } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
 import { format } from "date-fns";
 import { ja } from "date-fns/locale";
-import FestivalBanner from "../../components/features/FestivalBanner";
-import EventCard from "../../components/features/EventCard";
-import TimelinePost from "../../components/features/TimelinePost";
-import { useFeaturedEvents } from "../../hooks/useFeaturedEvents";
+import FestivalBanner from "../../components/features/FestivalBanner/FestivalBanner";
+import EventCard from "../../components/features/EventCard/EventCard";
+import TimelinePost from "../../components/features/TimelinePost/TimelinePost";
+import { useFeaturedEvents } from "../../hooks/useEvents";
 import styles from "./Home.module.css";
 
 const Home: React.FC = () => {

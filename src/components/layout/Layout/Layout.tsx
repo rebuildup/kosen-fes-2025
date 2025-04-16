@@ -1,9 +1,7 @@
 // src/components/layout/Layout/Layout.tsx
 import React from "react";
-import Header from "../Header";
-import Sidebar from "../Sidebar";
-import BottomNavigation from "../BottomNavigation";
-import { useMediaQuery } from "../../../hooks/useMediaQuery";
+import Header from "../Header/Header";
+import Footer from "../Footer/Footer";
 import styles from "./Layout.module.css";
 
 interface LayoutProps {
@@ -11,19 +9,13 @@ interface LayoutProps {
 }
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
-  const isMobile = useMediaQuery("(max-width: 768px)");
-
   return (
     <div className={styles.layoutContainer}>
       <Header />
-
-      <div className={styles.mainSection}>
-        {!isMobile && <Sidebar />}
-
-        <main className={styles.mainContent}>{children}</main>
-      </div>
-
-      {isMobile && <BottomNavigation />}
+      <main className={styles.mainContent}>
+        <div className={styles.contentWrapper}>{children}</div>
+      </main>
+      <Footer />
     </div>
   );
 };

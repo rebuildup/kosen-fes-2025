@@ -34,7 +34,7 @@ function VirtualizedList<T>({
           position: "relative",
         }}
       >
-        {virtualizer.getVirtualItems().map((virtualItem) => (
+        {virtualizer.getVirtualItems().map((virtualItem: any) => (
           <div
             key={virtualItem.key}
             style={{

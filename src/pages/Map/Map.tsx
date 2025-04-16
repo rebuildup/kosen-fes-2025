@@ -1,7 +1,7 @@
 // src/pages/Map/Map.tsx
 import React, { useState } from "react";
-import CampusMap from "../../components/features/CampusMap";
-import LocationCard from "../../components/features/LocationCard";
+import CampusMap from "../../components/features/CampusMap/CampusMap";
+import LocationCard from "../../components/features/LocationCard/LocationCard";
 import { useLocations } from "../../hooks/useLocations";
 import styles from "./Map.module.css";
 

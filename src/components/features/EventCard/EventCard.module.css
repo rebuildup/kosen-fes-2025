@@ -1,0 +1,162 @@
+/* src/components/features/EventCard/EventCard.module.css */
+.card {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--color-bg-secondary);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  text-decoration: none;
+  color: inherit;
+  transition: all var(--transition-normal);
+  height: 100%;
+}
+
+.card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-5px);
+}
+
+.imageContainer {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+}
+
+.image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--transition-normal);
+}
+
+.card:hover .image {
+  transform: scale(1.1);
+}
+
+.category {
+  position: absolute;
+  top: var(--spacing-2);
+  right: var(--spacing-2);
+  background-color: rgba(255, 255, 255, 0.9);
+  color: var(--color-kosen-primary);
+  border-radius: var(--radius-full);
+  padding: 4px 10px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+/* カテゴリーごとの色 */
+.ceremony {
+  color: #ff9800;
+}
+
+.performance {
+  color: #2196f3;
+}
+
+.workshop {
+  color: #4caf50;
+}
+
+.food {
+  color: #f44336;
+}
+
+.exhibition {
+  color: #9c27b0;
+}
+
+.competition {
+  color: #ff5722;
+}
+
+.film {
+  color: #607d8b;
+}
+
+.content {
+  flex: 1;
+  padding: var(--spacing-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+}
+
+.title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin: 0;
+  line-height: 1.3;
+}
+
+.details {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+  margin-top: auto;
+  font-size: 0.9rem;
+  color: var(--color-text-secondary);
+}
+
+.detail {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+}
+
+.icon {
+  width: 16px;
+  height: 16px;
+  fill: currentColor;
+}
+
+/* コンパクトスタイル - 横向きカード */
+.compact {
+  flex-direction: row;
+  height: 120px;
+}
+
+.compact .imageContainer {
+  flex: 0 0 180px;
+  aspect-ratio: auto;
+  height: 100%;
+}
+
+.compact .content {
+  padding: var(--spacing-2);
+}
+
+.compact .title {
+  font-size: 1rem;
+}
+
+.compact .details {
+  font-size: 0.8rem;
+}
+
+.compact .detail {
+  gap: var(--spacing-1);
+}
+
+/* メディアクエリ */
+@media (max-width: 768px) {
+  .title {
+    font-size: 1.1rem;
+  }
+
+  .details {
+    gap: var(--spacing-1);
+  }
+
+  .compact {
+    height: auto;
+    flex-direction: column;
+  }
+
+  .compact .imageContainer {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+  }
+}
