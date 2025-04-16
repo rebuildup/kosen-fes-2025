@@ -1,12 +1,12 @@
 // src/pages/Events/Events.tsx
 import React, { useState, useEffect } from "react";
-import EventCard from "../../components/features/EventCard/EventCard";
-import { useEvents } from "../../hooks/useEvents";
+import EventCard from "../../components/features/EventCard";
+import { useEvents, Event } from "../../hooks/useEvents";
 import styles from "./Events.module.css";
 
 const Events: React.FC = () => {
   const { events, loading, categories } = useEvents();
-  const [filteredEvents, setFilteredEvents] = useState(events);
+  const [filteredEvents, setFilteredEvents] = useState<Event[]>([]);
   const [activeCategory, setActiveCategory] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -16,14 +16,16 @@ const Events: React.FC = () => {
 
     // カテゴリーでフィルタリング
     if (activeCategory !== "all") {
-      result = result.filter((event) => event.category === activeCategory);
+      result = result.filter(
+        (event: Event) => event.category === activeCategory
+      );
     }
 
     // 検索クエリでフィルタリング
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
       result = result.filter(
-        (event) =>
+        (event: Event) =>
           event.title.toLowerCase().includes(query) ||
           event.description.toLowerCase().includes(query) ||
           event.location.toLowerCase().includes(query)
@@ -69,8 +71,8 @@ const Events: React.FC = () => {
             すべて
           </button>
           {categories
-            .filter((category) => category !== "all")
-            .map((category) => (
+            .filter((category: string) => category !== "all")
+            .map((category: string) => (
               <button
                 key={category}
                 className={`${styles.categoryButton} ${
@@ -93,8 +95,8 @@ const Events: React.FC = () => {
       ) : (
         <div className={styles.eventsGrid}>
           {filteredEvents
-            .filter((event) => event.type === "event")
-            .map((event) => (
+            .filter((event: Event) => event.type === "event")
+            .map((event: Event) => (
               <EventCard
                 key={event.id}
                 id={event.id}

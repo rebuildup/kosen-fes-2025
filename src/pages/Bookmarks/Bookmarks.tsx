@@ -1,19 +1,18 @@
 // src/pages/Bookmarks/Bookmarks.tsx
 import React, { useState } from "react";
-import EventCard from "../../components/features/EventCard";
-import { useBookmarks } from "../../hooks/useBookmarks";
+import EventCard from "../../components/features/EventCard/EventCard";
+import { useBookmarks, BookmarkItem } from "../../hooks/useBookmarks";
 import styles from "./Bookmarks.module.css";
 
 const Bookmarks: React.FC = () => {
-  const { bookmarks, loading, removeBookmark, clearAllBookmarks } =
-    useBookmarks();
+  const { bookmarks, loading, clearAllBookmarks } = useBookmarks();
   const [activeFilter, setActiveFilter] = useState("all");
 
   // Filter bookmarks by type
   const filteredBookmarks =
     activeFilter === "all"
       ? bookmarks
-      : bookmarks.filter((item) => item.type === activeFilter);
+      : bookmarks.filter((item: BookmarkItem) => item.type === activeFilter);
 
   const handleFilterChange = (filter: string) => {
     setActiveFilter(filter);
@@ -70,7 +69,11 @@ const Bookmarks: React.FC = () => {
               onClick={() => handleFilterChange("event")}
             >
               イベント (
-              {bookmarks.filter((item) => item.type === "event").length})
+              {
+                bookmarks.filter((item: BookmarkItem) => item.type === "event")
+                  .length
+              }
+              )
             </button>
             <button
               className={`${styles.filterButton} ${
@@ -79,7 +82,12 @@ const Bookmarks: React.FC = () => {
               onClick={() => handleFilterChange("exhibit")}
             >
               展示／露店 (
-              {bookmarks.filter((item) => item.type === "exhibit").length})
+              {
+                bookmarks.filter(
+                  (item: BookmarkItem) => item.type === "exhibit"
+                ).length
+              }
+              )
             </button>
             <button
               className={`${styles.filterButton} ${
@@ -88,12 +96,17 @@ const Bookmarks: React.FC = () => {
               onClick={() => handleFilterChange("location")}
             >
               会場 (
-              {bookmarks.filter((item) => item.type === "location").length})
+              {
+                bookmarks.filter(
+                  (item: BookmarkItem) => item.type === "location"
+                ).length
+              }
+              )
             </button>
           </div>
 
           <div className={styles.bookmarksGrid}>
-            {filteredBookmarks.map((item) => (
+            {filteredBookmarks.map((item: BookmarkItem) => (
               <EventCard
                 key={`${item.type}-${item.id}`}
                 id={item.id}

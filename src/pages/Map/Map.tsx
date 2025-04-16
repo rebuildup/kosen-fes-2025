@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import CampusMap from "../../components/features/CampusMap/CampusMap";
 import LocationCard from "../../components/features/LocationCard/LocationCard";
-import { useLocations } from "../../hooks/useLocations";
+import { useLocations, Location } from "../../hooks/useLocations";
 import styles from "./Map.module.css";
 
 const Map: React.FC = () => {
@@ -37,7 +37,7 @@ const Map: React.FC = () => {
             <div className={styles.loading}>読み込み中...</div>
           ) : (
             <div className={styles.locationsList}>
-              {locations.map((location) => (
+              {locations.map((location: Location) => (
                 <LocationCard
                   key={location.id}
                   location={location}

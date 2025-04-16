@@ -17,7 +17,7 @@ export interface Event {
   type: "event" | "exhibit";
 }
 
-// モックデータ - 実際のアプリでは、APIからデータを取得するかもしれません
+// Mock events data - in a real app, this would be fetched from an API
 const mockEvents: Event[] = [
   {
     id: "1",
@@ -164,11 +164,9 @@ export const useEvents = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // APIからデータを取得する代わりに、モックデータを使用
-    // 実際のアプリでは、fetch APIなどを使ってデータを取得します
+    // Simulate API fetch delay
     const fetchEvents = async () => {
       try {
-        // モックデータの読み込みを模倣するため、短い遅延を追加
         await new Promise((resolve) => setTimeout(resolve, 500));
         setEvents(mockEvents);
       } catch (error) {
@@ -181,17 +179,18 @@ export const useEvents = () => {
     fetchEvents();
   }, []);
 
-  // イベントのカテゴリのリストを取得
+  // Get list of all categories
   const categories = ["all", ...new Set(events.map((event) => event.category))];
 
   return { events, loading, categories };
 };
 
-// 注目イベントのみを取得するフック
+// Hook for featured events
 export const useFeaturedEvents = () => {
   const { events, loading } = useEvents();
-  // フィーチャードイベントをフィルタリング（例：最初の5つのイベント）
   const featuredEvents = events.slice(0, 5);
 
   return { events: featuredEvents, loading };
 };
+
+export default useEvents;

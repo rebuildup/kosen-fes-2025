@@ -3,8 +3,8 @@ import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { format } from "date-fns";
 import { ja } from "date-fns/locale";
-import { useEvents } from "../../hooks/useEvents";
-import { useLocations } from "../../hooks/useLocations";
+import { useEvents, Event } from "../../hooks/useEvents";
+import { useLocations, Location } from "../../hooks/useLocations";
 import EventCard from "../../components/features/EventCard/EventCard";
 import CampusMap from "../../components/features/CampusMap/CampusMap";
 import styles from "./Detail.module.css";
@@ -19,8 +19,8 @@ const Detail: React.FC = () => {
   const { events, loading: eventsLoading } = useEvents();
   const { locations, loading: locationsLoading } = useLocations();
 
-  const [item, setItem] = useState<any>(null);
-  const [relatedItems, setRelatedItems] = useState<any[]>([]);
+  const [item, setItem] = useState<Event | Location | null>(null);
+  const [relatedItems, setRelatedItems] = useState<Event[]>([]);
   const [activeLocation, setActiveLocation] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -46,26 +46,26 @@ const Detail: React.FC = () => {
           setItem(foundItem);
 
           // 関連アイテムを設定
-          let related = [];
+          let related: Event[] = [];
           if (type === "event" || type === "exhibit") {
             // 同じカテゴリーの他のイベント/展示を取得
             related = events
               .filter(
                 (event) =>
                   event.id.toString() !== id &&
-                  event.category === foundItem.category &&
-                  event.type === foundItem.type
+                  event.category === (foundItem as Event).category &&
+                  event.type === (foundItem as Event).type
               )
               .slice(0, 3);
           } else if (type === "location") {
             // この会場で行われる他のイベントを取得
-            const locationEvents = foundItem.events
-              .map((eventRef: any) => {
+            const locationEvents = (foundItem as Location).events
+              .map((eventRef) => {
                 return events.find(
                   (event) => event.id.toString() === eventRef.id.toString()
                 );
               })
-              .filter(Boolean);
+              .filter((event): event is Event => !!event);
             related = locationEvents;
           }
 
@@ -112,6 +112,12 @@ const Detail: React.FC = () => {
     );
   }
 
+  // Event型とLocation型に共通のプロパティを取得するヘルパー関数
+  const getTitle = () => ("title" in item ? item.title : item.name);
+  const getDescription = () => item.description;
+  const getImage = () => item.image;
+  const getCategory = () => ("category" in item ? item.category : item.type);
+
   return (
     <div className={styles.detailPage}>
       <div className={styles.breadcrumbs}>
@@ -133,22 +139,23 @@ const Detail: React.FC = () => {
             : "会場"}
         </Link>
         <span className={styles.separator}>/</span>
-        <span className={styles.currentPage}>{item.title || item.name}</span>
+        <span className={styles.currentPage}>{getTitle()}</span>
       </div>
 
       <div className={styles.itemHeader}>
-        <h1 className={styles.title}>{item.title || item.name}</h1>
+        <h1 className={styles.title}>{getTitle()}</h1>
 
         <div className={styles.badges}>
           <span
             className={`${styles.badge} ${styles.category} ${
-              styles[item.category]
+              styles[getCategory()]
             }`}
           >
-            {item.category || item.type}
+            {getCategory()}
           </span>
 
-          {item.tags &&
+          {"tags" in item &&
+            item.tags &&
             item.tags.map((tag: string) => (
               <span key={tag} className={styles.badge}>
                 {tag}
@@ -160,15 +167,11 @@ const Detail: React.FC = () => {
       <div className={styles.mainContent}>
         <div className={styles.detailsContainer}>
           <div className={styles.imageContainer}>
-            <img
-              src={item.image}
-              alt={item.title || item.name}
-              className={styles.image}
-            />
+            <img src={getImage()} alt={getTitle()} className={styles.image} />
           </div>
 
           <div className={styles.infoContainer}>
-            {(type === "event" || type === "exhibit") && (
+            {(type === "event" || type === "exhibit") && "date" in item && (
               <>
                 <div className={styles.infoRow}>
                   <div className={styles.infoLabel}>
@@ -208,19 +211,25 @@ const Detail: React.FC = () => {
               </div>
               <div className={styles.infoValue}>
                 {type === "location" ? (
-                  item.name
-                ) : (
+                  "name" in item ? (
+                    item.name
+                  ) : (
+                    ""
+                  )
+                ) : "location" in item ? (
                   <Link
                     to={`/detail/location/${item.locationId}`}
                     className={styles.locationLink}
                   >
                     {item.location}
                   </Link>
+                ) : (
+                  ""
                 )}
               </div>
             </div>
 
-            {item.organizer && (
+            {"organizer" in item && item.organizer && (
               <div className={styles.infoRow}>
                 <div className={styles.infoLabel}>
                   <svg className={styles.infoIcon} viewBox="0 0 24 24">
@@ -236,7 +245,7 @@ const Detail: React.FC = () => {
 
         <div className={styles.descriptionContainer}>
           <h2 className={styles.sectionTitle}>説明</h2>
-          <p className={styles.description}>{item.description}</p>
+          <p className={styles.description}>{getDescription()}</p>
         </div>
 
         <div className={styles.locationMapContainer}>
@@ -246,7 +255,13 @@ const Detail: React.FC = () => {
               locations={locations}
               activeLocation={
                 activeLocation ||
-                (type === "location" ? item.id : item.locationId)
+                (type === "location"
+                  ? "id" in item
+                    ? (item.id as string)
+                    : ""
+                  : "locationId" in item
+                  ? (item.locationId as string)
+                  : "")
               }
               onLocationHover={handleLocationHover}
             />

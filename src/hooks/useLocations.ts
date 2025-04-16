@@ -1,6 +1,5 @@
 // src/hooks/useLocations.ts
 import { useState, useEffect } from "react";
-import { Event } from "./useEvents";
 
 export interface Location {
   id: string;
@@ -15,7 +14,7 @@ export interface Location {
     time: string;
     type: "event" | "exhibit";
   }[];
-  // マップでの表示に必要なプロパティ
+  // Properties for map display
   shape: "rect" | "circle" | "polygon";
   x: number;
   y: number;
@@ -27,7 +26,7 @@ export interface Location {
   labelY?: number;
 }
 
-// モックデータ - 実際のアプリでは、APIからデータを取得するかもしれません
+// Mock locations data - in a real app, this would be fetched from an API
 const mockLocations: Location[] = [
   {
     id: "main-stage",
@@ -210,10 +209,9 @@ export const useLocations = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // APIからデータを取得する代わりに、モックデータを使用
+    // Simulate API fetch delay
     const fetchLocations = async () => {
       try {
-        // モックデータの読み込みを模倣するため、短い遅延を追加
         await new Promise((resolve) => setTimeout(resolve, 500));
         setLocations(mockLocations);
       } catch (error) {
@@ -228,3 +226,5 @@ export const useLocations = () => {
 
   return { locations, loading };
 };
+
+export default useLocations;

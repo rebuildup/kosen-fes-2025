@@ -223,6 +223,7 @@
   /* Display only 3 lines and hide rest with ellipsis */
   display: -webkit-box;
   -webkit-line-clamp: 3;
+  line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -333,6 +334,7 @@
   }
 
   .event-description {
-    -webkit-line-clamp: 2; /* Show fewer lines on mobile */
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
   }
 }
