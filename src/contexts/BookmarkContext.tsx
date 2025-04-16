@@ -20,7 +20,7 @@ interface BookmarkContextType {
   clearAllBookmarks: () => void;
 }
 
-const BookmarkContext = createContext<BookmarkContextType | undefined>(
+export const BookmarkContext = createContext<BookmarkContextType | undefined>(
   undefined
 );
 
@@ -85,44 +85,13 @@ export const BookmarkProvider: React.FC<{ children: React.ReactNode }> = ({
   );
 };
 
-export const useBookmark = (type: string, id: string | number) => {
+// Create a hook for using the bookmark context
+export const useBookmarkContext = () => {
   const context = useContext(BookmarkContext);
-
   if (context === undefined) {
-    throw new Error("useBookmark must be used within a BookmarkProvider");
+    throw new Error(
+      "useBookmarkContext must be used within a BookmarkProvider"
+    );
   }
-
-  const { isBookmarked, addBookmark, removeBookmark } = context;
-
-  const toggleBookmark = (item?: Omit<BookmarkItem, "id" | "type">) => {
-    if (isBookmarked(type, id)) {
-      removeBookmark(type, id);
-    } else if (item) {
-      addBookmark({
-        id,
-        type,
-        ...item,
-      });
-    }
-  };
-
-  return {
-    isBookmarked: isBookmarked(type, id),
-    toggleBookmark,
-  };
-};
-
-export const useBookmarks = () => {
-  const context = useContext(BookmarkContext);
-
-  if (context === undefined) {
-    throw new Error("useBookmarks must be used within a BookmarkProvider");
-  }
-
-  return {
-    bookmarks: context.bookmarks,
-    loading: false,
-    removeBookmark: context.removeBookmark,
-    clearAllBookmarks: context.clearAllBookmarks,
-  };
+  return context;
 };

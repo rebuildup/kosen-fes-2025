@@ -1,12 +1,46 @@
 // src/pages/Bookmarks/Bookmarks.tsx
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import EventCard from "../../components/features/EventCard/EventCard";
-import { useBookmarks, BookmarkItem } from "../../hooks/useBookmarks";
 import styles from "./Bookmarks.module.css";
 
+// Since we're having trouble with the useBookmarks hook,
+// let's just implement the functionality directly in this component
+interface BookmarkItem {
+  id: string | number;
+  type: string;
+  title: string;
+  image: string;
+  date: string;
+  time: string;
+  location: string;
+  category: string;
+}
+
 const Bookmarks: React.FC = () => {
-  const { bookmarks, loading, clearAllBookmarks } = useBookmarks();
+  const [bookmarks, setBookmarks] = useState<BookmarkItem[]>([]);
+  const [loading, setLoading] = useState(true);
   const [activeFilter, setActiveFilter] = useState("all");
+
+  // Load bookmarks from localStorage
+  useEffect(() => {
+    try {
+      const savedBookmarks = localStorage.getItem("kosen-fest-bookmarks");
+      if (savedBookmarks) {
+        setBookmarks(JSON.parse(savedBookmarks));
+      }
+    } catch (error) {
+      console.error("Failed to load bookmarks", error);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const clearAllBookmarks = () => {
+    if (window.confirm("すべてのブックマークを削除してもよろしいですか？")) {
+      setBookmarks([]);
+      localStorage.setItem("kosen-fest-bookmarks", JSON.stringify([]));
+    }
+  };
 
   // Filter bookmarks by type
   const filteredBookmarks =
@@ -18,19 +52,13 @@ const Bookmarks: React.FC = () => {
     setActiveFilter(filter);
   };
 
-  const handleClearAll = () => {
-    if (window.confirm("すべてのブックマークを削除してもよろしいですか？")) {
-      clearAllBookmarks();
-    }
-  };
-
   return (
     <div className={styles.bookmarksPage}>
       <div className={styles.header}>
         <h1 className={styles.pageTitle}>ブックマーク</h1>
 
         {bookmarks.length > 0 && (
-          <button className={styles.clearAllButton} onClick={handleClearAll}>
+          <button className={styles.clearAllButton} onClick={clearAllBookmarks}>
             すべて削除
           </button>
         )}
