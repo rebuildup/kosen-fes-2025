@@ -1,0 +1,95 @@
+/* src/components/layout/Header/Header.module.css */
+.header {
+  background-color: var(--color-bg-primary);
+  box-shadow: var(--shadow-sm);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.headerContent {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-3) var(--spacing-4);
+  max-width: 1200px;
+  margin: 0 auto;
+  height: 64px;
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+}
+
+.searchButton,
+.menuButton {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: none;
+  border: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  color: var(--color-text-primary);
+}
+
+.searchButton:hover,
+.menuButton:hover {
+  background-color: var(--color-bg-tertiary);
+}
+
+.icon {
+  width: 24px;
+  height: 24px;
+  fill: currentColor;
+}
+
+/* Menu button (hamburger) */
+.menuButton {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.menuBar {
+  display: block;
+  width: 24px;
+  height: 2px;
+  background-color: var(--color-text-primary);
+  transition: transform 0.2s, opacity 0.2s;
+}
+
+.menuButton.active .menuBar:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+
+.menuButton.active .menuBar:nth-child(2) {
+  opacity: 0;
+}
+
+.menuButton.active .menuBar:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
+.mobileMenu {
+  position: absolute;
+  top: 64px;
+  left: 0;
+  right: 0;
+  background-color: var(--color-bg-primary);
+  box-shadow: var(--shadow-md);
+  border-top: 1px solid var(--color-border-primary);
+  z-index: 99;
+}
+
+@media (max-width: 768px) {
+  .headerContent {
+    padding: var(--spacing-2) var(--spacing-3);
+  }
+}

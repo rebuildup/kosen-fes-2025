@@ -1,0 +1,66 @@
+/* src/pages/Home/Home.module.css */
+.homePage {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-6);
+}
+
+.sectionTitle {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: var(--spacing-4);
+  position: relative;
+  padding-left: var(--spacing-3);
+}
+
+.sectionTitle::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.25rem;
+  bottom: 0.25rem;
+  width: 4px;
+  background-color: var(--color-kosen-primary);
+  border-radius: var(--radius-full);
+}
+
+.timelineContainer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4);
+}
+
+.highlightsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--spacing-4);
+}
+
+.viewAllLink {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: var(--spacing-4);
+  color: var(--color-kosen-primary);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.arrowIcon {
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
+  margin-left: var(--spacing-1);
+}
+
+.loading {
+  padding: var(--spacing-4);
+  text-align: center;
+  color: var(--color-text-secondary);
+}
+
+@media (max-width: 768px) {
+  .highlightsGrid {
+    grid-template-columns: 1fr;
+  }
+}

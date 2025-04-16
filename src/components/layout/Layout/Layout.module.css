@@ -1,0 +1,27 @@
+/* src/components/layout/Layout/Layout.module.css */
+.layoutContainer {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.mainSection {
+  display: flex;
+  flex: 1;
+}
+
+.mainContent {
+  flex: 1;
+  padding: var(--spacing-4);
+  overflow-y: auto;
+}
+
+/* For mobile screens */
+@media (max-width: 768px) {
+  .mainContent {
+    padding: var(--spacing-3);
+    padding-bottom: calc(
+      var(--spacing-8) + 56px
+    ); /* Account for bottom navigation */
+  }
+}

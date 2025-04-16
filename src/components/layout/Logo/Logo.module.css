@@ -1,0 +1,79 @@
+/* src/components/layout/Logo/Logo.module.css */
+.logo {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: var(--color-text-primary);
+}
+
+.logoIcon {
+  width: 40px;
+  height: 40px;
+  margin-right: var(--spacing-2);
+}
+
+.logoCircle {
+  stroke: var(--color-kosen-primary);
+  stroke-width: 2;
+  transition: stroke var(--transition-normal);
+}
+
+.logoPath {
+  stroke: var(--color-kosen-primary);
+  stroke-width: 2.5;
+  transition: stroke var(--transition-normal);
+}
+
+.logoText {
+  display: flex;
+  flex-direction: column;
+}
+
+.primaryText {
+  font-size: 1.2rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.yearText {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--color-kosen-primary);
+}
+
+/* Sizes */
+.small .logoIcon {
+  width: 24px;
+  height: 24px;
+}
+
+.small .primaryText {
+  font-size: 0.9rem;
+}
+
+.small .yearText {
+  font-size: 0.75rem;
+}
+
+.large .logoIcon {
+  width: 60px;
+  height: 60px;
+}
+
+.large .primaryText {
+  font-size: 1.8rem;
+}
+
+.large .yearText {
+  font-size: 1.4rem;
+}
+
+/* Hover states */
+.logo:hover .logoCircle,
+.logo:hover .logoPath {
+  stroke: var(--color-kosen-secondary);
+}
+
+.logo:hover .yearText {
+  color: var(--color-kosen-secondary);
+}
