@@ -1,0 +1,165 @@
+/* src/pages/Home.css (continued) */
+.hero-cta {
+  font-size: 1.2rem;
+  padding: 0.8em 2em;
+  background-color: white;
+  color: #667eea;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.hero-cta:hover {
+  background-color: #f8f8f8;
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+}
+
+.hero-decorations {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.decoration {
+  position: absolute;
+  opacity: 0.2;
+}
+
+.d1 {
+  top: 15%;
+  left: 10%;
+  animation: float 8s ease-in-out infinite;
+}
+
+.d2 {
+  top: 60%;
+  right: 15%;
+  animation: float 12s ease-in-out infinite reverse;
+}
+
+.d3 {
+  bottom: 10%;
+  left: 40%;
+  animation: float 10s ease-in-out infinite 2s;
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-20px) rotate(5deg);
+  }
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+}
+
+.home-section {
+  margin-bottom: 4rem;
+}
+
+.event-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.event-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.event-time {
+  display: inline-block;
+  background-color: #646cff;
+  color: white;
+  padding: 0.3em 0.8em;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+}
+
+.event-card h3 {
+  font-size: 1.5rem;
+  margin: 0.5rem 0;
+}
+
+.highlights {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.highlight-item {
+  text-align: center;
+}
+
+.highlight-icon {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+.highlight-item h3 {
+  font-size: 1.3rem;
+  margin: 0.5rem 0;
+}
+
+.cta-block {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 3rem 2rem;
+  text-align: center;
+  color: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.cta-block p {
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.large-btn {
+  font-size: 1.2rem;
+  padding: 0.8em 2em;
+  background-color: white;
+  color: #667eea;
+}
+
+.large-btn:hover {
+  background-color: #f8f8f8;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .hero-title {
+    font-size: 2.5rem;
+  }
+
+  .hero-subtitle {
+    font-size: 1.2rem;
+  }
+
+  .hero-banner {
+    height: 60vh;
+    min-height: 400px;
+  }
+
+  .highlights {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .cta-block p {
+    font-size: 1.2rem;
+  }
+}

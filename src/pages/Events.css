@@ -1,0 +1,226 @@
+/* src/pages/Events.css */
+.events-container {
+  padding: 2rem 0;
+}
+
+.page-title {
+  font-size: 2.5rem;
+  margin-bottom: 2rem;
+  text-align: center;
+  background: linear-gradient(90deg, #646cff, #535bf2);
+  -webkit-background-clip: text;
+  background-clip: text; /* Add this line */
+  -webkit-text-fill-color: transparent;
+}
+
+.filter-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+}
+
+.filter-btn {
+  background-color: #f1f1f1;
+  border: none;
+  border-radius: 20px;
+  padding: 0.5rem 1.2rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.filter-btn:hover {
+  background-color: #e1e1e1;
+}
+
+.filter-btn.active {
+  background-color: #646cff;
+  color: white;
+}
+
+.events-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.event-item {
+  display: flex;
+  background-color: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.event-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+}
+
+.event-image {
+  flex: 0 0 250px;
+  background-color: #646cff;
+  position: relative;
+  background-size: cover;
+  background-position: center;
+}
+
+.event-image.opening-ceremony {
+  background-image: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)),
+    url("/src/assets/images/opening.jpg");
+}
+
+.event-image.dance {
+  background-image: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)),
+    url("/src/assets/images/dance.jpg");
+}
+
+.event-image.workshop {
+  background-image: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)),
+    url("/src/assets/images/workshop.jpg");
+}
+
+.event-image.food {
+  background-image: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)),
+    url("/src/assets/images/food.jpg");
+}
+
+.event-image.concert {
+  background-image: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)),
+    url("/src/assets/images/concert.jpg");
+}
+
+.event-image.film {
+  background-image: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)),
+    url("/src/assets/images/film.jpg");
+}
+
+.event-image.closing {
+  background-image: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)),
+    url("/src/assets/images/closing.jpg");
+}
+
+.event-date {
+  position: absolute;
+  bottom: 1rem;
+  left: 1rem;
+  background-color: white;
+  color: #646cff;
+  padding: 0.4rem 0.8rem;
+  border-radius: 4px;
+  font-weight: bold;
+  font-size: 0.9rem;
+}
+
+.event-content {
+  flex: 1;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.event-time-location {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.event-time,
+.event-location {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.event-title {
+  font-size: 1.5rem;
+  margin: 0 0 1rem 0;
+}
+
+.event-description {
+  margin-bottom: 1.5rem;
+  color: #444;
+  line-height: 1.6;
+}
+
+.event-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: auto;
+}
+
+.event-category {
+  display: inline-block;
+  padding: 0.3rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.event-category.ceremony {
+  background-color: #ffecb3;
+  color: #ff9800;
+}
+
+.event-category.performance {
+  background-color: #e3f2fd;
+  color: #2196f3;
+}
+
+.event-category.workshop {
+  background-color: #e8f5e9;
+  color: #4caf50;
+}
+
+.event-category.food {
+  background-color: #ffebee;
+  color: #f44336;
+}
+
+.event-category.film {
+  background-color: #f3e5f5;
+  color: #9c27b0;
+}
+
+.event-details-btn {
+  background-color: transparent;
+  color: #646cff;
+  border: 1px solid #646cff;
+  border-radius: 4px;
+  padding: 0.4rem 1rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.event-details-btn:hover {
+  background-color: #646cff;
+  color: white;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .event-item {
+    flex-direction: column;
+  }
+
+  .event-image {
+    height: 200px;
+    flex-basis: auto;
+  }
+
+  .event-date {
+    top: 1rem;
+    bottom: auto;
+  }
+
+  .filter-container {
+    overflow-x: auto;
+    padding-bottom: 1rem;
+    justify-content: flex-start;
+  }
+}
