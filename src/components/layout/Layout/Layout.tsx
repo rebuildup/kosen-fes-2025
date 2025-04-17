@@ -1,7 +1,6 @@
 // src/components/layout/Layout/Layout.tsx
 import React from "react";
 import Header from "../Header/Header";
-import Footer from "../Footer/Footer";
 import styles from "./Layout.module.css";
 
 interface LayoutProps {
@@ -15,7 +14,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       <main className={styles.mainContent}>
         <div className={styles.contentWrapper}>{children}</div>
       </main>
-      <Footer />
     </div>
   );
 };
