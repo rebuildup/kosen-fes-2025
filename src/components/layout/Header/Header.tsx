@@ -1,398 +1,277 @@
 // src/components/layout/Header/Header.tsx
 import React, { useState, useEffect } from "react";
-import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { gsap } from "gsap";
+import { useLanguage } from "../../../contexts/LanguageContext";
+import Logo from "../Logo/Logo";
 import styles from "./Header.module.css";
-import bottomNavStyles from "./BottomNav.module.css";
-import Logo from "../Logo";
 
-const Header: React.FC = () => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
+interface HeaderProps {
+  onSettingsClick: () => void;
+}
+
+const Header: React.FC<HeaderProps> = ({ onSettingsClick }) => {
+  const { t } = useLanguage();
   const location = useLocation();
   const navigate = useNavigate();
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isSearchActive, setIsSearchActive] = useState(false);
 
+  // Listen for scroll events to change header style when scrolled
   useEffect(() => {
-    // Animate navigation items
-    gsap.from(".nav-item", {
+    const handleScroll = () => {
+      if (window.scrollY > 20) {
+        setIsScrolled(true);
+      } else {
+        setIsScrolled(false);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  // Animate header elements on mount
+  useEffect(() => {
+    gsap.from(`.${styles.headerLogo}`, {
+      y: -20,
       opacity: 0,
-      y: -10,
-      stagger: 0.05,
       duration: 0.4,
+      ease: "power2.out",
+    });
+
+    gsap.from(`.${styles.headerActions} button`, {
+      y: -20,
+      opacity: 0,
+      stagger: 0.1,
+      duration: 0.4,
+      delay: 0.2,
       ease: "power2.out",
     });
   }, []);
 
-  useEffect(() => {
-    // Close mobile menu when route changes
-    setIsMenuOpen(false);
-  }, [location]);
-
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
-  };
-
-  const handleSearchSubmit = (e: React.FormEvent) => {
+  const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
       navigate(`/search?q=${encodeURIComponent(searchQuery)}`);
-      setIsMenuOpen(false);
+      setSearchQuery("");
+      setIsSearchActive(false);
+    }
+  };
+
+  const toggleSearch = () => {
+    setIsSearchActive(!isSearchActive);
+    if (!isSearchActive) {
+      // Focus the search input when search is activated
+      setTimeout(() => {
+        const searchInput = document.querySelector(
+          `.${styles.searchInput}`
+        ) as HTMLInputElement;
+        if (searchInput) searchInput.focus();
+      }, 100);
     }
   };
 
   return (
-    <>
-      <header className={styles.header}>
-        <div className={styles.headerContainer}>
-          <div className={styles.logoContainer}>
-            <Link to="/" className={styles.logoLink}>
-              <Logo />
-              <div className={styles.logoText}>
-                <span className={styles.logoTitle}>宇部高専祭</span>
-                <span className={styles.logoYear}>2025</span>
+    <header className={`${styles.header} ${isScrolled ? styles.scrolled : ""}`}>
+      <div className={styles.headerContainer}>
+        {isSearchActive ? (
+          // Search mode header
+          <form className={styles.searchForm} onSubmit={handleSearch}>
+            <button
+              type="button"
+              className={styles.backButton}
+              onClick={toggleSearch}
+              aria-label="Back"
+            >
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <line x1="19" y1="12" x2="5" y2="12"></line>
+                <polyline points="12 19 5 12 12 5"></polyline>
+              </svg>
+            </button>
+            <input
+              type="text"
+              className={styles.searchInput}
+              placeholder={t("common.search")}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+            <button
+              type="submit"
+              className={styles.searchButton}
+              aria-label="Search"
+            >
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+            </button>
+          </form>
+        ) : (
+          // Normal header
+          <>
+            <Link to="/" className={styles.headerLogo}>
+              <Logo size="medium" />
+              <div className={styles.headerTitleContainer}>
+                <h1 className={styles.headerTitle}>
+                  {t("common.festivalName")}
+                </h1>
+                <span className={styles.headerYear}>2025</span>
               </div>
             </Link>
-          </div>
 
-          <nav className={styles.desktopNav}>
-            <ul className={styles.navList}>
-              <li className={styles.navItem}>
-                <NavLink
-                  to="/"
-                  className={({ isActive }) =>
-                    isActive
-                      ? `${styles.navLink} ${styles.active}`
-                      : styles.navLink
-                  }
-                  end
+            <div className={styles.headerActions}>
+              <button
+                className={styles.headerAction}
+                onClick={toggleSearch}
+                aria-label="Search"
+              >
+                <svg
+                  width="22"
+                  height="22"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                 >
-                  ホーム
-                </NavLink>
-              </li>
-              <li className={styles.navItem}>
-                <NavLink
-                  to="/events"
-                  className={({ isActive }) =>
-                    isActive
-                      ? `${styles.navLink} ${styles.active}`
-                      : styles.navLink
-                  }
-                >
-                  イベント
-                </NavLink>
-              </li>
-              <li className={styles.navItem}>
-                <NavLink
-                  to="/exhibits"
-                  className={({ isActive }) =>
-                    isActive
-                      ? `${styles.navLink} ${styles.active}`
-                      : styles.navLink
-                  }
-                >
-                  展示／露店
-                </NavLink>
-              </li>
-              <li className={styles.navItem}>
-                <NavLink
-                  to="/timetable"
-                  className={({ isActive }) =>
-                    isActive
-                      ? `${styles.navLink} ${styles.active}`
-                      : styles.navLink
-                  }
-                >
-                  タイムテーブル
-                </NavLink>
-              </li>
-              <li className={styles.navItem}>
-                <NavLink
-                  to="/map"
-                  className={({ isActive }) =>
-                    isActive
-                      ? `${styles.navLink} ${styles.active}`
-                      : styles.navLink
-                  }
-                >
-                  マップ
-                </NavLink>
-              </li>
-            </ul>
-          </nav>
-
-          <div className={styles.headerActions}>
-            <form className={styles.searchForm} onSubmit={handleSearchSubmit}>
-              <input
-                type="text"
-                placeholder="検索..."
-                className={styles.searchInput}
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-              <button type="submit" className={styles.searchButton}>
-                <svg viewBox="0 0 24 24" className={styles.searchIcon}>
-                  <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" />
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                 </svg>
               </button>
-            </form>
-
-            <button className={styles.menuButton} onClick={toggleMenu}>
-              <span className={styles.menuIcon}></span>
-              <span className={styles.menuIcon}></span>
-              <span className={styles.menuIcon}></span>
-            </button>
-          </div>
-        </div>
-
-        {isMenuOpen && (
-          <>
-            <div className={styles.overlay} onClick={toggleMenu}></div>
-            <div
-              className={`${styles.mobileMenu} ${
-                isMenuOpen ? styles.open : ""
-              }`}
-            >
-              <div className={styles.mobileMenuContainer}>
-                <form
-                  className={styles.mobileSearchForm}
-                  onSubmit={handleSearchSubmit}
+              <button
+                className={styles.headerAction}
+                onClick={onSettingsClick}
+                aria-label="Settings"
+              >
+                <svg
+                  width="22"
+                  height="22"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                 >
-                  <input
-                    type="text"
-                    placeholder="検索..."
-                    className={styles.mobileSearchInput}
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                  />
-                  <button type="submit" className={styles.mobileSearchButton}>
-                    <svg
-                      viewBox="0 0 24 24"
-                      className={styles.mobileSearchIcon}
-                    >
-                      <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" />
-                    </svg>
-                  </button>
-                </form>
-
-                <nav className={styles.mobileNav}>
-                  <ul className={styles.mobileNavList}>
-                    <li className={styles.mobileNavItem}>
-                      <NavLink
-                        to="/"
-                        className={({ isActive }) =>
-                          isActive
-                            ? `${styles.mobileNavLink} ${styles.active}`
-                            : styles.mobileNavLink
-                        }
-                        onClick={toggleMenu}
-                        end
-                      >
-                        ホーム
-                      </NavLink>
-                    </li>
-                    <li className={styles.mobileNavItem}>
-                      <NavLink
-                        to="/events"
-                        className={({ isActive }) =>
-                          isActive
-                            ? `${styles.mobileNavLink} ${styles.active}`
-                            : styles.mobileNavLink
-                        }
-                        onClick={toggleMenu}
-                      >
-                        イベント
-                      </NavLink>
-                    </li>
-                    <li className={styles.mobileNavItem}>
-                      <NavLink
-                        to="/exhibits"
-                        className={({ isActive }) =>
-                          isActive
-                            ? `${styles.mobileNavLink} ${styles.active}`
-                            : styles.mobileNavLink
-                        }
-                        onClick={toggleMenu}
-                      >
-                        展示／露店
-                      </NavLink>
-                    </li>
-                    <li className={styles.mobileNavItem}>
-                      <NavLink
-                        to="/timetable"
-                        className={({ isActive }) =>
-                          isActive
-                            ? `${styles.mobileNavLink} ${styles.active}`
-                            : styles.mobileNavLink
-                        }
-                        onClick={toggleMenu}
-                      >
-                        タイムテーブル
-                      </NavLink>
-                    </li>
-                    <li className={styles.mobileNavItem}>
-                      <NavLink
-                        to="/map"
-                        className={({ isActive }) =>
-                          isActive
-                            ? `${styles.mobileNavLink} ${styles.active}`
-                            : styles.mobileNavLink
-                        }
-                        onClick={toggleMenu}
-                      >
-                        マップ
-                      </NavLink>
-                    </li>
-                    <li className={styles.mobileNavItem}>
-                      <NavLink
-                        to="/bookmarks"
-                        className={({ isActive }) =>
-                          isActive
-                            ? `${styles.mobileNavLink} ${styles.active}`
-                            : styles.mobileNavLink
-                        }
-                        onClick={toggleMenu}
-                      >
-                        ブックマーク
-                      </NavLink>
-                    </li>
-                  </ul>
-                </nav>
-              </div>
+                  <circle cx="12" cy="12" r="3"></circle>
+                  <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                </svg>
+              </button>
             </div>
           </>
         )}
-      </header>
-
-      {/* Bottom navigation for mobile */}
-      <div className={bottomNavStyles.bottomNav}>
-        <NavLink
-          to="/"
-          className={({ isActive }) =>
-            isActive
-              ? `${bottomNavStyles.navItem} ${bottomNavStyles.active}`
-              : bottomNavStyles.navItem
-          }
-          end
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className={bottomNavStyles.navIcon}
-          >
-            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-            <polyline points="9 22 9 12 15 12 15 22" />
-          </svg>
-          <span className={bottomNavStyles.navLabel}>ホーム</span>
-        </NavLink>
-        <NavLink
-          to="/events"
-          className={({ isActive }) =>
-            isActive
-              ? `${bottomNavStyles.navItem} ${bottomNavStyles.active}`
-              : bottomNavStyles.navItem
-          }
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className={bottomNavStyles.navIcon}
-          >
-            <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-            <line x1="16" y1="2" x2="16" y2="6" />
-            <line x1="8" y1="2" x2="8" y2="6" />
-            <line x1="3" y1="10" x2="21" y2="10" />
-          </svg>
-          <span className={bottomNavStyles.navLabel}>イベント</span>
-        </NavLink>
-        <NavLink
-          to="/exhibits"
-          className={({ isActive }) =>
-            isActive
-              ? `${bottomNavStyles.navItem} ${bottomNavStyles.active}`
-              : bottomNavStyles.navItem
-          }
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className={bottomNavStyles.navIcon}
-          >
-            <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
-          </svg>
-          <span className={bottomNavStyles.navLabel}>展示</span>
-        </NavLink>
-        <NavLink
-          to="/timetable"
-          className={({ isActive }) =>
-            isActive
-              ? `${bottomNavStyles.navItem} ${bottomNavStyles.active}`
-              : bottomNavStyles.navItem
-          }
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className={bottomNavStyles.navIcon}
-          >
-            <circle cx="12" cy="12" r="10" />
-            <polyline points="12 6 12 12 16 14" />
-          </svg>
-          <span className={bottomNavStyles.navLabel}>時間</span>
-        </NavLink>
-        <NavLink
-          to="/map"
-          className={({ isActive }) =>
-            isActive
-              ? `${bottomNavStyles.navItem} ${bottomNavStyles.active}`
-              : bottomNavStyles.navItem
-          }
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className={bottomNavStyles.navIcon}
-          >
-            <path d="M20.5 3l-.16.03L15 5.1 9 3 3.36 4.9c-.21.07-.36.25-.36.48V20.5c0 .28.22.5.5.5l.16-.03L9 18.9l6 2.1 5.64-1.9c.21-.07.36-.25.36-.48V3.5c0-.28-.22-.5-.5-.5zM15 19l-6-2.11V5l6 2.11V19z" />
-          </svg>
-          <span className={bottomNavStyles.navLabel}>マップ</span>
-        </NavLink>
       </div>
-    </>
+
+      {/* Bottom Navigation for SNS-style mobile app look */}
+      <nav className={styles.bottomNav}>
+        <Link
+          to="/"
+          className={`${styles.navItem} ${
+            location.pathname === "/" ? styles.active : ""
+          }`}
+        >
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+          </svg>
+          <span>{t("common.home")}</span>
+        </Link>
+        <Link
+          to="/events"
+          className={`${styles.navItem} ${
+            location.pathname === "/events" ? styles.active : ""
+          }`}
+        >
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+            <line x1="16" y1="2" x2="16" y2="6"></line>
+            <line x1="8" y1="2" x2="8" y2="6"></line>
+            <line x1="3" y1="10" x2="21" y2="10"></line>
+          </svg>
+          <span>{t("common.events")}</span>
+        </Link>
+        <Link
+          to="/map"
+          className={`${styles.navItem} ${
+            location.pathname === "/map" ? styles.active : ""
+          }`}
+        >
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+            <circle cx="12" cy="10" r="3"></circle>
+          </svg>
+          <span>{t("common.map")}</span>
+        </Link>
+        <Link
+          to="/bookmarks"
+          className={`${styles.navItem} ${
+            location.pathname === "/bookmarks" ? styles.active : ""
+          }`}
+        >
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+          </svg>
+          <span>{t("common.bookmarks")}</span>
+        </Link>
+      </nav>
+    </header>
   );
 };
 

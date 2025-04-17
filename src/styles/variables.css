@@ -26,14 +26,38 @@
   --color-ui-error: #e53e3e;
   --color-ui-info: #4299e1;
 
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.12);
-  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
-  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.07);
+  /* Social Media Interaction Colors */
+  --color-like: #f91880; /* Twitter/X like color */
+  --color-retweet: #00ba7c; /* Twitter/X retweet color */
+  --color-comment: #1d9bf0; /* Twitter/X comment color */
+  --color-share: #8a2be2; /* Custom share color */
+
+  /* Shadow system */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.07), 0 4px 6px rgba(0, 0, 0, 0.05);
+  --shadow-xl: 0 15px 25px rgba(0, 0, 0, 0.1), 0 5px 10px rgba(0, 0, 0, 0.05);
+  --shadow-inner: inset 0 2px 4px rgba(0, 0, 0, 0.06);
+  --shadow-outline: 0 0 0 3px rgba(224, 27, 34, 0.15);
 
   /* Typography */
-  --font-family-sans: "Noto Sans JP", sans-serif;
-  --font-family-display: "Noto Sans JP", sans-serif;
-  --font-family-mono: "Roboto Mono", monospace;
+  --font-family-sans: "Noto Sans JP", -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-family-display: "Noto Sans JP", -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-family-mono: "Roboto Mono", SFMono-Regular, Consolas, "Liberation Mono",
+    Menlo, monospace;
+
+  /* Font sizes */
+  --font-size-xs: 0.75rem; /* 12px */
+  --font-size-sm: 0.875rem; /* 14px */
+  --font-size-base: 1rem; /* 16px */
+  --font-size-lg: 1.125rem; /* 18px */
+  --font-size-xl: 1.25rem; /* 20px */
+  --font-size-2xl: 1.5rem; /* 24px */
+  --font-size-3xl: 1.875rem; /* 30px */
+  --font-size-4xl: 2.25rem; /* 36px */
+  --font-size-5xl: 3rem; /* 48px */
 
   /* Spacing system */
   --spacing-1: 0.25rem; /* 4px */
@@ -44,6 +68,8 @@
   --spacing-6: 2rem; /* 32px */
   --spacing-8: 3rem; /* 48px */
   --spacing-10: 4rem; /* 64px */
+  --spacing-12: 6rem; /* 96px */
+  --spacing-16: 8rem; /* 128px */
 
   /* Border radius */
   --radius-sm: 0.125rem; /* 2px */
@@ -53,13 +79,30 @@
   --radius-full: 9999px;
 
   /* Transition speeds */
-  --transition-fast: 150ms;
-  --transition-normal: 250ms;
-  --transition-slow: 350ms;
+  --transition-fast: 150ms ease;
+  --transition-normal: 250ms ease;
+  --transition-slow: 350ms ease;
+  --transition-bounce: 500ms cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* Z-index levels */
+  --z-index-dropdown: 10;
+  --z-index-sticky: 20;
+  --z-index-fixed: 30;
+  --z-index-modal-backdrop: 40;
+  --z-index-modal: 50;
+  --z-index-popover: 60;
+  --z-index-tooltip: 70;
+
+  /* Festival gradient - for special elements */
+  --festival-gradient: linear-gradient(
+    135deg,
+    var(--color-kosen-primary),
+    var(--color-kosen-secondary)
+  );
 }
 
 /* Dark theme colors - will be applied when .dark-theme class is added to body */
-.dark-theme {
+[data-theme="dark"] {
   --color-bg-primary: #121212;
   --color-bg-secondary: #1e1e1e;
   --color-bg-tertiary: #2d2d2d;
@@ -81,7 +124,58 @@
   --color-ui-error: #fc8181;
   --color-ui-info: #63b3ed;
 
+  /* Social Media Interaction Colors - brightened for dark mode */
+  --color-like: #ff3b9a;
+  --color-retweet: #00d18d;
+  --color-comment: #38a8ff;
+  --color-share: #9d3eff;
+
+  /* Shadow adjustments for dark mode */
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.4);
-  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.5);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.4), 0 2px 4px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.5), 0 4px 6px rgba(0, 0, 0, 0.3);
+  --shadow-xl: 0 15px 25px rgba(0, 0, 0, 0.6), 0 5px 10px rgba(0, 0, 0, 0.4);
+  --shadow-inner: inset 0 2px 4px rgba(0, 0, 0, 0.4);
+  --shadow-outline: 0 0 0 3px rgba(255, 107, 107, 0.25);
+}
+
+/* Japanese language adjustments */
+[data-language="ja"] {
+  --font-family-sans: "Noto Sans JP", -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-family-display: "Noto Sans JP", -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+
+  /* Slightly adjust line heights for Japanese text */
+  line-height: 1.7;
+}
+
+[data-language="ja"] h1,
+[data-language="ja"] h2,
+[data-language="ja"] h3,
+[data-language="ja"] h4,
+[data-language="ja"] h5,
+[data-language="ja"] h6 {
+  line-height: 1.4;
+  letter-spacing: -0.02em;
+}
+
+/* English language adjustments */
+[data-language="en"] {
+  --font-family-sans: "Noto Sans JP", -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-family-display: "Noto Sans JP", -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+
+  line-height: 1.6;
+}
+
+[data-language="en"] h1,
+[data-language="en"] h2,
+[data-language="en"] h3,
+[data-language="en"] h4,
+[data-language="en"] h5,
+[data-language="en"] h6 {
+  line-height: 1.2;
+  letter-spacing: -0.01em;
 }

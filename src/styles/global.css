@@ -2,7 +2,7 @@
 @import "./variables.css";
 
 /* Import Google Fonts */
-@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Roboto+Mono&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700;800&family=Roboto+Mono&display=swap");
 
 /* Base styles */
 * {
@@ -11,13 +11,21 @@
   box-sizing: border-box;
 }
 
+html {
+  scroll-behavior: smooth; /* Enable smooth scrolling */
+  overflow-x: hidden; /* Prevent horizontal scrolling */
+}
+
 body {
   font-family: var(--font-family-sans);
   background-color: var(--color-bg-primary);
   color: var(--color-text-primary);
   line-height: 1.6;
-  transition: background-color var(--transition-normal),
-    color var(--transition-normal);
+  transition: background-color 0.3s ease, color 0.3s ease;
+  min-height: 100vh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* Make all interactive elements respect theme transition */
@@ -26,7 +34,168 @@ button,
 input,
 select,
 textarea {
-  transition: color var(--transition-normal),
-    background-color var(--transition-normal),
-    border-color var(--transition-normal), box-shadow var(--transition-normal);
+  transition: color 0.3s ease, background-color 0.3s ease,
+    border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+/* Focus styles for accessibility */
+:focus {
+  outline: 2px solid var(--color-kosen-primary);
+  outline-offset: 2px;
+}
+
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+  background-color: var(--color-bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--color-border-secondary);
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--color-kosen-primary);
+}
+
+/* Firefox scrollbar */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border-secondary) var(--color-bg-secondary);
+}
+
+/* Button styling for consistently interactive elements */
+button {
+  cursor: pointer;
+  font-family: var(--font-family-sans);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+/* Image and media handling */
+img,
+video,
+svg,
+canvas {
+  max-width: 100%;
+  vertical-align: middle;
+}
+
+/* Link styling */
+a {
+  color: var(--color-kosen-primary);
+  text-decoration: none;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+a:hover {
+  color: var(--color-kosen-secondary);
+}
+
+/* Typography refinements */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  line-height: 1.2;
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-3);
+}
+
+p {
+  margin-bottom: var(--spacing-3);
+}
+
+/* Page transitions and animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInRight {
+  from {
+    opacity: 0;
+    transform: translateX(-40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Helper classes */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.text-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Make sure animations only play on devices that prefer them */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
