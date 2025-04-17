@@ -26,7 +26,6 @@ const App: React.FC = () => {
           <Route path="/search" element={<Search />} />
           <Route path="/bookmarks" element={<Bookmarks />} />
           <Route path="/detail/:type/:id" element={<Detail />} />
-          {/* 404ページはHomeにリダイレクト */}
           <Route path="*" element={<Home />} />
         </Routes>
       </Layout>
