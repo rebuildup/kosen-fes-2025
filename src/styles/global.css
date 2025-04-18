@@ -5,6 +5,14 @@
 @import "./components/sidebar.css";
 @import "./components/footer.css";
 @import "./components/menu.css";
+@import "./components/home.css";
+@import "./components/timeline.css";
+@import "./components/events.css";
+@import "./components/exhibits.css";
+@import "./components/schedule.css";
+@import "./components/map.css";
+@import "./components/detail.css";
+@import "./components/error.css";
 
 /* Rest of the global.css content */
 

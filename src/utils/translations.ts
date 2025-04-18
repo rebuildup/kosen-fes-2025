@@ -80,6 +80,10 @@ export const enTranslations: Translations = {
   map: {
     title: "Festival Map",
     viewLocations: "View Locations",
+    viewFullMap: "View Full Map",
+    item: "Item",
+    items: "Items",
+    noLocations: "No locations found",
   },
   detail: {
     back: "Back to List",
@@ -93,6 +97,9 @@ export const enTranslations: Translations = {
     creator: "Creator",
     products: "Products",
     tags: "Tags",
+    duration: "Duration",
+    related: "Related Items",
+    noRelatedItems: "No related items found",
   },
   search: {
     placeholder: "Search for events, exhibits, etc.",
@@ -111,10 +118,17 @@ export const enTranslations: Translations = {
     description: "Your saved events, exhibits, and stalls will appear here.",
   },
   errors: {
-    pageNotFound: "Page Not Found",
-    pageNotFoundMessage: "The page you're looking for doesn't exist.",
-    backToHome: "Go back to home",
+    itemNotFound: "Item not found",
     genericError: "Something went wrong",
+    genericErrorMessage: "An error occurred while processing your request.",
+    pageNotFound: "Page Not Found",
+    pageNotFoundMessage:
+      "The page you are looking for doesn't exist or has been moved.",
+    serverError: "Server Error",
+    serverErrorMessage:
+      "We're experiencing issues with our server. Please try again later.",
+    applicationError: "Application Error",
+    backToHome: "Go to Homepage",
     tryAgain: "Try Again",
   },
   tags: {
@@ -223,6 +237,10 @@ export const jaTranslations: Translations = {
   map: {
     title: "会場マップ",
     viewLocations: "場所を表示",
+    viewFullMap: "マップ全体を表示",
+    item: "アイテム",
+    items: "アイテム",
+    noLocations: "場所が見つかりません",
   },
   detail: {
     back: "一覧に戻る",
@@ -236,6 +254,9 @@ export const jaTranslations: Translations = {
     creator: "制作者",
     products: "商品",
     tags: "タグ",
+    duration: "所要時間",
+    related: "関連アイテム",
+    noRelatedItems: "関連アイテムが見つかりません",
   },
   search: {
     placeholder: "イベント、展示などを検索",
@@ -254,10 +275,16 @@ export const jaTranslations: Translations = {
     description: "保存したイベント、展示、露店がここに表示されます。",
   },
   errors: {
-    pageNotFound: "ページが見つかりません",
-    pageNotFoundMessage: "お探しのページは存在しません。",
-    backToHome: "ホームに戻る",
+    itemNotFound: "アイテムが見つかりません",
     genericError: "エラーが発生しました",
+    genericErrorMessage: "リクエストの処理中にエラーが発生しました。",
+    pageNotFound: "ページが見つかりません",
+    pageNotFoundMessage: "お探しのページは存在しないか、移動されました。",
+    serverError: "サーバーエラー",
+    serverErrorMessage:
+      "サーバーに問題が発生しています。後でもう一度お試しください。",
+    applicationError: "アプリケーションエラー",
+    backToHome: "ホームページへ",
     tryAgain: "再試行",
   },
   tags: {

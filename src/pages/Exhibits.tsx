@@ -1,8 +1,116 @@
+import { useState, useEffect } from "react";
+import { useLanguage } from "../context/LanguageContext";
+import { useTag } from "../context/TagContext";
+import { exhibits } from "../data/exhibits";
+import { stalls } from "../data/stalls";
+import { Item } from "../types/common";
+import CardGrid from "../components/common/CardGrid";
+import CardListToggle from "../components/common/CardListToggle";
+import TagFilter from "../components/common/TagFilter";
+import SelectedTags from "../components/common/SelectedTags";
+
 const Exhibits = () => {
+  const { t } = useLanguage();
+  const { filterItemsByTags, selectedTags } = useTag();
+
+  const [viewMode, setViewMode] = useState<
+    "default" | "compact" | "grid" | "list"
+  >("default");
+  const [filteredItems, setFilteredItems] = useState<Item[]>([
+    ...exhibits,
+    ...stalls,
+  ]);
+  const [typeFilter, setTypeFilter] = useState<"all" | "exhibit" | "stall">(
+    "all"
+  );
+
+  // Filter items by selected type and tags
+  useEffect(() => {
+    let filtered: Item[] = [];
+
+    // Filter by type
+    if (typeFilter === "all") {
+      filtered = [...exhibits, ...stalls];
+    } else if (typeFilter === "exhibit") {
+      filtered = [...exhibits];
+    } else {
+      filtered = [...stalls];
+    }
+
+    // Apply tag filtering
+    if (selectedTags.length > 0) {
+      filtered = filterItemsByTags(filtered);
+    }
+
+    setFilteredItems(filtered);
+  }, [typeFilter, selectedTags, filterItemsByTags]);
+
+  // Handle type filter change
+  const handleTypeFilterChange = (type: "all" | "exhibit" | "stall") => {
+    setTypeFilter(type);
+  };
+
   return (
-    <div>
-      <h2>Exhibits & Stalls</h2>
-      <p>All exhibits and stalls will be displayed here.</p>
+    <div className="exhibits-page">
+      <div className="exhibits-header">
+        <h1 className="exhibits-title">{t("exhibits.title")}</h1>
+
+        <div className="exhibits-filters">
+          <div className="type-filter">
+            <button
+              className={`type-filter-button ${
+                typeFilter === "all" ? "active" : ""
+              }`}
+              onClick={() => handleTypeFilterChange("all")}
+            >
+              {t("exhibits.filters.all")}
+            </button>
+            <button
+              className={`type-filter-button ${
+                typeFilter === "exhibit" ? "active" : ""
+              }`}
+              onClick={() => handleTypeFilterChange("exhibit")}
+            >
+              {t("exhibits.filters.exhibits")}
+            </button>
+            <button
+              className={`type-filter-button ${
+                typeFilter === "stall" ? "active" : ""
+              }`}
+              onClick={() => handleTypeFilterChange("stall")}
+            >
+              {t("exhibits.filters.stalls")}
+            </button>
+          </div>
+
+          <CardListToggle viewMode={viewMode} setViewMode={setViewMode} />
+        </div>
+      </div>
+
+      <div className="exhibits-content">
+        <div className="exhibits-sidebar">
+          <TagFilter onFilter={() => {}} />
+        </div>
+
+        <div className="exhibits-main">
+          <SelectedTags />
+
+          <CardGrid
+            items={filteredItems}
+            variant={viewMode}
+            showTags={true}
+            showDescription={viewMode === "list"}
+            emptyMessage={
+              typeFilter === "exhibit"
+                ? t("exhibits.noExhibits")
+                : typeFilter === "stall"
+                ? t("exhibits.noStalls")
+                : t("common.noItems")
+            }
+            filterType={typeFilter === "all" ? undefined : typeFilter}
+          />
+        </div>
+      </div>
     </div>
   );
 };
