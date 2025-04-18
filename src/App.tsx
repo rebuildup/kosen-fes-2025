@@ -1,19 +1,8 @@
 // src/App.tsx
 import React, { useEffect } from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router } from "react-router-dom";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import Layout from "./components/layout/Layout/Layout";
-
-// Import page components
-import Home from "./pages/Home/Home";
-import Events from "./pages/Events/Events";
-import Exhibits from "./pages/Exhibits/Exhibits";
-import Timetable from "./pages/Timetable/Timetable";
-import Map from "./pages/Map/Map";
-import Search from "./pages/Search/Search";
-import Detail from "./pages/Detail/Detail";
-import Bookmarks from "./pages/Bookmarks/Bookmarks";
 
 // Register GSAP plugins globally
 gsap.registerPlugin(ScrollTrigger);
@@ -56,23 +45,7 @@ const App: React.FC = () => {
     };
   }, []);
 
-  return (
-    <Router>
-      <Layout>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/events" element={<Events />} />
-          <Route path="/exhibits" element={<Exhibits />} />
-          <Route path="/timetable" element={<Timetable />} />
-          <Route path="/map" element={<Map />} />
-          <Route path="/search" element={<Search />} />
-          <Route path="/bookmarks" element={<Bookmarks />} />
-          <Route path="/detail/:type/:id" element={<Detail />} />
-          <Route path="*" element={<Home />} />
-        </Routes>
-      </Layout>
-    </Router>
-  );
+  return <Router></Router>;
 };
 
 export default App;
