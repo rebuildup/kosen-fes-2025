@@ -4,7 +4,8 @@ import { AppProvider } from "./contexts/AppContext";
 import ErrorBoundary from "./components/ErrorBoundary";
 import Layout from "./components/layout/Layout";
 import AppRoutes from "./router";
-import "./styles/globals.css";
+// src/App.tsx - FIXED
+import "./styles/global.css"; // Correct file name
 
 const App: React.FC = () => {
   return (

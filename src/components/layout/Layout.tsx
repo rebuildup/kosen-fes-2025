@@ -30,6 +30,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           {children}
         </main>
       </div>
+      {isMobile && <MobileMenu />}
 
       {/* Mobile Footer - Only visible on mobile */}
       <Footer />

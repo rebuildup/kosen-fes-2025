@@ -1,14 +1,14 @@
-// src/components/settings/ThemeSettings.tsx
+// src/components/features/theme/ThemeSettings.tsx
 import React from "react";
-import { useTheme } from "../features/theme/ThemeContext";
-import { useLanguage } from "../../hooks/useLanguage";
+import { useTheme } from "../theme/ThemeContext";
+import { useLanguage } from "../../../hooks/useLanguage";
 
 interface ThemeSettingsProps {
   className?: string;
 }
 
 const ThemeSettings: React.FC<ThemeSettingsProps> = ({ className = "" }) => {
-  const { theme, setTheme, toggleTheme } = useTheme();
+  const { theme, setTheme } = useTheme();
   const { t } = useLanguage();
 
   return (
@@ -16,7 +16,6 @@ const ThemeSettings: React.FC<ThemeSettingsProps> = ({ className = "" }) => {
       <h3 className="text-lg font-semibold mb-4">{t("settings.appearance")}</h3>
 
       <div className="space-y-4">
-        {/* Theme Toggle */}
         <div className="flex items-center justify-between">
           <span className="text-gray-700 dark:text-gray-300">
             {t("settings.theme")}
@@ -30,7 +29,6 @@ const ThemeSettings: React.FC<ThemeSettingsProps> = ({ className = "" }) => {
                   : "bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400"
               }`}
               aria-label={t("settings.lightMode")}
-              aria-pressed={theme === "light"}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -53,7 +51,6 @@ const ThemeSettings: React.FC<ThemeSettingsProps> = ({ className = "" }) => {
                   : "bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400"
               }`}
               aria-label={t("settings.darkMode")}
-              aria-pressed={theme === "dark"}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -64,21 +61,7 @@ const ThemeSettings: React.FC<ThemeSettingsProps> = ({ className = "" }) => {
                 <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" />
               </svg>
             </button>
-            <button
-              onClick={toggleTheme}
-              className="ml-2 text-sm text-primary-600 dark:text-primary-400 hover:underline"
-            >
-              {theme === "light"
-                ? t("settings.switchToDark")
-                : t("settings.switchToLight")}
-            </button>
           </div>
-        </div>
-
-        <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
-          <p className="text-sm text-gray-500 dark:text-gray-400">
-            {t("settings.themeDescription")}
-          </p>
         </div>
       </div>
     </div>

@@ -1,121 +1,116 @@
-import { SearchResult } from '../types/common';
+// src/services/searchService.ts
+import { SearchResult } from "../types/common";
+import { events } from "../data/events";
+import { exhibitions } from "../data/exhibitions";
+import { foodStalls } from "../data/foodStalls";
 
-const BOOKMARK_STORAGE_KEY = 'ube_festival_bookmarks';
-
-/**
- * Get all bookmarks from localStorage
- * @returns Array of bookmarked items
- */
-export const getBookmarks = (): SearchResult[] => {
-  try {
-    const bookmarksJson = localStorage.getItem(BOOKMARK_STORAGE_KEY);
-    return bookmarksJson ? JSON.parse(bookmarksJson) : [];
-  } catch (error) {
-    console.error('Failed to get bookmarks:', error);
-    return [];
-  }
-};
+export interface SearchOptions {
+  query?: string;
+  types?: string[];
+  tags?: string[];
+  dateRange?: { start?: string; end?: string };
+}
 
 /**
- * Save bookmarks to localStorage
- * @param bookmarks Array of bookmarked items
+ * Search for items matching the query
+ * @param query Search query
+ * @param options Additional search options
+ * @returns Array of matching items
  */
-export const saveBookmarks = (bookmarks: SearchResult[]): void => {
-  try {
-    localStorage.setItem(BOOKMARK_STORAGE_KEY, JSON.stringify(bookmarks));
-    
-    // Dispatch a custom event for cross-tab synchronization
-    window.dispatchEvent(new CustomEvent('bookmarks-updated'));
-  } catch (error) {
-    console.error('Failed to save bookmarks:', error);
-  }
-};
+export const searchItems = async (
+  query: string,
+  options?: SearchOptions
+): Promise<SearchResult[]> => {
+  // Simulate API call with setTimeout
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      // Convert to lowercase for case-insensitive search
+      const lowerQuery = query.toLowerCase().trim();
 
-/**
- * Add an item to bookmarks
- * @param item Item to bookmark
- * @returns Updated array of bookmarks
- */
-export const addBookmark = (item: SearchResult): SearchResult[] => {
-  const bookmarks = getBookmarks();
-  
-  // Check if item is already bookmarked
-  if (!bookmarks.some(bookmark => bookmark.id === item.id && bookmark.type === item.type)) {
-    const updatedBookmarks = [...bookmarks, item];
-    saveBookmarks(updatedBookmarks);
-    return updatedBookmarks;
-  }
-  
-  return bookmarks;
-};
+      if (!lowerQuery) {
+        resolve([]);
+        return;
+      }
 
-/**
- * Remove an item from bookmarks
- * @param id Item ID
- * @param type Item type
- * @returns Updated array of bookmarks
- */
-export const removeBookmark = (id: string, type: string): SearchResult[] => {
-  const bookmarks = getBookmarks();
-  const updatedBookmarks = bookmarks.filter(
-    bookmark => !(bookmark.id === id && bookmark.type === type)
-  );
-  
-  saveBookmarks(updatedBookmarks);
-  return updatedBookmarks;
-};
+      // Combine all items
+      const allItems: SearchResult[] = [
+        ...events.map((event) => ({ ...event, type: "event" as const })),
+        ...exhibitions.map((exhibition) => ({
+          ...exhibition,
+          type: "exhibition" as const,
+        })),
+        ...foodStalls.map((foodStall) => ({
+          ...foodStall,
+          type: "foodStall" as const,
+        })),
+      ];
 
-/**
- * Check if an item is bookmarked
- * @param id Item ID
- * @param type Item type
- * @returns Boolean indicating if item is bookmarked
- */
-export const isBookmarked = (id: string, type: string): boolean => {
-  const bookmarks = getBookmarks();
-  return bookmarks.some(bookmark => bookmark.id === id && bookmark.type === type);
-};
+      // Filter by query
+      let results = allItems.filter((item) => {
+        // Search in title
+        if (item.title.toLowerCase().includes(lowerQuery)) {
+          return true;
+        }
 
-/**
- * Filter bookmarks by type
- * @param type Item type to filter by
- * @returns Filtered array of bookmarks
- */
-export const getBookmarksByType = (type: string): SearchResult[] => {
-  const bookmarks = getBookmarks();
-  return bookmarks.filter(bookmark => bookmark.type === type);
-};
+        // Search in description
+        if (
+          item.description &&
+          item.description.toLowerCase().includes(lowerQuery)
+        ) {
+          return true;
+        }
 
-/**
- * Clear all bookmarks
- * @returns Empty array
- */
-export const clearAllBookmarks = (): SearchResult[] => {
-  saveBookmarks([]);
-  return [];
-};
+        // Search in tags
+        if (
+          item.tags &&
+          item.tags.some((tag) => tag.toLowerCase().includes(lowerQuery))
+        ) {
+          return true;
+        }
 
-/**
- * Export bookmarks as JSON string
- * @returns JSON string of bookmarks
- */
-export const exportBookmarks = (): string => {
-  const bookmarks = getBookmarks();
-  return JSON.stringify(bookmarks);
-};
+        // Search in location
+        if (item.location && item.location.toLowerCase().includes(lowerQuery)) {
+          return true;
+        }
 
-/**
- * Import bookmarks from JSON string
- * @param jsonString JSON string of bookmarks
- * @returns Imported bookmarks array
- */
-export const importBookmarks = (jsonString: string): SearchResult[] => {
-  try {
-    const bookmarks = JSON.parse(jsonString) as SearchResult[];
-    saveBookmarks(bookmarks);
-    return bookmarks;
-  } catch (error) {
-    console.error('Failed to import bookmarks:', error);
-    return getBookmarks();
-  }
+        return false;
+      });
+
+      // Apply additional filters if provided
+      if (options) {
+        // Filter by types
+        if (options.types && options.types.length > 0) {
+          results = results.filter((item) =>
+            options.types?.includes(item.type)
+          );
+        }
+
+        // Filter by tags
+        if (options.tags && options.tags.length > 0) {
+          results = results.filter(
+            (item) =>
+              item.tags && item.tags.some((tag) => options.tags?.includes(tag))
+          );
+        }
+
+        // Filter by date range
+        if (options.dateRange) {
+          const { start, end } = options.dateRange;
+
+          results = results.filter((item) => {
+            if (!item.date) return false;
+
+            const itemDate = new Date(item.date.split(" ")[0]);
+
+            if (start && itemDate < new Date(start)) return false;
+            if (end && itemDate > new Date(end)) return false;
+
+            return true;
+          });
+        }
+      }
+
+      resolve(results);
+    }, 500); // Simulate some latency
+  });
 };

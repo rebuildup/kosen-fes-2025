@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { SearchResult } from "../../types/common";
 import { useLanguage } from "../../hooks/useLanguage";
 import Card from "./Card";
