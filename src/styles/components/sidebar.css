@@ -1,0 +1,212 @@
+/* PC Sidebar Styles */
+.pc-sidebar {
+  width: 280px;
+  background-color: var(--sidebar-bg);
+  border-right: 1px solid var(--border-light);
+  padding: var(--spacing-md);
+  height: calc(100vh - 60px); /* Subtract header height */
+  position: sticky;
+  top: 60px; /* Position below header */
+  overflow-y: auto;
+  flex-shrink: 0;
+  transition: background-color 0.3s ease;
+}
+
+/* Sidebar sections */
+.sidebar-section {
+  margin-bottom: var(--spacing-lg);
+  border-bottom: 1px solid var(--border-light);
+  padding-bottom: var(--spacing-md);
+}
+
+.sidebar-section:last-child {
+  border-bottom: none;
+}
+
+.sidebar-title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: var(--spacing-sm);
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sidebar-title-clickable {
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.sidebar-title-clickable:hover {
+  color: var(--primary);
+}
+
+.sidebar-link {
+  color: inherit;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.sidebar-link:hover {
+  color: var(--primary);
+}
+
+.sidebar-arrow {
+  transition: transform 0.2s ease;
+  font-size: 0.8rem;
+}
+
+.sidebar-arrow.expanded {
+  transform: rotate(180deg);
+}
+
+.sidebar-content {
+  margin-top: var(--spacing-sm);
+  padding-left: var(--spacing-sm);
+}
+
+/* Bookmark count */
+.bookmark-count {
+  background-color: var(--primary);
+  color: white;
+  font-size: 0.7rem;
+  font-weight: 500;
+  padding: 2px 6px;
+  border-radius: 10px;
+  margin-left: var(--spacing-sm);
+}
+
+/* Settings area */
+.sidebar-setting {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--spacing-sm);
+  padding: var(--spacing-sm);
+  border-radius: var(--border-radius-sm);
+  background-color: var(--bg-secondary);
+}
+
+.setting-label {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+/* Info area */
+.sidebar-info {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.sidebar-info p {
+  margin-bottom: var(--spacing-sm);
+}
+
+/* Search area */
+.sidebar-search {
+  margin-top: var(--spacing-sm);
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .pc-sidebar {
+    display: none; /* Hide sidebar on mobile */
+  }
+}
+
+/* Dark theme adjustments */
+.dark .pc-sidebar {
+  border-right-color: var(--border-dark);
+}
+
+.dark .sidebar-section {
+  border-bottom-color: var(--border-dark);
+}
+/* Sidebar Link Item */
+.sidebar-link-item {
+  display: flex;
+  align-items: center;
+  padding: var(--spacing-sm) var(--spacing-md);
+  margin-bottom: var(--spacing-xs);
+  border-radius: var(--border-radius-md);
+  text-decoration: none;
+  color: var(--text-primary);
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.sidebar-link-item:hover {
+  background-color: var(--bg-tertiary);
+  color: var(--primary);
+}
+
+.sidebar-link-icon {
+  margin-right: var(--spacing-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+}
+
+.sidebar-link-label {
+  flex: 1;
+  font-size: 0.9rem;
+}
+
+.sidebar-link-badge {
+  background-color: var(--primary);
+  color: white;
+  font-size: 0.7rem;
+  font-weight: 500;
+  padding: 2px 6px;
+  border-radius: 10px;
+  min-width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+/* Sidebar links group */
+.sidebar-links {
+  display: flex;
+  flex-direction: column;
+  margin-top: var(--spacing-xs);
+}
+
+/* Sidebar section content transition */
+.sidebar-content {
+  animation: fade-in 0.2s ease-in-out;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Scrollbar styling for sidebar */
+.pc-sidebar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.pc-sidebar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.pc-sidebar::-webkit-scrollbar-thumb {
+  background-color: var(--border-light);
+  border-radius: 3px;
+}
+
+.pc-sidebar::-webkit-scrollbar-thumb:hover {
+  background-color: var(--border-dark);
+}

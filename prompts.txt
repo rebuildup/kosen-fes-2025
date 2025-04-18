@@ -59,3 +59,60 @@ Part 23: 検索機能に関するUIと機能のファイルを出力してくだ
 Part 24: ブックマーク機能に関するUIと機能のファイルを出力してください
 Part 25: コード全体を見直してリファクタリングしてください
 
+Create a website for a cultural festival.
+Develop it using Vite with React and TypeScript.
+Include the following elements in the website:
+- Title (Ube Kosen Festival 2025)
+- Home (serves as a timeline, displaying highlighted events or exhibits)
+- Events (list event images and details; tapping an event shows its detail page)
+- Exhibits/Stalls (list exhibit and stall images and details; tapping shows their detail page)
+- Time Schedule (vertical timeline for 2 days; basic text cards listed; hovering over a card expands its height to show an event-related image; clicking navigates to the event’s detail page)
+- Map (split into 2 sections: left side shows the school map, right side lists event/exhibit text cards; hovering over a card expands it to show an image; clicking navigates to the detail page)
+- Detail Page (summarizes details for events, exhibits, and stalls, including title, image, details, tags, and a map at the bottom)
+- Search Function (searching a keyword displays a list of detail page cards with images + text containing that keyword)
+- Tag Function (attach tags to events, exhibits, and stalls; clicking a tag displays a list of detail page cards with images + text for that tag)
+- Bookmark Function (save detail cards and view them in a list)
+- Color Theme (light mode and dark mode)
+- UI Language (Japanese/English)
+
+Style the entire site’s UI like a social media app such as X or Instagram.
+Make it a responsive design and code.
+For PC: exclude the footer; include only main pages (Home, Events, Exhibits/Stalls, Time Schedule, Map) in the header; place settings/bookmarks/search in the sidebar.
+For Mobile: exclude the header; use a fixed footer bar displaying the same content as the PC header; place a hamburger menu in the top-right corner, which, when tapped, shows the header content + the same features as the PC sidebar.
+
+Assume a vertical layout design, using padding to organize information vertically.
+However, base the overall color scheme on the TBS RECRUIT website.
+
+Do not include fake information (e.g., fictional likes or profile feeds).
+Use dummy images for debugging purposes.
+Use the same card design across the site for listing events, exhibits, and stalls.
+For the card UI, prioritize the image and title; on hover, display time, location, and a bookmark button; clicking the image navigates to the detail page.
+
+Minimize comments in the code; if included, write them in English.
+
+Since the output will be lengthy, split the instructions into Part 1 to Part 5 as follows and output each part separately. After completing each part, wait for the user to request the next part before proceeding. Generate the code iteratively, ensuring functionality is verifiable at each part.
+- Part 1: Output the folder structure and list of required files; create a skeleton.
+- Part 2: To handle cases where Claude’s output is cut off due to character limits, output prompts for each part to regenerate from the initial state without file attachments.
+- Part 3: Output files affecting the overall structure (color theme section).
+- Part 4: Output files affecting the overall structure (UI language section).
+- Part 5: Output files affecting the overall structure (search function section).
+- Part 6: Output files affecting the overall structure (bookmark function section).
+- Part 7: Output files affecting the overall structure (card listing section).
+- Part 8: Output files affecting the overall structure (tag function section).
+- Part 9: Output files related to layout UI (PC header section).
+- Part 10: Output files related to layout UI (PC sidebar section).
+- Part 11: Output files related to layout UI (mobile fixed footer bar section).
+- Part 12: Output files related to layout UI (mobile hamburger menu section).
+- Part 13: Output files related to the card used in listings.
+- Part 14: Output files related to pages (Home).
+- Part 15: Output files related to pages (Events).
+- Part 16: Output files related to pages (Exhibits/Stalls).
+- Part 17: Output files related to pages (Time Schedule).
+- Part 18: Output files related to pages (Map).
+- Part 19: Output files related to pages (Detail Page).
+- Part 20: Output files related to pages (Error Page).
+- Part 21: Output files related to pages (404 Page).
+- Part 22: Output files related to overall page settings (color theme and UI language).
+- Part 23: Output files for the search function UI and functionality.
+- Part 24: Output files for the bookmark function UI and functionality.
+- Part 25: Review and refactor the entire code.

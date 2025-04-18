@@ -1,5 +1,5 @@
 import { Outlet } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Header from "./Header";
 import Sidebar from "./Sidebar";
 import Footer from "./Footer";
@@ -10,6 +10,8 @@ const Layout = () => {
   const [isMobile, setIsMobile] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const { theme } = useTheme();
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
+  const menuCloseButtonRef = useRef<HTMLButtonElement>(null);
 
   // Update isMobile state based on screen width
   useEffect(() => {
@@ -31,14 +33,31 @@ const Layout = () => {
   useEffect(() => {
     if (menuOpen) {
       document.body.style.overflow = "hidden";
+
+      // Focus the close button when menu opens
+      if (menuCloseButtonRef.current) {
+        menuCloseButtonRef.current.focus();
+      }
     } else {
       document.body.style.overflow = "";
+
+      // Return focus to menu button when menu closes
+      if (menuButtonRef.current) {
+        menuButtonRef.current.focus();
+      }
     }
 
     return () => {
       document.body.style.overflow = "";
     };
   }, [menuOpen]);
+
+  // Close menu when screen size changes from mobile to desktop
+  useEffect(() => {
+    if (!isMobile && menuOpen) {
+      setMenuOpen(false);
+    }
+  }, [isMobile, menuOpen]);
 
   return (
     <div className={`app ${theme}`}>
@@ -55,10 +74,14 @@ const Layout = () => {
       </div>
 
       {/* Mobile Footer - only shown on mobile */}
-      {isMobile && <Footer setMenuOpen={setMenuOpen} />}
+      {isMobile && (
+        <Footer setMenuOpen={setMenuOpen} menuButtonRef={menuButtonRef} />
+      )}
 
       {/* Mobile Menu - only shown when opened on mobile */}
-      {isMobile && menuOpen && <Menu setMenuOpen={setMenuOpen} />}
+      {isMobile && menuOpen && (
+        <Menu setMenuOpen={setMenuOpen} closeButtonRef={menuCloseButtonRef} />
+      )}
     </div>
   );
 };

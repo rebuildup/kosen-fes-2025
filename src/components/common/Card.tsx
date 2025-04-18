@@ -1,31 +1,54 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { Item } from "../../types/common";
 import { useLanguage } from "../../context/LanguageContext";
-import BookmarkButton from "./BookmarkButton";
+import { useBookmark } from "../../context/BookmarkContext";
+import Tag from "./Tag";
+import ItemTypeIcon from "./ItemTypeIcon";
 
 interface CardProps {
   item: Item;
-  variant?: "default" | "compact" | "featured";
-  highlightText?: (text: string) => React.ReactNode;
-  showDescription?: boolean;
+  variant?: "default" | "compact" | "featured" | "grid" | "list";
   showTags?: boolean;
+  showDescription?: boolean;
+  highlightText?: (text: string) => React.ReactNode;
   onClick?: () => void;
+  className?: string;
 }
 
 const Card = ({
   item,
   variant = "default",
-  highlightText,
-  showDescription = false,
   showTags = false,
+  showDescription = false,
+  highlightText,
   onClick,
+  className = "",
 }: CardProps) => {
   const { t } = useLanguage();
+  const { isBookmarked, toggleBookmark } = useBookmark();
+  const navigate = useNavigate();
+
   const [isImageLoaded, setIsImageLoaded] = useState(false);
   const [hasImageError, setHasImageError] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
 
-  const renderText = (text: string) => {
+  // Get placeholder image based on item type
+  const getPlaceholderImage = () => {
+    switch (item.type) {
+      case "event":
+        return "/images/placeholder-event.jpg";
+      case "exhibit":
+        return "/images/placeholder-exhibit.jpg";
+      case "stall":
+        return "/images/placeholder-stall.jpg";
+      default:
+        return "/images/placeholder.jpg";
+    }
+  };
+
+  // Format text with highlighting if provided
+  const formatText = (text: string) => {
     return highlightText ? highlightText(text) : text;
   };
 
@@ -36,12 +59,24 @@ const Card = ({
     } else if (item.type === "exhibit") {
       return item.creator;
     } else if (item.type === "stall") {
-      return item.products.join(", ");
+      return item.products?.length > 0 ? item.products.join(", ") : "";
     }
     return "";
   };
 
-  // Generate type label
+  // Get organization label based on item type
+  const getOrganizationLabel = () => {
+    if (item.type === "event") {
+      return t("detail.organizer");
+    } else if (item.type === "exhibit") {
+      return t("detail.creator");
+    } else if (item.type === "stall") {
+      return t("detail.products");
+    }
+    return "";
+  };
+
+  // Get type label
   const getTypeLabel = () => {
     if (item.type === "event") {
       return t("detail.event");
@@ -52,11 +87,6 @@ const Card = ({
     }
   };
 
-  // Card class based on variant
-  const cardClass = `card card-${variant} ${
-    showDescription ? "card-with-description" : ""
-  }`;
-
   // Handle card click
   const handleCardClick = (e: React.MouseEvent) => {
     if (onClick) {
@@ -65,97 +95,148 @@ const Card = ({
     }
   };
 
-  // Handle image loading
+  // Handle bookmark toggle
+  const handleBookmarkToggle = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    toggleBookmark(item.id);
+  };
+
+  // Handle image load event
   const handleImageLoad = () => {
     setIsImageLoaded(true);
   };
 
-  // Handle image error
+  // Handle image error event
   const handleImageError = () => {
     setHasImageError(true);
   };
 
-  // Determine image src
+  // Handle mouse enter
+  const handleMouseEnter = () => {
+    setIsHovered(true);
+  };
+
+  // Handle mouse leave
+  const handleMouseLeave = () => {
+    setIsHovered(false);
+  };
+
+  // Determine image source
   const imageSrc = hasImageError
-    ? "/images/placeholder.jpg"
-    : item.imageUrl || "/images/placeholder.jpg";
+    ? getPlaceholderImage()
+    : item.imageUrl || getPlaceholderImage();
+
+  // Generate unique class names based on props
+  const cardClasses = [
+    "card",
+    `card-${variant}`,
+    showDescription ? "card-with-description" : "",
+    isHovered ? "card-hovered" : "",
+    className,
+  ]
+    .filter(Boolean)
+    .join(" ");
 
   return (
-    <div className={cardClass}>
-      <div className="card-inner">
-        <Link
-          to={`/detail/${item.type}/${item.id}`}
-          className="card-link"
-          onClick={handleCardClick}
-        >
-          <div className="card-header">
-            <div className="card-image-container">
-              <div
-                className={`card-image-wrapper ${
-                  isImageLoaded ? "loaded" : "loading"
-                }`}
-              >
-                <img
-                  src={imageSrc}
-                  alt={item.title}
-                  className="card-image"
-                  onLoad={handleImageLoad}
-                  onError={handleImageError}
-                />
-                {!isImageLoaded && !hasImageError && (
-                  <div className="card-image-loading">
-                    <div className="loading-spinner"></div>
-                  </div>
-                )}
+    <div
+      className={cardClasses}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
+      <Link
+        to={`/detail/${item.type}/${item.id}`}
+        className="card-link"
+        onClick={handleCardClick}
+      >
+        <div className="card-image-container">
+          <div
+            className={`card-image-wrapper ${
+              isImageLoaded ? "loaded" : "loading"
+            }`}
+          >
+            <img
+              src={imageSrc}
+              alt={item.title}
+              className="card-image"
+              onLoad={handleImageLoad}
+              onError={handleImageError}
+            />
+            {!isImageLoaded && !hasImageError && (
+              <div className="card-image-loading">
+                <div className="loading-spinner"></div>
               </div>
-              <div className="card-badge">{getTypeLabel()}</div>
-              <div className="card-bookmark-container">
-                <BookmarkButton itemId={item.id} size="small" />
-              </div>
-            </div>
+            )}
           </div>
 
-          <div className="card-content">
-            <h3 className="card-title">{renderText(item.title)}</h3>
+          <div className="card-badge">
+            <ItemTypeIcon type={item.type} size="small" />
+            <span className="card-badge-text">{getTypeLabel()}</span>
+          </div>
 
-            {showDescription && (
-              <p className="card-description">{renderText(item.description)}</p>
-            )}
+          <button
+            className={`card-bookmark-button ${
+              isBookmarked(item.id) ? "bookmarked" : ""
+            }`}
+            onClick={handleBookmarkToggle}
+            aria-label={
+              isBookmarked(item.id)
+                ? t("actions.removeBookmark")
+                : t("actions.bookmark")
+            }
+          >
+            {isBookmarked(item.id) ? "★" : "☆"}
+          </button>
+        </div>
 
-            <div className="card-meta">
-              <div className="card-time">
-                <span className="card-meta-icon">🕒</span>
+        <div className="card-content">
+          <h3 className="card-title">{formatText(item.title)}</h3>
+
+          {showDescription && (
+            <p className="card-description">{formatText(item.description)}</p>
+          )}
+
+          <div
+            className={`card-meta ${
+              isHovered || variant === "list" ? "card-meta-visible" : ""
+            }`}
+          >
+            <div className="card-date-time">
+              <span className="card-icon">🕒</span>
+              <span>
+                {item.date} | {item.time}
+              </span>
+            </div>
+
+            <div className="card-location">
+              <span className="card-icon">📍</span>
+              <span>{formatText(item.location)}</span>
+            </div>
+
+            {getOrganization() && (
+              <div className="card-organization">
+                <span className="card-icon">👥</span>
                 <span>
-                  {item.date} | {item.time}
+                  {getOrganizationLabel()}: {formatText(getOrganization())}
                 </span>
               </div>
-              <div className="card-location">
-                <span className="card-meta-icon">📍</span>
-                <span>{renderText(item.location)}</span>
-              </div>
-              <div className="card-organization">
-                <span className="card-meta-icon">👥</span>
-                <span>{renderText(getOrganization())}</span>
-              </div>
-            </div>
-
-            {showTags && item.tags && item.tags.length > 0 && (
-              <div className="card-tags">
-                {item.tags.map((tag) => (
-                  <Link
-                    key={tag}
-                    to={`/search?tag=${tag}`}
-                    className="card-tag"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    #{tag}
-                  </Link>
-                ))}
-              </div>
             )}
           </div>
-        </Link>
-      </div>
+
+          {showTags && item.tags && item.tags.length > 0 && (
+            <div
+              className={`card-tags ${isHovered ? "card-tags-visible" : ""}`}
+            >
+              {item.tags.slice(0, 3).map((tag) => (
+                <Tag key={tag} tag={tag} size="small" />
+              ))}
+              {item.tags.length > 3 && (
+                <span className="card-tags-more">+{item.tags.length - 3}</span>
+              )}
+            </div>
+          )}
+        </div>
+      </Link>
     </div>
   );
 };

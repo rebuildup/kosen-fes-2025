@@ -2,6 +2,11 @@
 @import "./components/card.css";
 @import "./components/tag.css";
 @import "./components/header.css";
+@import "./components/sidebar.css";
+@import "./components/footer.css";
+@import "./components/menu.css";
+
+/* Rest of the global.css content */
 
 * {
   margin: 0;
@@ -596,5 +601,29 @@ mark {
 
   .search-main {
     order: 1;
+  }
+}
+/* Main content padding for mobile to account for footer */
+@media (max-width: 768px) {
+  .main-content {
+    padding-bottom: calc(
+      var(--spacing-lg) + 60px
+    ); /* Add space for fixed footer */
+  }
+}
+
+/* Safe area inset for devices with notches */
+@supports (padding: max(0px)) {
+  .mobile-footer {
+    padding-bottom: max(0px, env(safe-area-inset-bottom));
+    height: calc(60px + max(0px, env(safe-area-inset-bottom)));
+  }
+
+  @media (max-width: 768px) {
+    .main-content {
+      padding-bottom: calc(
+        var(--spacing-lg) + 60px + max(0px, env(safe-area-inset-bottom))
+      );
+    }
   }
 }

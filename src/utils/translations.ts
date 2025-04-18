@@ -15,15 +15,21 @@ export const enTranslations: Translations = {
     map: "Map",
     search: "Search",
     bookmarks: "Bookmarks",
+    quickLinks: "Quick Links",
+    menu: "Menu",
+    main: "Main Navigation",
   },
   settings: {
+    title: "Settings",
     theme: {
+      title: "Theme",
       light: "Light Mode",
       dark: "Dark Mode",
       switchToLight: "Switch to Light Theme",
       switchToDark: "Switch to Dark Theme",
     },
     language: {
+      title: "Language",
       en: "English",
       ja: "Japanese",
       switchToEn: "Switch to English",
@@ -92,6 +98,7 @@ export const enTranslations: Translations = {
     placeholder: "Search for events, exhibits, etc.",
     noResults: "No results found",
     results: "Search Results",
+    title: "Search",
   },
   bookmarks: {
     title: "Bookmarks",
@@ -121,6 +128,23 @@ export const enTranslations: Translations = {
     showMore: "Show more",
     relatedTags: "Related Tags",
   },
+  info: {
+    title: "Festival Info",
+    festivalDates: "Festival Dates",
+    location: "Location",
+    organizer: "Organizer",
+    contactUs: "Contact Us",
+  },
+  common: {
+    view: "View",
+    viewDefault: "Default View",
+    viewCompact: "Compact View",
+    viewGrid: "Grid View",
+    viewList: "List View",
+    noItems: "No items found",
+    loadMore: "Load More",
+    showAll: "Show All",
+  },
 };
 
 // Japanese translations
@@ -134,15 +158,21 @@ export const jaTranslations: Translations = {
     map: "マップ",
     search: "検索",
     bookmarks: "ブックマーク",
+    quickLinks: "クイックリンク",
+    menu: "メニュー",
+    main: "メインナビゲーション",
   },
   settings: {
+    title: "設定",
     theme: {
+      title: "テーマ",
       light: "ライトモード",
       dark: "ダークモード",
       switchToLight: "ライトテーマに切り替え",
       switchToDark: "ダークテーマに切り替え",
     },
     language: {
+      title: "言語",
       en: "英語",
       ja: "日本語",
       switchToEn: "英語に切り替え",
@@ -211,6 +241,7 @@ export const jaTranslations: Translations = {
     placeholder: "イベント、展示などを検索",
     noResults: "検索結果が見つかりません",
     results: "検索結果",
+    title: "検索",
   },
   bookmarks: {
     title: "ブックマーク",
@@ -239,6 +270,23 @@ export const jaTranslations: Translations = {
     clearAll: "すべてクリア",
     showMore: "もっと見る",
     relatedTags: "関連タグ",
+  },
+  info: {
+    title: "祭り情報",
+    festivalDates: "開催日",
+    location: "場所",
+    organizer: "主催者",
+    contactUs: "お問い合わせ",
+  },
+  common: {
+    view: "表示",
+    viewDefault: "デフォルト表示",
+    viewCompact: "コンパクト表示",
+    viewGrid: "グリッド表示",
+    viewList: "リスト表示",
+    noItems: "アイテムが見つかりません",
+    loadMore: "もっと見る",
+    showAll: "すべて表示",
   },
 };
 

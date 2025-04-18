@@ -3,35 +3,36 @@ import { ItemType } from "../../types/common";
 interface ItemTypeIconProps {
   type: ItemType;
   size?: "small" | "medium" | "large";
+  className?: string;
 }
 
-const ItemTypeIcon = ({ type, size = "medium" }: ItemTypeIconProps) => {
+const ItemTypeIcon = ({
+  type,
+  size = "medium",
+  className = "",
+}: ItemTypeIconProps) => {
+  // Get icon based on type
   const getIcon = () => {
     switch (type) {
       case "event":
-        return "🎭"; // Event icon
+        return "🎭";
       case "exhibit":
-        return "🖼️"; // Exhibit icon
+        return "🖼️";
       case "stall":
-        return "🍽️"; // Stall icon
+        return "🍽️";
       default:
-        return "📌"; // Default icon
+        return "📌";
     }
   };
 
-  const getSizeClass = () => {
-    switch (size) {
-      case "small":
-        return "type-icon-small";
-      case "large":
-        return "type-icon-large";
-      default:
-        return "type-icon-medium";
-    }
-  };
+  // Get size class
+  const sizeClass = `item-type-icon-${size}`;
 
   return (
-    <span className={`item-type-icon ${getSizeClass()}`} aria-hidden="true">
+    <span
+      className={`item-type-icon ${sizeClass} ${className}`}
+      aria-hidden="true"
+    >
       {getIcon()}
     </span>
   );
