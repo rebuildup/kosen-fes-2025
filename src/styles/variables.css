@@ -1,0 +1,84 @@
+:root {
+  /* Base colors (Light theme is default) */
+  --primary: #e31a1a; /* TBS red as primary */
+  --primary-dark: #c51717; /* Darker shade of primary */
+  --primary-light: #ff3939; /* Lighter shade of primary */
+  --secondary: #0055b7; /* Blue as secondary color */
+  --secondary-dark: #004494; /* Darker shade of secondary */
+  --secondary-light: #4d9dff; /* Lighter shade of secondary */
+  --accent: #ffb400; /* Festival accent color (yellow/gold) */
+
+  /* Neutral colors */
+  --text-primary: #333333;
+  --text-secondary: #666666;
+  --text-muted: #999999;
+
+  /* Background colors */
+  --bg-primary: #ffffff;
+  --bg-secondary: #f6f6f6;
+  --bg-tertiary: #eeeeee;
+
+  /* UI colors */
+  --border-light: #e4e4e4;
+  --border-dark: #cccccc;
+  --shadow-color: rgba(0, 0, 0, 0.1);
+
+  /* Status colors */
+  --success: #34c759;
+  --error: #ff3b30;
+  --warning: #ff9500;
+  --info: #007aff;
+
+  /* Component-specific colors */
+  --card-bg: #ffffff;
+  --card-hover: #f9f9f9;
+  --header-bg: #ffffff;
+  --sidebar-bg: #f8f8f8;
+  --footer-bg: #ffffff;
+
+  /* Other variables */
+  --border-radius-sm: 4px;
+  --border-radius-md: 8px;
+  --border-radius-lg: 16px;
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --transition-fast: 0.15s ease;
+  --transition-normal: 0.3s ease;
+  --box-shadow: 0 2px 8px var(--shadow-color);
+}
+
+/* Dark theme variables */
+[data-theme="dark"] {
+  --primary: #ff4b4b; /* Brighter red for dark mode */
+  --primary-dark: #cc3333; /* Adjusted darker shade for dark mode */
+  --primary-light: #ff7575; /* Adjusted lighter shade for dark mode */
+  --secondary: #4d9dff; /* Brighter blue for dark mode */
+  --secondary-dark: #0066cc; /* Adjusted darker shade for dark mode */
+  --secondary-light: #80bfff; /* Adjusted lighter shade for dark mode */
+  --accent: #ffd133; /* Brighter accent for dark mode */
+
+  /* Neutral colors */
+  --text-primary: #ffffff;
+  --text-secondary: #dddddd;
+  --text-muted: #aaaaaa;
+
+  /* Background colors */
+  --bg-primary: #121212;
+  --bg-secondary: #1e1e1e;
+  --bg-tertiary: #2c2c2c;
+
+  /* UI colors */
+  --border-light: #333333;
+  --border-dark: #444444;
+  --shadow-color: rgba(0, 0, 0, 0.3);
+
+  /* Component-specific colors */
+  --card-bg: #1e1e1e;
+  --card-hover: #2a2a2a;
+  --header-bg: #1a1a1a;
+  --sidebar-bg: #1a1a1a;
+  --footer-bg: #1a1a1a;
+}

@@ -1,0 +1,100 @@
+{
+  "siteName": "宇部高専祭 2025",
+  "navigation": {
+    "home": "ホーム",
+    "events": "イベント",
+    "exhibits": "展示・露店",
+    "schedule": "タイムスケジュール",
+    "map": "マップ",
+    "search": "検索",
+    "bookmarks": "ブックマーク"
+  },
+  "settings": {
+    "theme": {
+      "light": "ライトモード",
+      "dark": "ダークモード",
+      "switchToLight": "ライトテーマに切り替え",
+      "switchToDark": "ダークテーマに切り替え"
+    },
+    "language": {
+      "en": "英語",
+      "ja": "日本語",
+      "switchToEn": "英語に切り替え",
+      "switchToJa": "日本語に切り替え"
+    }
+  },
+  "actions": {
+    "close": "閉じる",
+    "save": "保存",
+    "cancel": "キャンセル",
+    "delete": "削除",
+    "bookmark": "ブックマーク",
+    "removeBookmark": "ブックマークを解除",
+    "search": "検索",
+    "viewDetails": "詳細を見る"
+  },
+  "home": {
+    "title": "宇部高専祭 2025へようこそ",
+    "subtitle": "注目のイベントや展示をチェック！",
+    "featuredEvents": "注目イベント",
+    "featuredExhibits": "注目展示"
+  },
+  "events": {
+    "title": "イベント",
+    "noEvents": "イベントが見つかりません",
+    "filters": {
+      "all": "すべてのイベント",
+      "day1": "1日目",
+      "day2": "2日目"
+    }
+  },
+  "exhibits": {
+    "title": "展示・露店",
+    "noExhibits": "展示が見つかりません",
+    "noStalls": "露店が見つかりません",
+    "filters": {
+      "all": "すべて",
+      "exhibits": "展示",
+      "stalls": "露店"
+    }
+  },
+  "schedule": {
+    "title": "タイムスケジュール",
+    "day1": "1日目",
+    "day2": "2日目"
+  },
+  "map": {
+    "title": "会場マップ",
+    "viewLocations": "場所を表示"
+  },
+  "detail": {
+    "back": "一覧に戻る",
+    "event": "イベント",
+    "exhibit": "展示",
+    "stall": "露店",
+    "date": "日付",
+    "time": "時間",
+    "location": "場所",
+    "organizer": "主催者",
+    "creator": "制作者",
+    "products": "商品",
+    "tags": "タグ"
+  },
+  "search": {
+    "placeholder": "イベント、展示などを検索",
+    "noResults": "検索結果が見つかりません",
+    "results": "検索結果"
+  },
+  "bookmarks": {
+    "title": "ブックマーク",
+    "noBookmarks": "ブックマークはまだありません。",
+    "bookmarkedItems": "ブックマークしたアイテム"
+  },
+  "errors": {
+    "pageNotFound": "ページが見つかりません",
+    "pageNotFoundMessage": "お探しのページは存在しません。",
+    "backToHome": "ホームに戻る",
+    "genericError": "エラーが発生しました",
+    "tryAgain": "再試行"
+  }
+}
