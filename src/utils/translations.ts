@@ -7,6 +7,7 @@ export interface Translations {
 // English translations
 export const enTranslations: Translations = {
   siteName: "Ube Kosen Festival 2025",
+  language: "en",
   navigation: {
     home: "Home",
     events: "Events",
@@ -46,6 +47,7 @@ export const enTranslations: Translations = {
     removeBookmark: "Remove Bookmark",
     search: "Search",
     viewDetails: "View Details",
+    clear: "Clear",
   },
   home: {
     title: "Welcome to Ube Kosen Festival 2025",
@@ -76,6 +78,7 @@ export const enTranslations: Translations = {
     title: "Schedule",
     day1: "Day 1",
     day2: "Day 2",
+    noEvents: "No events scheduled for this day",
   },
   map: {
     title: "Festival Map",
@@ -102,10 +105,15 @@ export const enTranslations: Translations = {
     noRelatedItems: "No related items found",
   },
   search: {
+    title: "Search",
     placeholder: "Search for events, exhibits, etc.",
     noResults: "No results found",
-    results: "Search Results",
-    title: "Search",
+    searching: "Searching",
+    recentSearches: "Recent Searches",
+    tryDifferentQuery: "Try using different keywords or filters.",
+    result: "result",
+    results: "results",
+    enterQuery: "Enter a search term or select a tag to start searching",
   },
   bookmarks: {
     title: "Bookmarks",
@@ -116,20 +124,22 @@ export const enTranslations: Translations = {
     all: "All",
     noItemsOfType: "No bookmarked items of this type",
     description: "Your saved events, exhibits, and stalls will appear here.",
+    startBookmarking:
+      "Explore events, exhibits, and stalls and bookmark your favorites to see them here.",
   },
   errors: {
-    itemNotFound: "Item not found",
-    genericError: "Something went wrong",
-    genericErrorMessage: "An error occurred while processing your request.",
     pageNotFound: "Page Not Found",
     pageNotFoundMessage:
-      "The page you are looking for doesn't exist or has been moved.",
+      "The page you're looking for doesn't exist or has been moved.",
+    backToHome: "Go back to home",
+    genericError: "Something went wrong",
+    genericErrorMessage: "An error occurred while processing your request.",
     serverError: "Server Error",
     serverErrorMessage:
       "We're experiencing issues with our server. Please try again later.",
     applicationError: "Application Error",
-    backToHome: "Go to Homepage",
     tryAgain: "Try Again",
+    itemNotFound: "Item not found",
   },
   tags: {
     popularTags: "Popular Tags",
@@ -164,6 +174,7 @@ export const enTranslations: Translations = {
 // Japanese translations
 export const jaTranslations: Translations = {
   siteName: "宇部高専祭 2025",
+  language: "ja",
   navigation: {
     home: "ホーム",
     events: "イベント",
@@ -203,6 +214,7 @@ export const jaTranslations: Translations = {
     removeBookmark: "ブックマークを解除",
     search: "検索",
     viewDetails: "詳細を見る",
+    clear: "クリア",
   },
   home: {
     title: "宇部高専祭 2025へようこそ",
@@ -233,6 +245,7 @@ export const jaTranslations: Translations = {
     title: "タイムスケジュール",
     day1: "1日目",
     day2: "2日目",
+    noEvents: "この日のイベントはありません",
   },
   map: {
     title: "会場マップ",
@@ -259,10 +272,16 @@ export const jaTranslations: Translations = {
     noRelatedItems: "関連アイテムが見つかりません",
   },
   search: {
+    title: "検索",
     placeholder: "イベント、展示などを検索",
     noResults: "検索結果が見つかりません",
-    results: "検索結果",
-    title: "検索",
+    searching: "検索中",
+    recentSearches: "最近の検索",
+    tryDifferentQuery:
+      "別のキーワードやフィルターを使って検索してみてください。",
+    result: "件の結果",
+    results: "件の結果",
+    enterQuery: "検索語を入力するか、タグを選択して検索を開始してください",
   },
   bookmarks: {
     title: "ブックマーク",
@@ -273,19 +292,21 @@ export const jaTranslations: Translations = {
     all: "すべて",
     noItemsOfType: "このタイプのブックマークはありません",
     description: "保存したイベント、展示、露店がここに表示されます。",
+    startBookmarking:
+      "イベント、展示、露店を探索して、お気に入りをブックマークして、ここで表示します。",
   },
   errors: {
-    itemNotFound: "アイテムが見つかりません",
-    genericError: "エラーが発生しました",
-    genericErrorMessage: "リクエストの処理中にエラーが発生しました。",
     pageNotFound: "ページが見つかりません",
     pageNotFoundMessage: "お探しのページは存在しないか、移動されました。",
+    backToHome: "ホームに戻る",
+    genericError: "エラーが発生しました",
+    genericErrorMessage: "リクエストの処理中にエラーが発生しました。",
     serverError: "サーバーエラー",
     serverErrorMessage:
       "サーバーに問題が発生しています。後でもう一度お試しください。",
     applicationError: "アプリケーションエラー",
-    backToHome: "ホームページへ",
     tryAgain: "再試行",
+    itemNotFound: "アイテムが見つかりません",
   },
   tags: {
     popularTags: "人気のタグ",

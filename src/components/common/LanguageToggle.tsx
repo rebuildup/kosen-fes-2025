@@ -13,7 +13,17 @@ const LanguageToggle = () => {
           : t("settings.language.switchToEn")
       }
     >
-      {language === "en" ? "🇯🇵 日本語" : "🇺🇸 English"}
+      {language === "en" ? (
+        <>
+          <span className="toggle-icon">🇯🇵</span>
+          <span className="toggle-text">日本語</span>
+        </>
+      ) : (
+        <>
+          <span className="toggle-icon">🇺🇸</span>
+          <span className="toggle-text">English</span>
+        </>
+      )}
     </button>
   );
 };

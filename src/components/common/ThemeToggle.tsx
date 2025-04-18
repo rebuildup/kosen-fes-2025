@@ -17,13 +17,13 @@ const ThemeToggle = () => {
     >
       {theme === "light" ? (
         <>
-          <span className="icon">🌙</span>
-          <span>{t("settings.theme.dark")}</span>
+          <span className="toggle-icon">🌙</span>
+          <span className="toggle-text">{t("settings.theme.dark")}</span>
         </>
       ) : (
         <>
-          <span className="icon">☀️</span>
-          <span>{t("settings.theme.light")}</span>
+          <span className="toggle-icon">☀️</span>
+          <span className="toggle-text">{t("settings.theme.light")}</span>
         </>
       )}
     </button>

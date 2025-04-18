@@ -8,7 +8,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { Event, Exhibit, Stall, Item } from "../types/common";
 
-// Import mock data (we'll replace this with real data later)
+// Import mock data
 import { events } from "../data/events";
 import { exhibits } from "../data/exhibits";
 import { stalls } from "../data/stalls";
@@ -20,6 +20,8 @@ interface SearchContextType {
   performSearch: (query: string) => void;
   isSearching: boolean;
   clearSearch: () => void;
+  searchHistory: string[];
+  recentSearches: string[];
 }
 
 const defaultContext: SearchContextType = {
@@ -29,6 +31,8 @@ const defaultContext: SearchContextType = {
   performSearch: () => {},
   isSearching: false,
   clearSearch: () => {},
+  searchHistory: [],
+  recentSearches: [],
 };
 
 const SearchContext = createContext<SearchContextType>(defaultContext);
@@ -43,7 +47,21 @@ export const SearchProvider = ({ children }: SearchProviderProps) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<Item[]>([]);
   const [isSearching, setIsSearching] = useState(false);
+  const [searchHistory, setSearchHistory] = useState<string[]>(() => {
+    const saved = localStorage.getItem("searchHistory");
+    return saved ? JSON.parse(saved) : [];
+  });
   const navigate = useNavigate();
+
+  // Get recent searches (last 5 unique searches)
+  const recentSearches = [...new Set(searchHistory)]
+    .slice(0, 5)
+    .filter(Boolean);
+
+  // Save search history to localStorage when it changes
+  useEffect(() => {
+    localStorage.setItem("searchHistory", JSON.stringify(searchHistory));
+  }, [searchHistory]);
 
   // Function to filter items by search query
   const filterItemsByQuery = (items: Item[], query: string): Item[] => {
@@ -70,6 +88,10 @@ export const SearchProvider = ({ children }: SearchProviderProps) => {
     }
 
     setIsSearching(true);
+    setSearchQuery(query);
+
+    // Add to search history (at the beginning)
+    setSearchHistory((prev) => [query, ...prev.filter((q) => q !== query)]);
 
     // Combine all items and filter them
     const allItems: Item[] = [
@@ -85,7 +107,7 @@ export const SearchProvider = ({ children }: SearchProviderProps) => {
 
     // Navigate to search results page if not already there
     if (window.location.pathname !== "/search") {
-      navigate("/search");
+      navigate(`/search?q=${encodeURIComponent(query)}`);
     }
   };
 
@@ -94,18 +116,6 @@ export const SearchProvider = ({ children }: SearchProviderProps) => {
     setSearchQuery("");
     setSearchResults([]);
   };
-
-  // Automatically perform search when query changes
-  useEffect(() => {
-    // Debounce search to avoid too many searches while typing
-    const timer = setTimeout(() => {
-      if (searchQuery) {
-        performSearch(searchQuery);
-      }
-    }, 300);
-
-    return () => clearTimeout(timer);
-  }, [searchQuery]);
 
   return (
     <SearchContext.Provider
@@ -116,6 +126,8 @@ export const SearchProvider = ({ children }: SearchProviderProps) => {
         performSearch,
         isSearching,
         clearSearch,
+        searchHistory,
+        recentSearches,
       }}
     >
       {children}

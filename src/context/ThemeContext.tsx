@@ -14,14 +14,12 @@ interface ThemeContextType {
   isDark: boolean;
 }
 
-// Create context with a default value
 const ThemeContext = createContext<ThemeContextType>({
   theme: "light",
   toggleTheme: () => {},
   isDark: false,
 });
 
-// Custom hook for using the theme context
 export const useTheme = () => useContext(ThemeContext);
 
 interface ThemeProviderProps {

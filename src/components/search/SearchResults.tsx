@@ -4,6 +4,7 @@ import { useLanguage } from "../../context/LanguageContext";
 import { useTag } from "../../context/TagContext";
 import { Item } from "../../types/common";
 import CardGrid from "../common/CardGrid";
+import CardListToggle from "../common/CardListToggle";
 
 interface FilteredResults {
   events: Item[];
@@ -16,6 +17,9 @@ const SearchResults = () => {
   const { t } = useLanguage();
   const { selectedTags, filterItemsByTags } = useTag();
 
+  const [viewMode, setViewMode] = useState<
+    "default" | "compact" | "grid" | "list"
+  >("default");
   const [filteredResults, setFilteredResults] = useState<FilteredResults>({
     events: [],
     exhibits: [],
@@ -60,7 +64,9 @@ const SearchResults = () => {
       <>
         {parts.map((part, i) =>
           part.toLowerCase() === searchQuery.toLowerCase() ? (
-            <mark key={i}>{part}</mark>
+            <mark key={i} className="search-highlight">
+              {part}
+            </mark>
           ) : (
             part
           )
@@ -75,24 +81,56 @@ const SearchResults = () => {
     filteredResults.stalls.length;
 
   if (isSearching) {
-    return <div className="search-loading">{t("search.searching")}...</div>;
+    return (
+      <div className="search-loading">
+        <div className="spinner"></div>
+        <p>{t("search.searching")}...</p>
+      </div>
+    );
   }
 
-  if (totalResults === 0 && (searchQuery || selectedTags.length > 0)) {
-    return <div className="search-no-results">{t("search.noResults")}</div>;
+  // No search query entered yet
+  if (!searchQuery && selectedTags.length === 0) {
+    return (
+      <div className="search-prompt">
+        <p>{t("search.enterQuery")}</p>
+      </div>
+    );
+  }
+
+  // No results found
+  if (totalResults === 0) {
+    return (
+      <div className="search-no-results">
+        <div className="search-no-results-icon">🔍</div>
+        <h3>{t("search.noResults")}</h3>
+        <p>{t("search.tryDifferentQuery")}</p>
+      </div>
+    );
   }
 
   return (
     <div className="search-results">
+      <div className="search-results-header">
+        <div className="search-results-count">
+          {totalResults}{" "}
+          {t(totalResults === 1 ? "search.result" : "search.results")}
+        </div>
+
+        <CardListToggle viewMode={viewMode} setViewMode={setViewMode} />
+      </div>
+
       {filteredResults.events.length > 0 && (
         <section className="search-section">
-          <h3>
+          <h3 className="search-section-title">
             {t("events.title")} ({filteredResults.events.length})
           </h3>
           <CardGrid
             items={filteredResults.events}
-            variant="compact"
+            variant={viewMode}
             highlightText={highlightMatch}
+            showTags={true}
+            showDescription={viewMode === "list"}
             emptyMessage={t("events.noEvents")}
           />
         </section>
@@ -100,13 +138,15 @@ const SearchResults = () => {
 
       {filteredResults.exhibits.length > 0 && (
         <section className="search-section">
-          <h3>
+          <h3 className="search-section-title">
             {t("detail.exhibit")} ({filteredResults.exhibits.length})
           </h3>
           <CardGrid
             items={filteredResults.exhibits}
-            variant="compact"
+            variant={viewMode}
             highlightText={highlightMatch}
+            showTags={true}
+            showDescription={viewMode === "list"}
             emptyMessage={t("exhibits.noExhibits")}
           />
         </section>
@@ -114,13 +154,15 @@ const SearchResults = () => {
 
       {filteredResults.stalls.length > 0 && (
         <section className="search-section">
-          <h3>
+          <h3 className="search-section-title">
             {t("detail.stall")} ({filteredResults.stalls.length})
           </h3>
           <CardGrid
             items={filteredResults.stalls}
-            variant="compact"
+            variant={viewMode}
             highlightText={highlightMatch}
+            showTags={true}
+            showDescription={viewMode === "list"}
             emptyMessage={t("exhibits.noStalls")}
           />
         </section>

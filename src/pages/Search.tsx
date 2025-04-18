@@ -10,7 +10,8 @@ import SelectedTags from "../components/common/SelectedTags";
 import TagCloud from "../components/common/TagCloud";
 
 const Search = () => {
-  const { searchQuery, setSearchQuery, performSearch } = useSearch();
+  const { searchQuery, setSearchQuery, performSearch, recentSearches } =
+    useSearch();
   const { t } = useLanguage();
   const { selectedTags } = useTag();
   const location = useLocation();
@@ -24,31 +25,50 @@ const Search = () => {
       setSearchQuery(queryParam);
       performSearch(queryParam);
     }
-  }, [location.search]);
+  }, [location.search, searchQuery, setSearchQuery, performSearch]);
 
   return (
     <div className="search-page">
-      <h2>{t("search.results")}</h2>
+      <h1 className="search-title">{t("search.title")}</h1>
 
       <div className="search-container">
-        <SearchBar variant="large" />
+        <SearchBar variant="large" autoFocus showSuggestions />
       </div>
 
       <div className="search-content">
         <div className="search-layout">
           <div className="search-sidebar">
-            <TagFilter />
+            <TagFilter onFilter={() => {}} />
+
+            {recentSearches.length > 0 &&
+              !searchQuery &&
+              selectedTags.length === 0 && (
+                <div className="recent-searches">
+                  <h3 className="search-sidebar-title">
+                    {t("search.recentSearches")}
+                  </h3>
+                  <ul className="recent-searches-list">
+                    {recentSearches.map((query, index) => (
+                      <li key={index} className="recent-search-item">
+                        <button
+                          className="recent-search-button"
+                          onClick={() => performSearch(query)}
+                        >
+                          <span className="recent-search-icon">🕒</span>
+                          <span className="recent-search-text">{query}</span>
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
             <TagCloud title={t("tags.popularTags")} showCount maxTags={15} />
           </div>
 
           <div className="search-main">
             <SelectedTags />
-
-            {searchQuery || selectedTags.length > 0 ? (
-              <SearchResults />
-            ) : (
-              <div className="search-prompt">{t("search.enterQuery")}</div>
-            )}
+            <SearchResults />
           </div>
         </div>
       </div>

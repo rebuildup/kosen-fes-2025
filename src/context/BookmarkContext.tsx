@@ -18,6 +18,8 @@ interface BookmarkContextType {
   toggleBookmark: (id: string) => void;
   isBookmarked: (id: string) => boolean;
   clearAllBookmarks: () => void;
+  getBookmarkedItemsByType: (type: string) => Item[];
+  getBookmarkCount: () => number;
 }
 
 const defaultContext: BookmarkContextType = {
@@ -28,6 +30,8 @@ const defaultContext: BookmarkContextType = {
   toggleBookmark: () => {},
   isBookmarked: () => false,
   clearAllBookmarks: () => {},
+  getBookmarkedItemsByType: () => [],
+  getBookmarkCount: () => 0,
 };
 
 const BookmarkContext = createContext<BookmarkContextType>(defaultContext);
@@ -87,6 +91,14 @@ export const BookmarkProvider = ({ children }: BookmarkProviderProps) => {
     setBookmarks([]);
   };
 
+  const getBookmarkedItemsByType = (type: string) => {
+    return bookmarkedItems.filter((item) => item.type === type);
+  };
+
+  const getBookmarkCount = () => {
+    return bookmarks.length;
+  };
+
   return (
     <BookmarkContext.Provider
       value={{
@@ -97,6 +109,8 @@ export const BookmarkProvider = ({ children }: BookmarkProviderProps) => {
         toggleBookmark,
         isBookmarked,
         clearAllBookmarks,
+        getBookmarkedItemsByType,
+        getBookmarkCount,
       }}
     >
       {children}

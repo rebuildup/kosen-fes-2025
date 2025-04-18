@@ -1,12 +1,33 @@
 import { useRouteError, isRouteErrorResponse, Link } from "react-router-dom";
 import { useLanguage } from "../context/LanguageContext";
-import { useTheme } from "../context/ThemeContext";
 import { useEffect, useState } from "react";
+
+interface ErrorWithMessage {
+  message: string;
+  stack?: string;
+}
+
+function isErrorWithMessage(error: unknown): error is ErrorWithMessage {
+  return (
+    typeof error === "object" &&
+    error !== null &&
+    "message" in error &&
+    typeof (error as Record<string, unknown>).message === "string"
+  );
+}
+
+function isErrorWithStack(error: unknown): error is Error {
+  return (
+    typeof error === "object" &&
+    error !== null &&
+    "stack" in error &&
+    typeof (error as Record<string, unknown>).stack === "string"
+  );
+}
 
 const Error = () => {
   const error = useRouteError();
   const { t } = useLanguage();
-  const { theme } = useTheme();
   const [errorDetails, setErrorDetails] = useState<{
     title: string;
     message: string;
@@ -42,8 +63,8 @@ const Error = () => {
             status: error.status,
           });
       }
-    } else if (error instanceof Error) {
-      // Handle JavaScript errors
+    } else if (isErrorWithMessage(error)) {
+      // Handle JavaScript errors with message property
       setErrorDetails({
         title: t("errors.applicationError"),
         message: error.message || t("errors.genericErrorMessage"),
@@ -87,7 +108,7 @@ const Error = () => {
           </button>
         </div>
 
-        {process.env.NODE_ENV === "development" && error instanceof Error && (
+        {import.meta.env.DEV && isErrorWithStack(error) && (
           <div className="error-debug">
             <h3 className="error-debug-title">Debug Information</h3>
             <pre className="error-stack">{error.stack}</pre>
