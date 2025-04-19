@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useTag } from "../../context/TagContext";
 import { useLanguage } from "../../context/LanguageContext";
 import Tag from "./Tag";
@@ -12,6 +12,7 @@ const TagFilter = ({ onFilter, compact = false }: TagFilterProps) => {
   const { tags, selectedTags, toggleTag, clearTags, tagCounts } = useTag();
   const { t } = useLanguage();
   const [searchValue, setSearchValue] = useState("");
+  const tagContainerRef = useRef<HTMLDivElement>(null);
 
   // Filter tags by search input
   const filteredTags = tags.filter((tag) =>
@@ -27,6 +28,21 @@ const TagFilter = ({ onFilter, compact = false }: TagFilterProps) => {
     clearTags();
     if (onFilter) onFilter();
   };
+
+  // Scroll selected tags into view when tags are selected
+  useEffect(() => {
+    if (tagContainerRef.current && selectedTags.length > 0) {
+      // Find the first selected tag element
+      const selectedTag = tagContainerRef.current.querySelector(".tag-active");
+      if (selectedTag) {
+        selectedTag.scrollIntoView({
+          behavior: "smooth",
+          block: "nearest",
+          inline: "center",
+        });
+      }
+    }
+  }, [selectedTags]);
 
   return (
     <div className={`tag-filter ${compact ? "tag-filter-compact" : ""}`}>
@@ -52,20 +68,22 @@ const TagFilter = ({ onFilter, compact = false }: TagFilterProps) => {
         </div>
       )}
 
-      <div className="tag-filter-tags">
-        {filteredTags.length === 0 ? (
-          <div className="tag-filter-empty">{t("tags.noTagsFound")}</div>
-        ) : (
-          filteredTags.map((tag) => (
-            <Tag
-              key={tag}
-              tag={tag}
-              count={tagCounts[tag]}
-              onClick={handleToggleTag}
-              size="small"
-            />
-          ))
-        )}
+      <div className="tag-filter-scroll-container" ref={tagContainerRef}>
+        <div className="tag-filter-tags">
+          {filteredTags.length === 0 ? (
+            <div className="tag-filter-empty">{t("tags.noTagsFound")}</div>
+          ) : (
+            filteredTags.map((tag) => (
+              <Tag
+                key={tag}
+                tag={tag}
+                count={tagCounts[tag]}
+                onClick={handleToggleTag}
+                size="small"
+              />
+            ))
+          )}
+        </div>
       </div>
     </div>
   );

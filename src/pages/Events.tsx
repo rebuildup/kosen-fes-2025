@@ -2,11 +2,14 @@ import { useState, useEffect } from "react";
 import { useLanguage } from "../context/LanguageContext";
 import { useTag } from "../context/TagContext";
 import { events } from "../data/events";
-import { Event, Item } from "../types/common";
+import { Item } from "../types/common";
 import CardGrid from "../components/common/CardGrid";
 import CardListToggle from "../components/common/CardListToggle";
 import TagFilter from "../components/common/TagFilter";
 import SelectedTags from "../components/common/SelectedTags";
+
+// Import the new CSS (make sure to add this to your imports)
+import "../styles/components/tag-filter-scrollable.css";
 
 const Events = () => {
   const { t } = useLanguage();
@@ -78,14 +81,16 @@ const Events = () => {
         </div>
       </div>
 
+      {/* Single column layout */}
       <div className="events-content">
+        {/* Tag filter at the top - single column */}
         <div className="events-sidebar">
           <TagFilter onFilter={() => {}} />
+          <SelectedTags />
         </div>
 
+        {/* Events grid below */}
         <div className="events-main">
-          <SelectedTags />
-
           <CardGrid
             items={filteredEvents}
             variant={viewMode}

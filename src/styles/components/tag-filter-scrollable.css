@@ -1,0 +1,172 @@
+/* Scrollable Tag Filter CSS */
+
+/* Container for the entire tag filter component */
+.tag-filter {
+  margin-bottom: 20px;
+  border: 1px solid var(--border-light);
+  border-radius: var(--border-radius-md);
+  padding: 15px;
+  background-color: var(--bg-secondary);
+  width: 100%;
+}
+
+/* Compact version for smaller spaces */
+.tag-filter-compact {
+  padding: 10px;
+}
+
+/* Header with title and clear button */
+.tag-filter-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.tag-filter-title {
+  font-size: 0.9rem;
+  font-weight: 500;
+  margin: 0;
+}
+
+.tag-filter-clear {
+  font-size: 0.75rem;
+  color: var(--primary);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px 8px;
+}
+
+.tag-filter-clear:hover {
+  text-decoration: underline;
+}
+
+/* Search input */
+.tag-filter-search {
+  margin-bottom: 12px;
+}
+
+.tag-filter-input {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid var(--border-light);
+  border-radius: var(--border-radius-sm);
+  font-size: 0.8rem;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+/* Outer container to hide scrollbar */
+.tag-filter-scroll-container {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  padding-bottom: 5px; /* Add space for scrollbar */
+}
+
+/* Inner container for horizontal scrolling */
+.tag-filter-tags {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap; /* Critical: prevent wrapping */
+  overflow-x: auto; /* Enable horizontal scrolling */
+  gap: 8px;
+  padding: 5px 0;
+  scroll-padding: 10px;
+
+  /* Smooth scrolling on iOS */
+  -webkit-overflow-scrolling: touch;
+
+  /* Firefox scrollbar */
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-light) transparent;
+
+  /* Better scrollbar for WebKit browsers */
+  &::-webkit-scrollbar {
+    height: 4px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: var(--border-light);
+    border-radius: 4px;
+  }
+
+  /* Visual indicator for more content */
+  mask-image: linear-gradient(
+    to right,
+    black calc(100% - 40px),
+    transparent 100%
+  );
+  -webkit-mask-image: linear-gradient(
+    to right,
+    black calc(100% - 40px),
+    transparent 100%
+  );
+}
+
+/* Tag styling for horizontal scrolling */
+.tag {
+  flex: 0 0 auto; /* Do not grow or shrink */
+  white-space: nowrap; /* Prevent text wrapping */
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 10px;
+  background-color: var(--bg-tertiary);
+  color: var(--text-secondary);
+  border-radius: 20px;
+  font-size: 0.75rem;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease, transform 0.1s ease;
+  user-select: none;
+}
+
+.tag:hover {
+  background-color: var(--secondary-light);
+  color: white;
+  transform: translateY(-1px);
+}
+
+.tag-active {
+  background-color: var(--secondary);
+  color: white;
+}
+
+.tag-text {
+  line-height: 1;
+}
+
+.tag-count {
+  margin-left: 5px;
+  font-size: 0.65rem;
+  background-color: rgba(0, 0, 0, 0.1);
+  padding: 1px 4px;
+  border-radius: var(--border-radius-sm);
+  font-weight: 500;
+}
+
+/* Empty state */
+.tag-filter-empty {
+  padding: 10px;
+  color: var(--text-muted);
+  font-style: italic;
+  white-space: nowrap;
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+  .tag-filter-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .tag-filter-clear {
+    padding: 0;
+  }
+}
