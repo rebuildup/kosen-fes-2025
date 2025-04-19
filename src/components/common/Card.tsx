@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import { Item } from "../../types/common";
 import { useLanguage } from "../../context/LanguageContext";
 import { useBookmark } from "../../context/BookmarkContext";
@@ -27,7 +27,6 @@ const Card = ({
 }: CardProps) => {
   const { t } = useLanguage();
   const { isBookmarked, toggleBookmark } = useBookmark();
-  const navigate = useNavigate();
 
   const [isImageLoaded, setIsImageLoaded] = useState(false);
   const [hasImageError, setHasImageError] = useState(false);

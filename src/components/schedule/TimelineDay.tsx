@@ -42,7 +42,7 @@ const TimelineDay = ({
       </div>
 
       <div className="timeline">
-        {timeSlots.map((timeSlot, index) => (
+        {timeSlots.map((timeSlot) => (
           <div key={timeSlot} className="timeline-slot">
             <div className="timeline-time">
               <div className="timeline-time-marker"></div>
