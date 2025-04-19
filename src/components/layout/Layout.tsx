@@ -5,6 +5,10 @@ import Sidebar from "./Sidebar";
 import Footer from "./Footer";
 import Menu from "./Menu";
 import { useTheme } from "../../context/ThemeContext";
+import PageTransition from "./PageTransition";
+import { useLocation } from "react-router-dom";
+import { gsap } from "gsap";
+import { DURATION, EASE } from "../../utils/animations";
 
 const Layout = () => {
   const [isMobile, setIsMobile] = useState(false);
@@ -12,6 +16,8 @@ const Layout = () => {
   const { theme } = useTheme();
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const menuCloseButtonRef = useRef<HTMLButtonElement>(null);
+  const layoutRef = useRef<HTMLDivElement>(null);
+  const location = useLocation();
 
   // Update isMobile state based on screen width
   useEffect(() => {
@@ -28,6 +34,39 @@ const Layout = () => {
     // Clean up event listener
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
+
+  // Theme transition effect
+  useEffect(() => {
+    if (layoutRef.current) {
+      gsap.to(layoutRef.current, {
+        backgroundColor: "var(--bg-primary)",
+        color: "var(--text-primary)",
+        duration: DURATION.NORMAL,
+        ease: EASE.SMOOTH,
+      });
+    }
+  }, [theme]);
+
+  // Page change animation
+  useEffect(() => {
+    if (layoutRef.current) {
+      const contentContainer =
+        layoutRef.current.querySelector(".content-container");
+      if (contentContainer) {
+        gsap.fromTo(
+          contentContainer,
+          { opacity: 0, y: 20 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: DURATION.NORMAL,
+            ease: EASE.SMOOTH,
+            clearProps: "all",
+          }
+        );
+      }
+    }
+  }, [location.pathname]);
 
   // Prevent body scroll when menu is open
   useEffect(() => {
@@ -52,6 +91,41 @@ const Layout = () => {
     };
   }, [menuOpen]);
 
+  // Menu open/close animation
+  const toggleMenu = (open: boolean) => {
+    setMenuOpen(open);
+
+    if (open) {
+      // Menu opening animation handled in Menu component
+    } else {
+      // Menu closing animation can be triggered here if needed
+      const menuOverlay = document.querySelector(".menu-overlay");
+      const mobileMenu = document.querySelector(".mobile-menu");
+
+      if (menuOverlay && mobileMenu) {
+        const tl = gsap.timeline({
+          onComplete: () => {
+            setMenuOpen(false);
+          },
+        });
+
+        tl.to(mobileMenu, {
+          x: "100%",
+          duration: DURATION.NORMAL,
+          ease: EASE.SMOOTH,
+        }).to(
+          menuOverlay,
+          {
+            autoAlpha: 0,
+            duration: DURATION.FAST,
+            ease: EASE.SMOOTH,
+          },
+          "-=0.2"
+        );
+      }
+    }
+  };
+
   // Close menu when screen size changes from mobile to desktop
   useEffect(() => {
     if (!isMobile && menuOpen) {
@@ -60,7 +134,7 @@ const Layout = () => {
   }, [isMobile, menuOpen]);
 
   return (
-    <div className={`app ${theme}`}>
+    <div className={`app ${theme}`} ref={layoutRef}>
       {/* PC Header - only shown on desktop */}
       {!isMobile && <Header />}
 
@@ -69,18 +143,20 @@ const Layout = () => {
         {!isMobile && <Sidebar />}
 
         <main className="main-content">
-          <Outlet />
+          <PageTransition>
+            <Outlet />
+          </PageTransition>
         </main>
       </div>
 
       {/* Mobile Footer - only shown on mobile */}
       {isMobile && (
-        <Footer setMenuOpen={setMenuOpen} menuButtonRef={menuButtonRef} />
+        <Footer setMenuOpen={toggleMenu} menuButtonRef={menuButtonRef} />
       )}
 
       {/* Mobile Menu - only shown when opened on mobile */}
       {isMobile && menuOpen && (
-        <Menu setMenuOpen={setMenuOpen} closeButtonRef={menuCloseButtonRef} />
+        <Menu setMenuOpen={toggleMenu} closeButtonRef={menuCloseButtonRef} />
       )}
     </div>
   );

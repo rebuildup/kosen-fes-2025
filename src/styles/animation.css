@@ -1,0 +1,206 @@
+/* Animation Styles */
+
+/* Common Transitions */
+.page-transition-wrapper {
+  transition: opacity 0.4s ease;
+}
+
+/* Hover Animation Utilities */
+.hover-scale {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.hover-scale:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+}
+
+/* Pulse Animation */
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.pulse {
+  animation: pulse 2s infinite ease-in-out;
+}
+
+/* Floating Animation */
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+.float {
+  animation: float 4s ease-in-out infinite;
+}
+
+/* Fade In Animation */
+.fade-in {
+  opacity: 0;
+  animation: fadeIn 0.6s ease forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Staggered animation for lists */
+.stagger-item {
+  opacity: 0;
+}
+
+.stagger-item.animated {
+  animation: staggerFadeIn 0.5s ease forwards;
+}
+
+@keyframes staggerFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Card hover effects - enhancing the existing styles with transitions */
+.card {
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 0.3s ease, background-color 0.3s ease;
+  will-change: transform, box-shadow;
+}
+
+.card-image {
+  transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  will-change: transform;
+}
+
+.card:hover .card-image,
+.card-hovered .card-image {
+  transform: scale(1.08);
+}
+
+.card-bookmark-button {
+  transition: opacity 0.3s ease,
+    transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), background-color 0.3s ease;
+  will-change: transform, opacity;
+}
+
+.card-meta,
+.card-tags {
+  transition: opacity 0.4s ease,
+    transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), max-height 0.4s ease;
+  will-change: transform, opacity, max-height;
+}
+
+/* Timeline item animations */
+.timeline-item {
+  transition: transform 0.3s ease, background-color 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.timeline-item.expanded {
+  transform: scale(1.01);
+}
+
+.timeline-item-expanded {
+  transition: height 0.4s ease, opacity 0.4s ease;
+  will-change: height, opacity;
+}
+
+/* Menu animations */
+.menu-overlay {
+  will-change: opacity;
+}
+
+.menu-backdrop {
+  backdrop-filter: blur(5px);
+  transition: backdrop-filter 0.4s ease;
+}
+
+.mobile-menu {
+  will-change: transform;
+}
+
+/* Tag animations */
+.tag {
+  transition: background-color 0.3s ease, color 0.3s ease,
+    transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  will-change: transform, background-color;
+}
+
+.tag:hover {
+  transform: translateY(-2px) scale(1.05);
+}
+
+.tag.tag-active {
+  transform: scale(1.05);
+}
+
+/* Search bar animations */
+.search-input-container {
+  transition: box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.search-button,
+.search-clear-button {
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.search-button:hover,
+.search-clear-button:hover {
+  transform: scale(1.1);
+}
+
+/* Home hero animations */
+.festival-symbol {
+  transition: transform 0.5s ease;
+  animation: float 6s ease-in-out infinite;
+}
+
+.home-hero-cta {
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 0.3s ease;
+}
+
+.home-hero-cta:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+}
+
+.home-hero-cta:hover .home-hero-cta-icon {
+  animation: arrowBounce 0.8s ease infinite;
+}
+
+@keyframes arrowBounce {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(5px);
+  }
+}

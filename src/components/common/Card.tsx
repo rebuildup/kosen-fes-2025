@@ -1,10 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Item } from "../../types/common";
 import { useLanguage } from "../../context/LanguageContext";
 import { useBookmark } from "../../context/BookmarkContext";
 import Tag from "./Tag";
 import ItemTypeIcon from "./ItemTypeIcon";
+import { gsap } from "gsap";
+import { DURATION, EASE } from "../../utils/animations";
 
 interface CardProps {
   item: Item;
@@ -31,6 +33,88 @@ const Card = ({
   const [isImageLoaded, setIsImageLoaded] = useState(false);
   const [hasImageError, setHasImageError] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+
+  const cardRef = useRef<HTMLDivElement>(null);
+  const imageRef = useRef<HTMLImageElement>(null);
+  const metaRef = useRef<HTMLDivElement>(null);
+  const tagsRef = useRef<HTMLDivElement>(null);
+
+  // Set up hover animations
+  useEffect(() => {
+    if (!cardRef.current) return;
+
+    const card = cardRef.current;
+    const hoverTimeline = gsap.timeline({ paused: true });
+
+    // Card scale and shadow animation
+    hoverTimeline.to(card, {
+      y: -6,
+      boxShadow: "0 8px 20px rgba(0, 0, 0, 0.15)",
+      duration: DURATION.FAST,
+      ease: EASE.SMOOTH,
+    });
+
+    // Image scale animation
+    if (imageRef.current) {
+      hoverTimeline.to(
+        imageRef.current,
+        {
+          scale: 1.05,
+          duration: DURATION.FAST,
+          ease: EASE.SMOOTH,
+        },
+        0
+      );
+    }
+
+    // Meta information fade in
+    if (metaRef.current && variant !== "list") {
+      hoverTimeline.to(
+        metaRef.current,
+        {
+          autoAlpha: 1,
+          y: 0,
+          duration: DURATION.FAST,
+          ease: EASE.SMOOTH,
+        },
+        0
+      );
+    }
+
+    // Tags fade in
+    if (tagsRef.current && showTags) {
+      hoverTimeline.to(
+        tagsRef.current,
+        {
+          autoAlpha: 1,
+          y: 0,
+          duration: DURATION.FAST,
+          ease: EASE.SMOOTH,
+        },
+        0
+      );
+    }
+
+    // Mouse enter/leave events
+    const handleMouseEnter = () => {
+      setIsHovered(true);
+      hoverTimeline.play();
+    };
+
+    const handleMouseLeave = () => {
+      setIsHovered(false);
+      hoverTimeline.reverse();
+    };
+
+    card.addEventListener("mouseenter", handleMouseEnter);
+    card.addEventListener("mouseleave", handleMouseLeave);
+
+    return () => {
+      card.removeEventListener("mouseenter", handleMouseEnter);
+      card.removeEventListener("mouseleave", handleMouseLeave);
+      hoverTimeline.kill();
+    };
+  }, [variant, showTags]);
 
   // Get placeholder image based on item type
   const getPlaceholderImage = () => {
@@ -94,32 +178,70 @@ const Card = ({
     }
   };
 
-  // Handle bookmark toggle
+  // Handle bookmark toggle with animation
   const handleBookmarkToggle = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    toggleBookmark(item.id);
+
+    const target = e.currentTarget as HTMLButtonElement;
+    const isCurrentlyBookmarked = isBookmarked(item.id);
+
+    // Animation for toggling bookmark
+    if (isCurrentlyBookmarked) {
+      // Removing bookmark animation
+      gsap.to(target, {
+        scale: 0.8,
+        duration: DURATION.FAST / 2,
+        ease: EASE.SMOOTH,
+        onComplete: () => {
+          toggleBookmark(item.id);
+          gsap.to(target, {
+            scale: 1,
+            duration: DURATION.FAST / 2,
+            ease: "back.out(1.7)",
+          });
+        },
+      });
+    } else {
+      // Adding bookmark animation
+      gsap.to(target, {
+        scale: 1.2,
+        duration: DURATION.FAST / 2,
+        ease: EASE.SMOOTH,
+        onComplete: () => {
+          toggleBookmark(item.id);
+          gsap.to(target, {
+            scale: 1,
+            duration: DURATION.FAST / 2,
+            ease: "elastic.out(1, 0.3)",
+          });
+        },
+      });
+    }
   };
 
-  // Handle image load event
+  // Handle image load event with fade-in animation
   const handleImageLoad = () => {
-    setIsImageLoaded(true);
+    if (imageRef.current) {
+      gsap.fromTo(
+        imageRef.current,
+        { autoAlpha: 0 },
+        {
+          autoAlpha: 1,
+          duration: DURATION.NORMAL,
+          ease: EASE.SMOOTH,
+          onComplete: () => setIsImageLoaded(true),
+        }
+      );
+    } else {
+      setIsImageLoaded(true);
+    }
   };
 
   // Handle image error event
   const handleImageError = () => {
     console.warn(`Failed to load image for ${item.title}`, item.imageUrl);
     setHasImageError(true);
-  };
-
-  // Handle mouse enter
-  const handleMouseEnter = () => {
-    setIsHovered(true);
-  };
-
-  // Handle mouse leave
-  const handleMouseLeave = () => {
-    setIsHovered(false);
   };
 
   // Correctly determine image source with proper fallback
@@ -162,11 +284,7 @@ const Card = ({
     .join(" ");
 
   return (
-    <div
-      className={cardClasses}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-    >
+    <div className={cardClasses} ref={cardRef}>
       <Link
         to={`/detail/${item.type}/${item.id}`}
         className="card-link"
@@ -184,6 +302,7 @@ const Card = ({
               className="card-image"
               onLoad={handleImageLoad}
               onError={handleImageError}
+              ref={imageRef}
             />
             {!isImageLoaded && !hasImageError && (
               <div className="card-image-loading">
@@ -223,6 +342,11 @@ const Card = ({
             className={`card-meta ${
               isHovered || variant === "list" ? "card-meta-visible" : ""
             }`}
+            ref={metaRef}
+            style={{
+              opacity: variant === "list" ? 1 : 0,
+              transform: variant === "list" ? "none" : "translateY(10px)",
+            }}
           >
             <div className="card-date-time">
               <span className="card-icon">🕒</span>
@@ -249,6 +373,11 @@ const Card = ({
           {showTags && item.tags && item.tags.length > 0 && (
             <div
               className={`card-tags ${isHovered ? "card-tags-visible" : ""}`}
+              ref={tagsRef}
+              style={{
+                opacity: 0,
+                transform: "translateY(10px)",
+              }}
             >
               {item.tags.slice(0, 3).map((tag) => (
                 <Tag key={tag} tag={tag} size="small" />

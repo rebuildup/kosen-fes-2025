@@ -1,6 +1,7 @@
 /* Import global styles in the correct order */
 @import "./reset.css";
 @import "./theme/index.css";
+@import "./animation.css";
 
 /* Component styles */
 @import "./components/card.css";
