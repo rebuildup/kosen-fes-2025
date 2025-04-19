@@ -25,6 +25,32 @@
 @import "./components/layout-enhancements.css";
 @import "./components/tag-filter-scrollable.css";
 
+/* Force scrollbar to always show without flickering */
+html {
+  overflow-y: scroll !important; /* Forces vertical scrollbar to always be visible */
+  scrollbar-width: thin !important; /* For Firefox */
+  scrollbar-color: rgba(0, 0, 0, 0.2) transparent !important; /* For Firefox */
+  min-height: 101vh !important; /* Ensures page is always slightly taller than viewport */
+}
+
+/* Webkit scrollbar styling */
+html::-webkit-scrollbar {
+  width: 8px !important;
+}
+
+html::-webkit-scrollbar-track {
+  background: transparent !important;
+}
+
+html::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2) !important;
+  border-radius: 4px !important;
+}
+
+html::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(0, 0, 0, 0.3) !important;
+}
+
 /* Base element styles */
 body {
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
@@ -34,6 +60,8 @@ body {
   line-height: 1.5;
   transition: background-color var(--transition-normal),
     color var(--transition-normal);
+  overflow-x: hidden; /* Prevent horizontal scrolling */
+  min-height: 101vh !important; /* Ensures body is always slightly taller than viewport */
 }
 
 a {
@@ -117,28 +145,71 @@ p {
 
 /* Layout styles */
 .app {
-  min-height: 100vh;
+  min-height: 101vh; /* Ensures app container is always slightly taller than viewport */
   display: flex;
   flex-direction: column;
   background-color: var(--bg-primary);
   color: var(--text-primary);
   transition: background-color var(--transition-normal),
     color var(--transition-normal);
+  position: relative; /* Establish a positioning context */
 }
 
+/* Content layout adjustments for fixed header and sidebar */
 .content-container {
   display: flex;
   flex: 1;
-  padding-top: 0; /* Adjusted to account for sticky header */
-  max-width: 1400px;
+  padding-top: 60px; /* Match the header height */
+  max-width: 1000px; /* Reduced from 1400px to 1000px */
   margin: 0 auto;
   width: 100%;
+  position: relative; /* Create positioning context */
+}
+
+/* Add left spacing to account for fixed sidebar on desktop */
+@media (min-width: 769px) {
+  .content-container {
+    padding-left: 0; /* Reset padding - sidebar will be positioned relative to container */
+  }
 }
 
 .main-content {
   flex: 1;
   padding: var(--spacing-lg);
   overflow-x: hidden;
+  min-height: calc(100vh - 60px); /* Account for header height */
+  width: 100%; /* Ensure it takes full width */
+}
+@media (min-width: 769px) {
+  .main-content {
+    margin-left: 250px; /* Match sidebar width */
+    width: calc(100% - 250px); /* Adjust width to accommodate sidebar */
+  }
+}
+
+/* Add consistent bottom spacing to all main page content areas */
+.events-page,
+.exhibits-page,
+.schedule-page,
+.map-page,
+.search-page,
+.bookmarks-page,
+.home-page,
+.detail-page {
+  padding-bottom: calc(
+    var(--spacing-xl) + 100px
+  ); /* Consistent bottom padding */
+}
+
+/* Ensure timeschedule and map sections have adequate bottom spacing */
+.timeline-day,
+.map-container {
+  margin-bottom: calc(var(--spacing-xl) + 100px);
+}
+
+/* Last section on home page needs extra space */
+.home-section:last-child {
+  margin-bottom: calc(var(--spacing-xl) + 100px);
 }
 
 /* Common layout components */
@@ -289,6 +360,7 @@ p {
 @media (max-width: 768px) {
   .content-container {
     flex-direction: column;
+    padding-left: 0; /* Reset sidebar padding on mobile */
   }
 
   .main-content {

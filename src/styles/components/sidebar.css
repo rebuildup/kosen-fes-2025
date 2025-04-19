@@ -1,15 +1,20 @@
-/* PC Sidebar Styles */
+/* PC Sidebar Styles - Enhanced sticky behavior with proper alignment */
 .pc-sidebar {
-  width: 280px;
+  width: 250px; /* Slightly reduced width */
   background-color: var(--sidebar-bg);
   border-right: 1px solid var(--border-light);
-  padding: var(--spacing-md);
+  padding: var(--spacing-lg) var(--spacing-md) var(--spacing-md)
+    var(--spacing-lg);
   height: calc(100vh - 60px); /* Subtract header height */
-  position: sticky;
+  position: fixed; /* Fixed position */
   top: 60px; /* Position below header */
+  left: calc(
+    50% - 500px
+  ); /* Align with the header container: 50% - (container width / 2) */
   overflow-y: auto;
   flex-shrink: 0;
   transition: background-color 0.3s ease;
+  z-index: 999; /* Just below the header */
 }
 
 /* Sidebar sections */
@@ -113,6 +118,12 @@
 }
 
 /* Responsive styles */
+@media (max-width: 1024px) {
+  .pc-sidebar {
+    left: calc(50% - 450px); /* Adjust for smaller screens */
+  }
+}
+
 @media (max-width: 768px) {
   .pc-sidebar {
     display: none; /* Hide sidebar on mobile */

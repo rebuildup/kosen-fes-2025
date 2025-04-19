@@ -1,13 +1,15 @@
-/* PC Header Styles */
+/* PC Header Styles - Enhanced sticky behavior */
 .pc-header {
-  position: sticky;
+  position: fixed; /* Changed from sticky to fixed for guaranteed positioning */
   top: 0;
+  left: 0;
   width: 100%;
   background-color: var(--header-bg);
   border-bottom: 1px solid var(--border-light);
   z-index: 1000;
-  transition: box-shadow 0.3s ease, transform 0.3s ease;
+  transition: box-shadow 0.3s ease;
   height: 60px;
+  backdrop-filter: blur(5px); /* Add blur effect for better visual appearance */
 }
 
 .header-scrolled {
@@ -15,13 +17,13 @@
 }
 
 .header-container {
-  max-width: 1200px;
+  max-width: 1000px; /* Reduced from 1400px to 1000px */
   margin: 0 auto;
   display: flex;
   align-items: center;
   justify-content: space-between;
   height: 100%;
-  padding: 0 16px;
+  padding: 0 var(--spacing-lg);
 }
 
 /* Logo styling */

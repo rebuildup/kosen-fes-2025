@@ -329,10 +329,13 @@
   max-height: initial;
 }
 
-/* Card Grid Layout */
+/* Card Grid Layout - with added bottom margin */
 .card-grid {
   display: grid;
   gap: 20px;
+  margin-bottom: calc(
+    var(--spacing-xl) + 200px
+  ); /* Add extra space at bottom - enough for one card plus padding */
 }
 
 .card-grid-default {
@@ -354,6 +357,9 @@
 .card-grid-empty {
   text-align: center;
   padding: 40px 0;
+  margin-bottom: calc(
+    var(--spacing-xl) + 200px
+  ); /* Match the card grid margin */
   color: var(--text-muted);
   font-style: italic;
   background-color: var(--bg-secondary);
