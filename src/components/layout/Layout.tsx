@@ -6,7 +6,6 @@ import Footer from "./Footer";
 import Menu from "./Menu";
 import { useTheme } from "../../context/ThemeContext";
 import PageTransition from "./PageTransition";
-import { useLocation } from "react-router-dom";
 import { gsap } from "gsap";
 import { DURATION, EASE } from "../../utils/animations";
 
@@ -17,7 +16,6 @@ const Layout = () => {
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const menuCloseButtonRef = useRef<HTMLButtonElement>(null);
   const layoutRef = useRef<HTMLDivElement>(null);
-  const location = useLocation();
 
   // Update isMobile state based on screen width
   useEffect(() => {
@@ -46,27 +44,6 @@ const Layout = () => {
       });
     }
   }, [theme]);
-
-  // Page change animation
-  useEffect(() => {
-    if (layoutRef.current) {
-      const contentContainer =
-        layoutRef.current.querySelector(".content-container");
-      if (contentContainer) {
-        gsap.fromTo(
-          contentContainer,
-          { opacity: 0, y: 20 },
-          {
-            opacity: 1,
-            y: 0,
-            duration: DURATION.NORMAL,
-            ease: EASE.SMOOTH,
-            clearProps: "all",
-          }
-        );
-      }
-    }
-  }, [location.pathname]);
 
   // Prevent body scroll when menu is open
   useEffect(() => {
