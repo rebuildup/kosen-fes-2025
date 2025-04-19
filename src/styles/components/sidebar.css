@@ -9,7 +9,7 @@
   position: fixed; /* Fixed position */
   top: 60px; /* Position below header */
   left: calc(
-    50% - 500px
+    50% - 600px
   ); /* Align with the header container: 50% - (container width / 2) */
   overflow-y: auto;
   flex-shrink: 0;
@@ -202,22 +202,4 @@
     opacity: 1;
     transform: translateY(0);
   }
-}
-
-/* Scrollbar styling for sidebar */
-.pc-sidebar::-webkit-scrollbar {
-  width: 6px;
-}
-
-.pc-sidebar::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.pc-sidebar::-webkit-scrollbar-thumb {
-  background-color: var(--border-light);
-  border-radius: 3px;
-}
-
-.pc-sidebar::-webkit-scrollbar-thumb:hover {
-  background-color: var(--border-dark);
 }
