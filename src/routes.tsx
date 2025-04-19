@@ -1,15 +1,26 @@
+import { lazy, Suspense } from "react";
 import { RouteObject } from "react-router-dom";
 import Layout from "./components/layout/Layout";
-import Home from "./pages/Home";
-import Events from "./pages/Events";
-import Exhibits from "./pages/Exhibits";
-import TimeSchedule from "./pages/TimeSchedule";
-import Map from "./pages/Map";
-import Detail from "./pages/Detail";
-import Search from "./pages/Search";
-import Bookmarks from "./pages/Bookmarks";
 import Error from "./pages/Error";
-import NotFound from "./pages/NotFound";
+import LoadingIndicator from "./components/common/LoadingIndicator";
+
+// Lazy load page components
+const Home = lazy(() => import("./pages/Home"));
+const Events = lazy(() => import("./pages/Events"));
+const Exhibits = lazy(() => import("./pages/Exhibits"));
+const TimeSchedule = lazy(() => import("./pages/TimeSchedule"));
+const Map = lazy(() => import("./pages/Map"));
+const Detail = lazy(() => import("./pages/Detail"));
+const Search = lazy(() => import("./pages/Search"));
+const Bookmarks = lazy(() => import("./pages/Bookmarks"));
+const NotFound = lazy(() => import("./pages/NotFound"));
+
+// Suspense wrapper for lazy-loaded components
+const withSuspense = (Component: React.ComponentType) => (
+  <Suspense fallback={<LoadingIndicator />}>
+    <Component />
+  </Suspense>
+);
 
 const routes: RouteObject[] = [
   {
@@ -17,15 +28,15 @@ const routes: RouteObject[] = [
     element: <Layout />,
     errorElement: <Error />,
     children: [
-      { index: true, element: <Home /> },
-      { path: "events", element: <Events /> },
-      { path: "exhibits", element: <Exhibits /> },
-      { path: "schedule", element: <TimeSchedule /> },
-      { path: "map", element: <Map /> },
-      { path: "detail/:type/:id", element: <Detail /> },
-      { path: "search", element: <Search /> },
-      { path: "bookmarks", element: <Bookmarks /> },
-      { path: "*", element: <NotFound /> },
+      { index: true, element: withSuspense(Home) },
+      { path: "events", element: withSuspense(Events) },
+      { path: "exhibits", element: withSuspense(Exhibits) },
+      { path: "schedule", element: withSuspense(TimeSchedule) },
+      { path: "map", element: withSuspense(Map) },
+      { path: "detail/:type/:id", element: withSuspense(Detail) },
+      { path: "search", element: withSuspense(Search) },
+      { path: "bookmarks", element: withSuspense(Bookmarks) },
+      { path: "*", element: withSuspense(NotFound) },
     ],
   },
 ];

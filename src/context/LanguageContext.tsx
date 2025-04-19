@@ -4,6 +4,7 @@ import {
   useState,
   useEffect,
   ReactNode,
+  ComponentType,
 } from "react";
 import {
   Language,
@@ -29,6 +30,16 @@ const defaultContext: LanguageContextType = {
 const LanguageContext = createContext<LanguageContextType>(defaultContext);
 
 export const useLanguage = () => useContext(LanguageContext);
+
+// HOC to inject language props into class components
+export function withLanguage<P extends object>(
+  Component: ComponentType<P & { t: (key: string) => string }>
+): React.FC<P> {
+  return (props: P) => {
+    const { t } = useLanguage();
+    return <Component {...props} t={t} />;
+  };
+}
 
 interface LanguageProviderProps {
   children: ReactNode;
