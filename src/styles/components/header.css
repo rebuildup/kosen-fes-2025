@@ -1,6 +1,6 @@
 /* PC Header Styles - Enhanced sticky behavior */
 .pc-header {
-  position: fixed; /* Changed from sticky to fixed for guaranteed positioning */
+  position: fixed;
   top: 0;
   left: 0;
   width: 100%;
@@ -9,7 +9,7 @@
   z-index: 1000;
   transition: box-shadow 0.3s ease;
   height: 60px;
-  backdrop-filter: blur(5px); /* Add blur effect for better visual appearance */
+  backdrop-filter: blur(5px);
 }
 
 .header-scrolled {
@@ -17,7 +17,7 @@
 }
 
 .header-container {
-  max-width: 1200px; /* Reduced from 1400px to 1200px */
+  max-width: 1200px;
   margin: 0 auto;
   display: flex;
   align-items: center;
@@ -93,6 +93,7 @@
   width: 100%;
   height: 3px;
   background-color: var(--primary);
+  box-shadow: 0 0 8px rgba(var(--primary-rgb), 0.4);
 }
 
 .nav-icon {
@@ -123,20 +124,31 @@
   }
 }
 
-/* Animation for the active indicator */
-@keyframes slide-in {
-  from {
+/* Enhanced animation for the active indicator with bounce and fade */
+@keyframes active-indicator {
+  0% {
     transform: scaleX(0);
+    opacity: 0;
   }
-  to {
+  70% {
+    transform: scaleX(1.05);
+    opacity: 1;
+  }
+  85% {
+    transform: scaleX(0.98);
+    opacity: 1;
+  }
+  100% {
     transform: scaleX(1);
+    opacity: 1;
   }
 }
 
 .nav-link-active::after {
-  animation: slide-in 0.2s ease-out forwards;
-  transform-origin: left;
+  animation: active-indicator 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  transform-origin: center;
 }
+
 /* Logo Component */
 .logo {
   display: flex;
