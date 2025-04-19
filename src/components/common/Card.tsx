@@ -37,11 +37,11 @@ const Card = ({
   const getPlaceholderImage = () => {
     switch (item.type) {
       case "event":
-        return "/images/placeholder-event.jpg";
+        return "/images/events/placeholder-event.jpg";
       case "exhibit":
-        return "/images/placeholder-exhibit.jpg";
+        return "/images/exhibits/placeholder-exhibit.jpg";
       case "stall":
-        return "/images/placeholder-stall.jpg";
+        return "/images/stalls/placeholder-stall.jpg";
       default:
         return "/images/placeholder.jpg";
     }
@@ -109,6 +109,7 @@ const Card = ({
 
   // Handle image error event
   const handleImageError = () => {
+    console.warn(`Failed to load image for ${item.title}`, item.imageUrl);
     setHasImageError(true);
   };
 
@@ -122,10 +123,33 @@ const Card = ({
     setIsHovered(false);
   };
 
-  // Determine image source
-  const imageSrc = hasImageError
-    ? getPlaceholderImage()
-    : item.imageUrl || getPlaceholderImage();
+  // Correctly determine image source with proper fallback
+  // This attempts to use the item's imageUrl first, or falls back to a type-specific image
+  const determineImageSrc = () => {
+    // First try the item's specified image URL
+    if (item.imageUrl && !hasImageError) {
+      return item.imageUrl;
+    }
+
+    // If there's no imageUrl or loading failed, use type-specific placeholder
+    if (item.type === "event") {
+      // Create path to the event image based on ID (for example, event-1.jpg)
+      const eventNumber = item.id.split("-")[1];
+      return `/images/events/event-${eventNumber}.jpg`;
+    } else if (item.type === "exhibit") {
+      const exhibitNumber = item.id.split("-")[1];
+      return `/images/exhibits/exhibit-${exhibitNumber}.jpg`;
+    } else if (item.type === "stall") {
+      const stallNumber = item.id.split("-")[1];
+      return `/images/stalls/stall-${stallNumber}.jpg`;
+    }
+
+    // Final fallback to generic placeholder
+    return getPlaceholderImage();
+  };
+
+  // Get the actual image source
+  const imageSrc = determineImageSrc();
 
   // Generate unique class names based on props
   const cardClasses = [
