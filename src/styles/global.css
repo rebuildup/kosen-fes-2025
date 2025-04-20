@@ -373,3 +373,48 @@ p {
     }
   }
 }
+/* Content layout adjustments for fixed header and sidebar */
+.content-container {
+  display: flex;
+  flex: 1;
+  padding-top: 60px; /* Match the header height */
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+  position: relative; /* Create positioning context */
+}
+
+/* Update the main content styles to match sidebar changes */
+.main-content {
+  flex: 1;
+  padding: var(--spacing-lg);
+  overflow-x: hidden;
+  min-height: calc(100vh - 60px); /* Account for header height */
+  width: 100%; /* Ensure it takes full width */
+}
+
+/* REPLACE this media query with the following */
+@media (min-width: 1200px) {
+  .main-content {
+    margin-left: 250px; /* Match sidebar width */
+    width: calc(100% - 250px); /* Adjust width to accommodate sidebar */
+  }
+}
+
+/* ADD a new media query for medium screens */
+@media (min-width: 769px) and (max-width: 1199px) {
+  .main-content {
+    margin-left: 220px; /* Match reduced sidebar width */
+    width: calc(100% - 220px);
+    padding: var(--spacing-md); /* Slightly reduced padding */
+  }
+}
+
+@media (max-width: 768px) {
+  .main-content {
+    margin-left: 0;
+    width: 100%;
+    padding: var(--spacing-md);
+    margin-bottom: 60px; /* Space for the fixed footer */
+  }
+}

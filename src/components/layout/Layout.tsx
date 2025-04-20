@@ -17,9 +17,9 @@ const Layout = () => {
   const menuCloseButtonRef = useRef<HTMLButtonElement>(null);
   const layoutRef = useRef<HTMLDivElement>(null);
 
-  // Update isMobile state based on screen width
   useEffect(() => {
     const checkMobile = () => {
+      // CHANGE: Update to only consider truly mobile screens as "mobile"
       setIsMobile(window.innerWidth < 768);
     };
 

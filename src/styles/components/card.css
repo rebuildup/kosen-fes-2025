@@ -664,3 +664,77 @@
     display: none;
   }
 }
+/* Card Grid Layout - with added bottom margin */
+.card-grid {
+  display: grid;
+  gap: 20px;
+  margin-bottom: calc(var(--spacing-xl) + 200px);
+}
+
+.card-grid-default {
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+}
+
+.card-grid-compact {
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+}
+
+.card-grid-grid {
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+}
+
+.card-grid-list {
+  grid-template-columns: 1fr;
+}
+
+/* UPDATE the responsive adjustments */
+/* Medium screens (800-1000px range) */
+@media (min-width: 769px) and (max-width: 1000px) {
+  .card-grid-default {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  }
+
+  .card-grid-compact {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  }
+
+  .card-grid-grid {
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  }
+
+  /* Reduce image size and font size to fit better */
+  .card-title {
+    font-size: 0.9rem;
+  }
+
+  .card-meta {
+    font-size: 0.75rem;
+  }
+}
+
+/* Keep the existing media queries but update them */
+@media (max-width: 768px) {
+  .card-grid-default {
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  }
+
+  .card-grid-compact {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  }
+
+  .card-list .card-image-container {
+    width: 100px;
+    min-width: 100px;
+    height: 75px;
+  }
+
+  .card-title {
+    font-size: 0.95rem;
+  }
+
+  .card-meta {
+    opacity: 1;
+    transform: none;
+    max-height: 200px;
+  }
+}

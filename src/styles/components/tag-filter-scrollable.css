@@ -170,3 +170,19 @@
     padding: 0;
   }
 }
+/* Add this media query for medium screens */
+@media (min-width: 769px) and (max-width: 1000px) {
+  .tag-filter {
+    padding: 10px;
+  }
+
+  .tag {
+    /* Make tags slightly smaller on medium screens */
+    padding: 3px 8px;
+    font-size: 0.7rem;
+  }
+
+  .tag-filter-title {
+    font-size: 0.85rem;
+  }
+}
