@@ -1,149 +1,247 @@
-# Cultural Festival 2025 Website
+# 宇部高専文化祭 2025 公式サイト
 
-This is a modern, responsive website template for a cultural festival, built using React, TypeScript, and Vite. The website is designed to provide visitors with comprehensive information about the festival, including events, exhibits, schedule, and venue map.
+本サイトは React、TypeScript、Vite を使用して構築された宇部高専文化祭 2025 の公式ウェブサイトです。来場者の皆さまに、イベント情報、展示内容、スケジュール、会場マップなど、文化祭に関するあらゆる情報をわかりやすくお届けします。
 
-## Features
+## 主な機能
 
-- **Mobile-First Responsive Design**: Optimized for mobile devices with responsive layouts that adapt to all screen sizes
-- **Modern UI Components**: Clean, intuitive interface with smooth animations and transitions
-- **Interactive Festival Map**: SVG-based venue map with location highlights
-- **Dynamic Event Schedule**: Interactive timetable with filtering by day
-- **Art Exhibits Gallery**: Filterable gallery of festival exhibits
-- **GSAP Animations**: Smooth scroll-triggered animations throughout the site
+- **バイリンガル対応**：日本語／英語の切り替え機能
+- **テーマ切替**：ライトモード／ダークモードに対応
+- **モバイルファースト設計**：スマホからデスクトップまで快適に閲覧可能
+- **インタラクティブ会場マップ**：SVG を使った会場図とスポットハイライト
+- **動的イベントスケジュール**：日付ごとに絞り込めるタイムテーブル
+- **展示＆屋台ギャラリー**：全出展の一覧表示と詳細閲覧
+- **ブックマーク機能**：お気に入りのイベントや展示を保存
+- **検索機能**：キーワードでイベントや展示を検索
+- **タグフィルタ**：タグやカテゴリで絞り込み可能
+- **GSAP アニメーション**：サイト全体のスムーズな演出
 
-## Pages
+## 技術スタック
 
-### Home
+- **React v19**：最新機能と高いパフォーマンス
+- **TypeScript**：型安全な開発をサポート
+- **Vite**：高速なビルド／開発サーバー
+- **React Router**：クライアントサイドルーティング
+- **Context API**：グローバルな状態管理
+- **GSAP**：高度なアニメーションライブラリ
+- **CSS**：テーマ変数を用いたカスタムスタイル
 
-- Festival banner with animated elements
-- Featured events section
-- Festival highlights with custom SVG icons
-- Call-to-action section
-
-### Events
-
-- Comprehensive list of all festival events
-- Filtering by category (performances, workshops, etc.)
-- Event cards with details and times
-
-### Exhibits
-
-- Art exhibit gallery with filtering by category
-- Artist information and exhibit descriptions
-- Visual categorization with custom styling
-
-### Timetable
-
-- Interactive schedule organized by day
-- Timeline visualization for easy navigation
-- Color-coded event categories
-
-### Map
-
-- Interactive SVG map of the festival venue
-- Location listing with descriptions
-- Visual color coordination between map and listing
-
-## Technical Stack
-
-- **React 19**: Latest React features with improved performance
-- **TypeScript**: Type-safe JavaScript for better development experience
-- **Vite**: Fast, modern build tool and development server
-- **React Router**: Client-side routing for single-page application
-- **GSAP (GreenSock Animation Platform)**: Professional-grade animations
-- **CSS Modules**: Scoped CSS styling for components
-
-## Getting Started
-
-### Prerequisites
-
-- Node.js 16+ and npm/yarn
-
-### Installation
-
-1. Clone the repository
-
-```bash
-git clone https://github.com/yourusername/cultural-festival-2025.git
-cd cultural-festival-2025
-```
-
-2. Install dependencies
-
-```bash
-npm install
-# or
-yarn
-```
-
-3. Start the development server
-
-```bash
-npm run dev
-# or
-yarn dev
-```
-
-4. Build for production
-
-```bash
-npm run build
-# or
-yarn build
-```
-
-## Project Structure
+## ディレクトリ構成
 
 ```
-cultural-festival-2025/
-├── public/                # Static assets
+kosen-fes-2025/
+├── public/               # 静的資産・画像
 ├── src/
-│   ├── assets/            # Images, fonts, etc.
-│   ├── components/        # Reusable UI components
-│   ├── pages/             # Page components
-│   ├── App.tsx            # Main App component
-│   ├── App.css            # App-wide styles
-│   ├── main.tsx           # Entry point
-│   └── index.css          # Global styles
-├── index.html             # HTML template
-├── package.json           # Project dependencies
-├── tsconfig.json          # TypeScript configuration
-└── vite.config.ts         # Vite configuration
+│   ├── components/      # 再利用可能な UI コンポーネント
+│   │   ├── bookmarks/    # ブックマーク関連
+│   │   ├── common/       # 共通 UI 要素
+│   │   ├── detail/       # 詳細ページ
+│   │   ├── events/       # イベント一覧・詳細
+│   │   ├── exhibits/     # 展示一覧・詳細
+│   │   ├── home/         # ホームページ
+│   │   ├── layout/       # ヘッダー／サイドバー／フッター
+│   │   ├── map/          # 会場マップ
+│   │   ├── schedule/     # スケジュール表示
+│   │   └── search/       # 検索機能
+│   ├── context/         # React Context 定義
+│   ├── data/            # モックデータ（events／exhibits／stalls）
+│   ├── pages/           # ページコンポーネント
+│   ├── styles/          # CSSスタイル
+│   │   ├── components/   # コンポーネント別スタイル
+│   │   └── theme/        # テーマ変数／スタイル
+│   ├── types/           # TypeScript 型定義
+│   ├── utils/           # ヘルパー関数
+│   ├── App.tsx          # メインアプリコンポーネント
+│   ├── AppProviders.tsx # Context プロバイダー設定
+│   └── main.tsx         # エントリーポイント
+├── index.html           # HTML テンプレート
+├── package.json         # 依存関係定義
+├── tsconfig.json        # TypeScript 設定
+└── vite.config.ts       # Vite 設定
 ```
 
-## Customization
+### 主なコンポーネント・ファイル
 
-### Styling
+- **AppProviders.tsx**：テーマ／言語／ブックマーク／検索／タグの各 Context をまとめて設定
+- **context/**：
+  - `ThemeContext.tsx`：テーマ切替を管理
+  - `LanguageContext.tsx`：言語切替を管理
+  - `BookmarkContext.tsx`：ブックマーク機能を管理
+  - `SearchContext.tsx`：検索機能を管理
+  - `TagContext.tsx`：タグフィルタを管理
+- **data/**：
+  - `events.ts`：イベント情報
+  - `exhibits.ts`：展示情報
+  - `stalls.ts`：屋台情報
+- **pages/**：
+  - `Home.tsx`：トップページ
+  - `Events.tsx`：イベント一覧ページ
+  - `Exhibits.tsx`：展示・屋台一覧ページ
+  - `TimeSchedule.tsx`：タイムテーブルページ
+  - `Map.tsx`：インタラクティブマップページ
+  - `Detail.tsx`：詳細表示ページ
+  - `Search.tsx`：検索結果ページ
+  - `Bookmarks.tsx`：ブックマーク一覧ページ
+- **components/common/**：Card、Tag、SearchBar などの汎用コンポーネント
+- **utils/**：
+  - `animations.ts`：GSAP 用アニメーション関数
+  - `formatters.tsx`：日付・テキスト整形関数
+  - `translations.ts`：翻訳文字列とヘルパー関数
 
-- Global styles are in `src/index.css`
-- App-wide styles are in `src/App.css`
-- Page-specific styles are in their respective CSS files in the `pages` directory
+## セットアップ
 
-### Content
+### 必要環境
 
-- Event data is stored in the respective page components
-- To change content, modify the arrays in each page component
+- Node.js v16 以上
+- npm または yarn
 
-### Images
+### インストール手順
 
-- Replace placeholder images in the `src/assets/images/` directory with your own
+1. リポジトリをクローン
 
-## Notes on Assets
+   ```bash
+   git clone https://github.com/rebuildup/kosen-fes-2025.git
+   cd kosen-fes-2025
+   ```
 
-For the sake of this template, we've used placeholders for images and referenced them in CSS files. In a real implementation, you would need to:
+2. 依存パッケージをインストール
 
-1. Create an `assets/images/` directory
-2. Add appropriate images for events, exhibits, etc.
-3. Make sure the image names match those referenced in the CSS files
+   ```bash
+   npm install
+   # または
+   yarn
+   ```
 
-## Browser Support
+3. 開発用サーバー起動
 
-The website is optimized for modern browsers including:
+   ```bash
+   npm run dev
+   # または
+   yarn dev
+   ```
 
-- Chrome/Edge (latest)
-- Firefox (latest)
-- Safari (latest)
+4. 本番用ビルド
 
-## License
+   ```bash
+   npm run build
+   # または
+   yarn build
+   ```
 
-This project is licensed under the MIT License.
+## コンテンツ追加方法
+
+### イベント追加
+
+`src/data/events.ts` を編集し、以下の形式でオブジェクトを追加してください。
+
+```ts
+{
+  id: "event-7",            // ユニークID
+  type: "event",
+  title: "イベントタイトル",
+  description: "詳細説明文",
+  imageUrl: "/images/events/event-7.jpg",
+  date: "2025-06-15",      // YYYY-MM-DD
+  time: "14:00 - 15:30",    // HH:MM - HH:MM
+  location: "Main Stage",
+  tags: ["performance", "music"],
+  organizer: "主催者名",
+  duration: 90,               // 分
+}
+```
+
+### 展示追加
+
+`src/data/exhibits.ts` に以下の形式でオブジェクトを追加してください。
+
+```ts
+{
+  id: "exhibit-7",
+  type: "exhibit",
+  title: "展示タイトル",
+  description: "詳細説明文",
+  imageUrl: "/images/exhibits/exhibit-7.jpg",
+  date: "2025-06-15",
+  time: "10:00 - 18:00",
+  location: "Art Building, Gallery Hall",
+  tags: ["art", "digital"],
+  creator: "制作者名",
+}
+```
+
+### 屋台追加
+
+`src/data/stalls.ts` に以下の形式でオブジェクトを追加してください。
+
+```ts
+{
+  id: "stall-7",
+  type: "stall",
+  title: "屋台タイトル",
+  description: "詳細説明文",
+  imageUrl: "/images/stalls/stall-7.jpg",
+  date: "2025-06-15",
+  time: "11:00 - 20:00",
+  location: "Food Court Area, Stall 6",
+  tags: ["food", "japanese"],
+  products: ["Product 1", "Product 2"],
+}
+```
+
+### 画像追加
+
+1. 各ディレクトリにアップロード：
+   - `/public/images/events/`
+   - `/public/images/exhibits/`
+   - `/public/images/stalls/`
+2. ファイル名例：
+   - `event-{番号}.jpg`
+   - `exhibit-{番号}.jpg`
+   - `stall-{番号}.jpg`
+3. 推奨設定：
+   - サイズ：800×450px（16:9）
+   - 形式：JPG／WebP
+   - ファイル容量：200KB 以下
+
+### 会場マップ更新
+
+`src/components/map/MapDisplay.tsx` 内の `locationCoordinates` に新規スポットを追加します。
+
+```ts
+const locationCoordinates: Record<string, { x: number; y: number }> = {
+  // 既存のマッピング,
+  新しいスポット名: { x: 45, y: 65 },
+};
+```
+
+### 翻訳追加・修正
+
+`src/utils/translations.ts` の `enTranslations`／`jaTranslations` に対応するキーを追加・編集し、両言語の整合性を保ってください。
+
+## カスタマイズ
+
+- **スタイル調整**：
+  - グローバル：`src/styles/global.css`
+  - テーマ変数：`src/styles/theme/index.css`
+  - コンポーネント別：`src/styles/components/`
+- **ナビゲーション編集**：ルート定義は `src/routes.tsx` を更新
+
+## サーバー設定
+
+- 本番ビルド成果物を指定ディレクトリに配置
+- ストレージ上限：2GB
+- URL：`https://festival.ube-k.ac.jp/2025/`
+
+## 対応ブラウザ
+
+- Chrome／Edge（最新）
+- Firefox（最新）
+- Safari（最新）
+- iOS／Android のモバイルブラウザ
+
+## ライセンス
+
+MIT ライセンス
+
+## クレジット
+
+宇部高専文化祭 2025 公式サイトとして作成
