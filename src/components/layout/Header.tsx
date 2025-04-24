@@ -1,13 +1,13 @@
 import { useState, useEffect } from "react";
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import { useLanguage } from "../../context/LanguageContext";
 import { useTheme } from "../../context/ThemeContext";
 import Logo from "../common/Logo";
 
 const Header = () => {
   const { t } = useLanguage();
-  const { theme } = useTheme();
-  const location = useLocation();
+  const {} = useTheme();
+
   const [scrolled, setScrolled] = useState(false);
 
   // Handle scroll behavior for header styling
