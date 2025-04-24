@@ -1,3 +1,4 @@
+// src/AppProviders.tsx
 import { ReactNode } from "react";
 import { ThemeProvider } from "./context/ThemeContext";
 import { LanguageProvider } from "./context/LanguageContext";

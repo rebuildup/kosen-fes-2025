@@ -51,7 +51,8 @@ export const enTranslations: Translations = {
   },
   home: {
     title: "Welcome to Ube Kosen Festival 2025",
-    subtitle: "Check out our featured events and exhibits!",
+    subtitle:
+      "Explore events, exhibits, and performances at Ube National College of Technology on November 8-9, 2025!",
     featuredEvents: "Featured Events",
     featuredExhibits: "Featured Exhibits",
   },
@@ -154,9 +155,9 @@ export const enTranslations: Translations = {
   },
   info: {
     title: "Festival Info",
-    festivalDates: "Festival Dates",
-    location: "Location",
-    organizer: "Organizer",
+    festivalDates: "Festival Dates: November 8-9, 2025",
+    location: "Location: Ube National College of Technology",
+    organizer: "Organizer: Festival Committee",
     contactUs: "Contact Us",
   },
   common: {
@@ -218,7 +219,8 @@ export const jaTranslations: Translations = {
   },
   home: {
     title: "宇部高専祭 2025へようこそ",
-    subtitle: "注目のイベントや展示をチェック！",
+    subtitle:
+      "2025年11月8日～9日に宇部工業高等専門学校で開催される展示やイベントをご覧ください！",
     featuredEvents: "注目イベント",
     featuredExhibits: "注目展示",
   },
@@ -321,9 +323,9 @@ export const jaTranslations: Translations = {
   },
   info: {
     title: "祭り情報",
-    festivalDates: "開催日",
-    location: "場所",
-    organizer: "主催者",
+    festivalDates: "開催日: 2025年11月8日～9日",
+    location: "場所: 宇部工業高等専門学校",
+    organizer: "主催者: 実行委員会",
     contactUs: "お問い合わせ",
   },
   common: {

@@ -1,3 +1,4 @@
+// src/main.tsx
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
@@ -9,11 +10,16 @@ import "./styles/global.css";
 // Get root element
 const rootElement = document.getElementById("root");
 
+// Determine if we're in production (deployed) mode
+// In development, we'll use no basename
+// In production, we'll use '/fes2025'
+const basename = import.meta.env.DEV ? "" : "/fes2025";
+
 // Create and render app
 if (rootElement) {
   createRoot(rootElement).render(
     <StrictMode>
-      <BrowserRouter>
+      <BrowserRouter basename={basename}>
         <App />
       </BrowserRouter>
     </StrictMode>

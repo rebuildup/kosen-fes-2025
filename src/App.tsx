@@ -1,3 +1,4 @@
+// src/App.tsx
 import { useRoutes } from "react-router-dom";
 import { AppProviders } from "./AppProviders";
 import routes from "./routes";
