@@ -1,5 +1,7 @@
 import { useTheme } from "../../context/ThemeContext";
 import { useLanguage } from "../../context/LanguageContext";
+import { SunIcon } from "../icons/SunIcon";
+import { MoonIcon } from "../icons/MoonIcon";
 
 const ThemeToggle = () => {
   const { theme, toggleTheme } = useTheme();
@@ -17,12 +19,16 @@ const ThemeToggle = () => {
     >
       {theme === "light" ? (
         <>
-          <span className="toggle-icon">🌙</span>
+          <span className="toggle-icon">
+            <MoonIcon size={16} />
+          </span>
           <span className="toggle-text">{t("settings.theme.dark")}</span>
         </>
       ) : (
         <>
-          <span className="toggle-icon">☀️</span>
+          <span className="toggle-icon">
+            <SunIcon size={16} />
+          </span>
           <span className="toggle-text">{t("settings.theme.light")}</span>
         </>
       )}

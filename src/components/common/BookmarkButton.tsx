@@ -1,5 +1,6 @@
 import { useBookmark } from "../../context/BookmarkContext";
 import { useLanguage } from "../../context/LanguageContext";
+import { BookmarkIcon } from "../icons/BookmarkIcon";
 
 interface BookmarkButtonProps {
   itemId: string;
@@ -39,7 +40,9 @@ const BookmarkButton = ({
       }
       title={isActive ? t("actions.removeBookmark") : t("actions.bookmark")}
     >
-      <span className="bookmark-icon">{isActive ? "★" : "☆"}</span>
+      <span className="bookmark-icon">
+        <BookmarkIcon size={16} fill={isActive ? "currentColor" : "none"} />
+      </span>
       {showText && (
         <span className="bookmark-text">
           {isActive ? t("actions.removeBookmark") : t("actions.bookmark")}

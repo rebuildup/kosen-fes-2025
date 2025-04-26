@@ -6,6 +6,11 @@ import ThemeToggle from "../common/ThemeToggle";
 import LanguageToggle from "../common/LanguageToggle";
 import SearchBar from "../common/SearchBar";
 import SidebarLink from "./SidebarLink";
+import { BookmarkIcon } from "../icons/BookmarkIcon";
+import { EventIcon } from "../icons/EventIcon";
+import { ExhibitIcon } from "../icons/ExhibitIcon";
+import { ScheduleIcon } from "../icons/ScheduleIcon";
+import { MapIcon } from "../icons/MapIcon";
 
 const Sidebar = () => {
   const { t } = useLanguage();
@@ -41,22 +46,30 @@ const Sidebar = () => {
         <div className="sidebar-links">
           <SidebarLink
             to="/bookmarks"
-            icon="🔖"
+            icon={<BookmarkIcon size={18} />}
             label={t("bookmarks.title")}
             badge={bookmarks.length || undefined}
           />
-          <SidebarLink to="/events" icon="🎭" label={t("navigation.events")} />
+          <SidebarLink
+            to="/events"
+            icon={<EventIcon size={18} />}
+            label={t("navigation.events")}
+          />
           <SidebarLink
             to="/exhibits"
-            icon="🖼️"
+            icon={<ExhibitIcon size={18} />}
             label={t("navigation.exhibits")}
           />
           <SidebarLink
             to="/schedule"
-            icon="📅"
+            icon={<ScheduleIcon size={18} />}
             label={t("navigation.schedule")}
           />
-          <SidebarLink to="/map" icon="🗺️" label={t("navigation.map")} />
+          <SidebarLink
+            to="/map"
+            icon={<MapIcon size={18} />}
+            label={t("navigation.map")}
+          />
         </div>
       </div>
 

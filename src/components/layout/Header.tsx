@@ -1,13 +1,15 @@
 import { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
 import { useLanguage } from "../../context/LanguageContext";
-import { useTheme } from "../../context/ThemeContext";
 import Logo from "../common/Logo";
+import { HomeIcon } from "../icons/HomeIcon";
+import { EventIcon } from "../icons/EventIcon";
+import { ExhibitIcon } from "../icons/ExhibitIcon";
+import { ScheduleIcon } from "../icons/ScheduleIcon";
+import { MapIcon } from "../icons/MapIcon";
 
 const Header = () => {
   const { t } = useLanguage();
-  const {} = useTheme();
-
   const [scrolled, setScrolled] = useState(false);
 
   // Handle scroll behavior for header styling
@@ -43,7 +45,9 @@ const Header = () => {
                 }
                 end
               >
-                <span className="nav-icon">🏠</span>
+                <span className="nav-icon">
+                  <HomeIcon size={20} />
+                </span>
                 <span className="nav-text">{t("navigation.home")}</span>
               </NavLink>
             </li>
@@ -55,7 +59,9 @@ const Header = () => {
                   `nav-link ${isActive ? "nav-link-active" : ""}`
                 }
               >
-                <span className="nav-icon">🎭</span>
+                <span className="nav-icon">
+                  <EventIcon size={20} />
+                </span>
                 <span className="nav-text">{t("navigation.events")}</span>
               </NavLink>
             </li>
@@ -67,7 +73,9 @@ const Header = () => {
                   `nav-link ${isActive ? "nav-link-active" : ""}`
                 }
               >
-                <span className="nav-icon">🖼️</span>
+                <span className="nav-icon">
+                  <ExhibitIcon size={20} />
+                </span>
                 <span className="nav-text">{t("navigation.exhibits")}</span>
               </NavLink>
             </li>
@@ -79,7 +87,9 @@ const Header = () => {
                   `nav-link ${isActive ? "nav-link-active" : ""}`
                 }
               >
-                <span className="nav-icon">📅</span>
+                <span className="nav-icon">
+                  <ScheduleIcon size={20} />
+                </span>
                 <span className="nav-text">{t("navigation.schedule")}</span>
               </NavLink>
             </li>
@@ -91,7 +101,9 @@ const Header = () => {
                   `nav-link ${isActive ? "nav-link-active" : ""}`
                 }
               >
-                <span className="nav-icon">🗺️</span>
+                <span className="nav-icon">
+                  <MapIcon size={20} />
+                </span>
                 <span className="nav-text">{t("navigation.map")}</span>
               </NavLink>
             </li>

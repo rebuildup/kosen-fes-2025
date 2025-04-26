@@ -1,4 +1,7 @@
 import { ItemType } from "../../types/common";
+import { EventIcon } from "../icons/EventIcon";
+import { ExhibitIcon } from "../icons/ExhibitIcon";
+import { MapIcon } from "../icons/MapIcon";
 
 interface ItemTypeIconProps {
   type: ItemType;
@@ -11,17 +14,30 @@ const ItemTypeIcon = ({
   size = "medium",
   className = "",
 }: ItemTypeIconProps) => {
+  // Get size in pixels
+  const getSize = () => {
+    switch (size) {
+      case "small":
+        return 16;
+      case "large":
+        return 24;
+      case "medium":
+      default:
+        return 20;
+    }
+  };
+
   // Get icon based on type
-  const getIcon = () => {
+  const renderIcon = () => {
     switch (type) {
       case "event":
-        return "🎭";
+        return <EventIcon size={getSize()} />;
       case "exhibit":
-        return "🖼️";
+        return <ExhibitIcon size={getSize()} />;
       case "stall":
-        return "🍽️";
+        return <MapIcon size={getSize()} />; // Using MapIcon for stalls
       default:
-        return "📌";
+        return <MapIcon size={getSize()} />;
     }
   };
 
@@ -33,7 +49,7 @@ const ItemTypeIcon = ({
       className={`item-type-icon ${sizeClass} ${className}`}
       aria-hidden="true"
     >
-      {getIcon()}
+      {renderIcon()}
     </span>
   );
 };

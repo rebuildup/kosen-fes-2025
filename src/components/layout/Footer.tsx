@@ -1,6 +1,12 @@
 import { NavLink } from "react-router-dom";
 import { useLanguage } from "../../context/LanguageContext";
 import { RefObject } from "react";
+import { HomeIcon } from "../icons/HomeIcon";
+import { EventIcon } from "../icons/EventIcon";
+import { ExhibitIcon } from "../icons/ExhibitIcon";
+import { ScheduleIcon } from "../icons/ScheduleIcon";
+import { MapIcon } from "../icons/MapIcon";
+import { MenuIcon } from "../icons/MenuIcon";
 
 interface FooterProps {
   setMenuOpen: (open: boolean) => void;
@@ -20,7 +26,9 @@ const Footer = ({ setMenuOpen, menuButtonRef }: FooterProps) => {
           }
           end
         >
-          <div className="footer-nav-icon">🏠</div>
+          <div className="footer-nav-icon">
+            <HomeIcon size={20} />
+          </div>
           <div className="footer-nav-label">{t("navigation.home")}</div>
         </NavLink>
 
@@ -30,7 +38,9 @@ const Footer = ({ setMenuOpen, menuButtonRef }: FooterProps) => {
             `footer-nav-item ${isActive ? "footer-nav-active" : ""}`
           }
         >
-          <div className="footer-nav-icon">🎭</div>
+          <div className="footer-nav-icon">
+            <EventIcon size={20} />
+          </div>
           <div className="footer-nav-label">{t("navigation.events")}</div>
         </NavLink>
 
@@ -40,7 +50,9 @@ const Footer = ({ setMenuOpen, menuButtonRef }: FooterProps) => {
             `footer-nav-item ${isActive ? "footer-nav-active" : ""}`
           }
         >
-          <div className="footer-nav-icon">🖼️</div>
+          <div className="footer-nav-icon">
+            <ExhibitIcon size={20} />
+          </div>
           <div className="footer-nav-label">{t("navigation.exhibits")}</div>
         </NavLink>
 
@@ -50,7 +62,9 @@ const Footer = ({ setMenuOpen, menuButtonRef }: FooterProps) => {
             `footer-nav-item ${isActive ? "footer-nav-active" : ""}`
           }
         >
-          <div className="footer-nav-icon">📅</div>
+          <div className="footer-nav-icon">
+            <ScheduleIcon size={20} />
+          </div>
           <div className="footer-nav-label">{t("navigation.schedule")}</div>
         </NavLink>
 
@@ -60,7 +74,9 @@ const Footer = ({ setMenuOpen, menuButtonRef }: FooterProps) => {
             `footer-nav-item ${isActive ? "footer-nav-active" : ""}`
           }
         >
-          <div className="footer-nav-icon">🗺️</div>
+          <div className="footer-nav-icon">
+            <MapIcon size={20} />
+          </div>
           <div className="footer-nav-label">{t("navigation.map")}</div>
         </NavLink>
 
@@ -70,7 +86,9 @@ const Footer = ({ setMenuOpen, menuButtonRef }: FooterProps) => {
           aria-label={t("navigation.menu")}
           ref={menuButtonRef}
         >
-          <div className="footer-nav-icon">☰</div>
+          <div className="footer-nav-icon">
+            <MenuIcon size={20} />
+          </div>
           <div className="footer-nav-label">{t("navigation.menu")}</div>
         </button>
       </nav>

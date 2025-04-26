@@ -3,6 +3,7 @@ import { useSearch } from "../../context/SearchContext";
 import { useLanguage } from "../../context/LanguageContext";
 import { gsap } from "gsap";
 import { DURATION, EASE } from "../../utils/animations";
+import { SearchIcon } from "../icons/SearchIcon";
 
 interface SearchBarProps {
   variant?: "default" | "large" | "inline";
@@ -244,7 +245,7 @@ const SearchBar = ({
             className="search-button"
             aria-label={t("actions.search")}
           >
-            🔍
+            <SearchIcon size={20} />
           </button>
         </div>
       </form>

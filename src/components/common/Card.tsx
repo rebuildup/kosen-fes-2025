@@ -7,6 +7,9 @@ import Tag from "./Tag";
 import ItemTypeIcon from "./ItemTypeIcon";
 import { gsap } from "gsap";
 import { DURATION, EASE } from "../../utils/animations";
+import { TimeIcon } from "../icons/TimeIcon";
+import { LocationIcon } from "../icons/LocationIcon";
+import { PeopleIcon } from "../icons/PeopleIcon";
 
 interface CardProps {
   item: Item;
@@ -349,20 +352,26 @@ const Card = ({
             }}
           >
             <div className="card-date-time">
-              <span className="card-icon">🕒</span>
+              <span className="card-icon">
+                <TimeIcon size={16} />
+              </span>
               <span>
                 {item.date} | {item.time}
               </span>
             </div>
 
             <div className="card-location">
-              <span className="card-icon">📍</span>
+              <span className="card-icon">
+                <LocationIcon size={16} />
+              </span>
               <span>{formatText(item.location)}</span>
             </div>
 
             {getOrganization() && (
               <div className="card-organization">
-                <span className="card-icon">👥</span>
+                <span className="card-icon">
+                  <PeopleIcon size={16} />
+                </span>
                 <span>
                   {getOrganizationLabel()}: {formatText(getOrganization())}
                 </span>
