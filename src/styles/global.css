@@ -24,6 +24,7 @@
 @import "./components/bookmarks.css";
 @import "./components/layout-enhancements.css";
 @import "./components/tag-filter-scrollable.css";
+@import "./components/sponsors.css";
 
 /* Base element styles */
 body {

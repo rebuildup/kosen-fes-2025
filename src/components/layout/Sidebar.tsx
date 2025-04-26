@@ -11,6 +11,7 @@ import { EventIcon } from "../icons/EventIcon";
 import { ExhibitIcon } from "../icons/ExhibitIcon";
 import { ScheduleIcon } from "../icons/ScheduleIcon";
 import { MapIcon } from "../icons/MapIcon";
+import { SponsorIcon } from "../icons/SponsorIcon";
 
 const Sidebar = () => {
   const { t } = useLanguage();
@@ -69,6 +70,11 @@ const Sidebar = () => {
             to="/map"
             icon={<MapIcon size={18} />}
             label={t("navigation.map")}
+          />
+          <SidebarLink
+            to="/sponsors"
+            icon={<SponsorIcon size={18} />}
+            label={t("navigation.sponsors")}
           />
         </div>
       </div>

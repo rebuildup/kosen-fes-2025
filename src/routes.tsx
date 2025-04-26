@@ -14,6 +14,7 @@ const Detail = lazy(() => import("./pages/Detail"));
 const Search = lazy(() => import("./pages/Search"));
 const Bookmarks = lazy(() => import("./pages/Bookmarks"));
 const NotFound = lazy(() => import("./pages/NotFound"));
+const Sponsors = lazy(() => import("./pages/Sponsors"));
 
 // Suspense wrapper for lazy-loaded components
 const withSuspense = (Component: React.ComponentType) => (
@@ -36,6 +37,7 @@ const routes: RouteObject[] = [
       { path: "detail/:type/:id", element: withSuspense(Detail) },
       { path: "search", element: withSuspense(Search) },
       { path: "bookmarks", element: withSuspense(Bookmarks) },
+      { path: "sponsors", element: withSuspense(Sponsors) },
       { path: "*", element: withSuspense(NotFound) },
     ],
   },

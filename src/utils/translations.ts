@@ -19,6 +19,7 @@ export const enTranslations: Translations = {
     quickLinks: "Quick Links",
     menu: "Menu",
     main: "Main Navigation",
+    sponsors: "Sponsors",
   },
   settings: {
     title: "Settings",
@@ -104,6 +105,10 @@ export const enTranslations: Translations = {
     duration: "Duration",
     related: "Related Items",
     noRelatedItems: "No related items found",
+    sponsor: "Sponsor",
+    website: "Website",
+    tier: "Sponsorship Tier",
+    contact: "Contact",
   },
   search: {
     title: "Search",
@@ -170,6 +175,17 @@ export const enTranslations: Translations = {
     loadMore: "Load More",
     showAll: "Show All",
   },
+  sponsors: {
+    title: "Our Sponsors",
+    noSponsors: "No sponsors found",
+    filters: {
+      all: "All Sponsors",
+      platinum: "Platinum",
+      gold: "Gold",
+      silver: "Silver",
+      bronze: "Bronze",
+    },
+  },
 };
 
 // Japanese translations
@@ -187,6 +203,7 @@ export const jaTranslations: Translations = {
     quickLinks: "クイックリンク",
     menu: "メニュー",
     main: "メインナビゲーション",
+    sponsors: "スポンサー",
   },
   settings: {
     title: "設定",
@@ -272,6 +289,10 @@ export const jaTranslations: Translations = {
     duration: "所要時間",
     related: "関連アイテム",
     noRelatedItems: "関連アイテムが見つかりません",
+    sponsor: "スポンサー",
+    website: "ウェブサイト",
+    tier: "スポンサーシップレベル",
+    contact: "連絡先",
   },
   search: {
     title: "検索",
@@ -337,6 +358,17 @@ export const jaTranslations: Translations = {
     noItems: "アイテムが見つかりません",
     loadMore: "もっと見る",
     showAll: "すべて表示",
+  },
+  sponsors: {
+    title: "私たちのスポンサー",
+    noSponsors: "スポンサーが見つかりません",
+    filters: {
+      all: "すべてのスポンサー",
+      platinum: "プラチナ",
+      gold: "ゴールド",
+      silver: "シルバー",
+      bronze: "ブロンズ",
+    },
   },
 };
 

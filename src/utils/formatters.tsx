@@ -49,7 +49,7 @@ export const formatDuration = (minutes: number, language: Language): string => {
  * Get type label based on item type and language
  */
 export const getTypeLabel = (
-  type: "event" | "exhibit" | "stall",
+  type: "event" | "exhibit" | "stall" | "sponsor", // Add "sponsor" here
   translations: Record<string, any>
 ): string => {
   switch (type) {
@@ -59,6 +59,8 @@ export const getTypeLabel = (
       return translations["detail.exhibit"] || "Exhibit";
     case "stall":
       return translations["detail.stall"] || "Stall";
+    case "sponsor": // Add this case
+      return translations["detail.sponsor"] || "Sponsor";
     default:
       return type;
   }

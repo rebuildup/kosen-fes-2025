@@ -6,10 +6,12 @@ import { useTag } from "../context/TagContext";
 import { events } from "../data/events";
 import { exhibits } from "../data/exhibits";
 import { stalls } from "../data/stalls";
+import { sponsors } from "../data/sponsors";
 import { Item, Event, Exhibit, Stall } from "../types/common";
 import Tag from "../components/common/Tag";
 import DetailMap from "../components/detail/DetailMap";
 import ItemTypeIcon from "../components/common/ItemTypeIcon";
+import { Sponsor } from "../types/common";
 
 const Detail = () => {
   const { type, id } = useParams<{ type: string; id: string }>();
@@ -44,6 +46,9 @@ const Detail = () => {
         break;
       case "stall":
         foundItem = stalls.find((stall) => stall.id === id);
+        break;
+      case "sponsor":
+        foundItem = sponsors.find((sponsor) => sponsor.id === id); // Add this case
         break;
       default:
         setError(`Invalid type: ${type}`);
@@ -103,40 +108,43 @@ const Detail = () => {
   // Determine specific properties based on item type
   const renderSpecificDetails = () => {
     switch (item.type) {
-      case "event":
-        const event = item as Event;
+      case "event": {
+        const eventItem = item as Event;
         return (
           <div className="detail-specific">
             <div className="detail-field">
               <span className="detail-label">{t("detail.organizer")}:</span>
-              <span className="detail-value">{event.organizer}</span>
+              <span className="detail-value">{eventItem.organizer}</span>
             </div>
             <div className="detail-field">
               <span className="detail-label">{t("detail.duration")}:</span>
               <span className="detail-value">
-                {Math.floor(event.duration / 60)} hr {event.duration % 60} min
+                {Math.floor(eventItem.duration / 60)} hr{" "}
+                {eventItem.duration % 60} min
               </span>
             </div>
           </div>
         );
-      case "exhibit":
-        const exhibit = item as Exhibit;
+      }
+      case "exhibit": {
+        const exhibitItem = item as Exhibit;
         return (
           <div className="detail-specific">
             <div className="detail-field">
               <span className="detail-label">{t("detail.creator")}:</span>
-              <span className="detail-value">{exhibit.creator}</span>
+              <span className="detail-value">{exhibitItem.creator}</span>
             </div>
           </div>
         );
-      case "stall":
-        const stall = item as Stall;
+      }
+      case "stall": {
+        const stallItem = item as Stall;
         return (
           <div className="detail-specific">
             <div className="detail-field">
               <span className="detail-label">{t("detail.products")}:</span>
               <div className="detail-products">
-                {stall.products.map((product, index) => (
+                {stallItem.products.map((product, index) => (
                   <span key={index} className="detail-product-item">
                     {product}
                   </span>
@@ -145,12 +153,49 @@ const Detail = () => {
             </div>
           </div>
         );
+      }
+      case "sponsor": {
+        const sponsorItem = item as Sponsor;
+        return (
+          <div className="detail-specific">
+            <div className="detail-field">
+              <span className="detail-label">{t("detail.website")}:</span>
+              <a
+                href={sponsorItem.website}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="detail-value detail-link"
+              >
+                {sponsorItem.website}
+              </a>
+            </div>
+            <div className="detail-field">
+              <span className="detail-label">{t("detail.tier")}:</span>
+              <span
+                className={`detail-value detail-tier detail-tier-${sponsorItem.tier}`}
+              >
+                {sponsorItem.tier.charAt(0).toUpperCase() +
+                  sponsorItem.tier.slice(1)}
+              </span>
+            </div>
+            {sponsorItem.contactEmail && (
+              <div className="detail-field">
+                <span className="detail-label">{t("detail.contact")}:</span>
+                <a
+                  href={`mailto:${sponsorItem.contactEmail}`}
+                  className="detail-value detail-link"
+                >
+                  {sponsorItem.contactEmail}
+                </a>
+              </div>
+            )}
+          </div>
+        );
+      }
       default:
         return null;
     }
   };
-
-  // Get type label
   const getTypeLabel = () => {
     switch (item.type) {
       case "event":
@@ -159,6 +204,8 @@ const Detail = () => {
         return t("detail.exhibit");
       case "stall":
         return t("detail.stall");
+      case "sponsor":
+        return t("detail.sponsor");
       default:
         return "";
     }

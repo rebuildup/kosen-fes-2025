@@ -1,0 +1,144 @@
+/* Sponsors Page Styles */
+.sponsors-page {
+  width: 100%;
+  max-width: 100%;
+}
+
+.sponsors-header {
+  margin-bottom: var(--spacing-lg);
+}
+
+.sponsors-title {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: var(--spacing-md);
+}
+
+.sponsors-filters {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-lg);
+  flex-wrap: wrap;
+  gap: var(--spacing-md);
+}
+
+.tier-filter {
+  display: flex;
+  border: 1px solid var(--border-light);
+  border-radius: var(--border-radius-md);
+  overflow: hidden;
+  flex-wrap: wrap;
+}
+
+.tier-filter-button {
+  background: none;
+  border: none;
+  padding: var(--spacing-sm) var(--spacing-md);
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.tier-filter-button:hover {
+  background-color: var(--bg-tertiary);
+  color: var(--text-primary);
+}
+
+.tier-filter-button.active {
+  background-color: var(--primary);
+  color: white;
+}
+
+.sponsors-content {
+  display: flex;
+  gap: var(--spacing-lg);
+}
+
+.sponsors-sidebar {
+  width: 280px;
+  flex-shrink: 0;
+}
+
+.sponsors-main {
+  flex: 1;
+  min-width: 0; /* Fix for flexbox children overflow */
+}
+
+/* Tier badges in detail view */
+.detail-tier {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: var(--border-radius-sm);
+  text-transform: capitalize;
+  font-weight: 500;
+}
+
+.detail-tier-platinum {
+  background-color: #e5e4e2;
+  color: #505050;
+}
+
+.detail-tier-gold {
+  background-color: #ffd700;
+  color: #5a4a00;
+}
+
+.detail-tier-silver {
+  background-color: #c0c0c0;
+  color: #505050;
+}
+
+.detail-tier-bronze {
+  background-color: #cd7f32;
+  color: white;
+}
+
+.detail-link {
+  color: var(--secondary);
+  text-decoration: underline;
+}
+
+.detail-link:hover {
+  color: var(--secondary-dark);
+}
+
+/* Responsive Adjustments */
+@media (max-width: 992px) {
+  .sponsors-content {
+    flex-direction: column;
+  }
+
+  .sponsors-sidebar {
+    width: 100%;
+    margin-bottom: var(--spacing-lg);
+  }
+}
+
+@media (max-width: 768px) {
+  .sponsors-filters {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .tier-filter {
+    width: 100%;
+  }
+
+  .tier-filter-button {
+    flex: 1;
+    text-align: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .sponsors-title {
+    font-size: 1.5rem;
+  }
+
+  .tier-filter {
+    flex-direction: column;
+  }
+}

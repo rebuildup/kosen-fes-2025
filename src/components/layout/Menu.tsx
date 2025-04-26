@@ -7,6 +7,28 @@ import LanguageToggle from "../common/LanguageToggle";
 import SearchBar from "../common/SearchBar";
 import { gsap } from "gsap";
 import { DURATION, EASE } from "../../utils/animations";
+import { HomeIcon } from "../icons/HomeIcon";
+import { EventIcon } from "../icons/EventIcon";
+import { ExhibitIcon } from "../icons/ExhibitIcon";
+import { ScheduleIcon } from "../icons/ScheduleIcon";
+import { MapIcon } from "../icons/MapIcon";
+import { BookmarkIcon } from "../icons/BookmarkIcon";
+import { SearchIcon } from "../icons/SearchIcon";
+import { XIcon } from "../icons/XIcon"; // Let's create this for the close button
+
+// Create the XIcon component first
+// Path: src/components/icons/XIcon.tsx
+// ```tsx
+// import React from 'react';
+// import { Icon, IconProps } from './index';
+//
+// export const XIcon: React.FC<IconProps> = (props) => (
+//   <Icon {...props}>
+//     <line x1="18" y1="6" x2="6" y2="18" />
+//     <line x1="6" y1="6" x2="18" y2="18" />
+//   </Icon>
+// );
+// ```
 
 interface MenuProps {
   setMenuOpen: (open: boolean) => void;
@@ -143,7 +165,9 @@ const Menu = ({ setMenuOpen, closeButtonRef }: MenuProps) => {
             aria-label={t("actions.close")}
             ref={closeButtonRef}
           >
-            <span className="menu-close-icon">✕</span>
+            <span className="menu-close-icon">
+              <XIcon size={18} />
+            </span>
           </button>
           <div className="menu-title">{t("navigation.menu")}</div>
         </div>
@@ -164,7 +188,9 @@ const Menu = ({ setMenuOpen, closeButtonRef }: MenuProps) => {
                 onClick={handleMenuItemClick}
                 end
               >
-                <span className="menu-nav-icon">🏠</span>
+                <span className="menu-nav-icon">
+                  <HomeIcon size={18} />
+                </span>
                 <span className="menu-nav-label">{t("navigation.home")}</span>
               </NavLink>
 
@@ -175,7 +201,9 @@ const Menu = ({ setMenuOpen, closeButtonRef }: MenuProps) => {
                 }
                 onClick={handleMenuItemClick}
               >
-                <span className="menu-nav-icon">🎭</span>
+                <span className="menu-nav-icon">
+                  <EventIcon size={18} />
+                </span>
                 <span className="menu-nav-label">{t("navigation.events")}</span>
               </NavLink>
 
@@ -186,7 +214,9 @@ const Menu = ({ setMenuOpen, closeButtonRef }: MenuProps) => {
                 }
                 onClick={handleMenuItemClick}
               >
-                <span className="menu-nav-icon">🖼️</span>
+                <span className="menu-nav-icon">
+                  <ExhibitIcon size={18} />
+                </span>
                 <span className="menu-nav-label">
                   {t("navigation.exhibits")}
                 </span>
@@ -199,7 +229,9 @@ const Menu = ({ setMenuOpen, closeButtonRef }: MenuProps) => {
                 }
                 onClick={handleMenuItemClick}
               >
-                <span className="menu-nav-icon">📅</span>
+                <span className="menu-nav-icon">
+                  <ScheduleIcon size={18} />
+                </span>
                 <span className="menu-nav-label">
                   {t("navigation.schedule")}
                 </span>
@@ -212,7 +244,9 @@ const Menu = ({ setMenuOpen, closeButtonRef }: MenuProps) => {
                 }
                 onClick={handleMenuItemClick}
               >
-                <span className="menu-nav-icon">🗺️</span>
+                <span className="menu-nav-icon">
+                  <MapIcon size={18} />
+                </span>
                 <span className="menu-nav-label">{t("navigation.map")}</span>
               </NavLink>
             </nav>
@@ -226,7 +260,9 @@ const Menu = ({ setMenuOpen, closeButtonRef }: MenuProps) => {
                 className="menu-link-item"
                 onClick={handleMenuItemClick}
               >
-                <span className="menu-link-icon">🔖</span>
+                <span className="menu-link-icon">
+                  <BookmarkIcon size={18} />
+                </span>
                 <span className="menu-link-label">{t("bookmarks.title")}</span>
                 {bookmarks.length > 0 && (
                   <span className="menu-link-badge">{bookmarks.length}</span>
@@ -238,7 +274,9 @@ const Menu = ({ setMenuOpen, closeButtonRef }: MenuProps) => {
                 className="menu-link-item"
                 onClick={handleMenuItemClick}
               >
-                <span className="menu-link-icon">🔍</span>
+                <span className="menu-link-icon">
+                  <SearchIcon size={18} />
+                </span>
                 <span className="menu-link-label">{t("search.title")}</span>
               </Link>
             </div>

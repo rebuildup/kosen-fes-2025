@@ -3,6 +3,7 @@ import { Item } from "../../types/common";
 import Card from "./Card";
 import { useLanguage } from "../../context/LanguageContext";
 
+// Update the filterType prop type
 interface CardGridProps {
   items: Item[];
   variant?: "default" | "compact" | "grid" | "list";
@@ -13,7 +14,7 @@ interface CardGridProps {
   highlightText?: (text: string) => React.ReactNode;
   className?: string;
   columns?: number;
-  filterType?: "event" | "exhibit" | "stall" | "all";
+  filterType?: "event" | "exhibit" | "stall" | "sponsor" | "all"; // Add "sponsor" here
 }
 
 const CardGrid = ({

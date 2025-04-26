@@ -2,6 +2,7 @@ import { ItemType } from "../../types/common";
 import { EventIcon } from "../icons/EventIcon";
 import { ExhibitIcon } from "../icons/ExhibitIcon";
 import { MapIcon } from "../icons/MapIcon";
+import { SponsorIcon } from "../icons/SponsorIcon";
 
 interface ItemTypeIconProps {
   type: ItemType;
@@ -35,7 +36,9 @@ const ItemTypeIcon = ({
       case "exhibit":
         return <ExhibitIcon size={getSize()} />;
       case "stall":
-        return <MapIcon size={getSize()} />; // Using MapIcon for stalls
+        return <MapIcon size={getSize()} />;
+      case "sponsor":
+        return <SponsorIcon size={getSize()} />;
       default:
         return <MapIcon size={getSize()} />;
     }

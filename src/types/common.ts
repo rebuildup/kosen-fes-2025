@@ -1,4 +1,4 @@
-export type ItemType = "event" | "exhibit" | "stall";
+export type ItemType = "event" | "exhibit" | "stall" | "sponsor";
 
 export interface BaseItem {
   id: string;
@@ -27,4 +27,11 @@ export interface Stall extends BaseItem {
   products: string[];
 }
 
-export type Item = Event | Exhibit | Stall;
+export interface Sponsor extends BaseItem {
+  type: "sponsor";
+  website: string;
+  tier: "platinum" | "gold" | "silver" | "bronze"; // Sponsorship level
+  contactEmail?: string;
+}
+
+export type Item = Event | Exhibit | Stall | Sponsor;
