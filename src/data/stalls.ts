@@ -7,7 +7,7 @@ export const stalls: Stall[] = [
     title: "International Food Stall",
     description:
       "Enjoy delicious dishes from around the world prepared by international students.",
-    imageUrl: "/images/stalls/stall-1.jpg",
+    imageUrl: "./images/stalls/stall-1.jpg",
     date: "2025-06-15",
     time: "11:00 - 20:00",
     location: "Food Court Area, Stall 1",
@@ -20,7 +20,7 @@ export const stalls: Stall[] = [
     title: "Takoyaki Stand",
     description:
       "Traditional Japanese takoyaki prepared freshly by the Japanese Cultural Club.",
-    imageUrl: "/images/stalls/stall-2.jpg",
+    imageUrl: "./images/stalls/stall-2.jpg",
     date: "2025-06-15",
     time: "11:00 - 20:00",
     location: "Food Court Area, Stall 2",
@@ -33,7 +33,7 @@ export const stalls: Stall[] = [
     title: "Tech Gadgets Bazaar",
     description:
       "Buy innovative gadgets and tech creations made by engineering students.",
-    imageUrl: "/images/stalls/stall-3.jpg",
+    imageUrl: "./images/stalls/stall-3.jpg",
     date: "2025-06-15",
     time: "10:00 - 18:00",
     location: "Central Plaza, Stall 3",
@@ -46,7 +46,7 @@ export const stalls: Stall[] = [
     title: "Crafts & Handmade Items",
     description:
       "Handmade crafts, accessories, and art pieces made by arts club students.",
-    imageUrl: "/images/stalls/stall-4.jpg",
+    imageUrl: "./images/stalls/stall-4.jpg",
     date: "2025-06-16",
     time: "10:00 - 18:00",
     location: "Central Plaza, Stall 4",
@@ -59,7 +59,7 @@ export const stalls: Stall[] = [
     title: "Bubble Tea Shop",
     description:
       "Refreshing bubble tea in various flavors, perfect for a hot festival day.",
-    imageUrl: "/images/stalls/stall-5.jpg",
+    imageUrl: "./images/stalls/stall-5.jpg",
     date: "2025-06-16",
     time: "11:00 - 20:00",
     location: "Food Court Area, Stall 5",
@@ -77,7 +77,7 @@ export const stalls: Stall[] = [
     title: "Festival Merchandise",
     description:
       "Official Ube Kosen Festival 2025 merchandise including t-shirts, bags, and souvenirs.",
-    imageUrl: "/images/stalls/stall-6.jpg",
+    imageUrl: "./images/stalls/stall-6.jpg",
     date: "2025-06-16",
     time: "10:00 - 21:00",
     location: "Main Entrance",

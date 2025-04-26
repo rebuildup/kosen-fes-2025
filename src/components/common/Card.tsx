@@ -123,13 +123,15 @@ const Card = ({
   const getPlaceholderImage = () => {
     switch (item.type) {
       case "event":
-        return "/images/events/placeholder-event.jpg";
+        return "./images/events/placeholder-event.jpg";
       case "exhibit":
-        return "/images/exhibits/placeholder-exhibit.jpg";
+        return "./images/exhibits/placeholder-exhibit.jpg";
       case "stall":
-        return "/images/stalls/placeholder-stall.jpg";
+        return "./images/stalls/placeholder-stall.jpg";
+      case "sponsor":
+        return "./images/sponsors/placeholder-sponsor.jpg";
       default:
-        return "/images/placeholder.jpg";
+        return "./images/placeholder.jpg";
     }
   };
 

@@ -52,21 +52,6 @@
   color: white;
 }
 
-.sponsors-content {
-  display: flex;
-  gap: var(--spacing-lg);
-}
-
-.sponsors-sidebar {
-  width: 280px;
-  flex-shrink: 0;
-}
-
-.sponsors-main {
-  flex: 1;
-  min-width: 0; /* Fix for flexbox children overflow */
-}
-
 /* Tier badges in detail view */
 .detail-tier {
   display: inline-block;
@@ -106,17 +91,6 @@
 }
 
 /* Responsive Adjustments */
-@media (max-width: 992px) {
-  .sponsors-content {
-    flex-direction: column;
-  }
-
-  .sponsors-sidebar {
-    width: 100%;
-    margin-bottom: var(--spacing-lg);
-  }
-}
-
 @media (max-width: 768px) {
   .sponsors-filters {
     flex-direction: column;

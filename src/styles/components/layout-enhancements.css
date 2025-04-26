@@ -3,7 +3,8 @@
 /* Base layout adjustments */
 .events-page,
 .exhibits-page,
-.search-page {
+.search-page,
+.sponsors-page {
   display: flex;
   flex-direction: column;
   width: 100%;
@@ -14,7 +15,8 @@
 .exhibits-content,
 .schedule-content,
 .map-content,
-.search-layout {
+.search-layout,
+.sponsors-content {
   display: flex;
   flex-direction: column;
   width: 100%;
@@ -25,7 +27,8 @@
 .exhibits-sidebar,
 .schedule-sidebar,
 .map-sidebar,
-.search-sidebar {
+.search-sidebar,
+.sponsors-sidebar {
   width: 100%;
   margin-bottom: var(--spacing-lg);
 }
@@ -35,7 +38,8 @@
 .exhibits-main,
 .schedule-main,
 .map-main,
-.search-main {
+.search-main,
+.sponsors-main {
   width: 100%;
 }
 
@@ -59,7 +63,8 @@
   .exhibits-content,
   .schedule-content,
   .map-content,
-  .search-layout {
+  .search-layout,
+  .sponsors-content {
     flex-direction: column;
   }
 
@@ -67,7 +72,8 @@
   .exhibits-sidebar,
   .schedule-sidebar,
   .map-sidebar,
-  .search-sidebar {
+  .search-sidebar,
+  .sponsors-sidebar {
     width: 100%;
     max-width: 100%;
   }

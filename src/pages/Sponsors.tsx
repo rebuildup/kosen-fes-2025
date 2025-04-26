@@ -1,3 +1,4 @@
+// src/pages/Sponsors.tsx
 import { useState, useEffect } from "react";
 import { useLanguage } from "../context/LanguageContext";
 import { useTag } from "../context/TagContext";
@@ -118,11 +119,13 @@ const Sponsors = () => {
       </div>
 
       <div className="sponsors-content">
+        {/* Tag filter at the top - single column */}
         <div className="sponsors-sidebar">
           <TagFilter onFilter={() => {}} />
           <SelectedTags />
         </div>
 
+        {/* Sponsors grid below */}
         <div className="sponsors-main">
           <CardGrid
             items={filteredSponsors}
