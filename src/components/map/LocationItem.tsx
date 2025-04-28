@@ -1,12 +1,16 @@
+// src/components/map/LocationItem.tsx
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useLanguage } from "../../context/LanguageContext";
-import { Item } from "../../types/common";
+import { Event, Exhibit, Stall } from "../../types/common";
 import ItemTypeIcon from "../common/ItemTypeIcon";
+
+// Type for non-sponsor items
+type NonSponsorItem = Event | Exhibit | Stall;
 
 interface LocationItemProps {
   location: string;
-  items: Item[];
+  items: NonSponsorItem[];
   isHovered: boolean;
   isSelected: boolean;
   onHover: (location: string | null) => void;
@@ -25,9 +29,9 @@ const LocationItem = ({
   const [expandedItem, setExpandedItem] = useState<string | null>(null);
 
   // Group items by type
-  const eventItems = items.filter((item) => item.type === "event");
-  const exhibitItems = items.filter((item) => item.type === "exhibit");
-  const stallItems = items.filter((item) => item.type === "stall");
+  const eventItems = items.filter((item) => item.type === "event") as Event[];
+  const exhibitItems = items.filter((item) => item.type === "exhibit") as Exhibit[];
+  const stallItems = items.filter((item) => item.type === "stall") as Stall[];
 
   // Handle item hover
   const handleItemHover = (itemId: string | null) => {

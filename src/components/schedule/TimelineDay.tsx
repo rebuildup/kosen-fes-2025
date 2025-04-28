@@ -1,12 +1,16 @@
+// src/components/schedule/TimelineDay.tsx
 import { useLanguage } from "../../context/LanguageContext";
-import { Item } from "../../types/common";
+import { Event, Exhibit, Stall } from "../../types/common";
 import TimelineItem from "./TimelineItem";
+
+// Type for non-sponsor items
+type NonSponsorItem = Event | Exhibit | Stall;
 
 interface TimelineDayProps {
   date: string;
-  items: Item[];
+  items: NonSponsorItem[];
   timeSlots: string[];
-  groupedItems: { [timeSlot: string]: Item[] };
+  groupedItems: { [timeSlot: string]: NonSponsorItem[] };
   dayName: string;
 }
 

@@ -1,10 +1,14 @@
+// src/components/map/LocationList.tsx
 import { useLanguage } from "../../context/LanguageContext";
-import { Item } from "../../types/common";
+import { Event, Exhibit, Stall } from "../../types/common";
 import LocationItem from "./LocationItem";
+
+// Type for non-sponsor items
+type NonSponsorItem = Event | Exhibit | Stall;
 
 interface LocationListProps {
   locations: string[];
-  getItemsForLocation: (location: string) => Item[];
+  getItemsForLocation: (location: string) => NonSponsorItem[];
   hoveredLocation: string | null;
   selectedLocation: string | null;
   onLocationHover: (location: string | null) => void;
