@@ -91,31 +91,6 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Quick Info Cards */}
-      <section className="home-quick-info">
-        <div className="home-info-card">
-          <div className="home-info-icon">🎭</div>
-          <h3 className="home-info-title">{t("events.title")}</h3>
-          <p className="home-info-text">
-            {events.length} {t("events.title")}
-          </p>
-        </div>
-        <div className="home-info-card">
-          <div className="home-info-icon">🖼️</div>
-          <h3 className="home-info-title">{t("detail.exhibit")}</h3>
-          <p className="home-info-text">
-            {exhibits.length} {t("detail.exhibit")}
-          </p>
-        </div>
-        <div className="home-info-card">
-          <div className="home-info-icon">🍽️</div>
-          <h3 className="home-info-title">{t("detail.stall")}</h3>
-          <p className="home-info-text">
-            {stalls.length} {t("detail.stall")}
-          </p>
-        </div>
-      </section>
-
       {/* Featured Events Section */}
       <section className="home-section">
         <div className="home-section-header">
