@@ -1,48 +1,52 @@
 /* Base Theme Variables */
 :root {
-  /* TBS Colors - Based on TBS RECRUIT website */
-  --tbs-red: #e31a1a;
-  --tbs-red-dark: #c51717;
-  --tbs-red-light: #ff3939;
-  --tbs-blue: #0055b7;
-  --tbs-blue-dark: #004494;
-  --tbs-blue-light: #4d9dff;
-  --tbs-yellow: #ffb400;
+  /* POP! Festival Colors - Modern vibrant palette */
+  --pop-pink: #FF1B8D;
+  --pop-pink-dark: #E6186F;
+  --pop-pink-light: #FF4FA8;
+  --pop-blue: #1B8DFF;
+  --pop-blue-dark: #186FE6;
+  --pop-blue-light: #4FA8FF;
+  --pop-green: #1BFF8D;
+  --pop-green-dark: #18E67F;
+  --pop-green-light: #4FFF9F;
+  --pop-orange: #FF8D1B;
+  --pop-purple: #8D1BFF;
 
   /* Primary Palette (Light Theme is default) */
-  --primary: var(--tbs-red);
-  --primary-dark: var(--tbs-red-dark);
-  --primary-light: var(--tbs-red-light);
-  --primary-rgb: 227, 26, 26;
+  --primary: var(--pop-pink);
+  --primary-dark: var(--pop-pink-dark);
+  --primary-light: var(--pop-pink-light);
+  --primary-rgb: 255, 27, 141;
 
-  --secondary: var(--tbs-blue);
-  --secondary-dark: var(--tbs-blue-dark);
-  --secondary-light: var(--tbs-blue-light);
-  --secondary-rgb: 0, 85, 183;
+  --secondary: var(--pop-blue);
+  --secondary-dark: var(--pop-blue-dark);
+  --secondary-light: var(--pop-blue-light);
+  --secondary-rgb: 27, 141, 255;
 
-  --accent: var(--tbs-yellow);
-  --accent-rgb: 255, 180, 0;
+  --accent: var(--pop-green);
+  --accent-rgb: 27, 255, 141;
 
   /* Neutral colors */
   --text-primary: #333333;
   --text-secondary: #666666;
   --text-muted: #999999;
 
-  /* Background colors */
-  --bg-primary: #ffffff;
-  --bg-secondary: #f6f6f6;
-  --bg-tertiary: #eeeeee;
+  /* Background colors - Slightly tinted for POP theme */
+  --bg-primary: #fefefe;
+  --bg-secondary: #f8f7ff;
+  --bg-tertiary: #f0f0ff;
 
   /* UI colors */
   --border-light: #e4e4e4;
   --border-dark: #cccccc;
   --shadow-color: rgba(0, 0, 0, 0.1);
 
-  /* Status colors */
-  --success: #34c759;
-  --error: #ff3b30;
-  --warning: #ff9500;
-  --info: #007aff;
+  /* Status colors - POP theme variations */
+  --success: var(--pop-green);
+  --error: #FF3366;
+  --warning: var(--pop-orange);
+  --info: var(--pop-blue);
 
   /* Component-specific colors */
   --card-bg: #ffffff;
@@ -101,29 +105,29 @@
 
 /* Dark theme variables */
 [data-theme="dark"] {
-  /* Primary Palette adjustments for dark mode */
-  --primary: #ff4b4b; /* Brighter red for dark mode */
-  --primary-dark: #cc3333;
-  --primary-light: #ff7575;
-  --primary-rgb: 255, 75, 75;
+  /* Primary Palette adjustments for dark mode - Enhanced POP colors */
+  --primary: #FF4FA8; /* Brighter pink for dark mode */
+  --primary-dark: #FF1B8D;
+  --primary-light: #FF80C4;
+  --primary-rgb: 255, 79, 168;
 
-  --secondary: #4d9dff; /* Brighter blue for dark mode */
-  --secondary-dark: #0066cc;
-  --secondary-light: #80bfff;
-  --secondary-rgb: 77, 157, 255;
+  --secondary: #4FA8FF; /* Brighter blue for dark mode */
+  --secondary-dark: #1B8DFF;
+  --secondary-light: #80C4FF;
+  --secondary-rgb: 79, 168, 255;
 
-  --accent: #ffd133; /* Brighter accent for dark mode */
-  --accent-rgb: 255, 209, 51;
+  --accent: #4FFF9F; /* Brighter green for dark mode */
+  --accent-rgb: 79, 255, 159;
 
   /* Neutral colors */
   --text-primary: #ffffff;
   --text-secondary: #dddddd;
   --text-muted: #aaaaaa;
 
-  /* Background colors */
-  --bg-primary: #121212;
-  --bg-secondary: #1e1e1e;
-  --bg-tertiary: #2c2c2c;
+  /* Background colors - Enhanced for POP dark theme */
+  --bg-primary: #0A0A0F;
+  --bg-secondary: #151520;
+  --bg-tertiary: #202035;
 
   /* UI colors */
   --border-light: #333333;
