@@ -315,7 +315,7 @@ const MapDisplay = ({
           </g>
 
           {/* Building layer with interactive polygons */}
-          <g id="tatemono">
+          <g id="building">
             {buildings.map((building) => (
               <polygon
                 key={building.id}

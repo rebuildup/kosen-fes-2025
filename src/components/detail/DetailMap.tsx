@@ -284,7 +284,7 @@ const DetailMap = ({ location }: DetailMapProps) => {
           </g>
 
           {/* Building layer */}
-          <g id="tatemono">
+          <g id="building">
             {buildings.map((building) => (
               <polygon
                 key={building.id}
