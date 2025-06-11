@@ -1,6 +1,6 @@
 import { NavLink } from "react-router-dom";
 import { useLanguage } from "../../context/LanguageContext";
-import { RefObject } from "react";
+import { MutableRefObject } from "react";
 import { HomeIcon } from "../icons/HomeIcon";
 import { EventIcon } from "../icons/EventIcon";
 import { ExhibitIcon } from "../icons/ExhibitIcon";
@@ -10,7 +10,7 @@ import { MenuIcon } from "../icons/MenuIcon";
 
 interface FooterProps {
   setMenuOpen: (open: boolean) => void;
-  menuButtonRef?: RefObject<HTMLButtonElement | null>;
+  menuButtonRef?: MutableRefObject<HTMLButtonElement | null>;
 }
 
 const Footer = ({ setMenuOpen, menuButtonRef }: FooterProps) => {

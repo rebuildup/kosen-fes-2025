@@ -1,4 +1,4 @@
-import { useRef, useEffect, RefObject } from "react";
+import { useRef, useEffect, MutableRefObject } from "react";
 import { NavLink, Link } from "react-router-dom";
 import { useLanguage } from "../../context/LanguageContext";
 import { useBookmark } from "../../context/BookmarkContext";
@@ -32,7 +32,7 @@ import { XIcon } from "../icons/XIcon"; // Let's create this for the close butto
 
 interface MenuProps {
   setMenuOpen: (open: boolean) => void;
-  closeButtonRef?: RefObject<HTMLButtonElement | null>;
+  closeButtonRef?: MutableRefObject<HTMLButtonElement | null>;
 }
 
 const Menu = ({ setMenuOpen, closeButtonRef }: MenuProps) => {
