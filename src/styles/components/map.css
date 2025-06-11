@@ -333,3 +333,109 @@
     margin-top: var(--spacing-xs);
   }
 }
+
+/* Zoom Controls Styles */
+.zoom-controls {
+  position: absolute;
+  top: var(--spacing-md);
+  right: var(--spacing-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  z-index: 10;
+}
+
+.zoom-control-button {
+  width: 44px;
+  height: 44px;
+  background-color: rgba(255, 255, 255, 0.95);
+  border: 1px solid var(--border-light);
+  border-radius: var(--border-radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  color: var(--text-primary);
+}
+
+.zoom-control-button:hover:not(:disabled) {
+  background-color: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transform: translateY(-1px);
+}
+
+.zoom-control-button:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.zoom-control-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.zoom-control-button svg {
+  width: 20px;
+  height: 20px;
+}
+
+.zoom-level {
+  background-color: rgba(255, 255, 255, 0.95);
+  border: 1px solid var(--border-light);
+  border-radius: var(--border-radius-sm);
+  padding: var(--spacing-xs);
+  text-align: center;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  min-width: 44px;
+}
+
+/* Map zoom/pan cursor styles */
+.school-map {
+  cursor: grab;
+}
+
+.school-map:active {
+  cursor: grabbing;
+}
+
+.school-map-svg {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+/* Touch action for mobile */
+.school-map,
+.detail-map-container {
+  touch-action: none;
+}
+
+/* Mobile adjustments for zoom controls */
+@media (max-width: 768px) {
+  .zoom-controls {
+    top: var(--spacing-sm);
+    right: var(--spacing-sm);
+  }
+  
+  .zoom-control-button {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .zoom-control-button svg {
+    width: 18px;
+    height: 18px;
+  }
+  
+  .zoom-level {
+    font-size: 0.75rem;
+    padding: var(--spacing-xs);
+    min-width: 40px;
+  }
+}

@@ -4,6 +4,8 @@ import {
   buildings,
   CAMPUS_MAP_BOUNDS,
 } from "../../data/buildings";
+import { useMapZoomPan } from "../../hooks/useMapZoomPan";
+import ZoomControls from "./ZoomControls";
 
 interface MapDisplayProps {
   hoveredLocation: string | null;
@@ -22,6 +24,22 @@ const MapDisplay = ({
 }: MapDisplayProps) => {
   const mapContainerRef = useRef<HTMLDivElement>(null);
 
+  // Initialize zoom/pan functionality
+  const {
+    svgRef,
+    zoomPan,
+    zoomIn,
+    zoomOut,
+    resetZoom,
+  } = useMapZoomPan({
+    minScale: 0.5,
+    maxScale: 4,
+    initialScale: 1,
+    mapWidth: CAMPUS_MAP_BOUNDS.width,
+    mapHeight: CAMPUS_MAP_BOUNDS.height,
+    containerRef: mapContainerRef,
+  });
+
   // Get coordinates for each location using the building data
   const getLocationCoordinates = (
     location: string
@@ -34,14 +52,24 @@ const MapDisplay = ({
   useEffect(() => {
     if (!mapContainerRef.current) return;
 
-    // Map container is now handling the accurate SVG map
+    // Map container is now handling the accurate SVG map with zoom/pan
   }, [hoveredLocation, selectedLocation, locations]);
 
   return (
     <div className="map-display" ref={mapContainerRef}>
       <div className="school-map">
+        {/* Zoom Controls */}
+        <ZoomControls
+          onZoomIn={zoomIn}
+          onZoomOut={zoomOut}
+          onReset={resetZoom}
+          scale={zoomPan.scale}
+          minScale={0.5}
+          maxScale={4}
+        />
+
         {/* Accurate Campus Map SVG */}
-        <svg viewBox={CAMPUS_MAP_BOUNDS.viewBox} className="school-map-svg">
+        <svg viewBox={CAMPUS_MAP_BOUNDS.viewBox} className="school-map-svg" ref={svgRef}>
           <defs>
             <style>
               {`

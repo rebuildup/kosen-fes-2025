@@ -6,6 +6,8 @@ import {
   buildings,
   CAMPUS_MAP_BOUNDS,
 } from "../../data/buildings";
+import { useMapZoomPan } from "../../hooks/useMapZoomPan";
+import ZoomControls from "../map/ZoomControls";
 
 interface DetailMapProps {
   location: string;
@@ -14,6 +16,22 @@ interface DetailMapProps {
 const DetailMap = ({ location }: DetailMapProps) => {
   const { t } = useLanguage();
   const mapRef = useRef<HTMLDivElement>(null);
+
+  // Initialize zoom/pan functionality
+  const {
+    svgRef,
+    zoomPan,
+    zoomIn,
+    zoomOut,
+    resetZoom,
+  } = useMapZoomPan({
+    minScale: 0.5,
+    maxScale: 4,
+    initialScale: 1,
+    mapWidth: CAMPUS_MAP_BOUNDS.width,
+    mapHeight: CAMPUS_MAP_BOUNDS.height,
+    containerRef: mapRef,
+  });
 
   // Get coordinates using the building data
   const getLocationCoordinates = (
@@ -28,7 +46,17 @@ const DetailMap = ({ location }: DetailMapProps) => {
   return (
     <div className="detail-map" ref={mapRef}>
       <div className="detail-map-container">
-        <svg viewBox={CAMPUS_MAP_BOUNDS.viewBox} className="detail-map-svg">
+        {/* Zoom Controls */}
+        <ZoomControls
+          onZoomIn={zoomIn}
+          onZoomOut={zoomOut}
+          onReset={resetZoom}
+          scale={zoomPan.scale}
+          minScale={0.5}
+          maxScale={4}
+        />
+
+        <svg viewBox={CAMPUS_MAP_BOUNDS.viewBox} className="detail-map-svg" ref={svgRef}>
           <defs>
             <style>
               {`

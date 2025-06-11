@@ -163,11 +163,13 @@
   overflow: hidden;
   background-color: var(--bg-secondary);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  position: relative;
 }
 
 .detail-map-container {
   width: 100%;
   height: 250px;
+  position: relative;
 }
 
 .detail-map-svg {
