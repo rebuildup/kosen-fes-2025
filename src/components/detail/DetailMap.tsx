@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useLanguage } from "../../context/LanguageContext";
 import {
@@ -18,20 +18,15 @@ const DetailMap = ({ location }: DetailMapProps) => {
   const mapRef = useRef<HTMLDivElement>(null);
 
   // Initialize zoom/pan functionality
-  const {
-    svgRef,
-    zoomPan,
-    zoomIn,
-    zoomOut,
-    resetZoom,
-  } = useMapZoomPan({
-    minScale: 0.5,
-    maxScale: 4,
-    initialScale: 1,
-    mapWidth: CAMPUS_MAP_BOUNDS.width,
-    mapHeight: CAMPUS_MAP_BOUNDS.height,
-    containerRef: mapRef,
-  });
+  const { svgRef, zoomPan, zoomIn, zoomOut, resetZoom, zoomToLocation } =
+    useMapZoomPan({
+      minScale: 0.5,
+      maxScale: 5,
+      initialScale: 1,
+      mapWidth: CAMPUS_MAP_BOUNDS.width,
+      mapHeight: CAMPUS_MAP_BOUNDS.height,
+      containerRef: mapRef,
+    });
 
   // Get coordinates using the building data
   const getLocationCoordinates = (
@@ -42,6 +37,15 @@ const DetailMap = ({ location }: DetailMapProps) => {
   };
 
   const coords = getLocationCoordinates(location);
+
+  // Automatically zoom to location when component mounts
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      zoomToLocation(coords.x, coords.y, 4, 1.5);
+    }, 300); // Small delay to ensure the map is properly mounted
+
+    return () => clearTimeout(timer);
+  }, [coords.x, coords.y, zoomToLocation]);
 
   return (
     <div className="detail-map" ref={mapRef}>
@@ -56,7 +60,11 @@ const DetailMap = ({ location }: DetailMapProps) => {
           maxScale={4}
         />
 
-        <svg viewBox={CAMPUS_MAP_BOUNDS.viewBox} className="detail-map-svg" ref={svgRef}>
+        <svg
+          viewBox={CAMPUS_MAP_BOUNDS.viewBox}
+          className="detail-map-svg"
+          ref={svgRef}
+        >
           <defs>
             <style>
               {`

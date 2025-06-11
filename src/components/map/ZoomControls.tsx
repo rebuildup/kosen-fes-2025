@@ -25,10 +25,17 @@ const ZoomControls = ({
         className="zoom-control-button zoom-in"
         onClick={onZoomIn}
         disabled={scale >= maxScale}
-        aria-label={t("map.zoomIn", "Zoom In")}
-        title={t("map.zoomIn", "Zoom In")}
+        aria-label={t("map.zoomIn")}
+        title={t("map.zoomIn")}
       >
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <svg
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+        >
           <circle cx="11" cy="11" r="8" />
           <path d="m21 21-4.35-4.35" />
           <line x1="8" y1="11" x2="14" y2="11" />
@@ -40,10 +47,17 @@ const ZoomControls = ({
         className="zoom-control-button zoom-out"
         onClick={onZoomOut}
         disabled={scale <= minScale}
-        aria-label={t("map.zoomOut", "Zoom Out")}
-        title={t("map.zoomOut", "Zoom Out")}
+        aria-label={t("map.zoomOut")}
+        title={t("map.zoomOut")}
       >
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <svg
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+        >
           <circle cx="11" cy="11" r="8" />
           <path d="m21 21-4.35-4.35" />
           <line x1="8" y1="11" x2="14" y2="11" />
@@ -53,10 +67,17 @@ const ZoomControls = ({
       <button
         className="zoom-control-button zoom-reset"
         onClick={onReset}
-        aria-label={t("map.resetZoom", "Reset Zoom")}
-        title={t("map.resetZoom", "Reset Zoom")}
+        aria-label={t("map.resetZoom")}
+        title={t("map.resetZoom")}
       >
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <svg
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+        >
           <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />
           <path d="M21 3v5h-5" />
           <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" />
@@ -64,9 +85,7 @@ const ZoomControls = ({
         </svg>
       </button>
 
-      <div className="zoom-level">
-        {Math.round(scale * 100)}%
-      </div>
+      <div className="zoom-level">{Math.round(scale * 100)}%</div>
     </div>
   );
 };

@@ -25,20 +25,15 @@ const MapDisplay = ({
   const mapContainerRef = useRef<HTMLDivElement>(null);
 
   // Initialize zoom/pan functionality
-  const {
-    svgRef,
-    zoomPan,
-    zoomIn,
-    zoomOut,
-    resetZoom,
-  } = useMapZoomPan({
-    minScale: 0.5,
-    maxScale: 4,
-    initialScale: 1,
-    mapWidth: CAMPUS_MAP_BOUNDS.width,
-    mapHeight: CAMPUS_MAP_BOUNDS.height,
-    containerRef: mapContainerRef,
-  });
+  const { svgRef, zoomPan, zoomIn, zoomOut, resetZoom, zoomToLocation } =
+    useMapZoomPan({
+      minScale: 0.5,
+      maxScale: 5,
+      initialScale: 1,
+      mapWidth: CAMPUS_MAP_BOUNDS.width,
+      mapHeight: CAMPUS_MAP_BOUNDS.height,
+      containerRef: mapContainerRef,
+    });
 
   // Get coordinates for each location using the building data
   const getLocationCoordinates = (
@@ -47,6 +42,32 @@ const MapDisplay = ({
     const coords = getBuildingCoordinates(location);
     return coords || null;
   };
+
+  // Handle location selection and hover
+  useEffect(() => {
+    if (selectedLocation) {
+      const coords = getLocationCoordinates(selectedLocation);
+      if (coords) {
+        zoomToLocation(coords.x, coords.y, 4, 1.5);
+      }
+    }
+  }, [selectedLocation, zoomToLocation]);
+
+  useEffect(() => {
+    if (hoveredLocation && !selectedLocation) {
+      const coords = getLocationCoordinates(hoveredLocation);
+      if (coords) {
+        zoomToLocation(coords.x, coords.y, 4, 1);
+      }
+    }
+  }, [hoveredLocation, selectedLocation, zoomToLocation]);
+
+  // Reset zoom when no location is selected or hovered
+  useEffect(() => {
+    if (!hoveredLocation && !selectedLocation) {
+      resetZoom();
+    }
+  }, [hoveredLocation, selectedLocation, resetZoom]);
 
   // Handle map SVG interactions
   useEffect(() => {
@@ -65,11 +86,15 @@ const MapDisplay = ({
           onReset={resetZoom}
           scale={zoomPan.scale}
           minScale={0.5}
-          maxScale={4}
+          maxScale={5}
         />
 
         {/* Accurate Campus Map SVG */}
-        <svg viewBox={CAMPUS_MAP_BOUNDS.viewBox} className="school-map-svg" ref={svgRef}>
+        <svg
+          viewBox={CAMPUS_MAP_BOUNDS.viewBox}
+          className="school-map-svg"
+          ref={svgRef}
+        >
           <defs>
             <style>
               {`

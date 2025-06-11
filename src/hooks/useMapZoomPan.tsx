@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
+import { CAMPUS_MAP_BOUNDS } from "../data/buildings";
 
 interface ZoomPanState {
   scale: number;
@@ -23,9 +24,14 @@ interface UseMapZoomPanOptions {
   containerRef: React.RefObject<HTMLElement>;
 }
 
+interface Point {
+  x: number;
+  y: number;
+}
+
 export const useMapZoomPan = ({
   minScale = 0.5,
-  maxScale = 4,
+  maxScale = 5,
   initialScale = 1,
   mapWidth,
   mapHeight,
@@ -40,8 +46,38 @@ export const useMapZoomPan = ({
   const svgRef = useRef<SVGSVGElement>(null);
   const isDragging = useRef(false);
   const lastPointerPos = useRef({ x: 0, y: 0 });
-  const lastTouchDistance = useRef(0);
-  const lastTouchCenter = useRef({ x: 0, y: 0 });
+
+  // Convert SVG coordinates to screen coordinates
+  const svgToScreen = useCallback(
+    (point: Point, scale: number): Point => {
+      if (!containerRef.current) return point;
+
+      const container = containerRef.current.getBoundingClientRect();
+      const svgPoint = {
+        x: (point.x / CAMPUS_MAP_BOUNDS.width) * container.width * scale,
+        y: (point.y / CAMPUS_MAP_BOUNDS.height) * container.height * scale,
+      };
+
+      return svgPoint;
+    },
+    [containerRef]
+  );
+
+  // Calculate the position to center a point
+  const calculateCenterPosition = useCallback(
+    (point: Point, scale: number): Point => {
+      if (!containerRef.current) return { x: 0, y: 0 };
+
+      const container = containerRef.current.getBoundingClientRect();
+      const screenPoint = svgToScreen(point, scale);
+
+      return {
+        x: container.width / 2 - screenPoint.x,
+        y: container.height / 2 - screenPoint.y,
+      };
+    },
+    [svgToScreen]
+  );
 
   // Calculate map bounds to prevent over-panning
   const getMapBounds = useCallback(
@@ -54,32 +90,15 @@ export const useMapZoomPan = ({
       const scaledWidth = mapWidth * scale;
       const scaledHeight = mapHeight * scale;
 
-      // If map is smaller than container, center it
-      if (scaledWidth <= container.width) {
-        const centerX = (container.width - scaledWidth) / 2;
-        return {
-          minX: centerX,
-          maxX: centerX,
-          minY: scaledHeight <= container.height ? (container.height - scaledHeight) / 2 : container.height - scaledHeight,
-          maxY: scaledHeight <= container.height ? (container.height - scaledHeight) / 2 : 0,
-        };
-      }
-
-      if (scaledHeight <= container.height) {
-        const centerY = (container.height - scaledHeight) / 2;
-        return {
-          minX: container.width - scaledWidth,
-          maxX: 0,
-          minY: centerY,
-          maxY: centerY,
-        };
-      }
+      // Add padding equal to half the container size
+      const paddingX = container.width / 2;
+      const paddingY = container.height / 2;
 
       return {
-        minX: container.width - scaledWidth,
-        maxX: 0,
-        minY: container.height - scaledHeight,
-        maxY: 0,
+        minX: container.width - scaledWidth - paddingX,
+        maxX: paddingX,
+        minY: container.height - scaledHeight - paddingY,
+        maxY: paddingY,
       };
     },
     [mapWidth, mapHeight, containerRef]
@@ -87,7 +106,7 @@ export const useMapZoomPan = ({
 
   // Constrain position within bounds
   const constrainPosition = useCallback(
-    (x: number, y: number, scale: number): { x: number; y: number } => {
+    (x: number, y: number, scale: number): Point => {
       const bounds = getMapBounds(scale);
       return {
         x: Math.max(bounds.minX, Math.min(bounds.maxX, x)),
@@ -97,12 +116,16 @@ export const useMapZoomPan = ({
     [getMapBounds]
   );
 
-  // Apply transform to SVG with smooth animation
+  // Apply transform with animation
   const applyTransform = useCallback(
-    (newState: ZoomPanState, animate = true) => {
+    (newState: ZoomPanState, animate = true, duration = 0.3) => {
       if (!svgRef.current) return;
 
-      const constrainedPos = constrainPosition(newState.x, newState.y, newState.scale);
+      const constrainedPos = constrainPosition(
+        newState.x,
+        newState.y,
+        newState.scale
+      );
       const finalState = { ...newState, ...constrainedPos };
 
       setZoomPan(finalState);
@@ -112,8 +135,8 @@ export const useMapZoomPan = ({
           scale: finalState.scale,
           x: finalState.x,
           y: finalState.y,
-          duration: 0.3,
-          ease: "power2.out",
+          duration: duration,
+          ease: "power2.inOut",
           transformOrigin: "0 0",
         });
       } else {
@@ -128,7 +151,28 @@ export const useMapZoomPan = ({
     [constrainPosition]
   );
 
-  // Zoom functions
+  // Zoom to specific location
+  const zoomToLocation = useCallback(
+    (x: number, y: number, targetScale: number = 4, duration: number = 1) => {
+      if (!containerRef.current || !svgRef.current) return;
+
+      const targetPoint = { x, y };
+      const centerPos = calculateCenterPosition(targetPoint, targetScale);
+
+      applyTransform(
+        {
+          scale: targetScale,
+          x: centerPos.x,
+          y: centerPos.y,
+        },
+        true,
+        duration
+      );
+    },
+    [containerRef, calculateCenterPosition, applyTransform]
+  );
+
+  // Basic zoom functions
   const zoomIn = useCallback(() => {
     const newScale = Math.min(maxScale, zoomPan.scale * 1.5);
     applyTransform({ ...zoomPan, scale: newScale });
@@ -143,46 +187,22 @@ export const useMapZoomPan = ({
     applyTransform({ scale: initialScale, x: 0, y: 0 });
   }, [initialScale, applyTransform]);
 
-  // Get touch distance for pinch-to-zoom
-  const getTouchDistance = (touches: TouchList): number => {
-    if (touches.length < 2) return 0;
-    const touch1 = touches[0];
-    const touch2 = touches[1];
-    return Math.sqrt(
-      Math.pow(touch2.clientX - touch1.clientX, 2) +
-      Math.pow(touch2.clientY - touch1.clientY, 2)
-    );
-  };
-
-  // Get center point of touches
-  const getTouchCenter = (touches: TouchList): { x: number; y: number } => {
-    if (touches.length === 1) {
-      return { x: touches[0].clientX, y: touches[0].clientY };
-    }
-    const touch1 = touches[0];
-    const touch2 = touches[1];
-    return {
-      x: (touch1.clientX + touch2.clientX) / 2,
-      y: (touch1.clientY + touch2.clientY) / 2,
-    };
-  };
-
-  // Mouse wheel zoom handler
+  // Mouse wheel handler
   const handleWheel = useCallback(
     (e: WheelEvent) => {
       e.preventDefault();
-      
       if (!containerRef.current) return;
 
       const rect = containerRef.current.getBoundingClientRect();
       const mouseX = e.clientX - rect.left;
       const mouseY = e.clientY - rect.top;
 
-      // Calculate zoom factor
       const zoomFactor = e.deltaY > 0 ? 0.9 : 1.1;
-      const newScale = Math.max(minScale, Math.min(maxScale, zoomPan.scale * zoomFactor));
+      const newScale = Math.max(
+        minScale,
+        Math.min(maxScale, zoomPan.scale * zoomFactor)
+      );
 
-      // Calculate new position to zoom towards mouse
       const scaleDiff = newScale - zoomPan.scale;
       const newX = zoomPan.x - (mouseX * scaleDiff) / zoomPan.scale;
       const newY = zoomPan.y - (mouseY * scaleDiff) / zoomPan.scale;
@@ -206,11 +226,14 @@ export const useMapZoomPan = ({
       const deltaX = e.clientX - lastPointerPos.current.x;
       const deltaY = e.clientY - lastPointerPos.current.y;
 
-      applyTransform({
-        ...zoomPan,
-        x: zoomPan.x + deltaX,
-        y: zoomPan.y + deltaY,
-      }, false);
+      applyTransform(
+        {
+          ...zoomPan,
+          x: zoomPan.x + deltaX,
+          y: zoomPan.y + deltaY,
+        },
+        false
+      );
 
       lastPointerPos.current = { x: e.clientX, y: e.clientY };
     },
@@ -221,72 +244,43 @@ export const useMapZoomPan = ({
     isDragging.current = false;
   }, []);
 
-  // Touch handlers for mobile
+  // Touch handlers
   const handleTouchStart = useCallback((e: TouchEvent) => {
     e.preventDefault();
-    
     if (e.touches.length === 1) {
-      // Single touch - start drag
       isDragging.current = true;
-      const touch = e.touches[0];
-      lastPointerPos.current = { x: touch.clientX, y: touch.clientY };
-    } else if (e.touches.length === 2) {
-      // Two touches - start pinch zoom
-      isDragging.current = false;
-      lastTouchDistance.current = getTouchDistance(e.touches);
-      lastTouchCenter.current = getTouchCenter(e.touches);
+      lastPointerPos.current = {
+        x: e.touches[0].clientX,
+        y: e.touches[0].clientY,
+      };
     }
   }, []);
 
   const handleTouchMove = useCallback(
     (e: TouchEvent) => {
       e.preventDefault();
+      if (!isDragging.current || e.touches.length !== 1) return;
 
-      if (e.touches.length === 1 && isDragging.current) {
-        // Single touch drag
-        const touch = e.touches[0];
-        const deltaX = touch.clientX - lastPointerPos.current.x;
-        const deltaY = touch.clientY - lastPointerPos.current.y;
+      const touch = e.touches[0];
+      const deltaX = touch.clientX - lastPointerPos.current.x;
+      const deltaY = touch.clientY - lastPointerPos.current.y;
 
-        applyTransform({
+      applyTransform(
+        {
           ...zoomPan,
           x: zoomPan.x + deltaX,
           y: zoomPan.y + deltaY,
-        }, false);
+        },
+        false
+      );
 
-        lastPointerPos.current = { x: touch.clientX, y: touch.clientY };
-      } else if (e.touches.length === 2) {
-        // Pinch zoom
-        const distance = getTouchDistance(e.touches);
-        const center = getTouchCenter(e.touches);
-
-        if (lastTouchDistance.current > 0) {
-          const scale = distance / lastTouchDistance.current;
-          const newScale = Math.max(minScale, Math.min(maxScale, zoomPan.scale * scale));
-
-          // Calculate new position to zoom towards touch center
-          if (!containerRef.current) return;
-          const rect = containerRef.current.getBoundingClientRect();
-          const centerX = center.x - rect.left;
-          const centerY = center.y - rect.top;
-
-          const scaleDiff = newScale - zoomPan.scale;
-          const newX = zoomPan.x - (centerX * scaleDiff) / zoomPan.scale;
-          const newY = zoomPan.y - (centerY * scaleDiff) / zoomPan.scale;
-
-          applyTransform({ scale: newScale, x: newX, y: newY }, false);
-        }
-
-        lastTouchDistance.current = distance;
-        lastTouchCenter.current = center;
-      }
+      lastPointerPos.current = { x: touch.clientX, y: touch.clientY };
     },
-    [zoomPan, minScale, maxScale, applyTransform, containerRef]
+    [zoomPan, applyTransform]
   );
 
   const handleTouchEnd = useCallback(() => {
     isDragging.current = false;
-    lastTouchDistance.current = 0;
   }, []);
 
   // Set up event listeners
@@ -294,15 +288,16 @@ export const useMapZoomPan = ({
     const container = containerRef.current;
     if (!container) return;
 
-    // Mouse events
     container.addEventListener("wheel", handleWheel, { passive: false });
     container.addEventListener("mousedown", handleMouseDown);
     window.addEventListener("mousemove", handleMouseMove);
     window.addEventListener("mouseup", handleMouseUp);
-
-    // Touch events
-    container.addEventListener("touchstart", handleTouchStart, { passive: false });
-    container.addEventListener("touchmove", handleTouchMove, { passive: false });
+    container.addEventListener("touchstart", handleTouchStart, {
+      passive: false,
+    });
+    container.addEventListener("touchmove", handleTouchMove, {
+      passive: false,
+    });
     container.addEventListener("touchend", handleTouchEnd);
 
     return () => {
@@ -332,5 +327,6 @@ export const useMapZoomPan = ({
     zoomOut,
     resetZoom,
     applyTransform,
+    zoomToLocation,
   };
 };
