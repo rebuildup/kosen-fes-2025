@@ -5,9 +5,9 @@ export const sponsors: Sponsor[] = [
   {
     id: "sponsor-1",
     type: "sponsor",
-    title: "山口テック工業",
+    title: "宇部テクテク工業",
     description:
-      "山口県を拠点とする技術系企業で、技術教育とイノベーションをサポートしています。",
+      "宇部市を拠点とする技術系企業で、技術教育とイノベーションをサポートしています。",
     imageUrl: "./images/sponsors/sponsor-1.jpg",
     date: "2025-06-15",
     time: "10:00 - 18:00",
@@ -20,7 +20,7 @@ export const sponsors: Sponsor[] = [
   {
     id: "sponsor-2",
     type: "sponsor",
-    title: "宇部エレクトロニクス",
+    title: "宇部エレクトロエレクトロ",
     description:
       "宇部市に本社を置く電機メーカーで、技術教育の発展に貢献しています。",
     imageUrl: "./images/sponsors/sponsor-2.jpg",
@@ -34,7 +34,7 @@ export const sponsors: Sponsor[] = [
   {
     id: "sponsor-3",
     type: "sponsor",
-    title: "中国エンジニアリングソリューションズ",
+    title: "中国エンジニア同好会",
     description:
       "中国地方全域でエンジニアリングコンサルティングを提供する企業です。",
     imageUrl: "./images/sponsors/sponsor-3.jpg",
@@ -48,7 +48,7 @@ export const sponsors: Sponsor[] = [
   {
     id: "sponsor-4",
     type: "sponsor",
-    title: "山陽ソフトウェア開発",
+    title: "山陽ソフトクリーム開発",
     description:
       "若手プログラミング人材の育成に注力するソフトウェア開発会社です。",
     imageUrl: "./images/sponsors/sponsor-4.jpg",
@@ -62,7 +62,7 @@ export const sponsors: Sponsor[] = [
   {
     id: "sponsor-5",
     type: "sponsor",
-    title: "宇部市銀行",
+    title: "宇部銀行強盗",
     description: "地域の発展と教育イニシアチブを支援する地方金融機関です。",
     imageUrl: "./images/sponsors/sponsor-5.jpg",
     date: "2025-06-15",
@@ -75,7 +75,7 @@ export const sponsors: Sponsor[] = [
   {
     id: "sponsor-6",
     type: "sponsor",
-    title: "山口県教育協会",
+    title: "山口県教育者の非公式組織",
     description: "山口県の教育機会の向上に取り組む組織です。",
     imageUrl: "./images/sponsors/sponsor-6.jpg",
     date: "2025-06-15",
@@ -88,7 +88,7 @@ export const sponsors: Sponsor[] = [
   {
     id: "sponsor-7",
     type: "sponsor",
-    title: "西日本半導体",
+    title: "西日本半導体の反動",
     description: "技術の進歩と教育を支援する半導体メーカーです。",
     imageUrl: "./images/sponsors/sponsor-7.jpg",
     date: "2025-06-15",
@@ -101,7 +101,7 @@ export const sponsors: Sponsor[] = [
   {
     id: "sponsor-8",
     type: "sponsor",
-    title: "宇部産業資材",
+    title: "宇部情報商材促進協会",
     description: "技術教育に貢献する産業資材メーカーです。",
     imageUrl: "./images/sponsors/sponsor-8.jpg",
     date: "2025-06-15",
@@ -114,7 +114,7 @@ export const sponsors: Sponsor[] = [
   {
     id: "sponsor-9",
     type: "sponsor",
-    title: "山陽技術書店",
+    title: "山陽牧場のチャンピオン",
     description: "技術書と教育関連書籍を専門とする書店です。",
     imageUrl: "./images/sponsors/sponsor-9.jpg",
     date: "2025-06-15",
@@ -127,7 +127,7 @@ export const sponsors: Sponsor[] = [
   {
     id: "sponsor-10",
     type: "sponsor",
-    title: "山口イノベーションハブ",
+    title: "起業家の非公式組織",
     description:
       "山口県でイノベーションと起業家精神を育むスタートアップインキュベーターです。",
     imageUrl: "./images/sponsors/sponsor-10.jpg",
