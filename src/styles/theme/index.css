@@ -1,61 +1,66 @@
 /* Base Theme Variables */
 :root {
-  /* POP! Festival Colors - Modern vibrant palette */
-  --pop-pink: #FF1B8D;
-  --pop-pink-dark: #E6186F;
-  --pop-pink-light: #FF4FA8;
-  --pop-blue: #1B8DFF;
-  --pop-blue-dark: #186FE6;
-  --pop-blue-light: #4FA8FF;
-  --pop-green: #1BFF8D;
-  --pop-green-dark: #18E67F;
-  --pop-green-light: #4FFF9F;
-  --pop-orange: #FF8D1B;
-  --pop-purple: #8D1BFF;
+  /* 学園祭テーマカラー - 明るく活気あるパレット */
+  --festival-blue: #2D9CDB; /* メインブルー */
+  --festival-blue-dark: #2180B9; /* 濃いブルー */
+  --festival-blue-light: #56CCF2; /* 明るいブルー */
+  
+  --festival-pink: #F472B6; /* 明るいピンク */
+  --festival-pink-dark: #DB4B9A; /* 濃いピンク */
+  --festival-pink-light: #FFACE6; /* 薄いピンク */
+  
+  --festival-teal: #3DD9D6; /* ターコイズ */
+  --festival-teal-dark: #25B3B0; /* 濃いターコイズ */
+  --festival-teal-light: #78F5F2; /* 薄いターコイズ */
+  
+  --festival-yellow: #FFCB45; /* 明るい黄色 */
+  --festival-purple: #9C5FFF; /* 明るい紫 */
 
-  /* Primary Palette (Light Theme is default) */
-  --primary: var(--pop-pink);
-  --primary-dark: var(--pop-pink-dark);
-  --primary-light: var(--pop-pink-light);
-  --primary-rgb: 255, 27, 141;
+  /* ライトモードの設定はそのまま維持 */
+  --primary: var(--festival-blue);
+  --primary-dark: var(--festival-blue-dark);
+  --primary-light: var(--festival-blue-light);
+  --primary-rgb: 45, 156, 219;
 
-  --secondary: var(--pop-blue);
-  --secondary-dark: var(--pop-blue-dark);
-  --secondary-light: var(--pop-blue-light);
-  --secondary-rgb: 27, 141, 255;
+  --secondary: var(--festival-pink);
+  --secondary-dark: var(--festival-pink-dark);
+  --secondary-light: var(--festival-pink-light);
+  --secondary-rgb: 244, 114, 182;
 
-  --accent: var(--pop-green);
-  --accent-rgb: 27, 255, 141;
+  --accent: var(--festival-teal);
+  --accent-dark: var(--festival-teal-dark);
+  --accent-light: var(--festival-teal-light);
+  --accent-rgb: 61, 217, 214;
 
-  /* Neutral colors */
+  /* Neutral colors - 明るい背景用 */
   --text-primary: #333333;
-  --text-secondary: #666666;
-  --text-muted: #999999;
+  --text-secondary: #555555;
+  --text-muted: #777777;
 
-  /* Background colors - Slightly tinted for POP theme */
-  --bg-primary: #fefefe;
-  --bg-secondary: #f8f7ff;
-  --bg-tertiary: #f0f0ff;
+  /* Background colors - 白ベース */
+  --bg-primary: #FFFFFF;
+  --bg-secondary: #F6F9FC;
+  --bg-tertiary: #EDF2F7;
 
   /* UI colors */
-  --border-light: #e4e4e4;
-  --border-dark: #cccccc;
+  --border-light: #E2E8F0;
+  --border-dark: #CBD5E0;
   --shadow-color: rgba(0, 0, 0, 0.1);
 
-  /* Status colors - POP theme variations */
-  --success: var(--pop-green);
-  --error: #FF3366;
-  --warning: var(--pop-orange);
-  --info: var(--pop-blue);
+  /* Status colors */
+  --success: #38C172;
+  --error: #E53E3E;
+  --warning: var(--festival-yellow);
+  --info: var(--festival-blue);
 
   /* Component-specific colors */
-  --card-bg: #ffffff;
-  --card-hover: #f9f9f9;
-  --header-bg: #ffffff;
-  --sidebar-bg: #f8f8f8;
-  --footer-bg: #ffffff;
+  --card-bg: #FFFFFF;
+  --card-hover: #F9FAFC;
+  --header-bg: #FFFFFF;
+  --sidebar-bg: #F6F9FC;
+  --footer-bg: #FFFFFF;
 
-  /* Spacing variables */
+  /* 他の変数はそのまま */
   --spacing-xs: 4px;
   --spacing-sm: 8px;
   --spacing-md: 16px;
@@ -63,22 +68,18 @@
   --spacing-xl: 32px;
   --spacing-xxl: 48px;
 
-  /* Border radius */
-  --border-radius-sm: 4px;
-  --border-radius-md: 8px;
-  --border-radius-lg: 16px;
+  --border-radius-sm: 8px;
+  --border-radius-md: 12px;
+  --border-radius-lg: 20px;
 
-  /* Transitions */
-  --transition-fast: 0.15s ease;
-  --transition-normal: 0.3s ease;
-  --transition-slow: 0.5s ease;
+  --transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 
-  /* Shadows */
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
-  --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.1);
-  --shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.1);
+  --shadow-sm: 0 2px 5px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 10px rgba(0, 0, 0, 0.07);
+  --shadow-lg: 0 10px 20px rgba(0, 0, 0, 0.1);
 
-  /* Z-index layers */
   --z-index-dropdown: 100;
   --z-index-sticky: 200;
   --z-index-fixed: 300;
@@ -86,89 +87,63 @@
   --z-index-popover: 500;
   --z-index-toast: 600;
 
-  /* Font sizes */
-  --font-size-xs: 0.75rem; /* 12px */
-  --font-size-sm: 0.875rem; /* 14px */
-  --font-size-md: 1rem; /* 16px */
-  --font-size-lg: 1.125rem; /* 18px */
-  --font-size-xl: 1.25rem; /* 20px */
-  --font-size-2xl: 1.5rem; /* 24px */
-  --font-size-3xl: 1.875rem; /* 30px */
-  --font-size-4xl: 2.25rem; /* 36px */
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-md: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.25rem;
+  --font-size-2xl: 1.5rem;
+  --font-size-3xl: 1.875rem;
+  --font-size-4xl: 2.25rem;
 
-  /* Font weights */
   --font-weight-normal: 400;
   --font-weight-medium: 500;
   --font-weight-semibold: 600;
   --font-weight-bold: 700;
 }
 
-/* Dark theme variables */
+/* 改良されたダークテーマ - シャープでかっこいいデザイン */
 [data-theme="dark"] {
-  /* Primary Palette adjustments for dark mode - Enhanced POP colors */
-  --primary: #FF4FA8; /* Brighter pink for dark mode */
-  --primary-dark: #FF1B8D;
-  --primary-light: #FF80C4;
-  --primary-rgb: 255, 79, 168;
+  /* より鮮やかなアクセントカラー */
+  --primary: #00AAFF; /* 鮮やかなブルー */
+  --primary-dark: #0088CC; /* 濃いブルー */
+  --primary-light: #33BBFF; /* 明るいブルー */
+  --primary-rgb: 0, 170, 255;
 
-  --secondary: #4FA8FF; /* Brighter blue for dark mode */
-  --secondary-dark: #1B8DFF;
-  --secondary-light: #80C4FF;
-  --secondary-rgb: 79, 168, 255;
+  --secondary: #FF3399; /* ビビッドなピンク */
+  --secondary-dark: #CC2977; /* 濃いピンク */
+  --secondary-light: #FF66B3; /* 明るいピンク */
+  --secondary-rgb: 255, 51, 153;
 
-  --accent: #4FFF9F; /* Brighter green for dark mode */
-  --accent-rgb: 79, 255, 159;
+  --accent: #00FFDD; /* 鮮やかなターコイズ */
+  --accent-dark: #00CCB1; /* 濃いターコイズ */
+  --accent-light: #33FFEB; /* 明るいターコイズ */
+  --accent-rgb: 0, 255, 221;
 
-  /* Neutral colors */
-  --text-primary: #ffffff;
-  --text-secondary: #dddddd;
-  --text-muted: #aaaaaa;
+  /* コントラストの高いテキスト */
+  --text-primary: #FFFFFF;
+  --text-secondary: #DDDDDD;
+  --text-muted: #AAAAAA;
 
-  /* Background colors - Enhanced for POP dark theme */
-  --bg-primary: #0A0A0F;
-  --bg-secondary: #151520;
-  --bg-tertiary: #202035;
+  /* 純粋な黒ベースの背景 */
+  --bg-primary: #000000; /* 純粋な黒 */
+  --bg-secondary: #121212; /* わずかに明るい黒 */
+  --bg-tertiary: #1E1E1E; /* ダークグレー */
 
-  /* UI colors */
+  /* シャープなUI要素 */
   --border-light: #333333;
   --border-dark: #444444;
-  --shadow-color: rgba(0, 0, 0, 0.3);
+  --shadow-color: rgba(0, 0, 0, 0.5);
 
-  /* Component-specific colors */
-  --card-bg: #1e1e1e;
-  --card-hover: #2a2a2a;
-  --header-bg: #1a1a1a;
-  --sidebar-bg: #1a1a1a;
-  --footer-bg: #1a1a1a;
+  /* コンポーネント色 */
+  --card-bg: #121212;
+  --card-hover: #1E1E1E;
+  --header-bg: #000000;
+  --sidebar-bg: #000000;
+  --footer-bg: #000000;
 
-  /* Shadows for dark mode */
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.3);
-  --shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.3);
-}
-
-/* High Contrast Mode */
-@media (prefers-contrast: high) {
-  :root {
-    --text-primary: #000000;
-    --text-secondary: #333333;
-    --border-light: #666666;
-    --border-dark: #000000;
-  }
-
-  [data-theme="dark"] {
-    --text-primary: #ffffff;
-    --text-secondary: #eeeeee;
-    --border-light: #aaaaaa;
-    --border-dark: #ffffff;
-  }
-}
-
-/* Reduced Motion Preference */
-@media (prefers-reduced-motion: reduce) {
-  :root {
-    --transition-fast: 0s;
-    --transition-normal: 0s;
-    --transition-slow: 0s;
-  }
+  /* ダークモード用のシャープなシャドウ */
+  --shadow-sm: 0 2px 5px rgba(0, 0, 0, 0.7);
+  --shadow-md: 0 4px 10px rgba(0, 0, 0, 0.8);
+  --shadow-lg: 0 8px 20px rgba(0, 0, 0, 0.9);
 }
