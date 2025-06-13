@@ -80,11 +80,20 @@ const Tag = ({
     }
   };
 
-  const sizeClass = `tag-${size}`;
+  // TailwindCSS classes based on size and state
+  const sizeClasses = {
+    small: "text-xs px-2 py-0.5",
+    medium: "text-sm px-2.5 py-1",
+    large: "text-base px-3 py-1.5"
+  };
+
+  const baseClasses = "inline-flex items-center gap-1 rounded-full font-medium transition-all duration-200 border";
+  const inactiveClasses = "bg-slate-100 text-slate-700 border-slate-200 hover:bg-slate-200 dark:bg-slate-700 dark:text-slate-300 dark:border-slate-600 dark:hover:bg-slate-600";
+  const activeClasses = "bg-primary-500 text-white border-primary-500 hover:bg-primary-600";
 
   return (
     <button
-      className={`tag ${sizeClass} ${isActive ? "tag-active" : ""}`}
+      className={`${baseClasses} ${sizeClasses[size]} ${isActive ? activeClasses : inactiveClasses}`}
       onClick={handleClick}
       type="button"
       role={role}
@@ -92,8 +101,8 @@ const Tag = ({
       aria-label={`${tag}${count ? ` (${count})` : ""}`}
       ref={tagRef}
     >
-      <span className="tag-text">#{tag}</span>
-      {count !== undefined && <span className="tag-count">{count}</span>}
+      <span>#{tag}</span>
+      {count !== undefined && <span className="ml-1 px-1.5 py-0.5 bg-black/10 dark:bg-white/10 rounded text-xs">{count}</span>}
     </button>
   );
 };

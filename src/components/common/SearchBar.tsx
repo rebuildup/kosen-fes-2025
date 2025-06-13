@@ -204,19 +204,19 @@ const SearchBar = ({
     });
   };
 
-  // Classes based on variant
-  const containerClass = `search-bar ${
-    variant === "large" ? "search-bar-large" : ""
-  } ${variant === "inline" ? "search-bar-inline" : ""}`;
+  // Classes based on variant using TailwindCSS
+  const containerClass = `bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg transition-all duration-200 ${
+    variant === "large" ? "p-4" : variant === "inline" ? "p-2" : "p-3"
+  } ${isFocused ? "border-primary-500 shadow-md" : "shadow-sm hover:shadow-md"}`;
 
   return (
-    <div className="search-bar-container">
+    <div className="relative">
       <form
         className={containerClass}
         onSubmit={handleSubmit}
         ref={containerRef}
       >
-        <div className="search-input-container">
+        <div className="relative flex items-center">
           <input
             type="text"
             value={inputValue}
@@ -225,7 +225,9 @@ const SearchBar = ({
             onBlur={handleBlur}
             placeholder={t("search.placeholder")}
             aria-label={t("search.placeholder")}
-            className={`search-input ${isFocused ? "focused" : ""}`}
+            className={`w-full px-4 py-2 pr-20 bg-transparent border-none outline-none text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 ${
+              variant === "large" ? "text-lg" : "text-base"
+            }`}
             ref={inputRef}
           />
 
@@ -233,7 +235,7 @@ const SearchBar = ({
             <button
               type="button"
               onClick={handleClear}
-              className="search-clear-button"
+              className="search-clear-button absolute right-12 top-1/2 -translate-y-1/2 w-6 h-6 flex items-center justify-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors duration-200"
               aria-label={t("actions.clear")}
             >
               ✕
@@ -242,7 +244,7 @@ const SearchBar = ({
 
           <button
             type="submit"
-            className="search-button"
+            className="search-button absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center text-slate-500 hover:text-primary-600 dark:text-slate-400 dark:hover:text-primary-400 transition-colors duration-200"
             aria-label={t("actions.search")}
           >
             <SearchIcon size={20} />
@@ -251,19 +253,19 @@ const SearchBar = ({
       </form>
 
       {showSuggestions && showSuggestionsList && recentSearches.length > 0 && (
-        <div className="search-suggestions" ref={suggestionsRef}>
-          <div className="search-suggestions-header">
+        <div className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-lg z-50" ref={suggestionsRef}>
+          <div className="px-3 py-2 text-sm font-medium text-slate-600 dark:text-slate-400 border-b border-slate-200 dark:border-slate-700">
             {t("search.recentSearches")}
           </div>
-          <ul className="search-suggestions-list">
+          <ul className="py-1">
             {recentSearches.map((suggestion, index) => (
               <li
                 key={index}
-                className="search-suggestion-item"
+                className="search-suggestion-item px-3 py-2 flex items-center gap-2 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 cursor-pointer transition-colors duration-150"
                 onClick={(e) => handleSuggestionClick(suggestion, e)}
               >
-                <span className="search-suggestion-icon">🕒</span>
-                <span className="search-suggestion-text">{suggestion}</span>
+                <span className="text-slate-400 dark:text-slate-500">🕒</span>
+                <span>{suggestion}</span>
               </li>
             ))}
           </ul>

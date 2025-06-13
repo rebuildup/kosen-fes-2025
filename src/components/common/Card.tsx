@@ -277,12 +277,12 @@ const Card = ({
   // Get the actual image source
   const imageSrc = determineImageSrc();
 
-  // Generate unique class names based on props
+  // Generate unique class names based on props using TailwindCSS
   const cardClasses = [
-    "card",
-    `card-${variant}`,
-    showDescription ? "card-with-description" : "",
-    isHovered ? "card-hovered" : "",
+    "card bg-white dark:bg-slate-800 rounded-lg overflow-hidden transition-all duration-200 shadow-sm hover:shadow-md h-full relative",
+    variant === "compact" ? "text-sm" : "",
+    variant === "featured" ? "text-lg" : "",
+    variant === "list" ? "flex flex-row h-auto items-center" : "",
     className,
   ]
     .filter(Boolean)
@@ -292,39 +292,42 @@ const Card = ({
     <div className={cardClasses} ref={cardRef}>
       <Link
         to={`/detail/${item.type}/${item.id}`}
-        className="card-link"
+        className="block text-slate-900 dark:text-slate-100 no-underline h-full"
         onClick={handleCardClick}
       >
-        <div className="card-image-container">
+        <div className={`relative overflow-hidden ${variant === "list" ? "w-30 min-w-30 h-24" : ""}`}>
           <div
-            className={`card-image-wrapper ${
-              isImageLoaded ? "loaded" : "loading"
-            }`}
+            className={`relative bg-slate-100 dark:bg-slate-700 ${
+              variant === "compact" ? "aspect-[4/3]" : 
+              variant === "featured" ? "aspect-[2/1]" : 
+              variant === "grid" ? "aspect-square" : 
+              variant === "list" ? "h-full" : "aspect-video"
+            } ${isImageLoaded ? "loaded" : "loading"}`}
           >
             <img
               src={imageSrc}
               alt={item.title}
-              className="card-image"
+              className="absolute top-0 left-0 w-full h-full object-cover transition-transform duration-300 hover:scale-105"
               onLoad={handleImageLoad}
               onError={handleImageError}
               ref={imageRef}
             />
             {!isImageLoaded && !hasImageError && (
-              <div className="card-image-loading">
-                <div className="loading-spinner"></div>
+              <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center bg-slate-100 dark:bg-slate-700">
+                <div className="w-8 h-8 border-2 border-slate-300 border-t-primary-500 rounded-full animate-spin"></div>
               </div>
             )}
           </div>
 
-          <div className="card-badge">
+          <div className="absolute bottom-2 left-2 bg-black/60 text-white px-2 py-1 rounded text-xs flex items-center gap-1 transition-opacity duration-200">
             <ItemTypeIcon type={item.type} size="small" />
-            <span className="card-badge-text">{getTypeLabel()}</span>
+            <span className="font-medium">{getTypeLabel()}</span>
           </div>
 
           <button
-            className={`card-bookmark-button ${
-              isBookmarked(item.id) ? "bookmarked" : ""
-            }`}
+            className={`absolute top-2 right-2 w-8 h-8 rounded-full bg-white/80 dark:bg-black/70 flex items-center justify-center cursor-pointer text-xl transition-all duration-200 z-10 ${
+              isBookmarked(item.id) ? "opacity-100 text-accent-500" : "opacity-0 group-hover:opacity-100 text-slate-600 dark:text-slate-300"
+            } hover:bg-white dark:hover:bg-black hover:scale-110`}
             onClick={handleBookmarkToggle}
             aria-label={
               isBookmarked(item.id)
@@ -336,25 +339,29 @@ const Card = ({
           </button>
         </div>
 
-        <div className="card-content">
-          <h3 className="card-title">{formatText(item.title)}</h3>
+        <div className={`p-3 ${variant === "featured" ? "p-5" : variant === "compact" ? "p-2.5" : variant === "list" ? "flex-1 p-3" : "p-4"}`}>
+          <h3 className={`font-semibold text-slate-900 dark:text-slate-100 leading-tight mb-2 line-clamp-2 ${
+            variant === "featured" ? "text-xl mb-3" : 
+            variant === "compact" ? "text-sm mb-1.5 line-clamp-1" : 
+            variant === "list" ? "text-base mb-1.5 line-clamp-1" : "text-base"
+          }`}>{formatText(item.title)}</h3>
 
           {showDescription && (
-            <p className="card-description">{formatText(item.description)}</p>
+            <p className="text-sm text-slate-600 dark:text-slate-400 mb-3 line-clamp-3 leading-relaxed">{formatText(item.description)}</p>
           )}
 
           <div
-            className={`card-meta ${
-              isHovered || variant === "list" ? "card-meta-visible" : ""
+            className={`text-xs text-slate-500 dark:text-slate-400 mt-2 transition-all duration-300 overflow-hidden ${
+              isHovered || variant === "list" ? "opacity-100 translate-y-0 max-h-48" : "opacity-0 translate-y-2 max-h-0"
             }`}
             ref={metaRef}
             style={{
-              opacity: variant === "list" ? 1 : 0,
-              transform: variant === "list" ? "none" : "translateY(10px)",
+              opacity: variant === "list" ? 1 : undefined,
+              transform: variant === "list" ? "none" : undefined,
             }}
           >
-            <div className="card-date-time">
-              <span className="card-icon">
+            <div className="flex items-center mb-1">
+              <span className="mr-1.5 flex items-center justify-center min-w-4">
                 <TimeIcon size={16} />
               </span>
               <span>
@@ -362,16 +369,16 @@ const Card = ({
               </span>
             </div>
 
-            <div className="card-location">
-              <span className="card-icon">
+            <div className="flex items-center mb-1">
+              <span className="mr-1.5 flex items-center justify-center min-w-4">
                 <LocationIcon size={16} />
               </span>
               <span>{formatText(item.location)}</span>
             </div>
 
             {getOrganization() && (
-              <div className="card-organization">
-                <span className="card-icon">
+              <div className="flex items-center mb-1">
+                <span className="mr-1.5 flex items-center justify-center min-w-4">
                   <PeopleIcon size={16} />
                 </span>
                 <span>
@@ -383,7 +390,9 @@ const Card = ({
 
           {showTags && item.tags && item.tags.length > 0 && (
             <div
-              className={`card-tags ${isHovered ? "card-tags-visible" : ""}`}
+              className={`flex flex-wrap gap-1.5 mt-3 transition-all duration-300 overflow-hidden ${
+                isHovered ? "opacity-100 translate-y-0 max-h-24" : "opacity-0 translate-y-2 max-h-0"
+              }`}
               ref={tagsRef}
               style={{
                 opacity: 0,
@@ -394,7 +403,7 @@ const Card = ({
                 <Tag key={tag} tag={tag} size="small" />
               ))}
               {item.tags.length > 3 && (
-                <span className="card-tags-more">+{item.tags.length - 3}</span>
+                <span className="text-xs text-slate-500 dark:text-slate-400 px-1.5 py-0.5 bg-slate-100 dark:bg-slate-700 rounded">+{item.tags.length - 3}</span>
               )}
             </div>
           )}

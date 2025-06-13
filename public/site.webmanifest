@@ -1,20 +1,105 @@
 {
-  "name": "Ube Kosen Festival 2025",
-  "short_name": "Festival 2025",
+  "name": "宇部高専文化祭2025 | Ube Kosen Festival 2025",
+  "short_name": "宇部高専祭2025",
+  "description": "宇部高専文化祭2025の公式サイト。イベント、展示、屋台の情報を掲載。",
+  "lang": "ja",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "theme_color": "#3b82f6",
+  "background_color": "#ffffff",
+  "scope": "/",
   "icons": [
     {
       "src": "/android-chrome-192x192.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "maskable any"
     },
     {
       "src": "/android-chrome-512x512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/favicon-32x32.png",
+      "sizes": "32x32",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/favicon-16x16.png",
+      "sizes": "16x16",
+      "type": "image/png",
+      "purpose": "any"
     }
   ],
-  "theme_color": "#ffffff",
-  "background_color": "#ffffff",
-  "display": "standalone",
-  "start_url": "/"
+  "categories": [
+    "education",
+    "entertainment",
+    "lifestyle"
+  ],
+  "shortcuts": [
+    {
+      "name": "イベント一覧",
+      "short_name": "イベント",
+      "description": "イベント一覧を表示",
+      "url": "/events",
+      "icons": [
+        {
+          "src": "/favicon-32x32.png",
+          "sizes": "32x32",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "展示・屋台",
+      "short_name": "展示",
+      "description": "展示・屋台一覧を表示",
+      "url": "/exhibits",
+      "icons": [
+        {
+          "src": "/favicon-32x32.png",
+          "sizes": "32x32",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "会場マップ",
+      "short_name": "マップ",
+      "description": "インタラクティブ会場マップを表示",
+      "url": "/map",
+      "icons": [
+        {
+          "src": "/favicon-32x32.png",
+          "sizes": "32x32",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "ブックマーク",
+      "short_name": "保存済み",
+      "description": "保存したイベント・展示を表示",
+      "url": "/bookmarks",
+      "icons": [
+        {
+          "src": "/favicon-32x32.png",
+          "sizes": "32x32",
+          "type": "image/png"
+        }
+      ]
+    }
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false
 }
