@@ -7,9 +7,7 @@ import {
 } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Item } from "../types/common";
-import { events } from "../data/events";
-import { exhibits } from "../data/exhibits";
-import { stalls } from "../data/stalls";
+import { dataManager } from "../data/dataManager";
 
 interface TagContextType {
   tags: string[];
@@ -50,32 +48,12 @@ export const TagProvider = ({ children }: TagProviderProps) => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Initialize tags from all items
+  // Initialize tags from dataManager
   useEffect(() => {
-    // Combine all items
-    const allItems: Item[] = [...events, ...exhibits, ...stalls];
-
-    // Extract all tags and count occurrences
-    const tagFrequency: Record<string, number> = {};
-    const allTags: string[] = [];
-
-    allItems.forEach((item) => {
-      item.tags.forEach((tag) => {
-        if (!tagFrequency[tag]) {
-          tagFrequency[tag] = 0;
-          allTags.push(tag);
-        }
-        tagFrequency[tag]++;
-      });
-    });
-
-    // Sort tags alphabetically
-    allTags.sort();
-
-    // Get popular tags (top 10 by frequency)
-    const popular = [...allTags]
-      .sort((a, b) => tagFrequency[b] - tagFrequency[a])
-      .slice(0, 10);
+    // Use dataManager to get tags and counts
+    const allTags = dataManager.getAllTags();
+    const tagFrequency = dataManager.getTagCounts();
+    const popular = dataManager.getPopularTags(10);
 
     setTags(allTags);
     setTagCounts(tagFrequency);
@@ -139,11 +117,7 @@ export const TagProvider = ({ children }: TagProviderProps) => {
 
   // Filter items by selected tags
   const filterItemsByTags = (items: Item[]): Item[] => {
-    if (selectedTags.length === 0) return items;
-
-    return items.filter((item) =>
-      selectedTags.some((tag) => item.tags.includes(tag))
-    );
+    return dataManager.filterItemsByTags(items, selectedTags);
   };
 
   return (

@@ -6,12 +6,8 @@ import {
   ReactNode,
 } from "react";
 import { useNavigate } from "react-router-dom";
-import { Event, Exhibit, Stall, Item } from "../types/common";
-
-// Import mock data
-import { events } from "../data/events";
-import { exhibits } from "../data/exhibits";
-import { stalls } from "../data/stalls";
+import { Item } from "../types/common";
+import { dataManager } from "../data/dataManager";
 
 interface SearchContextType {
   searchQuery: string;
@@ -63,21 +59,9 @@ export const SearchProvider = ({ children }: SearchProviderProps) => {
     localStorage.setItem("searchHistory", JSON.stringify(searchHistory));
   }, [searchHistory]);
 
-  // Function to filter items by search query
-  const filterItemsByQuery = (items: Item[], query: string): Item[] => {
-    if (!query.trim()) return [];
-
-    const normalizedQuery = query.toLowerCase().trim();
-
-    return items.filter((item) => {
-      // Search in title, description, and tags
-      return (
-        item.title.toLowerCase().includes(normalizedQuery) ||
-        item.description.toLowerCase().includes(normalizedQuery) ||
-        item.tags.some((tag) => tag.toLowerCase().includes(normalizedQuery)) ||
-        item.location.toLowerCase().includes(normalizedQuery)
-      );
-    });
+  // Function to perform search using dataManager
+  const performSearchQuery = (query: string): Item[] => {
+    return dataManager.searchItems(query);
   };
 
   // Function to perform search
@@ -93,14 +77,8 @@ export const SearchProvider = ({ children }: SearchProviderProps) => {
     // Add to search history (at the beginning)
     setSearchHistory((prev) => [query, ...prev.filter((q) => q !== query)]);
 
-    // Combine all items and filter them
-    const allItems: Item[] = [
-      ...(events as Event[]),
-      ...(exhibits as Exhibit[]),
-      ...(stalls as Stall[]),
-    ];
-
-    const results = filterItemsByQuery(allItems, query);
+    // Use dataManager to search
+    const results = performSearchQuery(query);
 
     setSearchResults(results);
     setIsSearching(false);

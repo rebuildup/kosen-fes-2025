@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
 import { useLanguage } from "../context/LanguageContext";
 import { useTag } from "../context/TagContext";
-import { exhibits } from "../data/exhibits";
-import { stalls } from "../data/stalls";
+import { dataManager } from "../data/dataManager";
 import { Item } from "../types/common";
 import CardGrid from "../components/common/CardGrid";
 import CardListToggle from "../components/common/CardListToggle";
@@ -16,10 +15,7 @@ const Exhibits = () => {
   const [viewMode, setViewMode] = useState<
     "default" | "compact" | "grid" | "list"
   >("default");
-  const [filteredItems, setFilteredItems] = useState<Item[]>([
-    ...exhibits,
-    ...stalls,
-  ]);
+  const [filteredItems, setFilteredItems] = useState<Item[]>([]);
   const [typeFilter, setTypeFilter] = useState<"all" | "exhibit" | "stall">(
     "all"
   );
@@ -28,13 +24,16 @@ const Exhibits = () => {
   useEffect(() => {
     let filtered: Item[] = [];
 
-    // Filter by type
+    // Filter by type using dataManager
     if (typeFilter === "all") {
-      filtered = [...exhibits, ...stalls];
+      filtered = [
+        ...dataManager.getAllExhibits(),
+        ...dataManager.getAllStalls()
+      ];
     } else if (typeFilter === "exhibit") {
-      filtered = [...exhibits];
+      filtered = dataManager.getAllExhibits();
     } else {
-      filtered = [...stalls];
+      filtered = dataManager.getAllStalls();
     }
 
     // Apply tag filtering

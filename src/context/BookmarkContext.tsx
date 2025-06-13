@@ -6,9 +6,7 @@ import {
   ReactNode,
 } from "react";
 import { Item } from "../types/common";
-import { events } from "../data/events";
-import { exhibits } from "../data/exhibits";
-import { stalls } from "../data/stalls";
+import { dataManager } from "../data/dataManager";
 
 interface BookmarkContextType {
   bookmarks: string[];
@@ -54,11 +52,8 @@ export const BookmarkProvider = ({ children }: BookmarkProviderProps) => {
 
   // Update bookmarked items when bookmarks change
   useEffect(() => {
-    // Combine all items
-    const allItems: Item[] = [...events, ...exhibits, ...stalls];
-
-    // Filter items by bookmarked IDs
-    const items = allItems.filter((item) => bookmarks.includes(item.id));
+    // Use dataManager to get items by IDs
+    const items = dataManager.getItemsByIds(bookmarks);
     setBookmarkedItems(items);
 
     // Save bookmarks to localStorage

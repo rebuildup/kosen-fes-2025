@@ -1,9 +1,20 @@
-import { DataStore, ItemCore, ItemDetails, EventCore, ExhibitCore, StallCore, SponsorCore, MapData, DataState } from '../types/data';
-import { events } from './events';
-import { exhibits } from './exhibits';
-import { stalls } from './stalls';
-import { sponsors } from './sponsors';
-import { campusMapData } from './mapData';
+import {
+  DataStore,
+  ItemCore,
+  ItemDetails,
+  EventCore,
+  ExhibitCore,
+  StallCore,
+  SponsorCore,
+  MapData,
+  DataState,
+} from "../types/data";
+import { Item, Event, Exhibit, Stall, Sponsor } from "../types/common";
+import { events } from "./events";
+import { exhibits } from "./exhibits";
+import { stalls } from "./stalls";
+import { sponsors } from "./sponsors";
+import { campusMapData } from "./mapData";
 
 // Helper to create data state
 const createDataState = <T>(data: T): DataState<T> => ({
@@ -39,7 +50,9 @@ const splitEventData = (event: any): { core: EventCore; details: any } => ({
   },
 });
 
-const splitExhibitData = (exhibit: any): { core: ExhibitCore; details: any } => ({
+const splitExhibitData = (
+  exhibit: any
+): { core: ExhibitCore; details: any } => ({
   core: {
     id: exhibit.id,
     type: exhibit.type,
@@ -73,7 +86,9 @@ const splitStallData = (stall: any): { core: StallCore; details: any } => ({
   },
 });
 
-const splitSponsorData = (sponsor: any): { core: SponsorCore; details: any } => ({
+const splitSponsorData = (
+  sponsor: any
+): { core: SponsorCore; details: any } => ({
   core: {
     id: sponsor.id,
     type: sponsor.type,
@@ -122,20 +137,20 @@ class DataManager {
 
     this.store = {
       // Core data (loaded immediately)
-      events: createDataState(eventData.map(d => d.core)),
-      exhibits: createDataState(exhibitData.map(d => d.core)),
-      stalls: createDataState(stallData.map(d => d.core)),
-      sponsors: createDataState(sponsorData.map(d => d.core)),
-      
+      events: createDataState(eventData.map((d) => d.core)),
+      exhibits: createDataState(exhibitData.map((d) => d.core)),
+      stalls: createDataState(stallData.map((d) => d.core)),
+      sponsors: createDataState(sponsorData.map((d) => d.core)),
+
       // Detailed data (loaded on-demand)
       eventDetails: {},
       exhibitDetails: {},
       stallDetails: {},
       sponsorDetails: {},
-      
+
       // Map data
       mapData: createDataState(getMapData()),
-      
+
       // User data (loaded from localStorage)
       bookmarks: this.loadBookmarks(),
       searchHistory: this.loadSearchHistory(),
@@ -177,13 +192,13 @@ class DataManager {
     }
 
     this.store.eventDetails[id] = createLoadingState();
-    
+
     // Simulate async loading (in real app, this would be an API call)
-    await new Promise(resolve => setTimeout(resolve, 100));
-    
+    await new Promise((resolve) => setTimeout(resolve, 100));
+
     const details = this.detailsCache.get(cacheKey);
     this.store.eventDetails[id] = createDataState(details);
-    
+
     return details;
   }
 
@@ -194,11 +209,11 @@ class DataManager {
     }
 
     this.store.exhibitDetails[id] = createLoadingState();
-    await new Promise(resolve => setTimeout(resolve, 100));
-    
+    await new Promise((resolve) => setTimeout(resolve, 100));
+
     const details = this.detailsCache.get(cacheKey);
     this.store.exhibitDetails[id] = createDataState(details);
-    
+
     return details;
   }
 
@@ -209,11 +224,11 @@ class DataManager {
     }
 
     this.store.stallDetails[id] = createLoadingState();
-    await new Promise(resolve => setTimeout(resolve, 100));
-    
+    await new Promise((resolve) => setTimeout(resolve, 100));
+
     const details = this.detailsCache.get(cacheKey);
     this.store.stallDetails[id] = createDataState(details);
-    
+
     return details;
   }
 
@@ -224,11 +239,11 @@ class DataManager {
     }
 
     this.store.sponsorDetails[id] = createLoadingState();
-    await new Promise(resolve => setTimeout(resolve, 100));
-    
+    await new Promise((resolve) => setTimeout(resolve, 100));
+
     const details = this.detailsCache.get(cacheKey);
     this.store.sponsorDetails[id] = createDataState(details);
-    
+
     return details;
   }
 
@@ -240,10 +255,10 @@ class DataManager {
   // Search functionality
   searchItems(query: string): ItemCore[] {
     if (!query.trim()) return [];
-    
+
     const normalizedQuery = query.toLowerCase().trim();
     const allItems = this.getAllCoreItems();
-    
+
     return allItems.filter((item) => {
       return (
         item.title.toLowerCase().includes(normalizedQuery) ||
@@ -253,12 +268,12 @@ class DataManager {
     });
   }
 
-  // Filter by tags
   filterByTags(tags: string[]): ItemCore[] {
     if (tags.length === 0) return this.getAllCoreItems();
-    
-    return this.getAllCoreItems().filter((item) =>
-      tags.some((tag) => item.tags.includes(tag))
+
+    const allItems = this.getAllCoreItems();
+    return allItems.filter((item) =>
+      tags.every((tag) => item.tags.includes(tag))
     );
   }
 
@@ -280,7 +295,9 @@ class DataManager {
   }
 
   removeBookmark(id: string): void {
-    this.store.bookmarks = this.store.bookmarks.filter(bookmarkId => bookmarkId !== id);
+    this.store.bookmarks = this.store.bookmarks.filter(
+      (bookmarkId) => bookmarkId !== id
+    );
     this.saveBookmarks();
   }
 
@@ -302,9 +319,12 @@ class DataManager {
     if (query.trim()) {
       this.store.searchHistory = [
         query,
-        ...this.store.searchHistory.filter(q => q !== query)
+        ...this.store.searchHistory.filter((q) => q !== query),
       ].slice(0, 10); // Keep only last 10
-      localStorage.setItem("searchHistory", JSON.stringify(this.store.searchHistory));
+      localStorage.setItem(
+        "searchHistory",
+        JSON.stringify(this.store.searchHistory)
+      );
     }
   }
 
@@ -315,10 +335,12 @@ class DataManager {
   // Preferences
   private loadPreferences() {
     const saved = localStorage.getItem("preferences");
-    return saved ? JSON.parse(saved) : {
-      language: "ja",
-      theme: "light",
-    };
+    return saved
+      ? JSON.parse(saved)
+      : {
+          language: "ja",
+          theme: "light",
+        };
   }
 
   updatePreferences(preferences: Partial<typeof this.store.preferences>): void {

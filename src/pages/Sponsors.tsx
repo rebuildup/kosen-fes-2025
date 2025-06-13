@@ -2,8 +2,8 @@
 import { useState, useEffect } from "react";
 import { useLanguage } from "../context/LanguageContext";
 import { useTag } from "../context/TagContext";
-import { sponsors } from "../data/sponsors";
-import { Item } from "../types/common";
+import { dataManager } from "../data/dataManager";
+import { Item, Sponsor } from "../types/common";
 import CardGrid from "../components/common/CardGrid";
 import CardListToggle from "../components/common/CardListToggle";
 import TagFilter from "../components/common/TagFilter";
@@ -16,19 +16,19 @@ const Sponsors = () => {
   const [viewMode, setViewMode] = useState<
     "default" | "compact" | "grid" | "list"
   >("default");
-  const [filteredSponsors, setFilteredSponsors] = useState<Item[]>(sponsors);
+  const [filteredSponsors, setFilteredSponsors] = useState<Item[]>([]);
   const [tierFilter, setTierFilter] = useState<
     "all" | "platinum" | "gold" | "silver" | "bronze"
   >("all");
 
   // Filter sponsors by selected tier and tags
   useEffect(() => {
-    let filtered = [...sponsors] as Item[];
+    let filtered = dataManager.getAllSponsors() as Item[];
 
     // Filter by tier
     if (tierFilter !== "all") {
       filtered = filtered.filter(
-        (sponsor) => sponsor.type === "sponsor" && sponsor.tier === tierFilter
+        (sponsor) => (sponsor as Sponsor).tier === tierFilter
       );
     }
 
