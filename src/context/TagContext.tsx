@@ -6,7 +6,6 @@ import {
   useEffect,
 } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Item } from "../types/common";
 import { dataManager } from "../data/dataManager";
 
 interface TagContextType {
@@ -18,7 +17,7 @@ interface TagContextType {
   selectTag: (tag: string) => void;
   clearTags: () => void;
   isTagSelected: (tag: string) => boolean;
-  filterItemsByTags: (items: Item[]) => Item[];
+  filterItemsByTags: (items: any[]) => any[];
 }
 
 const TagContext = createContext<TagContextType>({
@@ -116,7 +115,7 @@ export const TagProvider = ({ children }: TagProviderProps) => {
   };
 
   // Filter items by selected tags
-  const filterItemsByTags = (items: Item[]): Item[] => {
+  const filterItemsByTags = (items: any[]): any[] => {
     return dataManager.filterItemsByTags(items, selectedTags);
   };
 

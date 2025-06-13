@@ -1,6 +1,25 @@
+import type { ItemType } from "../../types/data";
+
 // Re-export types from existing location for backward compatibility
-export type { ItemType, BaseItem, Event, Exhibit, Stall, Sponsor, Item } from "../../types/common";
-export type { DataState, ItemCore, ItemDetails, EventCore, ExhibitCore, StallCore, SponsorCore, MapData, DataStore } from "../../types/data";
+export type {
+  BaseItem,
+  Event,
+  Exhibit,
+  Stall,
+  Sponsor,
+  Item,
+} from "../../types/common";
+export type {
+  DataState,
+  ItemCore,
+  ItemDetails,
+  EventCore,
+  ExhibitCore,
+  StallCore,
+  SponsorCore,
+  MapData,
+  DataStore,
+} from "../../types/data";
 
 // Additional shared types for the application
 export interface AppError {

@@ -1,7 +1,6 @@
 import {
   DataStore,
   ItemCore,
-  ItemDetails,
   EventCore,
   ExhibitCore,
   StallCore,
@@ -9,7 +8,6 @@ import {
   MapData,
   DataState,
 } from "../types/data";
-import { Item, Event, Exhibit, Stall, Sponsor } from "../types/common";
 import { events } from "./events";
 import { exhibits } from "./exhibits";
 import { stalls } from "./stalls";
@@ -355,20 +353,20 @@ class DataManager {
     return this.store.preferences;
   }
 
-  getAllEvents(): Event[] {
-    return this.getCoreEvents() as Event[];
+  getAllEvents(): any[] {
+    return this.getCoreEvents() as any[];
   }
 
-  getAllExhibits(): Exhibit[] {
-    return this.getCoreExhibits() as Exhibit[];
+  getAllExhibits(): any[] {
+    return this.getCoreExhibits() as any[];
   }
 
-  getAllStalls(): Stall[] {
-    return this.getCoreStalls() as Stall[];
+  getAllStalls(): any[] {
+    return this.getCoreStalls() as any[];
   }
 
-  getAllSponsors(): Sponsor[] {
-    return this.getCoreSponsors() as Sponsor[];
+  getAllSponsors(): any[] {
+    return this.getCoreSponsors() as any[];
   }
 
   getAllTags(): string[] {

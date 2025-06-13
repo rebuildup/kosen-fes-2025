@@ -54,10 +54,7 @@ export const getPlaceholderImage = (itemType: string): string => {
 /**
  * Get optimized image URL based on size requirements
  */
-export const getOptimizedImageUrl = (
-  imageUrl: string,
-  size: "small" | "medium" | "large" | "original" = "medium"
-): string => {
+export const getOptimizedImageUrl = (imageUrl: string): string => {
   // If it's already a placeholder or external URL, return as-is
   if (imageUrl.includes("placeholder") || imageUrl.startsWith("http")) {
     return imageUrl;
@@ -83,7 +80,7 @@ export const itemMatchesSearch = (item: Item, query: string): boolean => {
     ...(item.tags || []),
   ];
 
-  return searchableFields.some(field => 
+  return searchableFields.some((field) =>
     field?.toLowerCase().includes(searchQuery)
   );
 };
@@ -91,9 +88,12 @@ export const itemMatchesSearch = (item: Item, query: string): boolean => {
 /**
  * Check if an item matches the given tags
  */
-export const itemMatchesTags = (item: Item, selectedTags: string[]): boolean => {
+export const itemMatchesTags = (
+  item: Item,
+  selectedTags: string[]
+): boolean => {
   if (!selectedTags.length) return true;
-  return selectedTags.every(tag => item.tags?.includes(tag));
+  return selectedTags.every((tag) => item.tags?.includes(tag));
 };
 
 /**
@@ -104,9 +104,10 @@ export const filterItems = (
   searchQuery: string = "",
   selectedTags: string[] = []
 ): Item[] => {
-  return items.filter(item => 
-    itemMatchesSearch(item, searchQuery) && 
-    itemMatchesTags(item, selectedTags)
+  return items.filter(
+    (item) =>
+      itemMatchesSearch(item, searchQuery) &&
+      itemMatchesTags(item, selectedTags)
   );
 };
 
@@ -116,9 +117,10 @@ export const filterItems = (
 export const sortItemsByDateTime = (items: Item[]): Item[] => {
   return [...items].sort((a, b) => {
     // First sort by date
-    const dateComparison = new Date(a.date).getTime() - new Date(b.date).getTime();
+    const dateComparison =
+      new Date(a.date).getTime() - new Date(b.date).getTime();
     if (dateComparison !== 0) return dateComparison;
-    
+
     // If dates are equal, sort by time
     const timeA = a.time.split(" - ")[0] || "00:00";
     const timeB = b.time.split(" - ")[0] || "00:00";
@@ -145,8 +147,8 @@ export const groupItemsByDate = (items: Item[]): Record<string, Item[]> => {
  */
 export const getUniqueTagsFromItems = (items: Item[]): string[] => {
   const tagSet = new Set<string>();
-  items.forEach(item => {
-    item.tags?.forEach(tag => tagSet.add(tag));
+  items.forEach((item) => {
+    item.tags?.forEach((tag) => tagSet.add(tag));
   });
   return Array.from(tagSet).sort();
 };

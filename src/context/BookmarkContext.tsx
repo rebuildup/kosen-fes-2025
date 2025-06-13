@@ -10,7 +10,7 @@ import { dataManager } from "../data/dataManager";
 
 interface BookmarkContextType {
   bookmarks: string[];
-  bookmarkedItems: Item[];
+  bookmarkedItems: any[];
   addBookmark: (id: string) => void;
   removeBookmark: (id: string) => void;
   toggleBookmark: (id: string) => void;
@@ -48,7 +48,7 @@ export const BookmarkProvider = ({ children }: BookmarkProviderProps) => {
   });
 
   // Get all items and filter by bookmarked IDs
-  const [bookmarkedItems, setBookmarkedItems] = useState<Item[]>([]);
+  const [bookmarkedItems, setBookmarkedItems] = useState<any[]>([]);
 
   // Update bookmarked items when bookmarks change
   useEffect(() => {

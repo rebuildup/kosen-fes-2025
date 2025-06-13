@@ -57,9 +57,14 @@ export interface DataState<T> {
 
 // マップデータの型
 export interface MapData {
-  buildings: Building[];
-  paths: Path[];
+  buildings?: Building[];
+  paths?: Path[];
   locations: MapLocation[];
+  bounds?: {
+    width: number;
+    height: number;
+    viewBox: string;
+  };
 }
 
 export interface Path {
@@ -75,12 +80,11 @@ export interface Point {
 export interface MapLocation {
   id: string;
   name: string;
-  buildingId: string;
-  room?: string;
-  coordinates: {
-    x: number;
-    y: number;
-  };
+  centerX: number;
+  centerY: number;
+  polygon?: string;
+  type?: string;
+  rooms?: string[];
 }
 
 // データストアの型
