@@ -4,10 +4,8 @@ import { createRoot } from "react-dom/client";
 import { HashRouter } from "react-router-dom"; // Changed from BrowserRouter to HashRouter
 import App from "./App";
 
-// Import global styles - TailwindCSS MUST load first so utilities take precedence
+// Import Tailwind CSS v4 styles
 import "./index.css";
-import "./styles/theme.css";
-import "./styles/global.css";
 
 // Get root element
 const rootElement = document.getElementById("root");
