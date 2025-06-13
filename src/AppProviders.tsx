@@ -3,6 +3,7 @@ import { ReactNode } from "react";
 import { ThemeProvider } from "./context/ThemeContext";
 import { LanguageProvider } from "./context/LanguageContext";
 import { DataProvider } from "./context/DataContext";
+import { BookmarkProvider } from "./context/BookmarkContext";
 
 interface AppProvidersProps {
   children: ReactNode;
@@ -13,7 +14,7 @@ export const AppProviders = ({ children }: AppProvidersProps) => {
     <DataProvider>
       <ThemeProvider>
         <LanguageProvider>
-          {children}
+          <BookmarkProvider>{children}</BookmarkProvider>
         </LanguageProvider>
       </ThemeProvider>
     </DataProvider>

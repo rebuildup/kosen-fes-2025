@@ -1,16 +1,67 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useLanguage } from "../context/LanguageContext";
+import { useData } from "../context/DataContext";
+import { ItemCore } from "../types/data";
 import { Item } from "../types/common";
-import { events } from "../data/events";
-import { exhibits } from "../data/exhibits";
-import { stalls } from "../data/stalls";
 import FeaturedCard from "../components/common/FeaturedCard";
 import CardGrid from "../components/common/CardGrid";
 import TagCloud from "../components/common/TagCloud";
 
+// ItemCoreをItem型に変換するヘルパー関数
+const convertItemCoreToItem = (itemCore: ItemCore): Item => {
+  const baseItem = {
+    id: itemCore.id,
+    title: itemCore.title,
+    description: "", // ItemCoreにはdescriptionがないので空にする
+    imageUrl: itemCore.imageUrl,
+    date: itemCore.date || "",
+    time: itemCore.time || "",
+    location: itemCore.location,
+    tags: itemCore.tags,
+  };
+
+  switch (itemCore.type) {
+    case "event":
+      return {
+        ...baseItem,
+        type: "event",
+        organizer: (itemCore as any).organizer || "",
+        duration: (itemCore as any).duration || 0,
+      };
+    case "exhibit":
+      return {
+        ...baseItem,
+        type: "exhibit",
+        creator: (itemCore as any).creator || "",
+      };
+    case "stall":
+      return {
+        ...baseItem,
+        type: "stall",
+        products: [],
+      };
+    case "sponsor":
+      return {
+        ...baseItem,
+        type: "sponsor",
+        website: "",
+        tier: "bronze",
+      };
+    default:
+      // デフォルトはeventとして扱う
+      return {
+        ...baseItem,
+        type: "event",
+        organizer: "",
+        duration: 0,
+      };
+  }
+};
+
 const Home = () => {
   const { t } = useLanguage();
+  const { events, exhibits, stalls, getPopularTags } = useData();
   const [featuredEvents, setFeaturedEvents] = useState<Item[]>([]);
   const [featuredExhibits, setFeaturedExhibits] = useState<Item[]>([]);
   const [featuredStalls, setFeaturedStalls] = useState<Item[]>([]);
@@ -21,8 +72,12 @@ const Home = () => {
 
   // Get unique dates from all items
   const allDates = [
-    ...new Set([...events, ...exhibits, ...stalls].map((item) => item.date)),
-  ].sort();
+    ...new Set(
+      [...events, ...exhibits, ...stalls].map((item) => item.date || "")
+    ),
+  ]
+    .filter((date) => date !== "")
+    .sort();
 
   // Group items by date
   useEffect(() => {
@@ -30,34 +85,23 @@ const Home = () => {
     const byDate: { [date: string]: Item[] } = {};
 
     allDates.forEach((date) => {
-      byDate[date] = allItems.filter((item) => item.date === date);
+      byDate[date] = allItems
+        .filter((item) => item.date === date)
+        .map(convertItemCoreToItem);
     });
 
     setTimelineItems(byDate);
-  }, []);
+  }, [events, exhibits, stalls, allDates]);
 
   // Get featured items
   useEffect(() => {
-    setFeaturedEvents(events.slice(0, 2));
-    setFeaturedExhibits(exhibits.slice(0, 2));
-    setFeaturedStalls(stalls.slice(0, 1));
+    setFeaturedEvents(events.slice(0, 2).map(convertItemCoreToItem));
+    setFeaturedExhibits(exhibits.slice(0, 2).map(convertItemCoreToItem));
+    setFeaturedStalls(stalls.slice(0, 1).map(convertItemCoreToItem));
 
-    // Extract popular tags
-    const allItems = [...events, ...exhibits, ...stalls];
-    const tagCounts: { [tag: string]: number } = {};
-    allItems.forEach((item) => {
-      item.tags.forEach((tag) => {
-        tagCounts[tag] = (tagCounts[tag] || 0) + 1;
-      });
-    });
-
-    const sortedTags = Object.entries(tagCounts)
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, 8)
-      .map(([tag]) => tag);
-
-    setPopularTags(sortedTags);
-  }, []);
+    // Get popular tags from DataContext
+    setPopularTags(getPopularTags(8));
+  }, [events, exhibits, stalls, getPopularTags]);
 
   // Format date for display
   const formatDate = (dateStr: string) => {

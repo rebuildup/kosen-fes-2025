@@ -6,7 +6,7 @@ import {
   ReactNode,
 } from "react";
 import { Item } from "../types/common";
-import { dataManager } from "../data/dataManager";
+import dataManager from "../data/dataManager";
 
 interface BookmarkContextType {
   bookmarks: string[];

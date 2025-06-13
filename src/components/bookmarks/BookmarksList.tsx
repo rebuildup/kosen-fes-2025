@@ -19,7 +19,6 @@ const BookmarksList = () => {
   >("default");
   const [groupedItems, setGroupedItems] = useState<Record<string, Item[]>>({});
 
-  // Define filter options
   const filterOptions: BookmarkFilter[] = [
     { type: "all", label: t("bookmarks.all") },
     { type: "event", label: t("detail.event") },
@@ -27,11 +26,9 @@ const BookmarksList = () => {
     { type: "stall", label: t("detail.stall") },
   ];
 
-  // Group items by date when bookmarkedItems change
   useEffect(() => {
     let filtered = bookmarkedItems;
 
-    // Apply type filter
     if (filter !== "all") {
       filtered = bookmarkedItems.filter((item) => item.type === filter);
     }
@@ -45,10 +42,8 @@ const BookmarksList = () => {
       byDate[item.date].push(item);
     });
 
-    // Sort items in each date group
     Object.keys(byDate).forEach((date) => {
       byDate[date].sort((a, b) => {
-        // Sort first by time, then by title
         const aTime = a.time.split(" - ")[0];
         const bTime = b.time.split(" - ")[0];
 
@@ -62,7 +57,6 @@ const BookmarksList = () => {
     setGroupedItems(byDate);
   }, [bookmarkedItems, filter]);
 
-  // Format date for display
   const formatDate = (dateStr: string) => {
     try {
       const date = new Date(dateStr);
@@ -90,7 +84,6 @@ const BookmarksList = () => {
     );
   }
 
-  // Get all dates sorted
   const dates = Object.keys(groupedItems).sort();
 
   return (

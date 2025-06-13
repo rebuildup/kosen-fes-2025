@@ -1,12 +1,6 @@
 /// <reference types='node' />
 
-/**
- * Application Configuration
- * Central configuration for the Kosen Festival 2025 website
- */
-
 export const APP_CONFIG = {
-  // Site metadata
   site: {
     title: "宇部高専文化祭 2025",
     titleEn: "Ube Kosen Festival 2025",
@@ -17,7 +11,6 @@ export const APP_CONFIG = {
     keywords: ["宇部高専", "文化祭", "イベント", "展示", "屋台"],
   },
 
-  // Festival dates and times
   festival: {
     name: "宇部高専文化祭 2025",
     nameEn: "Ube Kosen Festival 2025",
@@ -34,7 +27,6 @@ export const APP_CONFIG = {
     locationEn: "Ube National College of Technology",
   },
 
-  // Feature flags
   features: {
     darkMode: true,
     bookmarks: true,
@@ -46,7 +38,6 @@ export const APP_CONFIG = {
     notifications: false,
   },
 
-  // Performance settings
   performance: {
     enableLazyLoading: true,
     enableImageOptimization: true,
@@ -56,7 +47,6 @@ export const APP_CONFIG = {
     cacheTimeout: 300000, // 5 minutes
   },
 
-  // UI configuration
   ui: {
     defaultTheme: "light" as const,
     defaultLanguage: "ja" as const,
@@ -67,7 +57,6 @@ export const APP_CONFIG = {
     mobileBreakpoint: 768,
   },
 
-  // Content limits
   limits: {
     maxBookmarks: 100,
     maxSearchHistory: 10,
@@ -77,7 +66,6 @@ export const APP_CONFIG = {
     searchQueryMaxLength: 100,
   },
 
-  // API configuration (for future use)
   api: {
     baseUrl: "",
     timeout: 10000,
@@ -85,7 +73,6 @@ export const APP_CONFIG = {
     retryDelay: 1000,
   },
 
-  // Analytics configuration (if enabled)
   analytics: {
     enabled: false,
     trackingId: "",
@@ -94,7 +81,6 @@ export const APP_CONFIG = {
     enableErrors: true,
   },
 
-  // Contact information
   contact: {
     email: "festival@ube-k.ac.jp",
     phone: "+81-836-35-4951",
@@ -102,7 +88,6 @@ export const APP_CONFIG = {
     addressEn: "2-14-1 Tokiwadai, Ube, Yamaguchi 755-8555, Japan",
   },
 
-  // Social media links
   social: {
     twitter: "",
     instagram: "",
@@ -110,7 +95,6 @@ export const APP_CONFIG = {
     youtube: "",
   },
 
-  // Error messages
   errors: {
     generic: "エラーが発生しました",
     genericEn: "An error occurred",
@@ -120,7 +104,6 @@ export const APP_CONFIG = {
     notFoundEn: "Page not found",
   },
 
-  // Development settings
   development: {
     enableDebugMode: process.env.NODE_ENV === "development",
     enablePerformanceMonitoring: false,
@@ -129,10 +112,8 @@ export const APP_CONFIG = {
   },
 } as const;
 
-// Type for configuration
 export type AppConfig = typeof APP_CONFIG;
 
-// Helper functions
 export const isFeatureEnabled = (
   feature: keyof typeof APP_CONFIG.features
 ): boolean => {

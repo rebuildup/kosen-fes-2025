@@ -7,9 +7,6 @@ export interface IconProps {
   className?: string;
 }
 
-/**
- * Base Icon component with common props and enhanced accessibility
- */
 export const Icon: React.FC<React.SVGProps<SVGSVGElement> & IconProps> = ({
   size = 24,
   color = "currentColor",
@@ -39,7 +36,6 @@ export const Icon: React.FC<React.SVGProps<SVGSVGElement> & IconProps> = ({
   );
 };
 
-// Re-export all icon components for easy access
 export { AlertIcon } from "../../components/icons/AlertIcon";
 export { BookmarkIcon } from "../../components/icons/BookmarkIcon";
 export { EventIcon } from "../../components/icons/EventIcon";

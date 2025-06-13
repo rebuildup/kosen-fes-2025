@@ -27,14 +27,12 @@ const BookmarkButton = ({
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    // Trigger on Enter or Space key press
     if (e.key === "Enter" || e.key === " ") {
       e.preventDefault();
       toggleBookmark(itemId);
     }
   };
 
-  // Determine aria attributes and text based on state
   const ariaLabel = isActive
     ? t("actions.removeBookmark")
     : t("actions.bookmark");
@@ -43,7 +41,6 @@ const BookmarkButton = ({
     ? t("actions.removeBookmark")
     : t("actions.bookmark");
 
-  // Determine class based on size
   const sizeClass = `bookmark-button-${size}`;
 
   return (

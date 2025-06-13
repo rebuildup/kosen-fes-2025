@@ -3,8 +3,8 @@ import { RouteObject } from "react-router-dom";
 import Layout from "./components/layout/Layout";
 import Error from "./pages/Error";
 import LoadingIndicator from "./components/common/LoadingIndicator";
+import { AppProviders } from "./AppProviders";
 
-// Lazy load page components
 const Home = lazy(() => import("./pages/Home"));
 const Events = lazy(() => import("./pages/Events"));
 const Exhibits = lazy(() => import("./pages/Exhibits"));
@@ -16,7 +16,6 @@ const Bookmarks = lazy(() => import("./pages/Bookmarks"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const Sponsors = lazy(() => import("./pages/Sponsors"));
 
-// Suspense wrapper for lazy-loaded components
 const withSuspense = (Component: React.ComponentType) => (
   <Suspense fallback={<LoadingIndicator />}>
     <Component />
@@ -26,7 +25,11 @@ const withSuspense = (Component: React.ComponentType) => (
 const routes: RouteObject[] = [
   {
     path: "/",
-    element: <Layout />,
+    element: (
+      <AppProviders>
+        <Layout />
+      </AppProviders>
+    ),
     errorElement: <Error />,
     children: [
       { index: true, element: withSuspense(Home) },

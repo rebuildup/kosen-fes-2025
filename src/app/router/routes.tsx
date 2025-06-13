@@ -4,7 +4,6 @@ import Layout from "../../components/layout/Layout";
 import Error from "../../pages/Error";
 import LoadingIndicator from "../../shared/components/feedback/LoadingIndicator";
 
-// Lazy load page components for better performance
 const Home = lazy(() => import("../../pages/Home"));
 const Events = lazy(() => import("../../pages/Events"));
 const Exhibits = lazy(() => import("../../pages/Exhibits"));
@@ -16,94 +15,87 @@ const Bookmarks = lazy(() => import("../../pages/Bookmarks"));
 const NotFound = lazy(() => import("../../pages/NotFound"));
 const Sponsors = lazy(() => import("../../pages/Sponsors"));
 
-/**
- * Higher-order component to wrap lazy-loaded components with Suspense
- */
 const withSuspense = (Component: React.ComponentType) => (
   <Suspense fallback={<LoadingIndicator />}>
     <Component />
   </Suspense>
 );
 
-/**
- * Application route configuration
- * Uses React Router v6 nested routing with lazy loading
- */
 export const routes: RouteObject[] = [
   {
     path: "/",
     element: <Layout />,
     errorElement: <Error />,
     children: [
-      { 
-        index: true, 
+      {
+        index: true,
         element: withSuspense(Home),
         handle: {
-          crumb: "home"
-        }
+          crumb: "home",
+        },
       },
-      { 
-        path: "events", 
+      {
+        path: "events",
         element: withSuspense(Events),
         handle: {
-          crumb: "events"
-        }
+          crumb: "events",
+        },
       },
-      { 
-        path: "exhibits", 
+      {
+        path: "exhibits",
         element: withSuspense(Exhibits),
         handle: {
-          crumb: "exhibits"
-        }
+          crumb: "exhibits",
+        },
       },
-      { 
-        path: "schedule", 
+      {
+        path: "schedule",
         element: withSuspense(TimeSchedule),
         handle: {
-          crumb: "schedule"
-        }
+          crumb: "schedule",
+        },
       },
-      { 
-        path: "map", 
+      {
+        path: "map",
         element: withSuspense(Map),
         handle: {
-          crumb: "map"
-        }
+          crumb: "map",
+        },
       },
-      { 
-        path: "detail/:type/:id", 
+      {
+        path: "detail/:type/:id",
         element: withSuspense(Detail),
         handle: {
-          crumb: "detail"
-        }
+          crumb: "detail",
+        },
       },
-      { 
-        path: "search", 
+      {
+        path: "search",
         element: withSuspense(Search),
         handle: {
-          crumb: "search"
-        }
+          crumb: "search",
+        },
       },
-      { 
-        path: "bookmarks", 
+      {
+        path: "bookmarks",
         element: withSuspense(Bookmarks),
         handle: {
-          crumb: "bookmarks"
-        }
+          crumb: "bookmarks",
+        },
       },
-      { 
-        path: "sponsors", 
+      {
+        path: "sponsors",
         element: withSuspense(Sponsors),
         handle: {
-          crumb: "sponsors"
-        }
+          crumb: "sponsors",
+        },
       },
-      { 
-        path: "*", 
+      {
+        path: "*",
         element: withSuspense(NotFound),
         handle: {
-          crumb: "notfound"
-        }
+          crumb: "notfound",
+        },
       },
     ],
   },

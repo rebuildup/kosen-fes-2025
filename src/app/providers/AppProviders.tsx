@@ -10,10 +10,6 @@ interface AppProvidersProps {
   children: ReactNode;
 }
 
-/**
- * Centralized provider configuration for the entire application
- * Provides global context for theme, language, data management, search, bookmarks, and tags
- */
 export const AppProviders = ({ children }: AppProvidersProps) => {
   return (
     <DataProvider>
@@ -21,9 +17,7 @@ export const AppProviders = ({ children }: AppProvidersProps) => {
         <LanguageProvider>
           <SearchProvider>
             <BookmarkProvider>
-              <TagProvider>
-                {children}
-              </TagProvider>
+              <TagProvider>{children}</TagProvider>
             </BookmarkProvider>
           </SearchProvider>
         </LanguageProvider>

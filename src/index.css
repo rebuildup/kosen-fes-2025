@@ -1,101 +1,159 @@
 @import "tailwindcss";
 
-/* Tailwind CSS v4 Custom Theme Configuration */
 @theme {
-  /* Custom Colors - Festival Theme */
-  --color-primary-50: #eff6ff;
-  --color-primary-100: #dbeafe;
-  --color-primary-200: #bfdbfe;
-  --color-primary-300: #93c5fd;
-  --color-primary-400: #60a5fa;
-  --color-primary-500: #3b82f6;
-  --color-primary-600: #2563eb;
-  --color-primary-700: #1d4ed8;
-  --color-primary-800: #1e40af;
-  --color-primary-900: #1e3a8a;
-  --color-primary-950: #172554;
+  /* カラーパレット */
+  --color-primary: 59 130 246; /* blue-500 */
+  --color-primary-hover: 37 99 235; /* blue-600 */
+  --color-secondary: 100 116 139; /* slate-500 */
+  --color-secondary-hover: 71 85 105; /* slate-600 */
 
-  --color-secondary-50: #f8fafc;
-  --color-secondary-100: #f1f5f9;
-  --color-secondary-200: #e2e8f0;
-  --color-secondary-300: #cbd5e1;
-  --color-secondary-400: #94a3b8;
-  --color-secondary-500: #64748b;
-  --color-secondary-600: #475569;
-  --color-secondary-700: #334155;
-  --color-secondary-800: #1e293b;
-  --color-secondary-900: #0f172a;
-  --color-secondary-950: #020617;
+  /* フェスティバルテーマ */
+  --color-festival-blue: 37 99 235;
+  --color-festival-purple: 147 51 234;
+  --color-festival-pink: 236 72 153;
+  --color-festival-yellow: 245 158 11;
 
-  --color-accent-50: #fdf4ff;
-  --color-accent-100: #fae8ff;
-  --color-accent-200: #f5d0fe;
-  --color-accent-300: #f0abfc;
-  --color-accent-400: #e879f9;
-  --color-accent-500: #d946ef;
-  --color-accent-600: #c026d3;
-  --color-accent-700: #a21caf;
-  --color-accent-800: #86198f;
-  --color-accent-900: #701a75;
-  --color-accent-950: #4a044e;
+  /* グレー系（ライト・ダークモード共通） */
+  --color-gray-50: 248 250 252;
+  --color-gray-100: 241 245 249;
+  --color-gray-200: 226 232 240;
+  --color-gray-300: 203 213 225;
+  --color-gray-400: 148 163 184;
+  --color-gray-500: 100 116 139;
+  --color-gray-600: 71 85 105;
+  --color-gray-700: 51 65 85;
+  --color-gray-800: 30 41 59;
+  --color-gray-900: 15 23 42;
 
-  /* Custom Font Families */
-  --font-family-sans: "Inter", system-ui, sans-serif;
-  --font-family-mono: "JetBrains Mono", monospace;
+  /* フォント */
+  --font-sans: "Inter", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
 
-  /* Custom Spacing */
-  --spacing-18: 4.5rem;
-  --spacing-88: 22rem;
-  --spacing-112: 28rem;
-  --spacing-128: 32rem;
+  /* アニメーション */
+  --animate-fade-in: fade-in 0.5s ease-out;
+  --animate-slide-up: slide-up 0.3s ease-out;
+  --animate-bounce-soft: bounce-soft 2s ease-in-out infinite;
+  --animate-pulse-soft: pulse-soft 2s ease-in-out infinite;
 
-  /* Custom Max Width */
-  --max-width-8xl: 88rem;
-  --max-width-9xl: 96rem;
-
-  /* Custom Animations */
-  --animate-fade-in: fade-in 0.5s ease-in-out;
-  --animate-slide-in: slide-in 0.3s ease-out;
-  --animate-bounce-soft: bounce-soft 2s infinite;
-  --animate-pulse-soft: pulse-soft 3s ease-in-out infinite;
-}
-
-@keyframes fade-in {
-  from {
-    opacity: 0;
+  /* アニメーションキーフレーム */
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
   }
-  to {
-    opacity: 1;
-  }
-}
 
-@keyframes slide-in {
-  from {
-    transform: translateY(-10px);
-    opacity: 0;
+  @keyframes slide-up {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
-  to {
-    transform: translateY(0);
-    opacity: 1;
+
+  @keyframes bounce-soft {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-4px);
+    }
+  }
+
+  @keyframes pulse-soft {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.8;
+    }
   }
 }
 
-@keyframes bounce-soft {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-5px);
+/* ダークモード設定 (メディアクエリベース) */
+@media (prefers-color-scheme: dark) {
+  @theme {
+    --color-primary: 96 165 250; /* blue-400 */
+    --color-primary-hover: 59 130 246; /* blue-500 */
+    --color-secondary: 148 163 184; /* slate-400 */
+    --color-secondary-hover: 203 213 225; /* slate-300 */
   }
 }
 
-@keyframes pulse-soft {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.8;
-  }
+/* ダークモード設定 (クラスベース - 手動切り替え用) */
+:root[data-theme="dark"] {
+  --color-primary: 96 165 250; /* blue-400 */
+  --color-primary-hover: 59 130 246; /* blue-500 */
+  --color-secondary: 148 163 184; /* slate-400 */
+  --color-secondary-hover: 203 213 225; /* slate-300 */
+}
+
+.dark {
+  color-scheme: dark;
+}
+
+/* カスタムクラス（v4対応） */
+.theme-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  background-color: rgb(var(--color-gray-100));
+  color: rgb(var(--color-gray-700));
+  border-radius: 0.5rem;
+  border: 1px solid rgb(var(--color-gray-200));
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.theme-toggle:hover {
+  background-color: rgb(var(--color-gray-200));
+  color: rgb(var(--color-gray-800));
+}
+
+.dark .theme-toggle {
+  background-color: rgb(var(--color-gray-800));
+  color: rgb(var(--color-gray-300));
+  border-color: rgb(var(--color-gray-700));
+}
+
+.dark .theme-toggle:hover {
+  background-color: rgb(var(--color-gray-700));
+  color: rgb(var(--color-gray-200));
+}
+
+/* フェスティバル用グラデーション */
+.festival-gradient {
+  background: linear-gradient(
+    135deg,
+    rgb(var(--color-festival-blue)),
+    rgb(var(--color-festival-purple)),
+    rgb(var(--color-festival-pink)),
+    rgb(var(--color-festival-yellow))
+  );
+}
+
+/* カード効果 */
+.card-hover {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.dark .card-hover:hover {
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3),
+    0 4px 6px -2px rgba(0, 0, 0, 0.1);
 }

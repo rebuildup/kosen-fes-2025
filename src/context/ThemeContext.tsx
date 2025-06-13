@@ -27,84 +27,63 @@ interface ThemeProviderProps {
 }
 
 export const ThemeProvider = ({ children }: ThemeProviderProps) => {
-  // Initialize theme from localStorage or system preference
+  // システム設定またはローカルストレージからテーマを初期化
   const [theme, setTheme] = useState<Theme>(() => {
-    // Try to get theme from localStorage
     const savedTheme = localStorage.getItem("theme") as Theme | null;
 
     if (savedTheme && (savedTheme === "light" || savedTheme === "dark")) {
       return savedTheme;
     }
 
-    // If no saved theme, check system preference
-    if (
-      window.matchMedia &&
-      window.matchMedia("(prefers-color-scheme: dark)").matches
-    ) {
+    // システム設定を確認
+    if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
       return "dark";
     }
 
-    // Default to light theme
     return "light";
   });
 
-  // Calculate if theme is dark
+  // テーマ切り替え機能
+  const toggleTheme = () => {
+    const newTheme = theme === "light" ? "dark" : "light";
+    setTheme(newTheme);
+    localStorage.setItem("theme", newTheme);
+  };
+
   const isDark = theme === "dark";
 
-  // Effect to update document attributes when theme changes
+  // Tailwind CSS v4対応: データ属性を使用したダークモード管理
   useEffect(() => {
-    // Update data-theme attribute on document element
-    document.documentElement.setAttribute("data-theme", theme);
+    const root = document.documentElement;
 
-    // Store theme preference in localStorage
-    localStorage.setItem("theme", theme);
-
-    // Apply appropriate class to body for any non-CSS variable styles
     if (theme === "dark") {
-      document.body.classList.add("dark-theme");
-      document.body.classList.remove("light-theme");
+      root.setAttribute("data-theme", "dark");
+      root.classList.add("dark");
     } else {
-      document.body.classList.add("light-theme");
-      document.body.classList.remove("dark-theme");
+      root.setAttribute("data-theme", "light");
+      root.classList.remove("dark");
     }
+
+    // color-schemeプロパティを設定（スクロールバーなどのブラウザコンポーネント用）
+    root.style.colorScheme = theme;
   }, [theme]);
 
-  // Listen for system theme changes
+  // システム設定の変更を監視
   useEffect(() => {
     const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
 
-    const handleChange = (e: MediaQueryListEvent) => {
-      // Only update if user hasn't explicitly set a preference
-      if (!localStorage.getItem("theme")) {
-        setTheme(e.matches ? "dark" : "light");
+    const handleChange = (event: MediaQueryListEvent) => {
+      // ローカルストレージに保存されたテーマがない場合のみシステム設定に従う
+      const savedTheme = localStorage.getItem("theme");
+      if (!savedTheme) {
+        setTheme(event.matches ? "dark" : "light");
       }
     };
 
-    // Add listener for theme changes
-    if (mediaQuery.addEventListener) {
-      mediaQuery.addEventListener("change", handleChange);
-    } else {
-      // For older browsers
-      mediaQuery.addListener(handleChange);
-    }
-
-    // Clean up
-    return () => {
-      if (mediaQuery.removeEventListener) {
-        mediaQuery.removeEventListener("change", handleChange);
-      } else {
-        // For older browsers
-        mediaQuery.removeListener(handleChange);
-      }
-    };
+    mediaQuery.addEventListener("change", handleChange);
+    return () => mediaQuery.removeEventListener("change", handleChange);
   }, []);
 
-  // Function to toggle between light and dark themes
-  const toggleTheme = () => {
-    setTheme((prevTheme) => (prevTheme === "light" ? "dark" : "light"));
-  };
-
-  // Provide the theme context to all children
   return (
     <ThemeContext.Provider value={{ theme, toggleTheme, isDark }}>
       {children}

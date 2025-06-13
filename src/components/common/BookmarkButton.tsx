@@ -26,7 +26,6 @@ const BookmarkButton = ({
     toggleBookmark(itemId);
   };
 
-  // Determine class based on size
   const sizeClass = `bookmark-button-${size}`;
 
   return (

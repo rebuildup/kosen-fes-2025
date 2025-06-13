@@ -1,24 +1,20 @@
 // src/main.tsx
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { HashRouter } from "react-router-dom"; // Changed from BrowserRouter to HashRouter
-import App from "./App";
+import { createHashRouter, RouterProvider } from "react-router-dom";
+import routes from "./routes";
 
-// Import Tailwind CSS v4 styles
 import "./index.css";
 
-// Get root element
+// HashRouterを使用してルートを作成
+const router = createHashRouter(routes);
+
 const rootElement = document.getElementById("root");
 
-// Create and render app
 if (rootElement) {
   createRoot(rootElement).render(
     <StrictMode>
-      <HashRouter>
-        {" "}
-        {/* Removed basename parameter as it's not needed with HashRouter */}
-        <App />
-      </HashRouter>
+      <RouterProvider router={router} />
     </StrictMode>
   );
 } else {
