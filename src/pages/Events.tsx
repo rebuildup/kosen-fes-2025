@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useLanguage } from "../context/LanguageContext";
 import { useTag } from "../context/TagContext";
-import { events } from "../data/events";
+import { dataManager } from "../data/dataManager";
 import { Item } from "../types/common";
 import CardGrid from "../components/common/CardGrid";
 import CardListToggle from "../components/common/CardListToggle";
@@ -18,12 +18,13 @@ const Events = () => {
   const [viewMode, setViewMode] = useState<
     "default" | "compact" | "grid" | "list"
   >("default");
-  const [filteredEvents, setFilteredEvents] = useState<Item[]>(events);
+  const [filteredEvents, setFilteredEvents] = useState<Item[]>([]);
   const [dayFilter, setDayFilter] = useState<"all" | "day1" | "day2">("all");
 
   // Filter events by selected day and tags
   useEffect(() => {
-    let filtered = [...events] as Item[];
+    // Get all events from dataManager
+    let filtered = dataManager.getAllEvents() as Item[];
 
     // Filter by day
     if (dayFilter !== "all") {
