@@ -1,4 +1,6 @@
 // 基本的なデータ型
+export type ItemType = "event" | "exhibit" | "stall" | "sponsor";
+
 export interface BaseEntity {
   id: string;
   type: string;
@@ -57,6 +59,7 @@ export interface DataState<T> {
 export interface MapData {
   buildings: Building[];
   paths: Path[];
+  locations: MapLocation[];
 }
 
 export interface Path {
@@ -67,6 +70,17 @@ export interface Path {
 export interface Point {
   x: number;
   y: number;
+}
+
+export interface MapLocation {
+  id: string;
+  name: string;
+  buildingId: string;
+  room?: string;
+  coordinates: {
+    x: number;
+    y: number;
+  };
 }
 
 // データストアの型

@@ -1,65 +1,32 @@
-/* Modern CSS Reset */
-
-/* Box sizing rules */
+/* Reset CSS */
 *,
 *::before,
 *::after {
   box-sizing: border-box;
-}
-
-/* Remove default margin and padding */
-html,
-body,
-h1,
-h2,
-h3,
-h4,
-h5,
-h6,
-p,
-figure,
-blockquote,
-dl,
-dd {
   margin: 0;
   padding: 0;
 }
 
-/* Set core body defaults */
+html {
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+}
+
 body {
-  min-height: 100vh;
-  scroll-behavior: smooth;
-  text-rendering: optimizeSpeed;
-  line-height: 1.5;
-  overflow-x: hidden;
-}
-
-/* Remove list styles on ul, ol elements */
-ul,
-ol {
-  list-style: none;
-  padding: 0;
   margin: 0;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
 }
 
-/* A elements that don't have a class get default styles */
-a:not([class]) {
-  text-decoration-skip-ink: auto;
-}
-
-/* Make images easier to work with */
 img,
-picture {
-  max-width: 100%;
+picture,
+video,
+canvas,
+svg {
   display: block;
+  max-width: 100%;
 }
 
-/* Natural flow and rhythm in articles by default */
-article > * + * {
-  margin-top: 1em;
-}
-
-/* Inherit fonts for inputs and buttons */
 input,
 button,
 textarea,
@@ -67,89 +34,17 @@ select {
   font: inherit;
 }
 
-/* Remove all animations and transitions for people that prefer not to see them */
-@media (prefers-reduced-motion: reduce) {
-  * {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
-  }
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  overflow-wrap: break-word;
 }
 
-/* Focus styles */
-:focus-visible {
-  outline: 2px solid var(--primary);
-  outline-offset: 2px;
-}
-
-/* Add accessible focus indicators */
-button:focus-visible,
-a:focus-visible,
-input:focus-visible,
-select:focus-visible,
-textarea:focus-visible {
-  outline: 2px solid var(--primary);
-  outline-offset: 2px;
-}
-
-/* Make sure textareas show scrollbars when necessary */
-textarea {
-  overflow: auto;
-}
-
-/* Remove the default touch highlight on mobile */
-/* From the CSS Working Group: https://drafts.csswg.org/css-ui-4/#outline-props */
-::-webkit-tap-highlight-color {
-  color: transparent;
-}
-
-/* Set proper mark color */
-mark {
-  background-color: rgba(var(--accent-rgb), 0.3);
-  color: inherit;
-}
-
-/* Set proper abbr styling */
-abbr[title] {
-  border-bottom: none;
-  text-decoration: underline;
-  text-decoration: underline dotted;
-  cursor: help;
-}
-
-/* Set proper code, kbd, samp, and pre styling */
-code,
-kbd,
-samp,
-pre {
-  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", Menlo,
-    monospace;
-  font-size: 0.9em;
-}
-
-/* Set proper hr styling */
-hr {
-  border: 0;
-  height: 1px;
-  background: var(--border-light);
-  margin: 1em 0;
-}
-
-/* Ensure iOS doesn't add styles to certain elements */
-/* Ensure iOS doesn't add styles to certain elements */
-button,
-[type="button"],
-[type="reset"],
-[type="submit"] {
-  -webkit-appearance: button;
-  appearance: button;
-}
-
-/* Set proper line breaks */
-pre,
-code,
-kbd,
-samp {
-  white-space: pre-wrap;
+#root,
+#__next {
+  isolation: isolate;
 }

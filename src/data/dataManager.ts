@@ -354,6 +354,59 @@ class DataManager {
   getPreferences() {
     return this.store.preferences;
   }
+
+  getAllEvents(): Event[] {
+    return this.getCoreEvents() as Event[];
+  }
+
+  getAllExhibits(): Exhibit[] {
+    return this.getCoreExhibits() as Exhibit[];
+  }
+
+  getAllStalls(): Stall[] {
+    return this.getCoreStalls() as Stall[];
+  }
+
+  getAllSponsors(): Sponsor[] {
+    return this.getCoreSponsors() as Sponsor[];
+  }
+
+  getAllTags(): string[] {
+    const allItems = this.getAllCoreItems();
+    const tagSet = new Set<string>();
+    allItems.forEach((item) => {
+      item.tags.forEach((tag) => tagSet.add(tag));
+    });
+    return Array.from(tagSet);
+  }
+
+  getTagCounts(): Record<string, number> {
+    const allItems = this.getAllCoreItems();
+    const counts: Record<string, number> = {};
+    allItems.forEach((item) => {
+      item.tags.forEach((tag) => {
+        counts[tag] = (counts[tag] || 0) + 1;
+      });
+    });
+    return counts;
+  }
+
+  getPopularTags(limit: number): string[] {
+    const counts = this.getTagCounts();
+    return Object.entries(counts)
+      .sort(([, a], [, b]) => b - a)
+      .slice(0, limit)
+      .map(([tag]) => tag);
+  }
+
+  getItemsByIds(ids: string[]): ItemCore[] {
+    const allItems = this.getAllCoreItems();
+    return allItems.filter((item) => ids.includes(item.id));
+  }
+
+  filterItemsByTags(items: ItemCore[], tags: string[]): ItemCore[] {
+    return items.filter((item) => tags.every((tag) => item.tags.includes(tag)));
+  }
 }
 
 // Singleton instance
