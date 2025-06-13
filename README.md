@@ -23,7 +23,9 @@
 - **React Router**：クライアントサイドルーティング
 - **Context API**：グローバルな状態管理
 - **GSAP**：高度なアニメーションライブラリ
-- **CSS**：テーマ変数を用いたカスタムスタイル
+- **TailwindCSS 3.4.4**：ユーティリティファーストCSSフレームワーク
+- **PostCSS**：CSS変換ツール（TailwindCSS処理用）
+- **CSS Variables**：テーマ変数によるカスタマイズ
 
 ## ディレクトリ構成
 
@@ -219,10 +221,43 @@ const locationCoordinates: Record<string, { x: number; y: number }> = {
 
 ## カスタマイズ
 
-- **スタイル調整**：
-  - グローバル：`src/styles/global.css`
-  - テーマ変数：`src/styles/theme/index.css`
-  - コンポーネント別：`src/styles/components/`
+### スタイル調整
+
+- **TailwindCSS**：メインのスタイリングはTailwindCSSユーティリティクラスを使用
+  - 設定：`tailwind.config.js`
+  - カスタムクラス：`src/index.css`の `@layer` ディレクティブで追加
+- **CSS Variables**：テーマ変数は `src/styles/theme.css` で定義
+- **グローバルスタイル**：`src/styles/global.css`（必要最小限に抑制）
+- **コンポーネント**：個別のCSS filesは廃止し、TailwindCSSクラスを使用
+
+### TailwindCSS使用方法
+
+1. **基本的なユーティリティクラス**：
+   ```tsx
+   <div className="flex items-center justify-between p-4 bg-white rounded-lg shadow-md">
+     <h2 className="text-xl font-semibold text-slate-900">Title</h2>
+   </div>
+   ```
+
+2. **レスポンシブ対応**：
+   ```tsx
+   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+   ```
+
+3. **ダークモード対応**：
+   ```tsx
+   <div className="bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100">
+   ```
+
+4. **カスタムクラス追加**：`src/index.css` で `@layer` を使用
+   ```css
+   @layer components {
+     .btn-primary {
+       @apply bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700;
+     }
+   }
+   ```
+
 - **ナビゲーション編集**：ルート定義は `src/routes.tsx` を更新
 
 ## サーバー設定
