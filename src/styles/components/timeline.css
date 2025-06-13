@@ -1,6 +1,8 @@
 /* Timeline Components */
 .timeline-item {
   display: flex;
+  align-items: stretch;
+  gap: var(--spacing-lg);
   margin-bottom: var(--spacing-md);
   padding-bottom: var(--spacing-md);
   border-bottom: 1px solid var(--border-light);
@@ -10,33 +12,64 @@
   border-bottom: none;
 }
 
-.timeline-item-time {
-  width: 80px;
-  font-weight: 600;
-  color: var(--text-secondary);
-  font-size: 0.9rem;
-  padding-top: 2px;
-}
-
-.timeline-item-content {
-  flex: 1;
+.timeline-item-row {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-lg);
+  width: 100%;
 }
 
 .timeline-item-type {
+  min-width: 80px;
+  flex-shrink: 0;
   display: flex;
   align-items: center;
-  margin-bottom: var(--spacing-xs);
+  gap: var(--spacing-xs);
+}
+
+.timeline-item-title {
+  flex: 1 1 200px;
+  min-width: 0;
+  max-width: 400px;
+  margin: 0 8px;
+  font-weight: 600;
+  font-size: 1.1rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.timeline-item-time {
+  min-width: 110px;
+  text-align: right;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.timeline-item-location {
+  min-width: 120px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  flex-shrink: 0;
+}
+
+.timeline-item-bookmark {
+  margin-left: auto;
+  flex-shrink: 0;
 }
 
 .timeline-item-type-label {
   font-size: 0.8rem;
   color: var(--text-secondary);
   margin-left: var(--spacing-xs);
-}
-
-.timeline-item-title {
-  font-size: 1rem;
-  margin-bottom: var(--spacing-xs);
 }
 
 .timeline-item-title a {
@@ -47,13 +80,6 @@
 
 .timeline-item-title a:hover {
   color: var(--primary);
-}
-
-.timeline-item-location {
-  font-size: 0.85rem;
-  color: var(--text-secondary);
-  display: flex;
-  align-items: center;
 }
 
 .timeline-item-location-icon {
@@ -69,5 +95,14 @@
   .timeline-item-time {
     width: 100%;
     margin-bottom: var(--spacing-xs);
+  }
+}
+
+@media (max-width: 600px) {
+  .timeline-item-title {
+    max-width: unset;
+  }
+  .timeline-item-row {
+    gap: var(--spacing-sm);
   }
 }

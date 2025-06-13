@@ -67,12 +67,27 @@ const TimelineItem = ({ item }: TimelineItemProps) => {
       className={`timeline-item ${expanded ? "expanded" : ""}`}
       onClick={handleToggleExpand}
     >
-      <div className="timeline-item-header">
+      <div className="timeline-item-row">
         <div className="timeline-item-type">
           <ItemTypeIcon type={item.type} size="small" />
           <span className="timeline-item-type-label">{getTypeLabel()}</span>
         </div>
-
+        <h3 className="timeline-item-title">
+          <Link
+            to={`/detail/${item.type}/${item.id}`}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {item.title}
+          </Link>
+        </h3>
+        <div className="timeline-item-time">
+          <span className="timeline-item-icon">🕒</span>
+          <span>{item.time}</span>
+        </div>
+        <div className="timeline-item-location">
+          <span className="timeline-item-icon">📍</span>
+          <span>{item.location}</span>
+        </div>
         <button
           className={`timeline-item-bookmark ${
             isBookmarked(item.id) ? "bookmarked" : ""
@@ -87,28 +102,6 @@ const TimelineItem = ({ item }: TimelineItemProps) => {
           {isBookmarked(item.id) ? "★" : "☆"}
         </button>
       </div>
-
-      <h3 className="timeline-item-title">
-        <Link
-          to={`/detail/${item.type}/${item.id}`}
-          onClick={(e) => e.stopPropagation()}
-        >
-          {item.title}
-        </Link>
-      </h3>
-
-      <div className="timeline-item-meta">
-        <div className="timeline-item-time">
-          <span className="timeline-item-icon">🕒</span>
-          <span>{item.time}</span>
-        </div>
-
-        <div className="timeline-item-location">
-          <span className="timeline-item-icon">📍</span>
-          <span>{item.location}</span>
-        </div>
-      </div>
-
       {expanded && (
         <div className="timeline-item-expanded">
           {item.imageUrl && (
@@ -116,9 +109,7 @@ const TimelineItem = ({ item }: TimelineItemProps) => {
               <img src={item.imageUrl} alt={item.title} />
             </div>
           )}
-
           <p className="timeline-item-description">{item.description}</p>
-
           {getOrganization() && (
             <div className="timeline-item-organization">
               <span className="timeline-item-icon">👥</span>
@@ -127,7 +118,6 @@ const TimelineItem = ({ item }: TimelineItemProps) => {
               </span>
             </div>
           )}
-
           {item.tags && item.tags.length > 0 && (
             <div className="timeline-item-tags">
               {item.tags.map((tag) => (
@@ -135,7 +125,6 @@ const TimelineItem = ({ item }: TimelineItemProps) => {
               ))}
             </div>
           )}
-
           <Link
             to={`/detail/${item.type}/${item.id}`}
             className="timeline-item-link"

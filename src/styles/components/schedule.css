@@ -175,6 +175,7 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: var(--spacing-sm);
+  gap: var(--spacing-md);
 }
 
 .timeline-item-type {
@@ -224,21 +225,18 @@
 }
 
 .timeline-item-meta {
-  display: grid;
-  grid-template-columns: minmax(120px, 25%) minmax(200px, 1fr);
-  gap: var(--spacing-sm);
+  display: flex;
+  gap: var(--spacing-md);
   margin-bottom: var(--spacing-md);
+  align-items: center;
 }
 
 .timeline-item-time,
-.timeline-item-location,
-.timeline-item-organization {
-  display: grid;
-  grid-template-columns: 1.25rem 1fr;
-  gap: var(--spacing-xs);
-  font-size: 0.875rem;
-  color: var(--text-secondary);
+.timeline-item-location {
+  display: flex;
   align-items: center;
+  gap: var(--spacing-xs);
+  min-width: 120px;
 }
 
 .timeline-item-icon {
