@@ -16,7 +16,9 @@ type NonSponsorItem = Event | Exhibit | Stall;
 
 // Type guard to check if an item is a non-sponsor item
 const isNonSponsorItem = (item: Item): item is NonSponsorItem => {
-  return item.type === "event" || item.type === "exhibit" || item.type === "stall";
+  return (
+    item.type === "event" || item.type === "exhibit" || item.type === "stall"
+  );
 };
 
 const Map = () => {
@@ -26,8 +28,9 @@ const Map = () => {
   const [filteredItems, setFilteredItems] = useState<NonSponsorItem[]>([]);
   const [hoveredLocation, setHoveredLocation] = useState<string | null>(null);
   const [selectedLocation, setSelectedLocation] = useState<string | null>(null);
-  const [locationItems, setLocationItems] = useState<Record<string, NonSponsorItem[]>>({});
-
+  const [locationItems, setLocationItems] = useState<
+    Record<string, NonSponsorItem[]>
+  >({});
   // Get all unique locations
   const allLocations = [
     ...new Set(
@@ -77,26 +80,26 @@ const Map = () => {
 
   // Get items for a specific location
   const getItemsForLocation = (location: string): NonSponsorItem[] => {
-    return filteredItems.filter(item => item.location === location);
+    return filteredItems.filter((item) => item.location === location);
   };
 
   // Get all locations with items
   const locationsWithItems = Object.keys(locationItems);
 
   return (
-    <div className="map-page">
-      <div className="map-header">
-        <h1 className="map-title">{t("map.title")}</h1>
+    <div>
+      <div>
+        <h1>{t("map.title")}</h1>
       </div>
 
-      <div className="map-content">
-        <div className="map-sidebar">
+      <div>
+        <div>
           <TagFilter onFilter={() => {}} compact={true} />
           <SelectedTags />
         </div>
 
-        <div className="map-main">
-          <div className="map-container">
+        <div>
+          <div>
             <MapDisplay
               hoveredLocation={hoveredLocation}
               selectedLocation={selectedLocation}

@@ -81,9 +81,7 @@ export const highlightSearchQuery = (
       <>
         {parts.map((part, i) =>
           part.toLowerCase() === query.toLowerCase() ? (
-            <mark key={i} className="search-highlight">
-              {part}
-            </mark>
+            <mark key={i}>{part}</mark>
           ) : (
             part
           )

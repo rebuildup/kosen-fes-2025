@@ -4,11 +4,9 @@ import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { DURATION, EASE } from "../../utils/animations";
 
-interface HomeHeroProps {
-  className?: string;
-}
+interface HomeHeroProps {}
 
-const HomeHero = ({ className = "" }: HomeHeroProps) => {
+const HomeHero = ({}: HomeHeroProps) => {
   const { t } = useLanguage();
   const heroRef = useRef<HTMLElement>(null);
   const titleRef = useRef<HTMLHeadingElement>(null);
@@ -135,25 +133,21 @@ const HomeHero = ({ className = "" }: HomeHeroProps) => {
   }, []);
 
   return (
-    <section className={`home-hero ${className}`} ref={heroRef}>
-      <div className="home-hero-content">
-        <h1 className="home-hero-title" ref={titleRef}>
-          {t("siteName")}
-        </h1>
-        <p className="home-hero-subtitle" ref={subtitleRef}>
-          {t("home.subtitle")}
-        </p>
-        <div className="home-hero-dates" ref={datesRef}>
-          <span className="home-hero-dates-icon">📅</span>
+    <section ref={heroRef}>
+      <div>
+        <h1 ref={titleRef}>{t("siteName")}</h1>
+        <p ref={subtitleRef}>{t("home.subtitle")}</p>
+        <div ref={datesRef}>
+          <span>📅</span>
           <span>2025/06/15 - 2025/06/16</span>
         </div>
-        <Link to="/schedule" className="home-hero-cta" ref={ctaRef}>
+        <Link to="/schedule" ref={ctaRef}>
           {t("schedule.title")}
-          <span className="home-hero-cta-icon">→</span>
+          <span>→</span>
         </Link>
       </div>
-      <div className="home-hero-decoration" ref={decorationRef}>
-        <div className="festival-symbol">祭</div>
+      <div ref={decorationRef}>
+        <div>祭</div>
       </div>
     </section>
   );

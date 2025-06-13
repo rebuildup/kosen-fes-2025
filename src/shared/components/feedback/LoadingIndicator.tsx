@@ -3,7 +3,6 @@ import React from "react";
 interface LoadingIndicatorProps {
   size?: "small" | "medium" | "large";
   message?: string;
-  className?: string;
 }
 
 /**
@@ -12,7 +11,6 @@ interface LoadingIndicatorProps {
 export const LoadingIndicator: React.FC<LoadingIndicatorProps> = ({
   size = "medium",
   message,
-  className = "",
 }) => {
   const sizeClasses = {
     small: "w-4 h-4",
@@ -21,21 +19,10 @@ export const LoadingIndicator: React.FC<LoadingIndicatorProps> = ({
   };
 
   return (
-    <div 
-      className={`loading-indicator flex flex-col items-center justify-center gap-2 ${className}`}
-      role="status"
-      aria-live="polite"
-    >
-      <div 
-        className={`spinner ${sizeClasses[size]}`}
-        aria-hidden="true"
-      />
-      {message && (
-        <span className="text-sm text-secondary sr-only">
-          {message}
-        </span>
-      )}
-      <span className="sr-only">読み込み中...</span>
+    <div role="status" aria-live="polite">
+      <div aria-hidden="true" />
+      {message && <span>{message}</span>}
+      <span>読み込み中...</span>
     </div>
   );
 };

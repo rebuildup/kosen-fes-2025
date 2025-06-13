@@ -66,50 +66,25 @@ const Sponsors = () => {
   };
 
   return (
-    <div className="sponsors-page">
-      <div className="sponsors-header">
-        <h1 className="sponsors-title">{t("sponsors.title")}</h1>
+    <div>
+      <div>
+        <h1>{t("sponsors.title")}</h1>
 
-        <div className="sponsors-filters">
-          <div className="tier-filter">
-            <button
-              className={`tier-filter-button ${
-                tierFilter === "all" ? "active" : ""
-              }`}
-              onClick={() => handleTierFilterChange("all")}
-            >
+        <div>
+          <div>
+            <button onClick={() => handleTierFilterChange("all")}>
               {getTierLabel("all")}
             </button>
-            <button
-              className={`tier-filter-button ${
-                tierFilter === "platinum" ? "active" : ""
-              }`}
-              onClick={() => handleTierFilterChange("platinum")}
-            >
+            <button onClick={() => handleTierFilterChange("platinum")}>
               {getTierLabel("platinum")}
             </button>
-            <button
-              className={`tier-filter-button ${
-                tierFilter === "gold" ? "active" : ""
-              }`}
-              onClick={() => handleTierFilterChange("gold")}
-            >
+            <button onClick={() => handleTierFilterChange("gold")}>
               {getTierLabel("gold")}
             </button>
-            <button
-              className={`tier-filter-button ${
-                tierFilter === "silver" ? "active" : ""
-              }`}
-              onClick={() => handleTierFilterChange("silver")}
-            >
+            <button onClick={() => handleTierFilterChange("silver")}>
               {getTierLabel("silver")}
             </button>
-            <button
-              className={`tier-filter-button ${
-                tierFilter === "bronze" ? "active" : ""
-              }`}
-              onClick={() => handleTierFilterChange("bronze")}
-            >
+            <button onClick={() => handleTierFilterChange("bronze")}>
               {getTierLabel("bronze")}
             </button>
           </div>
@@ -118,15 +93,15 @@ const Sponsors = () => {
         </div>
       </div>
 
-      <div className="sponsors-content">
+      <div>
         {/* Tag filter at the top - single column */}
-        <div className="sponsors-sidebar">
+        <div>
           <TagFilter onFilter={() => {}} />
           <SelectedTags />
         </div>
 
         {/* Sponsors grid below */}
-        <div className="sponsors-main">
+        <div>
           <CardGrid
             items={filteredSponsors}
             variant={viewMode}

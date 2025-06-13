@@ -26,7 +26,6 @@ interface UnifiedCardProps {
   showAnimation?: boolean;
   highlightText?: (text: string) => React.ReactNode;
   onClick?: () => void;
-  className?: string;
 }
 
 export const UnifiedCard = React.memo(
@@ -38,7 +37,6 @@ export const UnifiedCard = React.memo(
     showAnimation = true,
     highlightText,
     onClick,
-    className = "",
   }: UnifiedCardProps) => {
     const { t, language } = useLanguage();
     const { isBookmarked, toggleBookmark } = useBookmark();
@@ -202,44 +200,34 @@ export const UnifiedCard = React.memo(
 
     // Generate class names
     const cardClasses = useMemo(() => {
-      const classes = ["unified-card", `unified-card--${variant}`, className];
-
-      if (isHovered) classes.push("unified-card--hovered");
-      if (!isImageLoaded) classes.push("unified-card--loading");
-
-      return classes.filter(Boolean).join(" ");
-    }, [variant, className, isHovered, isImageLoaded]);
+      return "";
+    }, [variant, isHovered, isImageLoaded]);
 
     const cardContent = (
       <div
         ref={cardRef}
-        className={cardClasses}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
         onClick={handleCardClick}
       >
         {/* Image Section */}
-        <div className="unified-card__image-container">
+        <div>
           <img
             ref={imageRef}
             src={hasImageError ? placeholderImage : item.imageUrl}
             alt={item.title}
-            className="unified-card__image"
             onLoad={handleImageLoad}
             onError={handleImageError}
           />
 
           {/* Type Label */}
-          <div className="unified-card__type-badge">
+          <div>
             <ItemTypeIcon type={item.type} size="small" />
             <span>{typeLabel}</span>
           </div>
 
           {/* Bookmark Button */}
           <button
-            className={`unified-card__bookmark ${
-              isBookmarked(item.id) ? "unified-card__bookmark--active" : ""
-            }`}
             onClick={handleBookmarkClick}
             aria-label={
               isBookmarked(item.id) ? t("bookmarks.remove") : t("bookmarks.add")
@@ -250,29 +238,27 @@ export const UnifiedCard = React.memo(
         </div>
 
         {/* Content Section */}
-        <div className="unified-card__content">
-          <h3 className="unified-card__title">{formatText(item.title)}</h3>
+        <div>
+          <h3>{formatText(item.title)}</h3>
 
           {showDescription && item.description && (
-            <p className="unified-card__description">
-              {formatText(item.description)}
-            </p>
+            <p>{formatText(item.description)}</p>
           )}
 
           {/* Meta Information */}
-          <div ref={metaRef} className="unified-card__meta">
-            <div className="unified-card__meta-item">
+          <div ref={metaRef}>
+            <div>
               <TimeIcon size={16} />
               <span>{formatDuration(parseInt(item.time, 10), language)}</span>
             </div>
 
-            <div className="unified-card__meta-item">
+            <div>
               <LocationIcon size={16} />
               <span>{item.location}</span>
             </div>
 
             {organization && (
-              <div className="unified-card__meta-item">
+              <div>
                 <PeopleIcon size={16} />
                 <span>{formatText(organization)}</span>
               </div>
@@ -281,15 +267,11 @@ export const UnifiedCard = React.memo(
 
           {/* Tags */}
           {showTags && item.tags?.length > 0 && (
-            <div ref={tagsRef} className="unified-card__tags">
+            <div ref={tagsRef}>
               {item.tags.slice(0, 3).map((tag, idx) => (
                 <Tag key={idx} tag={tag} size="small" />
               ))}
-              {item.tags.length > 3 && (
-                <span className="unified-card__tags-more">
-                  +{item.tags.length - 3}
-                </span>
-              )}
+              {item.tags.length > 3 && <span>+{item.tags.length - 3}</span>}
             </div>
           )}
         </div>
@@ -298,14 +280,7 @@ export const UnifiedCard = React.memo(
 
     // Wrap with Link if no custom onClick handler
     if (!onClick) {
-      return (
-        <Link
-          to={`/detail/${item.type}/${item.id}`}
-          className="unified-card__link"
-        >
-          {cardContent}
-        </Link>
-      );
+      return <Link to={`/detail/${item.type}/${item.id}`}>{cardContent}</Link>;
     }
 
     return cardContent;

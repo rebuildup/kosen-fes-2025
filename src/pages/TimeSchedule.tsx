@@ -14,7 +14,9 @@ type NonSponsorItem = Event | Exhibit | Stall;
 
 // Type guard to check if an item is a non-sponsor item
 const isNonSponsorItem = (item: Item): item is NonSponsorItem => {
-  return item.type === "event" || item.type === "exhibit" || item.type === "stall";
+  return (
+    item.type === "event" || item.type === "exhibit" || item.type === "stall"
+  );
 };
 
 const TimeSchedule = () => {
@@ -22,16 +24,18 @@ const TimeSchedule = () => {
   const { filterItemsByTags, selectedTags } = useTag();
 
   const [selectedDay, setSelectedDay] = useState<"day1" | "day2">("day1");
-  const [filteredItems, setFilteredItems] = useState<{ [key: string]: NonSponsorItem[] }>({
+  const [filteredItems, setFilteredItems] = useState<{
+    [key: string]: NonSponsorItem[];
+  }>({
     day1: [],
-    day2: []
+    day2: [],
   });
 
   // Get all items sorted by time for each day
   useEffect(() => {
     // Start with only events, exhibits, and stalls (no sponsors)
     const baseItems: NonSponsorItem[] = [...events, ...exhibits, ...stalls];
-    
+
     // Group items by date
     const day1 = "2025-06-15";
     const day2 = "2025-06-16";
@@ -42,9 +46,11 @@ const TimeSchedule = () => {
     // Apply tag filtering if any tags are selected
     if (selectedTags.length > 0) {
       // Filter items and ensure we only keep non-sponsor items
-      const day1FilteredByTags = filterItemsByTags(day1Items).filter(isNonSponsorItem);
-      const day2FilteredByTags = filterItemsByTags(day2Items).filter(isNonSponsorItem);
-      
+      const day1FilteredByTags =
+        filterItemsByTags(day1Items).filter(isNonSponsorItem);
+      const day2FilteredByTags =
+        filterItemsByTags(day2Items).filter(isNonSponsorItem);
+
       day1Items = day1FilteredByTags;
       day2Items = day2FilteredByTags;
     }
@@ -99,76 +105,56 @@ const TimeSchedule = () => {
   };
 
   return (
-    <div className="space-y-8">
-      <div className="space-y-6">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 text-center mb-8">
-          {t("schedule.title")}
-        </h1>
+    <div>
+      <div>
+        <h1>{t("schedule.title")}</h1>
 
-        <div className="flex justify-center">
-          <div className="flex bg-gray-100 dark:bg-gray-800 rounded-lg p-1 space-x-1">
-            <button
-              className={`px-6 py-3 rounded-lg text-sm font-medium transition-colors ${
-                selectedDay === "day1"
-                  ? "bg-white dark:bg-gray-700 text-blue-600 dark:text-blue-400 shadow-sm"
-                  : "text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100"
-              }`}
-              onClick={() => handleDayChange("day1")}
-            >
+        <div>
+          <div>
+            <button onClick={() => setSelectedDay("day1")}>
               {t("schedule.day1")}
             </button>
-            <button
-              className={`px-6 py-3 rounded-lg text-sm font-medium transition-colors ${
-                selectedDay === "day2"
-                  ? "bg-white dark:bg-gray-700 text-blue-600 dark:text-blue-400 shadow-sm"
-                  : "text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100"
-              }`}
-              onClick={() => handleDayChange("day2")}
-            >
+            <button onClick={() => setSelectedDay("day2")}>
               {t("schedule.day2")}
             </button>
           </div>
         </div>
-      </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-        <div className="lg:col-span-1 space-y-6">
-          <TagFilter onFilter={() => {}} compact={true} />
-          <SelectedTags />
-        </div>
+        <div>
+          <div>
+            <TagFilter onFilter={() => {}} compact={true} />
+            <SelectedTags />
+          </div>
 
-        <div className="lg:col-span-3">
-          {selectedDay === "day1" && (
-            <TimelineDay
-              date="2025-06-15"
-              items={filteredItems.day1}
-              timeSlots={getOrderedTimeSlots(filteredItems.day1)}
-              groupedItems={groupItemsByTimeSlot(filteredItems.day1)}
-              dayName={t("schedule.day1")}
-            />
-          )}
+          <div>
+            {selectedDay === "day1" && (
+              <TimelineDay
+                date="2025-06-15"
+                items={filteredItems.day1}
+                timeSlots={getOrderedTimeSlots(filteredItems.day1)}
+                groupedItems={groupItemsByTimeSlot(filteredItems.day1)}
+                dayName={t("schedule.day1")}
+              />
+            )}
 
-          {selectedDay === "day2" && (
-            <TimelineDay
-              date="2025-06-16"
-              items={filteredItems.day2}
-              timeSlots={getOrderedTimeSlots(filteredItems.day2)}
-              groupedItems={groupItemsByTimeSlot(filteredItems.day2)}
-              dayName={t("schedule.day2")}
-            />
-          )}
+            {selectedDay === "day2" && (
+              <TimelineDay
+                date="2025-06-16"
+                items={filteredItems.day2}
+                timeSlots={getOrderedTimeSlots(filteredItems.day2)}
+                groupedItems={groupItemsByTimeSlot(filteredItems.day2)}
+                dayName={t("schedule.day2")}
+              />
+            )}
 
-          {selectedDay === "day1" && filteredItems.day1.length === 0 && (
-            <div className="text-center py-12 text-gray-500 dark:text-gray-400 text-lg">
-              {t("schedule.noEvents")}
-            </div>
-          )}
+            {selectedDay === "day1" && filteredItems.day1.length === 0 && (
+              <div>{t("schedule.noEvents")}</div>
+            )}
 
-          {selectedDay === "day2" && filteredItems.day2.length === 0 && (
-            <div className="text-center py-12 text-gray-500 dark:text-gray-400 text-lg">
-              {t("schedule.noEvents")}
-            </div>
-          )}
+            {selectedDay === "day2" && filteredItems.day2.length === 0 && (
+              <div>{t("schedule.noEvents")}</div>
+            )}
+          </div>
         </div>
       </div>
     </div>

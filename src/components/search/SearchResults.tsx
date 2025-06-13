@@ -5,6 +5,7 @@ import { useTag } from "../../context/TagContext";
 import { Item } from "../../types/common";
 import CardGrid from "../common/CardGrid";
 import CardListToggle from "../common/CardListToggle";
+import { ReactNode } from "react";
 
 interface FilteredResults {
   events: Item[];
@@ -55,24 +56,26 @@ const SearchResults = () => {
   }, [searchResults, selectedTags, filterItemsByTags]);
 
   // Highlight matching text
-  const highlightMatch = (text: string): React.ReactNode => {
-    if (!searchQuery.trim() || !text) return <>{text}</>;
+  const highlightSearchQuery = (text: string, query: string): ReactNode => {
+    if (!query.trim() || !text) return <>{text}</>;
 
-    const parts = text.split(new RegExp(`(${searchQuery})`, "gi"));
-
-    return (
-      <>
-        {parts.map((part, i) =>
-          part.toLowerCase() === searchQuery.toLowerCase() ? (
-            <mark key={i} className="search-highlight">
-              {part}
-            </mark>
-          ) : (
-            part
-          )
-        )}
-      </>
-    );
+    try {
+      const parts = text.split(new RegExp(`(${query})`, "gi"));
+      return (
+        <>
+          {parts.map((part, i) =>
+            part.toLowerCase() === query.toLowerCase() ? (
+              <mark key={i}>{part}</mark>
+            ) : (
+              part
+            )
+          )}
+        </>
+      );
+    } catch (e) {
+      console.error("Error highlighting text:", e);
+      return <>{text}</>;
+    }
   };
 
   const totalResults =
@@ -82,9 +85,9 @@ const SearchResults = () => {
 
   if (isSearching) {
     return (
-      <div className="search-loading">
-        <div className="spinner"></div>
-        <p>{t("search.searching")}...</p>
+      <div>
+        <div></div>
+        <span>{t("search.searching")}</span>
       </div>
     );
   }
@@ -92,7 +95,7 @@ const SearchResults = () => {
   // No search query entered yet
   if (!searchQuery && selectedTags.length === 0) {
     return (
-      <div className="search-prompt">
+      <div>
         <p>{t("search.enterQuery")}</p>
       </div>
     );
@@ -101,69 +104,70 @@ const SearchResults = () => {
   // No results found
   if (totalResults === 0) {
     return (
-      <div className="search-no-results">
-        <div className="search-no-results-icon">🔍</div>
-        <h3>{t("search.noResults")}</h3>
+      <div>
+        <div>🔍</div>
+        <h2>{t("search.noResults")}</h2>
         <p>{t("search.tryDifferentQuery")}</p>
       </div>
     );
   }
 
   return (
-    <div className="search-results">
-      <div className="search-results-header">
-        <div className="search-results-count">
-          {totalResults}{" "}
-          {t(totalResults === 1 ? "search.result" : "search.results")}
+    <div>
+      <div>
+        <div>
+          {totalResults > 0 && (
+            <span>
+              {totalResults}{" "}
+              {t(totalResults === 1 ? "search.result" : "search.results")}
+            </span>
+          )}
         </div>
 
         <CardListToggle viewMode={viewMode} setViewMode={setViewMode} />
       </div>
 
       {filteredResults.events.length > 0 && (
-        <section className="search-section">
-          <h3 className="search-section-title">
+        <section>
+          <h3>
             {t("events.title")} ({filteredResults.events.length})
           </h3>
           <CardGrid
             items={filteredResults.events}
             variant={viewMode}
-            highlightText={highlightMatch}
             showTags={true}
             showDescription={viewMode === "list"}
-            emptyMessage={t("events.noEvents")}
+            highlightText={(text) => highlightSearchQuery(text, searchQuery)}
           />
         </section>
       )}
 
       {filteredResults.exhibits.length > 0 && (
-        <section className="search-section">
-          <h3 className="search-section-title">
-            {t("detail.exhibit")} ({filteredResults.exhibits.length})
+        <section>
+          <h3>
+            {t("exhibits.title")} ({filteredResults.exhibits.length})
           </h3>
           <CardGrid
             items={filteredResults.exhibits}
             variant={viewMode}
-            highlightText={highlightMatch}
             showTags={true}
             showDescription={viewMode === "list"}
-            emptyMessage={t("exhibits.noExhibits")}
+            highlightText={(text) => highlightSearchQuery(text, searchQuery)}
           />
         </section>
       )}
 
       {filteredResults.stalls.length > 0 && (
-        <section className="search-section">
-          <h3 className="search-section-title">
-            {t("detail.stall")} ({filteredResults.stalls.length})
+        <section>
+          <h3>
+            {t("stalls.title")} ({filteredResults.stalls.length})
           </h3>
           <CardGrid
             items={filteredResults.stalls}
             variant={viewMode}
-            highlightText={highlightMatch}
             showTags={true}
             showDescription={viewMode === "list"}
-            emptyMessage={t("exhibits.noStalls")}
+            highlightText={(text) => highlightSearchQuery(text, searchQuery)}
           />
         </section>
       )}

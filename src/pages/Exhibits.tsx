@@ -28,7 +28,7 @@ const Exhibits = () => {
     if (typeFilter === "all") {
       filtered = [
         ...dataManager.getAllExhibits(),
-        ...dataManager.getAllStalls()
+        ...dataManager.getAllStalls(),
       ];
     } else if (typeFilter === "exhibit") {
       filtered = dataManager.getAllExhibits();
@@ -50,34 +50,19 @@ const Exhibits = () => {
   };
 
   return (
-    <div className="exhibits-page">
-      <div className="exhibits-header">
-        <h1 className="exhibits-title">{t("exhibits.title")}</h1>
+    <div>
+      <div>
+        <h1>{t("exhibits.title")}</h1>
 
-        <div className="exhibits-filters">
-          <div className="type-filter">
-            <button
-              className={`type-filter-button ${
-                typeFilter === "all" ? "active" : ""
-              }`}
-              onClick={() => handleTypeFilterChange("all")}
-            >
+        <div>
+          <div>
+            <button onClick={() => handleTypeFilterChange("all")}>
               {t("exhibits.filters.all")}
             </button>
-            <button
-              className={`type-filter-button ${
-                typeFilter === "exhibit" ? "active" : ""
-              }`}
-              onClick={() => handleTypeFilterChange("exhibit")}
-            >
+            <button onClick={() => handleTypeFilterChange("exhibit")}>
               {t("exhibits.filters.exhibits")}
             </button>
-            <button
-              className={`type-filter-button ${
-                typeFilter === "stall" ? "active" : ""
-              }`}
-              onClick={() => handleTypeFilterChange("stall")}
-            >
+            <button onClick={() => handleTypeFilterChange("stall")}>
               {t("exhibits.filters.stalls")}
             </button>
           </div>
@@ -86,12 +71,12 @@ const Exhibits = () => {
         </div>
       </div>
 
-      <div className="exhibits-content">
-        <div className="exhibits-sidebar">
+      <div>
+        <div>
           <TagFilter onFilter={() => {}} />
         </div>
 
-        <div className="exhibits-main">
+        <div>
           <SelectedTags />
 
           <CardGrid

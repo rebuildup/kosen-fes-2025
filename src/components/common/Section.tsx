@@ -7,34 +7,26 @@ interface SectionProps {
   linkTo?: string;
   linkText?: string;
   children: ReactNode;
-  className?: string;
 }
 
-const Section = ({
-  title,
-  icon,
-  linkTo,
-  linkText,
-  children,
-  className = "",
-}: SectionProps) => {
+const Section = ({ title, icon, linkTo, linkText, children }: SectionProps) => {
   return (
-    <section className={`section ${className}`}>
-      <div className="section-header">
-        <h2 className="section-title">
-          {icon && <span className="section-icon">{icon}</span>}
+    <section>
+      <div>
+        <h2>
+          {icon && <span>{icon}</span>}
           {title}
         </h2>
 
         {linkTo && linkText && (
-          <Link to={linkTo} className="section-link">
+          <Link to={linkTo}>
             {linkText}
-            <span className="section-link-icon">→</span>
+            <span>→</span>
           </Link>
         )}
       </div>
 
-      <div className="section-content">{children}</div>
+      <div>{children}</div>
     </section>
   );
 };

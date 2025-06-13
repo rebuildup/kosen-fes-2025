@@ -115,90 +115,87 @@ const Home = () => {
   };
 
   return (
-    <div className="home-page">
-      {/* Hero/Banner Section */}
-      <section className="home-hero">
-        <div className="home-hero-content">
-          <h1 className="home-hero-title">{t("siteName")}</h1>
-          <p className="home-hero-subtitle">{t("home.subtitle")}</p>
-          <div className="home-hero-dates">
-            <span className="home-hero-dates-icon">📅</span>
-            <span>2025/06/15 - 2025/06/16</span>
+    <div>
+      {/* Hero Section */}
+      <section>
+        <div>
+          <h1>{t("siteName")}</h1>
+          <p>{t("home.subtitle")}</p>
+          <div>
+            <span>📅</span>
+            <span>{t("home.dates")}</span>
           </div>
-          <Link to="/schedule" className="home-hero-cta">
-            {t("schedule.title")}
-            <span className="home-hero-cta-icon">→</span>
+          <Link to="/schedule">
+            {t("home.viewSchedule")}
+            <span>→</span>
           </Link>
         </div>
-        <div className="home-hero-decoration">
-          <div className="festival-symbol">祭</div>
+        <div>
+          <div>祭</div>
         </div>
       </section>
 
-      {/* Featured Events Section */}
-      <section className="home-section">
-        <div className="home-section-header">
-          <h2 className="home-section-title">
-            <span className="home-section-icon">🎭</span>
-            {t("home.featuredEvents")}
+      {/* Events Section */}
+      <section>
+        <div>
+          <h2>
+            <span>🎭</span>
+            {t("home.events")}
           </h2>
-          <Link to="/events" className="home-section-link">
-            {t("common.showAll")}
-            <span className="home-section-link-icon">→</span>
+          <Link to="/events">
+            {t("home.viewAll")}
+            <span>→</span>
           </Link>
         </div>
 
-        {featuredEvents.length > 0 && <FeaturedCard item={featuredEvents[0]} />}
+        <div>
+          {featuredEvents.map((event) => (
+            <FeaturedCard key={event.id} item={event} />
+          ))}
+        </div>
+      </section>
 
-        {featuredEvents.length > 1 && (
+      {/* Exhibits Section */}
+      <section>
+        <div>
+          <h2>
+            <span>🖼️</span>
+            {t("home.exhibits")}
+          </h2>
+          <Link to="/exhibits">
+            {t("home.viewAll")}
+            <span>→</span>
+          </Link>
+        </div>
+
+        <div>
           <CardGrid
-            items={featuredEvents.slice(1)}
+            items={[...featuredExhibits, ...featuredStalls]}
             variant="default"
             showTags
             showDescription
           />
-        )}
+        </div>
       </section>
 
-      {/* Featured Exhibits Section */}
-      <section className="home-section">
-        <div className="home-section-header">
-          <h2 className="home-section-title">
-            <span className="home-section-icon">🖼️</span>
-            {t("home.featuredExhibits")}
+      {/* Schedule Section */}
+      <section>
+        <div>
+          <h2>
+            <span>📅</span>
+            {t("home.schedule")}
           </h2>
-          <Link to="/exhibits" className="home-section-link">
-            {t("common.showAll")}
-            <span className="home-section-link-icon">→</span>
+          <Link to="/schedule">
+            {t("home.viewFull")}
+            <span>→</span>
           </Link>
         </div>
 
-        <CardGrid
-          items={[...featuredExhibits, ...featuredStalls]}
-          variant="default"
-          showTags
-          showDescription
-        />
-      </section>
-
-      {/* Timeline Section */}
-      <section className="home-section">
-        <div className="home-section-header">
-          <h2 className="home-section-title">
-            <span className="home-section-icon">📅</span>
-            {t("schedule.title")}
-          </h2>
-          <Link to="/schedule" className="home-section-link">
-            {t("common.showAll")}
-            <span className="home-section-link-icon">→</span>
-          </Link>
-        </div>
-
-        <div className="home-timeline">
+        <div>
           {allDates.map((date) => (
-            <div key={date} className="home-timeline-group">
-              <h3 className="home-timeline-date">{formatDate(date)}</h3>
-              <div className="home-timeline-items">
+            <div key={date}>
+              <h3>{formatDate(date)}</h3>
+              <div>
                 <CardGrid
                   items={timelineItems[date]?.slice(0, 3) || []}
                   variant="compact"
@@ -210,16 +207,16 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Popular Tags Section */}
-      <section className="home-section">
-        <div className="home-section-header">
-          <h2 className="home-section-title">
-            <span className="home-section-icon">#</span>
-            {t("tags.popularTags")}
+      {/* Search Section */}
+      <section>
+        <div>
+          <h2>
+            <span>#</span>
+            {t("home.explore")}
           </h2>
-          <Link to="/search" className="home-section-link">
-            {t("search.title")}
-            <span className="home-section-link-icon">→</span>
+          <Link to="/search">
+            {t("home.search")}
+            <span>→</span>
           </Link>
         </div>
 

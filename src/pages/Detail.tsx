@@ -83,24 +83,22 @@ const Detail = () => {
     navigate("/search");
   };
 
-  // If loading
+  // Loading state
   if (loading) {
     return (
-      <div className="detail-loading">
-        <div className="loading-spinner"></div>
+      <div>
+        <div></div>
+        <p>{t("loading")}</p>
       </div>
     );
   }
 
-  // If error
+  // Error state
   if (error || !item) {
     return (
-      <div className="detail-error">
-        <h2>{t("errors.genericError")}</h2>
-        <p>{error || t("errors.itemNotFound")}</p>
-        <button onClick={handleBack} className="back-button">
-          {t("detail.back")}
-        </button>
+      <div>
+        <p>{t("errors.itemNotFound")}</p>
+        <button onClick={handleBack}>{t("navigation.back")}</button>
       </div>
     );
   }
@@ -111,14 +109,14 @@ const Detail = () => {
       case "event": {
         const eventItem = item as Event;
         return (
-          <div className="detail-specific">
-            <div className="detail-field">
-              <span className="detail-label">{t("detail.organizer")}:</span>
-              <span className="detail-value">{eventItem.organizer}</span>
+          <div>
+            <div>
+              <span>{t("detail.organizer")}:</span>
+              <span>{eventItem.organizer}</span>
             </div>
-            <div className="detail-field">
-              <span className="detail-label">{t("detail.duration")}:</span>
-              <span className="detail-value">
+            <div>
+              <span>{t("detail.duration")}:</span>
+              <span>
                 {Math.floor(eventItem.duration / 60)} hr{" "}
                 {eventItem.duration % 60} min
               </span>
@@ -129,10 +127,10 @@ const Detail = () => {
       case "exhibit": {
         const exhibitItem = item as Exhibit;
         return (
-          <div className="detail-specific">
-            <div className="detail-field">
-              <span className="detail-label">{t("detail.creator")}:</span>
-              <span className="detail-value">{exhibitItem.creator}</span>
+          <div>
+            <div>
+              <span>{t("detail.creator")}:</span>
+              <span>{exhibitItem.creator}</span>
             </div>
           </div>
         );
@@ -140,14 +138,12 @@ const Detail = () => {
       case "stall": {
         const stallItem = item as Stall;
         return (
-          <div className="detail-specific">
-            <div className="detail-field">
-              <span className="detail-label">{t("detail.products")}:</span>
-              <div className="detail-products">
+          <div>
+            <div>
+              <span>{t("detail.products")}:</span>
+              <div>
                 {stallItem.products.map((product, index) => (
-                  <span key={index} className="detail-product-item">
-                    {product}
-                  </span>
+                  <span key={index}>{product}</span>
                 ))}
               </div>
             </div>
@@ -157,34 +153,28 @@ const Detail = () => {
       case "sponsor": {
         const sponsorItem = item as Sponsor;
         return (
-          <div className="detail-specific">
-            <div className="detail-field">
-              <span className="detail-label">{t("detail.website")}:</span>
+          <div>
+            <div>
+              <span>{t("detail.website")}:</span>
               <a
                 href={sponsorItem.website}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="detail-value detail-link"
               >
                 {sponsorItem.website}
               </a>
             </div>
-            <div className="detail-field">
-              <span className="detail-label">{t("detail.tier")}:</span>
-              <span
-                className={`detail-value detail-tier detail-tier-${sponsorItem.tier}`}
-              >
+            <div>
+              <span>{t("detail.tier")}:</span>
+              <span>
                 {sponsorItem.tier.charAt(0).toUpperCase() +
                   sponsorItem.tier.slice(1)}
               </span>
             </div>
             {sponsorItem.contactEmail && (
-              <div className="detail-field">
-                <span className="detail-label">{t("detail.contact")}:</span>
-                <a
-                  href={`mailto:${sponsorItem.contactEmail}`}
-                  className="detail-value detail-link"
-                >
+              <div>
+                <span>{t("detail.contact")}:</span>
+                <a href={`mailto:${sponsorItem.contactEmail}`}>
                   {sponsorItem.contactEmail}
                 </a>
               </div>
@@ -212,16 +202,11 @@ const Detail = () => {
   };
 
   return (
-    <div className="detail-page">
-      <div className="detail-header">
-        <button onClick={handleBack} className="back-button">
-          ← {t("detail.back")}
-        </button>
+    <div>
+      <div>
+        <button onClick={handleBack}>← {t("navigation.back")}</button>
 
         <button
-          className={`bookmark-button ${
-            isBookmarked(item.id) ? "bookmarked" : ""
-          }`}
           onClick={handleBookmarkToggle}
           aria-label={
             isBookmarked(item.id)
@@ -230,78 +215,71 @@ const Detail = () => {
           }
         >
           {isBookmarked(item.id) ? "★" : "☆"}
-          <span className="bookmark-text">
-            {isBookmarked(item.id)
-              ? t("actions.removeBookmark")
-              : t("actions.bookmark")}
+          <span>
+            {isBookmarked(item.id) ? t("actions.remove") : t("actions.add")}
           </span>
         </button>
       </div>
 
-      <div className="detail-content">
-        <div className="detail-type">
-          <ItemTypeIcon type={item.type} size="medium" />
-          <span className="detail-type-label">{getTypeLabel()}</span>
+      <div>
+        <div>
+          <ItemTypeIcon type={item.type} size="large" />
+          <span>{getTypeLabel()}</span>
         </div>
 
-        <h1 className="detail-title">{item.title}</h1>
+        <h1>{item.title}</h1>
 
-        <div className="detail-meta">
-          <div className="detail-field">
-            <span className="detail-icon">🕒</span>
-            <span className="detail-label">{t("detail.date")}:</span>
-            <span className="detail-value">{item.date}</span>
+        <div>
+          <div>
+            <span>🕒</span>
+            <span>{t("detail.date")}:</span>
+            <span>{item.date}</span>
           </div>
 
-          <div className="detail-field">
-            <span className="detail-icon">⏱️</span>
-            <span className="detail-label">{t("detail.time")}:</span>
-            <span className="detail-value">{item.time}</span>
+          <div>
+            <span>⏱️</span>
+            <span>{t("detail.time")}:</span>
+            <span>{item.time}</span>
           </div>
 
-          <div className="detail-field">
-            <span className="detail-icon">📍</span>
-            <span className="detail-label">{t("detail.location")}:</span>
-            <span className="detail-value">{item.location}</span>
+          <div>
+            <span>📍</span>
+            <span>{t("detail.location")}:</span>
+            <span>{item.location}</span>
           </div>
         </div>
 
         {item.imageUrl && (
-          <div className="detail-image">
+          <div>
             <img src={item.imageUrl} alt={item.title} />
           </div>
         )}
 
-        <div className="detail-description">
+        <div>
           <p>{item.description}</p>
         </div>
 
         {renderSpecificDetails()}
 
         {item.tags && item.tags.length > 0 && (
-          <div className="detail-tags">
-            <h3 className="detail-section-title">{t("detail.tags")}</h3>
-            <div className="detail-tags-list">
-              {item.tags.map((tag) => (
-                <Tag
-                  key={tag}
-                  tag={tag}
-                  size="medium"
-                  onClick={handleTagClick}
-                />
+          <div>
+            <h3>{t("detail.tags")}</h3>
+            <div>
+              {item.tags.map((tag, idx) => (
+                <Tag key={idx} tag={tag} />
               ))}
             </div>
           </div>
         )}
 
-        <div className="detail-map-section">
-          <h3 className="detail-section-title">{t("map.title")}</h3>
-          <DetailMap location={item.location} />
+        <div>
+          <h3>{t("map.title")}</h3>
+          <p>{item.location}</p>
         </div>
 
-        <div className="detail-related">
-          <h3 className="detail-section-title">{t("detail.related")}</h3>
-          <div className="detail-related-content">
+        <div>
+          <h3>{t("detail.related")}</h3>
+          <div>
             {/* This would be populated with related items in a real implementation */}
             <p>{t("detail.noRelatedItems")}</p>
           </div>

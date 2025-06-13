@@ -12,13 +12,13 @@ const Logo = ({ size = "medium", withText = true }: LogoProps) => {
   const sizeClass = `logo-${size}`;
 
   return (
-    <div className={`logo ${sizeClass}`}>
-      <Link to="/" className="logo-link">
-        <div className="logo-icon">
-          <span className="logo-symbol">祭</span>
+    <div>
+      <Link to="/">
+        <div>
+          <span>POP!</span>
         </div>
 
-        {withText && <span className="logo-text">{t("siteName")}</span>}
+        {withText && <span>{t("siteName")}</span>}
       </Link>
     </div>
   );

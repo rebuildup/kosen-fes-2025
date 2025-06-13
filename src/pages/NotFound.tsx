@@ -16,31 +16,33 @@ const NotFound = () => {
   }, [t]);
 
   return (
-    <div className="not-found-page">
-      <div className="not-found-container">
-        <div className="not-found-code">404</div>
+    <div>
+      <div>
+        <div>404</div>
 
-        <div className="not-found-icon">
-          <span role="img" aria-label="Not Found">
-            🔍
-          </span>
+        <div>
+          <svg
+            width="120"
+            height="120"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.5"
+          >
+            <circle cx="12" cy="12" r="10" />
+            <path d="M9 9L15 15M15 9L9 15" />
+          </svg>
         </div>
 
-        <h1 className="not-found-title">{t("errors.pageNotFound")}</h1>
-        <p className="not-found-message">{t("errors.pageNotFoundMessage")}</p>
+        <h1>{t("errors.pageNotFound")}</h1>
+        <p>{t("errors.pageNotFoundMessage")}</p>
 
-        <div className="not-found-actions">
-          <Link to="/" className="not-found-action-button primary">
-            {t("errors.backToHome")}
-          </Link>
+        <div>
+          <Link to="/">{t("navigation.home")}</Link>
 
-          <Link to="/map" className="not-found-action-button secondary">
-            {t("map.title")}
-          </Link>
+          <Link to="/map">{t("navigation.map")}</Link>
 
-          <Link to="/search" className="not-found-action-button secondary">
-            {t("search.title")}
-          </Link>
+          <Link to="/search">{t("navigation.search")}</Link>
         </div>
       </div>
     </div>

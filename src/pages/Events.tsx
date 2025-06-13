@@ -18,7 +18,9 @@ const Events = () => {
     "default" | "compact" | "grid" | "list"
   >("default");
   const [filteredEvents, setFilteredEvents] = useState<Item[]>([]);
-  const [dayFilter, setDayFilter] = useState<"all" | "day1" | "day2">("all");
+  const [dateFilter, setDateFilter] = useState<
+    "all" | "2025-06-15" | "2025-06-16"
+  >("all");
 
   // Filter events by selected day and tags
   useEffect(() => {
@@ -26,8 +28,8 @@ const Events = () => {
     let filtered = dataManager.getAllEvents() as Item[];
 
     // Filter by day
-    if (dayFilter !== "all") {
-      const day = dayFilter === "day1" ? "2025-06-15" : "2025-06-16";
+    if (dateFilter !== "all") {
+      const day = dateFilter === "2025-06-15" ? "2025-06-15" : "2025-06-16";
       filtered = filtered.filter((event) => event.date === day);
     }
 
@@ -37,43 +39,28 @@ const Events = () => {
     }
 
     setFilteredEvents(filtered);
-  }, [dayFilter, selectedTags, filterItemsByTags]);
+  }, [dateFilter, selectedTags, filterItemsByTags]);
 
   // Handle day filter change
-  const handleDayFilterChange = (day: "all" | "day1" | "day2") => {
-    setDayFilter(day);
+  const handleDayFilterChange = (day: "all" | "2025-06-15" | "2025-06-16") => {
+    setDateFilter(day);
   };
 
   return (
-    <div className="events-page">
-      <div className="events-header">
-        <h1 className="events-title">{t("events.title")}</h1>
+    <div>
+      <div>
+        <h1>{t("events.title")}</h1>
 
-        <div className="events-filters">
-          <div className="day-filter">
-            <button
-              className={`day-filter-button ${
-                dayFilter === "all" ? "active" : ""
-              }`}
-              onClick={() => handleDayFilterChange("all")}
-            >
-              {t("events.filters.all")}
+        <div>
+          <div>
+            <button onClick={() => setDateFilter("all")}>
+              {t("events.allDays")}
             </button>
-            <button
-              className={`day-filter-button ${
-                dayFilter === "day1" ? "active" : ""
-              }`}
-              onClick={() => handleDayFilterChange("day1")}
-            >
-              {t("events.filters.day1")}
+            <button onClick={() => setDateFilter("2025-06-15")}>
+              {t("events.day1")}
             </button>
-            <button
-              className={`day-filter-button ${
-                dayFilter === "day2" ? "active" : ""
-              }`}
-              onClick={() => handleDayFilterChange("day2")}
-            >
-              {t("events.filters.day2")}
+            <button onClick={() => setDateFilter("2025-06-16")}>
+              {t("events.day2")}
             </button>
           </div>
 
@@ -81,23 +68,20 @@ const Events = () => {
         </div>
       </div>
 
-      {/* Single column layout */}
-      <div className="events-content">
-        {/* Tag filter at the top - single column */}
-        <div className="events-sidebar">
+      <div>
+        <div>
           <TagFilter onFilter={() => {}} />
           <SelectedTags />
         </div>
 
-        {/* Events grid below */}
-        <div className="events-main">
+        <div>
           <CardGrid
             items={filteredEvents}
             variant={viewMode}
             showTags={true}
             showDescription={viewMode === "list"}
-            emptyMessage={t("events.noEvents")}
-            filterType="event"
+            emptyMessage={t("events.noEventsFound")}
+            filterType="all"
           />
         </div>
       </div>

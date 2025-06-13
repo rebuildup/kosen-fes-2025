@@ -12,9 +12,9 @@ const ExhibitCreatorInfo = ({ creator }: ExhibitCreatorInfoProps) => {
   }
 
   return (
-    <div className="exhibit-creator">
-      <span className="exhibit-creator-label">{t("detail.creator")}: </span>
-      <span className="exhibit-creator-name">{creator}</span>
+    <div>
+      <span>{t("detail.creator")}: </span>
+      <span>{creator}</span>
     </div>
   );
 };

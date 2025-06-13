@@ -7,14 +7,9 @@ import { SponsorIcon } from "../icons/SponsorIcon";
 interface ItemTypeIconProps {
   type: ItemType;
   size?: "small" | "medium" | "large";
-  className?: string;
 }
 
-const ItemTypeIcon = ({
-  type,
-  size = "medium",
-  className = "",
-}: ItemTypeIconProps) => {
+const ItemTypeIcon = ({ type, size = "medium" }: ItemTypeIconProps) => {
   // Get size in pixels
   const getSize = () => {
     switch (size) {
@@ -44,17 +39,7 @@ const ItemTypeIcon = ({
     }
   };
 
-  // Get size class
-  const sizeClass = `item-type-icon-${size}`;
-
-  return (
-    <span
-      className={`item-type-icon ${sizeClass} ${className}`}
-      aria-hidden="true"
-    >
-      {renderIcon()}
-    </span>
-  );
+  return <span aria-hidden="true">{renderIcon()}</span>;
 };
 
 export default ItemTypeIcon;

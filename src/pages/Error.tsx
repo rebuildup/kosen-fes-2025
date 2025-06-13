@@ -78,40 +78,36 @@ const Error = () => {
   };
 
   return (
-    <div className="error-page">
-      <div className="error-container">
-        <div className="error-icon">
-          {errorDetails.status === 404 ? (
-            <span role="img" aria-label="Not Found">
-              🔍
-            </span>
-          ) : (
-            <span role="img" aria-label="Error">
-              ⚠️
-            </span>
-          )}
+    <div>
+      <div>
+        <div>
+          <svg
+            width="80"
+            height="80"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.5"
+          >
+            <circle cx="12" cy="12" r="10" />
+            <line x1="12" y1="8" x2="12" y2="12" />
+            <line x1="12" y1="16" x2="12.01" y2="16" />
+          </svg>
         </div>
 
-        <h1 className="error-title">{errorDetails.title}</h1>
-        <p className="error-message">{errorDetails.message}</p>
+        <h1>{errorDetails.title}</h1>
+        <p>{errorDetails.message}</p>
 
-        <div className="error-actions">
-          <Link to="/" className="error-action-button primary">
-            {t("errors.backToHome")}
-          </Link>
+        <div>
+          <Link to="/">{t("errors.backToHome")}</Link>
 
-          <button
-            onClick={handleReload}
-            className="error-action-button secondary"
-          >
-            {t("errors.tryAgain")}
-          </button>
+          <button onClick={handleReload}>{t("errors.tryAgain")}</button>
         </div>
 
         {import.meta.env.DEV && isErrorWithStack(error) && (
-          <div className="error-debug">
-            <h3 className="error-debug-title">Debug Information</h3>
-            <pre className="error-stack">{error.stack}</pre>
+          <div>
+            <h3>Debug Information</h3>
+            <pre>{error.stack}</pre>
           </div>
         )}
       </div>

@@ -28,48 +28,41 @@ const Search = () => {
   }, [location.search, searchQuery, setSearchQuery, performSearch]);
 
   return (
-    <div className="search-page">
-      <h1 className="search-title">{t("search.title")}</h1>
+    <div>
+      <h1>{t("search.title")}</h1>
 
-      <div className="search-container">
+      <div>
         <SearchBar variant="large" autoFocus showSuggestions />
-      </div>
 
-      <div className="search-content">
-        <div className="search-layout">
-          <div className="search-sidebar">
-            <TagFilter onFilter={() => {}} />
+        <div>
+          <div>
+            <div>
+              <TagFilter onFilter={() => {}} />
+            </div>
 
-            {recentSearches.length > 0 &&
-              !searchQuery &&
-              selectedTags.length === 0 && (
-                <div className="recent-searches">
-                  <h3 className="search-sidebar-title">
-                    {t("search.recentSearches")}
-                  </h3>
-                  <ul className="recent-searches-list">
-                    {recentSearches.map((query, index) => (
-                      <li key={index} className="recent-search-item">
-                        <button
-                          className="recent-search-button"
-                          onClick={() => performSearch(query)}
-                        >
-                          <span className="recent-search-icon">🕒</span>
-                          <span className="recent-search-text">{query}</span>
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
+            <div>
+              <h3>{t("search.recentSearches")}</h3>
+              <ul>
+                {recentSearches.map((query, index) => (
+                  <li key={index}>
+                    <button onClick={() => performSearch(query)}>
+                      <span>🕒</span>
+                      <span>{query}</span>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
 
+          <div>
             <TagCloud title={t("tags.popularTags")} showCount maxTags={15} />
           </div>
+        </div>
 
-          <div className="search-main">
-            <SelectedTags />
-            <SearchResults />
-          </div>
+        <div>
+          <SelectedTags />
+          <SearchResults />
         </div>
       </div>
     </div>

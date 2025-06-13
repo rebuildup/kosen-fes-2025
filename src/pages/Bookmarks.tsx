@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useLanguage } from "../context/LanguageContext";
 import { useBookmark } from "../context/BookmarkContext";
 import BookmarksList from "../components/bookmarks/BookmarksList";
+import { Link } from "react-router-dom";
 
 const Bookmarks = () => {
   const { t } = useLanguage();
@@ -20,11 +21,18 @@ const Bookmarks = () => {
   }, [t, getBookmarkCount]);
 
   return (
-    <div className="bookmarks-page">
-      <h1 className="bookmarks-title">{t("bookmarks.title")}</h1>
-      <p className="bookmarks-description">{t("bookmarks.description")}</p>
+    <div>
+      <h1>{t("bookmarks.title")}</h1>
+      <p>{t("bookmarks.description")}</p>
 
-      <BookmarksList />
+      {getBookmarkCount() === 0 ? (
+        <div>
+          <p>{t("bookmarks.empty")}</p>
+          <Link to="/">{t("navigation.home")}</Link>
+        </div>
+      ) : (
+        <BookmarksList />
+      )}
     </div>
   );
 };
