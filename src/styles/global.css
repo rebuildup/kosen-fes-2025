@@ -1,6 +1,5 @@
 @import "./reset.css";
-@import "./utilities.css";
-@import "./unified-card.css";
+/* Removed utilities.css and unified-card.css to avoid conflicts with TailwindCSS */
 
 /* Design System Theme Variables */
 :root {
@@ -212,124 +211,9 @@ a:focus {
   outline-offset: 2px;
 }
 
-/* Consolidated layout styles */
-.app-container {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-  background-color: var(--bg-primary);
-  color: var(--text-primary);
-  transition: background-color var(--transition-normal),
-    color var(--transition-normal);
-  position: relative;
-}
+/* Removed layout styles - now using TailwindCSS utilities instead */
 
-.content-container {
-  display: flex;
-  flex: 1;
-  padding-top: var(--header-height);
-  max-width: var(--container-max-width);
-  margin: 0 auto;
-  width: 100%;
-  position: relative;
-}
-
-.main-content {
-  flex: 1;
-  padding: var(--spacing-lg);
-  overflow-x: hidden;
-  min-height: calc(100vh - var(--header-height));
-  width: 100%;
-}
-
-/* Responsive layout adjustments */
-@media (min-width: 1200px) {
-  .main-content {
-    margin-left: var(--sidebar-width-desktop);
-    width: calc(100% - var(--sidebar-width-desktop));
-  }
-}
-
-@media (min-width: 769px) and (max-width: 1199px) {
-  .main-content {
-    margin-left: var(--sidebar-width-mobile);
-    width: calc(100% - var(--sidebar-width-mobile));
-    padding: var(--spacing-md);
-  }
-}
-
-@media (max-width: 768px) {
-  .main-content {
-    margin-left: 0;
-    width: 100%;
-    padding: var(--spacing-md);
-    margin-bottom: var(--header-height);
-    padding-bottom: calc(
-      var(--spacing-lg) + var(--header-height) +
-        max(0px, env(safe-area-inset-bottom))
-    );
-  }
-}
-
-/* Page-specific styles */
-.page-container {
-  padding-bottom: calc(var(--spacing-xl) + 100px);
-}
-
-.events-page,
-.exhibits-page,
-.schedule-page,
-.map-page,
-.search-page,
-.bookmarks-page,
-.home-page,
-.detail-page,
-.sponsors-page {
-  @extend .page-container;
-}
-
-/* Typography enhancements */
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  color: var(--text-primary);
-  font-weight: var(--font-weight-semibold);
-  line-height: var(--line-height-tight);
-  margin: 0;
-}
-
-h1 {
-  font-size: var(--font-size-4xl);
-  font-weight: var(--font-weight-bold);
-}
-
-h2 {
-  font-size: var(--font-size-3xl);
-}
-
-h3 {
-  font-size: var(--font-size-2xl);
-}
-
-h4 {
-  font-size: var(--font-size-xl);
-}
-
-h5 {
-  font-size: var(--font-size-lg);
-}
-
-h6 {
-  font-size: var(--font-size-base);
-}
-
-p {
-  margin: 0;
-  line-height: var(--line-height-normal);
-}
+/* Minimal typography enhancements - TailwindCSS handles the rest */
 
 /* Scrollbar styling */
 ::-webkit-scrollbar {
@@ -369,38 +253,17 @@ select:focus {
   color: var(--text-primary);
 }
 
-/* Print styles */
+/* Print styles - simplified for TailwindCSS compatibility */
 @media print {
-  .header,
-  .sidebar,
-  .footer,
-  .menu,
-  .bookmark-button,
-  .search-bar {
-    display: none !important;
-  }
-
-  .main-content {
-    margin: 0;
-    padding: 0;
-    width: 100%;
-  }
-
-  .unified-card {
+  * {
     break-inside: avoid;
     page-break-inside: avoid;
   }
 }
 
-/* High contrast mode support */
+/* High contrast mode support - simplified */
 @media (prefers-contrast: high) {
-  .unified-card {
-    border: 1px solid var(--text-primary);
-  }
-
-  .unified-card__bookmark {
-    border: 1px solid var(--text-primary);
-  }
+  /* TailwindCSS components will handle high contrast styling */
 }
 
 /* Reduced motion support */
