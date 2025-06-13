@@ -1,8 +1,11 @@
-// src/App.tsx
 import { useRoutes } from "react-router-dom";
-import { AppProviders } from "./AppProviders";
-import routes from "./routes";
+import { AppProviders } from "./app/providers/AppProviders";
+import { routes } from "./app/router/routes";
 
+/**
+ * Main application component
+ * Handles routing and provides global context providers
+ */
 function App() {
   const routing = useRoutes(routes);
 

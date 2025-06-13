@@ -5,7 +5,7 @@ import { HashRouter } from "react-router-dom"; // Changed from BrowserRouter to 
 import App from "./App";
 
 // Import global styles
-import "./styles/global.css";
+import "./assets/styles/global.css";
 
 // Get root element
 const rootElement = document.getElementById("root");
