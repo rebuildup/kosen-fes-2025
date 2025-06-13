@@ -1,241 +1,16 @@
 @import "./reset.css";
-/* Removed utilities.css and unified-card.css to avoid conflicts with TailwindCSS */
+/* All component CSS files removed to prevent conflicts with TailwindCSS */
 
-/* Design System Theme Variables */
-:root {
-  /* Color Palette - Festival Theme */
-  --primary: #2563eb;
-  --primary-hover: #1d4ed8;
-  --primary-alpha-30: rgba(37, 99, 235, 0.3);
-  --primary-alpha-50: rgba(37, 99, 235, 0.5);
-
-  --secondary: #ec4899;
-  --secondary-hover: #db2777;
-
-  --accent: #06b6d4;
-  --accent-hover: #0891b2;
-
-  --success: #10b981;
-  --warning: #f59e0b;
-  --error: #ef4444;
-  --info: --var(--primary);
-
-  /* Neutral Colors - Light Theme */
-  --text-primary: #1f2937;
-  --text-secondary: #6b7280;
-  --text-tertiary: #9ca3af;
-  --text-inverse: #ffffff;
-
-  --bg-primary: #ffffff;
-  --bg-secondary: #f9fafb;
-  --bg-tertiary: #f3f4f6;
-  --bg-inverse: #111827;
-
-  --border-color: #e5e7eb;
-  --border-hover: #d1d5db;
-
-  /* Component-specific colors */
-  --card-bg: var(--bg-primary);
-  --header-bg: var(--bg-primary);
-  --sidebar-bg: var(--bg-primary);
-  --footer-bg: var(--bg-secondary);
-
-  /* Layout Dimensions */
-  --header-height: 60px;
-  --sidebar-width-mobile: 220px;
-  --sidebar-width-desktop: 250px;
-  --container-max-width: 1200px;
-
-  /* Typography Scale */
-  --font-size-xs: 0.75rem;
-  --font-size-sm: 0.875rem;
-  --font-size-base: 1rem;
-  --font-size-lg: 1.125rem;
-  --font-size-xl: 1.25rem;
-  --font-size-2xl: 1.5rem;
-  --font-size-3xl: 1.875rem;
-  --font-size-4xl: 2.25rem;
-
-  --font-weight-normal: 400;
-  --font-weight-medium: 500;
-  --font-weight-semibold: 600;
-  --font-weight-bold: 700;
-
-  --line-height-tight: 1.25;
-  --line-height-normal: 1.5;
-  --line-height-relaxed: 1.75;
-
-  /* Spacing Scale */
-  --spacing-xs: 0.25rem;
-  --spacing-sm: 0.5rem;
-  --spacing-md: 0.75rem;
-  --spacing-lg: 1rem;
-  --spacing-xl: 1.25rem;
-  --spacing-2xl: 1.5rem;
-  --spacing-3xl: 2rem;
-  --spacing-4xl: 2.5rem;
-  --spacing-5xl: 3rem;
-
-  /* Border Radius */
-  --border-radius-sm: 0.25rem;
-  --border-radius-md: 0.375rem;
-  --border-radius-lg: 0.5rem;
-  --border-radius-xl: 0.75rem;
-  --border-radius-2xl: 1rem;
-  --border-radius-full: 9999px;
-
-  /* Shadows */
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.08);
-  --shadow-lg: 0 4px 12px rgba(0, 0, 0, 0.1);
-  --shadow-xl: 0 8px 20px rgba(0, 0, 0, 0.15);
-  --shadow-2xl: 0 12px 24px rgba(0, 0, 0, 0.2);
-
-  /* Transitions */
-  --transition-fast: 0.15s ease-out;
-  --transition-normal: 0.2s ease-out;
-  --transition-slow: 0.3s ease-out;
-
-  /* Z-index Scale */
-  --z-dropdown: 1000;
-  --z-sticky: 1020;
-  --z-fixed: 1030;
-  --z-modal-backdrop: 1040;
-  --z-modal: 1050;
-  --z-popover: 1060;
-  --z-tooltip: 1070;
-  --z-notification: 1080;
-}
-
-/* Dark Theme */
-[data-theme="dark"] {
-  /* Neutral Colors - Dark Theme */
-  --text-primary: #f9fafb;
-  --text-secondary: #d1d5db;
-  --text-tertiary: #9ca3af;
-  --text-inverse: #111827;
-
-  --bg-primary: #111827;
-  --bg-secondary: #1f2937;
-  --bg-tertiary: #374151;
-  --bg-inverse: #ffffff;
-
-  --border-color: #374151;
-  --border-hover: #4b5563;
-
-  /* Component-specific colors for dark theme */
-  --card-bg: var(--bg-secondary);
-  --header-bg: var(--bg-primary);
-  --sidebar-bg: var(--bg-primary);
-  --footer-bg: var(--bg-secondary);
-
-  /* Adjusted shadows for dark theme */
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.3);
-  --shadow-lg: 0 4px 12px rgba(0, 0, 0, 0.4);
-  --shadow-xl: 0 8px 20px rgba(0, 0, 0, 0.5);
-  --shadow-2xl: 0 12px 24px rgba(0, 0, 0, 0.6);
-}
-
-/* Color scheme preference detection */
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme]) {
-    /* Apply dark theme variables when no explicit theme is set */
-    --text-primary: #f9fafb;
-    --text-secondary: #d1d5db;
-    --text-tertiary: #9ca3af;
-    --text-inverse: #111827;
-
-    --bg-primary: #111827;
-    --bg-secondary: #1f2937;
-    --bg-tertiary: #374151;
-    --bg-inverse: #ffffff;
-
-    --border-color: #374151;
-    --border-hover: #4b5563;
-
-    --card-bg: var(--bg-secondary);
-    --header-bg: var(--bg-primary);
-    --sidebar-bg: var(--bg-primary);
-    --footer-bg: var(--bg-secondary);
-  }
-}
-
-/* High contrast mode adjustments */
-@media (prefers-contrast: high) {
-  :root {
-    --border-color: var(--text-primary);
-    --border-hover: var(--text-primary);
-  }
-
-  [data-theme="dark"] {
-    --border-color: var(--text-primary);
-    --border-hover: var(--text-primary);
-  }
-}
-
-/* Reduced motion preferences */
-@media (prefers-reduced-motion: reduce) {
-  :root {
-    --transition-fast: 0s;
-    --transition-normal: 0s;
-    --transition-slow: 0s;
-  }
-}
-
-/* Base element styles */
+/* Base element styles that don't conflict with TailwindCSS */
 body {
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
     Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
-  background-color: var(--bg-primary);
-  color: var(--text-primary);
-  line-height: 1.5;
-  transition: background-color var(--transition-normal),
-    color var(--transition-normal);
   overflow-x: hidden;
-  min-height: 101vh !important;
-}
-
-a {
-  color: var(--secondary);
-  text-decoration: none;
-  transition: color var(--transition-fast);
-}
-
-a:hover {
-  color: var(--primary);
-}
-
-a:focus {
-  outline: 2px solid var(--primary);
-  outline-offset: 2px;
-}
-
-/* Removed layout styles - now using TailwindCSS utilities instead */
-
-/* Minimal typography enhancements - TailwindCSS handles the rest */
-
-/* Scrollbar styling */
-::-webkit-scrollbar {
-  width: 12px;
-}
-
-::-webkit-scrollbar-track {
-  background: var(--bg-secondary);
-}
-
-::-webkit-scrollbar-thumb {
-  background: var(--border-color);
-  border-radius: var(--border-radius-full);
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: var(--text-secondary);
 }
 
 /* Focus styles */
 *:focus {
-  outline: 2px solid var(--primary);
+  outline: 2px solid theme(colors.primary.500);
   outline-offset: 2px;
 }
 
@@ -243,27 +18,44 @@ button:focus,
 input:focus,
 textarea:focus,
 select:focus {
-  outline: 2px solid var(--primary);
+  outline: 2px solid theme(colors.primary.500);
   outline-offset: 2px;
 }
 
 /* Selection styles */
 ::selection {
-  background-color: var(--primary-alpha-30);
-  color: var(--text-primary);
+  background-color: theme(colors.primary.200);
+  color: theme(colors.primary.900);
 }
 
-/* Print styles - simplified for TailwindCSS compatibility */
-@media print {
-  * {
-    break-inside: avoid;
-    page-break-inside: avoid;
-  }
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 12px;
 }
 
-/* High contrast mode support - simplified */
-@media (prefers-contrast: high) {
-  /* TailwindCSS components will handle high contrast styling */
+::-webkit-scrollbar-track {
+  background: theme(colors.slate.100);
+}
+
+::-webkit-scrollbar-thumb {
+  background: theme(colors.slate.300);
+  border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: theme(colors.slate.400);
+}
+
+.dark ::-webkit-scrollbar-track {
+  background: theme(colors.slate.800);
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: theme(colors.slate.600);
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: theme(colors.slate.500);
 }
 
 /* Reduced motion support */

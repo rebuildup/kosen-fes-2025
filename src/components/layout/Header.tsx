@@ -29,82 +29,82 @@ const Header = () => {
   }, [scrolled]);
 
   return (
-    <header className={`pc-header ${scrolled ? "header-scrolled" : ""}`}>
-      <div className="header-container">
-        <div className="header-logo">
+    <header className={`fixed top-0 left-0 w-full bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 z-[1000] h-16 backdrop-blur-sm transition-shadow duration-300 ${scrolled ? "shadow-md" : ""}`}>
+      <div className="max-w-screen-xl mx-auto flex items-center justify-between h-full px-4">
+        <div className="flex items-center">
           <Logo />
         </div>
 
-        <nav className="header-nav">
-          <ul className="nav-list">
-            <li className="nav-item">
+        <nav className="h-full">
+          <ul className="flex h-full m-0 p-0 list-none">
+            <li className="h-full flex items-center">
               <NavLink
                 to="/"
                 className={({ isActive }) =>
-                  `nav-link ${isActive ? "nav-link-active" : ""}`
+                  `flex items-center px-4 h-full text-gray-700 dark:text-gray-300 hover:text-blue-600 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors duration-200 relative ${isActive ? "text-blue-600 font-medium after:absolute after:bottom-0 after:left-0 after:w-full after:h-1 after:bg-blue-600" : ""}`
                 }
                 end
               >
-                <span className="nav-icon">
+                <span className="mr-2 flex items-center justify-center text-lg">
                   <HomeIcon size={20} />
                 </span>
-                <span className="nav-text">{t("navigation.home")}</span>
+                <span className="text-sm">{t("navigation.home")}</span>
               </NavLink>
             </li>
 
-            <li className="nav-item">
+            <li className="h-full flex items-center">
               <NavLink
                 to="/events"
                 className={({ isActive }) =>
-                  `nav-link ${isActive ? "nav-link-active" : ""}`
+                  `flex items-center px-4 h-full text-gray-700 dark:text-gray-300 hover:text-blue-600 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors duration-200 relative ${isActive ? "text-blue-600 font-medium after:absolute after:bottom-0 after:left-0 after:w-full after:h-1 after:bg-blue-600" : ""}`
                 }
               >
-                <span className="nav-icon">
+                <span className="mr-2 flex items-center justify-center text-lg">
                   <EventIcon size={20} />
                 </span>
-                <span className="nav-text">{t("navigation.events")}</span>
+                <span className="text-sm">{t("navigation.events")}</span>
               </NavLink>
             </li>
 
-            <li className="nav-item">
+            <li className="h-full flex items-center">
               <NavLink
                 to="/exhibits"
                 className={({ isActive }) =>
-                  `nav-link ${isActive ? "nav-link-active" : ""}`
+                  `flex items-center px-4 h-full text-gray-700 dark:text-gray-300 hover:text-blue-600 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors duration-200 relative ${isActive ? "text-blue-600 font-medium after:absolute after:bottom-0 after:left-0 after:w-full after:h-1 after:bg-blue-600" : ""}`
                 }
               >
-                <span className="nav-icon">
+                <span className="mr-2 flex items-center justify-center text-lg">
                   <ExhibitIcon size={20} />
                 </span>
-                <span className="nav-text">{t("navigation.exhibits")}</span>
+                <span className="text-sm">{t("navigation.exhibits")}</span>
               </NavLink>
             </li>
 
-            <li className="nav-item">
+            <li className="h-full flex items-center">
               <NavLink
                 to="/schedule"
                 className={({ isActive }) =>
-                  `nav-link ${isActive ? "nav-link-active" : ""}`
+                  `flex items-center px-4 h-full text-gray-700 dark:text-gray-300 hover:text-blue-600 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors duration-200 relative ${isActive ? "text-blue-600 font-medium after:absolute after:bottom-0 after:left-0 after:w-full after:h-1 after:bg-blue-600" : ""}`
                 }
               >
-                <span className="nav-icon">
+                <span className="mr-2 flex items-center justify-center text-lg">
                   <ScheduleIcon size={20} />
                 </span>
-                <span className="nav-text">{t("navigation.schedule")}</span>
+                <span className="text-sm">{t("navigation.schedule")}</span>
               </NavLink>
             </li>
 
-            <li className="nav-item">
+            <li className="h-full flex items-center">
               <NavLink
                 to="/map"
                 className={({ isActive }) =>
-                  `nav-link ${isActive ? "nav-link-active" : ""}`
+                  `flex items-center px-4 h-full text-gray-700 dark:text-gray-300 hover:text-blue-600 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors duration-200 relative ${isActive ? "text-blue-600 font-medium after:absolute after:bottom-0 after:left-0 after:w-full after:h-1 after:bg-blue-600" : ""}`
                 }
               >
-                <span className="nav-icon">
+                <span className="mr-2 flex items-center justify-center text-lg">
                   <MapIcon size={20} />
                 </span>
-                <span className="nav-text">{t("navigation.map")}</span>
+                <span className="text-sm">{t("navigation.map")}</span>
               </NavLink>
             </li>
           </ul>

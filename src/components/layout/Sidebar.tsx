@@ -34,17 +34,17 @@ const Sidebar = () => {
   };
 
   return (
-    <aside className="pc-sidebar">
-      <div className="sidebar-section">
-        <h3 className="sidebar-title">{t("search.title")}</h3>
-        <div className="sidebar-search">
+    <aside className="w-64 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 p-4 h-[calc(100vh-64px)] fixed top-16 left-0 overflow-y-auto flex-shrink-0 transition-colors duration-300 z-[999] md:block hidden">
+      <div className="mb-6 border-b border-gray-200 dark:border-gray-700 pb-4">
+        <h3 className="text-base font-semibold mb-3 text-gray-900 dark:text-gray-100">{t("search.title")}</h3>
+        <div className="mt-2">
           <SearchBar variant="inline" onSearch={handleSearch} />
         </div>
       </div>
 
-      <div className="sidebar-section">
-        <h3 className="sidebar-title">{t("navigation.quickLinks")}</h3>
-        <div className="sidebar-links">
+      <div className="mb-6 border-b border-gray-200 dark:border-gray-700 pb-4">
+        <h3 className="text-base font-semibold mb-3 text-gray-900 dark:text-gray-100">{t("navigation.quickLinks")}</h3>
+        <div className="flex flex-col mt-1">
           <SidebarLink
             to="/bookmarks"
             icon={<BookmarkIcon size={18} />}
@@ -79,15 +79,15 @@ const Sidebar = () => {
         </div>
       </div>
 
-      <div className="sidebar-section">
+      <div className="mb-6 border-b border-gray-200 dark:border-gray-700 pb-4">
         <h3
-          className="sidebar-title sidebar-title-clickable"
+          className="text-base font-semibold mb-3 text-gray-900 dark:text-gray-100 cursor-pointer hover:text-blue-600 transition-colors duration-200 flex items-center justify-between"
           onClick={() => toggleSection("settings")}
         >
           {t("settings.title")}
           <span
-            className={`sidebar-arrow ${
-              expanded === "settings" ? "expanded" : ""
+            className={`transition-transform duration-200 text-sm ${
+              expanded === "settings" ? "rotate-180" : ""
             }`}
           >
             ▾
@@ -95,16 +95,16 @@ const Sidebar = () => {
         </h3>
 
         {expanded === "settings" && (
-          <div className="sidebar-content">
-            <div className="sidebar-setting">
-              <span className="setting-label">
+          <div className="mt-2">
+            <div className="flex items-center justify-between mb-2 p-2 rounded-md bg-gray-50 dark:bg-gray-800">
+              <span className="text-sm text-gray-600 dark:text-gray-400">
                 {t("settings.theme.title")}:
               </span>
               <ThemeToggle />
             </div>
 
-            <div className="sidebar-setting">
-              <span className="setting-label">
+            <div className="flex items-center justify-between p-2 rounded-md bg-gray-50 dark:bg-gray-800">
+              <span className="text-sm text-gray-600 dark:text-gray-400">
                 {t("settings.language.title")}:
               </span>
               <LanguageToggle />
@@ -113,24 +113,24 @@ const Sidebar = () => {
         )}
       </div>
 
-      <div className="sidebar-section">
+      <div className="mb-6">
         <h3
-          className="sidebar-title sidebar-title-clickable"
+          className="text-base font-semibold mb-3 text-gray-900 dark:text-gray-100 cursor-pointer hover:text-blue-600 transition-colors duration-200 flex items-center justify-between"
           onClick={() => toggleSection("info")}
         >
           {t("info.title")}
           <span
-            className={`sidebar-arrow ${expanded === "info" ? "expanded" : ""}`}
+            className={`transition-transform duration-200 text-sm ${expanded === "info" ? "rotate-180" : ""}`}
           >
             ▾
           </span>
         </h3>
 
         {expanded === "info" && (
-          <div className="sidebar-content">
-            <div className="sidebar-info">
-              <p>{t("info.festivalDates")}: 2025/06/15 - 2025/06/16</p>
-              <p>{t("info.location")}: Ube Kosen, Yamaguchi</p>
+          <div className="mt-2">
+            <div className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+              <p className="mb-2">{t("info.festivalDates")}: 2025/06/15 - 2025/06/16</p>
+              <p className="mb-2">{t("info.location")}: Ube Kosen, Yamaguchi</p>
               <p>{t("info.organizer")}: Festival Committee</p>
             </div>
           </div>

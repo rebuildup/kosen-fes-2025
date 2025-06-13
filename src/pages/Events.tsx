@@ -8,8 +8,7 @@ import CardListToggle from "../components/common/CardListToggle";
 import TagFilter from "../components/common/TagFilter";
 import SelectedTags from "../components/common/SelectedTags";
 
-// Import the new CSS (make sure to add this to your imports)
-import "../styles/components/tag-filter-scrollable.css";
+// CSS removed - using TailwindCSS classes instead
 
 const Events = () => {
   const { t } = useLanguage();
