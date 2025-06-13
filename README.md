@@ -221,42 +221,72 @@ const locationCoordinates: Record<string, { x: number; y: number }> = {
 
 ## カスタマイズ
 
-### スタイル調整
+### スタイル調整（TailwindCSS完全移行済み）
 
-- **TailwindCSS**：メインのスタイリングはTailwindCSSユーティリティクラスを使用
-  - 設定：`tailwind.config.js`
-  - カスタムクラス：`src/index.css`の `@layer` ディレクティブで追加
-- **CSS Variables**：テーマ変数は `src/styles/theme.css` で定義
-- **グローバルスタイル**：`src/styles/global.css`（必要最小限に抑制）
-- **コンポーネント**：個別のCSS filesは廃止し、TailwindCSSクラスを使用
+**📌 重要**: このプロジェクトは2025年6月にTailwindCSSへ完全移行済みです。レガシーCSS ファイルは削除され、すべてのスタイリングがTailwindCSSで行われています。
+
+- **TailwindCSS 3.4.4**：すべてのスタイリングを担当
+  - 設定：`tailwind.config.js`（カスタムカラー、アニメーション、ユーティリティを定義）
+  - メインCSS：`src/index.css`（TailwindCSS ディレクティブとカスタムコンポーネント）
+- **CSS Variables**：テーマ変数は `src/styles/theme.css` で定義（TailwindCSSと並行使用）
+- **グローバルスタイル**：`src/styles/global.css`（スクロールバー、フォーカス、選択のみ）
+- **コンポーネント**：個別のCSS filesは廃止、全コンポーネントでTailwindCSSクラスを使用
 
 ### TailwindCSS使用方法
 
 1. **基本的なユーティリティクラス**：
    ```tsx
-   <div className="flex items-center justify-between p-4 bg-white rounded-lg shadow-md">
-     <h2 className="text-xl font-semibold text-slate-900">Title</h2>
+   <div className="flex items-center justify-between p-4 bg-white dark:bg-gray-900 rounded-lg shadow-md border border-gray-200 dark:border-gray-700">
+     <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">Title</h2>
    </div>
    ```
 
 2. **レスポンシブ対応**：
    ```tsx
-   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 px-4 md:px-6 lg:px-8">
    ```
 
 3. **ダークモード対応**：
    ```tsx
-   <div className="bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100">
+   <div className="bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 border border-gray-200 dark:border-gray-700">
    ```
 
-4. **カスタムクラス追加**：`src/index.css` で `@layer` を使用
+4. **カスタムコンポーネントクラス**：`src/index.css` の `@layer components` で定義済み
    ```css
    @layer components {
+     .btn {
+       @apply inline-flex items-center justify-center rounded-lg px-4 py-2 text-sm font-medium transition-all duration-200;
+     }
      .btn-primary {
-       @apply bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700;
+       @apply bg-primary-600 text-white hover:bg-primary-700 focus:ring-primary-500 shadow-sm hover:shadow-md;
+     }
+     .card {
+       @apply bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200;
      }
    }
    ```
+
+5. **固定レイアウト例**（ヘッダー・サイドバー・メインコンテンツ）：
+   ```tsx
+   {/* ヘッダー */}
+   <header className="fixed top-0 left-0 w-full h-16 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 z-[1000]">
+   
+   {/* サイドバー */}
+   <aside className="w-64 fixed top-16 left-0 h-[calc(100vh-64px)] bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700">
+   
+   {/* メインコンテンツ */}
+   <main className="ml-64 pt-16 min-h-screen p-4">
+   ```
+
+### TailwindCSS カスタム設定
+
+`tailwind.config.js` で定義されているカスタム設定：
+
+- **カスタムカラー**: primary, secondary, accent（各50-950シェード）
+- **カスタムフォント**: Inter（sans）、JetBrains Mono（mono）
+- **カスタムスペーシング**: 18, 88, 112, 128
+- **カスタムアニメーション**: fade-in, slide-in, bounce-soft, pulse-soft
+- **プラグイン**: @tailwindcss/typography, @tailwindcss/forms, @tailwindcss/aspect-ratio
 
 - **ナビゲーション編集**：ルート定義は `src/routes.tsx` を更新
 
