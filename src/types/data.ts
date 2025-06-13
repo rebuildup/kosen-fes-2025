@@ -8,6 +8,86 @@ export interface BaseEntity {
   tags: string[];
 }
 
+// コアデータの型
+export interface ItemCore {
+  id: string;
+  type: string;
+  title: string;
+  date?: string;
+  time?: string;
+  location: string;
+  tags: string[];
+  imageUrl: string;
+}
+
+export interface EventCore extends ItemCore {
+  type: "event";
+  organizer: string;
+  duration: number;
+}
+
+export interface ExhibitCore extends ItemCore {
+  type: "exhibit";
+  creator: string;
+}
+
+export interface StallCore extends ItemCore {
+  type: "stall";
+}
+
+export interface SponsorCore extends ItemCore {
+  type: "sponsor";
+  tier: string;
+}
+
+// 詳細データの型
+export interface ItemDetails {
+  description: string;
+}
+
+// データ状態の型
+export interface DataState<T> {
+  data: T | null;
+  loading: boolean;
+  error: string | null;
+  lastUpdated: number;
+}
+
+// マップデータの型
+export interface MapData {
+  buildings: Building[];
+  paths: Path[];
+}
+
+export interface Path {
+  id: string;
+  points: Point[];
+}
+
+export interface Point {
+  x: number;
+  y: number;
+}
+
+// データストアの型
+export interface DataStore {
+  events: DataState<EventCore[]>;
+  exhibits: DataState<ExhibitCore[]>;
+  stalls: DataState<StallCore[]>;
+  sponsors: DataState<SponsorCore[]>;
+  eventDetails: Record<string, DataState<ItemDetails>>;
+  exhibitDetails: Record<string, DataState<ItemDetails>>;
+  stallDetails: Record<string, DataState<ItemDetails>>;
+  sponsorDetails: Record<string, DataState<ItemDetails>>;
+  mapData: DataState<MapData>;
+  bookmarks: string[];
+  searchHistory: string[];
+  preferences: {
+    language: string;
+    theme: "light" | "dark";
+  };
+}
+
 // イベント関連の型
 export interface Event extends BaseEntity {
   type: "event";
@@ -70,14 +150,4 @@ export interface UserData {
     theme: "light" | "dark";
     notifications: boolean;
   };
-}
-
-// データストアの型
-export interface DataStore {
-  events: Event[];
-  exhibits: Exhibit[];
-  stalls: Stall[];
-  buildings: Building[];
-  sponsors: Sponsor[];
-  userData: UserData;
 }

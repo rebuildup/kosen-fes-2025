@@ -29,6 +29,7 @@ const createLoadingState = <T>(): DataState<T> => ({
   data: null,
   loading: true,
   error: null,
+  lastUpdated: Date.now(),
 });
 
 // Helper to split data into core and details
@@ -262,7 +263,9 @@ class DataManager {
     return allItems.filter((item) => {
       return (
         item.title.toLowerCase().includes(normalizedQuery) ||
-        item.tags.some((tag) => tag.toLowerCase().includes(normalizedQuery)) ||
+        item.tags.some((tag: string) =>
+          tag.toLowerCase().includes(normalizedQuery)
+        ) ||
         item.location.toLowerCase().includes(normalizedQuery)
       );
     });
@@ -296,7 +299,7 @@ class DataManager {
 
   removeBookmark(id: string): void {
     this.store.bookmarks = this.store.bookmarks.filter(
-      (bookmarkId) => bookmarkId !== id
+      (bookmarkId: string) => bookmarkId !== id
     );
     this.saveBookmarks();
   }
@@ -319,7 +322,7 @@ class DataManager {
     if (query.trim()) {
       this.store.searchHistory = [
         query,
-        ...this.store.searchHistory.filter((q) => q !== query),
+        ...this.store.searchHistory.filter((q: string) => q !== query),
       ].slice(0, 10); // Keep only last 10
       localStorage.setItem(
         "searchHistory",
