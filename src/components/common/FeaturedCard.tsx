@@ -94,36 +94,40 @@ const FeaturedCard = ({
     : item.imageUrl || getPlaceholderImage();
 
   return (
-    <div className={`featured-card ${className}`}>
-      <div className="featured-card-content">
-        <div className="featured-card-info">
-          <div className="featured-card-type">
+    <div className={`bg-white dark:bg-gray-900 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-xl transition-all duration-300 ${className}`}>
+      <div className="flex flex-col lg:flex-row lg:h-64">
+        <div className="flex-1 p-6 space-y-4">
+          <div className="flex items-center space-x-3">
             <ItemTypeIcon type={item.type} size="medium" />
-            <span className="featured-card-type-label">{getTypeLabel()}</span>
+            <span className="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+              {getTypeLabel()}
+            </span>
           </div>
 
-          <h2 className="featured-card-title">{formatText(item.title)}</h2>
+          <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 leading-tight line-clamp-2">
+            {formatText(item.title)}
+          </h2>
 
-          <p className="featured-card-description">
+          <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed line-clamp-3">
             {formatText(item.description)}
           </p>
 
-          <div className="featured-card-details">
-            <div className="featured-detail">
-              <span className="detail-icon">🕒</span>
+          <div className="space-y-2">
+            <div className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400">
+              <span>🕒</span>
               <span>
                 {item.date} | {item.time}
               </span>
             </div>
 
-            <div className="featured-detail">
-              <span className="detail-icon">📍</span>
+            <div className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400">
+              <span>📍</span>
               <span>{formatText(item.location)}</span>
             </div>
 
             {getOrganization() && (
-              <div className="featured-detail">
-                <span className="detail-icon">👥</span>
+              <div className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400">
+                <span>👥</span>
                 <span>
                   {getOrganizationLabel()}: {formatText(getOrganization())}
                 </span>
@@ -132,24 +136,26 @@ const FeaturedCard = ({
           </div>
 
           {item.tags && item.tags.length > 0 && (
-            <div className="featured-card-tags">
+            <div className="flex flex-wrap gap-2">
               {item.tags.slice(0, 5).map((tag) => (
                 <Tag key={tag} tag={tag} size="small" />
               ))}
             </div>
           )}
 
-          <div className="featured-card-actions">
+          <div className="flex items-center justify-between pt-4">
             <Link
               to={`/detail/${item.type}/${item.id}`}
-              className="featured-card-link"
+              className="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors"
             >
               {t("actions.viewDetails")}
             </Link>
 
             <button
-              className={`featured-card-bookmark ${
-                isBookmarked(item.id) ? "bookmarked" : ""
+              className={`flex items-center space-x-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                isBookmarked(item.id)
+                  ? "text-yellow-600 bg-yellow-50 dark:bg-yellow-900/20 dark:text-yellow-400"
+                  : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800"
               }`}
               onClick={handleBookmarkToggle}
               aria-label={
@@ -158,8 +164,8 @@ const FeaturedCard = ({
                   : t("actions.bookmark")
               }
             >
-              {isBookmarked(item.id) ? "★" : "☆"}
-              <span>
+              <span className="text-lg">{isBookmarked(item.id) ? "★" : "☆"}</span>
+              <span className="hidden sm:inline">
                 {isBookmarked(item.id)
                   ? t("actions.removeBookmark")
                   : t("actions.bookmark")}
@@ -168,8 +174,13 @@ const FeaturedCard = ({
           </div>
         </div>
 
-        <div className="featured-card-image">
-          <img src={imageSrc} alt={item.title} onError={handleImageError} />
+        <div className="lg:w-80 h-48 lg:h-full bg-gray-100 dark:bg-gray-800 flex-shrink-0">
+          <img 
+            src={imageSrc} 
+            alt={item.title} 
+            onError={handleImageError}
+            className="w-full h-full object-cover"
+          />
         </div>
       </div>
     </div>

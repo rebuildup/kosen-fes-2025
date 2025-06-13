@@ -102,8 +102,8 @@
       "name": "宇部高専文化祭2025",
       "alternateName": "Ube Kosen Festival 2025",
       "description": "宇部工業高等専門学校の年次文化祭。学生による展示、パフォーマンス、屋台など多彩なイベントが開催されます。",
-      "startDate": "2025-06-14T10:00:00+09:00",
-      "endDate": "2025-06-15T18:00:00+09:00",
+      "startDate": "2025-06-15T10:00:00+09:00",
+      "endDate": "2025-06-16T18:00:00+09:00",
       "location": {
         "@type": "Place",
         "name": "宇部工業高等専門学校",
@@ -194,6 +194,88 @@
         "target": "https://festival.ube-k.ac.jp/2025/search?q={search_term_string}",
         "query-input": "required name=search_term_string"
       }
+    }
+    </script>
+
+    <!-- BreadcrumbList Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "ホーム",
+          "item": "https://festival.ube-k.ac.jp/2025/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "イベント",
+          "item": "https://festival.ube-k.ac.jp/2025/events"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "展示・体験",
+          "item": "https://festival.ube-k.ac.jp/2025/exhibits"
+        },
+        {
+          "@type": "ListItem",
+          "position": 4,
+          "name": "タイムスケジュール",
+          "item": "https://festival.ube-k.ac.jp/2025/schedule"
+        },
+        {
+          "@type": "ListItem",
+          "position": 5,
+          "name": "会場マップ",
+          "item": "https://festival.ube-k.ac.jp/2025/map"
+        }
+      ]
+    }
+    </script>
+
+    <!-- FAQ Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "宇部高専文化祭2025はいつ開催されますか？",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "宇部高専文化祭2025は2025年6月15日（土）から6月16日（日）の2日間開催されます。"
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "入場料はかかりますか？",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "入場は無料です。どなたでもお気軽にお越しください。"
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "駐車場はありますか？",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "学校内に駐車場をご用意しております。詳しくは会場マップをご確認ください。"
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "雨天の場合は開催されますか？",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "雨天決行です。屋内展示やイベントも多数ご用意しております。"
+          }
+        }
+      ]
     }
     </script>
 

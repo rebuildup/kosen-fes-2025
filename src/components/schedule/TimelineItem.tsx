@@ -64,76 +64,100 @@ const TimelineItem = ({ item }: TimelineItemProps) => {
 
   return (
     <div
-      className={`timeline-item ${expanded ? "expanded" : ""}`}
+      className={`bg-white dark:bg-gray-900 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 cursor-pointer transition-all duration-200 hover:shadow-md ${
+        expanded ? "ring-2 ring-blue-500 ring-opacity-50" : ""
+      }`}
       onClick={handleToggleExpand}
     >
-      <div className="timeline-item-row">
-        <div className="timeline-item-type">
-          <ItemTypeIcon type={item.type} size="small" />
-          <span className="timeline-item-type-label">{getTypeLabel()}</span>
+      <div className="p-4 space-y-3">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-2">
+            <ItemTypeIcon type={item.type} size="small" />
+            <span className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+              {getTypeLabel()}
+            </span>
+          </div>
+          <button
+            className={`p-1 rounded-lg transition-colors ${
+              isBookmarked(item.id)
+                ? "text-yellow-500 hover:text-yellow-600"
+                : "text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+            }`}
+            onClick={handleBookmarkToggle}
+            aria-label={
+              isBookmarked(item.id)
+                ? t("actions.removeBookmark")
+                : t("actions.bookmark")
+            }
+          >
+            {isBookmarked(item.id) ? "★" : "☆"}
+          </button>
         </div>
-        <h3 className="timeline-item-title">
+
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 leading-tight">
           <Link
             to={`/detail/${item.type}/${item.id}`}
+            className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
             onClick={(e) => e.stopPropagation()}
           >
             {item.title}
           </Link>
         </h3>
-        <div className="timeline-item-time">
-          <span className="timeline-item-icon">🕒</span>
-          <span>{item.time}</span>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm text-gray-600 dark:text-gray-400">
+          <div className="flex items-center space-x-2">
+            <span>🕒</span>
+            <span>{item.time}</span>
+          </div>
+          <div className="flex items-center space-x-2">
+            <span>📍</span>
+            <span>{item.location}</span>
+          </div>
         </div>
-        <div className="timeline-item-location">
-          <span className="timeline-item-icon">📍</span>
-          <span>{item.location}</span>
-        </div>
-        <button
-          className={`timeline-item-bookmark ${
-            isBookmarked(item.id) ? "bookmarked" : ""
-          }`}
-          onClick={handleBookmarkToggle}
-          aria-label={
-            isBookmarked(item.id)
-              ? t("actions.removeBookmark")
-              : t("actions.bookmark")
-          }
-        >
-          {isBookmarked(item.id) ? "★" : "☆"}
-        </button>
+
+        {expanded && (
+          <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700 space-y-4">
+            {item.imageUrl && (
+              <div className="w-full h-48 rounded-lg overflow-hidden">
+                <img 
+                  src={item.imageUrl} 
+                  alt={item.title} 
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            )}
+            
+            <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
+              {item.description}
+            </p>
+            
+            {getOrganization() && (
+              <div className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400">
+                <span>👥</span>
+                <span>
+                  {getOrganizationLabel()}: {getOrganization()}
+                </span>
+              </div>
+            )}
+            
+            {item.tags && item.tags.length > 0 && (
+              <div className="flex flex-wrap gap-2">
+                {item.tags.map((tag) => (
+                  <Tag key={tag} tag={tag} size="small" />
+                ))}
+              </div>
+            )}
+            
+            <Link
+              to={`/detail/${item.type}/${item.id}`}
+              className="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {t("actions.viewDetails")}
+            </Link>
+          </div>
+        )}
       </div>
-      {expanded && (
-        <div className="timeline-item-expanded">
-          {item.imageUrl && (
-            <div className="timeline-item-image">
-              <img src={item.imageUrl} alt={item.title} />
-            </div>
-          )}
-          <p className="timeline-item-description">{item.description}</p>
-          {getOrganization() && (
-            <div className="timeline-item-organization">
-              <span className="timeline-item-icon">👥</span>
-              <span>
-                {getOrganizationLabel()}: {getOrganization()}
-              </span>
-            </div>
-          )}
-          {item.tags && item.tags.length > 0 && (
-            <div className="timeline-item-tags">
-              {item.tags.map((tag) => (
-                <Tag key={tag} tag={tag} size="small" />
-              ))}
-            </div>
-          )}
-          <Link
-            to={`/detail/${item.type}/${item.id}`}
-            className="timeline-item-link"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {t("actions.viewDetails")}
-          </Link>
-        </div>
-      )}
     </div>
   );
 };

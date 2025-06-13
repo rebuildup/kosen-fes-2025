@@ -99,33 +99,45 @@ const TimeSchedule = () => {
   };
 
   return (
-    <div className="schedule-page">
-      <div className="schedule-header">
-        <h1 className="schedule-title">{t("schedule.title")}</h1>
+    <div className="space-y-8">
+      <div className="space-y-6">
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 text-center mb-8">
+          {t("schedule.title")}
+        </h1>
 
-        <div className="schedule-tabs">
-          <button
-            className={`schedule-tab ${selectedDay === "day1" ? "active" : ""}`}
-            onClick={() => handleDayChange("day1")}
-          >
-            {t("schedule.day1")}
-          </button>
-          <button
-            className={`schedule-tab ${selectedDay === "day2" ? "active" : ""}`}
-            onClick={() => handleDayChange("day2")}
-          >
-            {t("schedule.day2")}
-          </button>
+        <div className="flex justify-center">
+          <div className="flex bg-gray-100 dark:bg-gray-800 rounded-lg p-1 space-x-1">
+            <button
+              className={`px-6 py-3 rounded-lg text-sm font-medium transition-colors ${
+                selectedDay === "day1"
+                  ? "bg-white dark:bg-gray-700 text-blue-600 dark:text-blue-400 shadow-sm"
+                  : "text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100"
+              }`}
+              onClick={() => handleDayChange("day1")}
+            >
+              {t("schedule.day1")}
+            </button>
+            <button
+              className={`px-6 py-3 rounded-lg text-sm font-medium transition-colors ${
+                selectedDay === "day2"
+                  ? "bg-white dark:bg-gray-700 text-blue-600 dark:text-blue-400 shadow-sm"
+                  : "text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100"
+              }`}
+              onClick={() => handleDayChange("day2")}
+            >
+              {t("schedule.day2")}
+            </button>
+          </div>
         </div>
       </div>
 
-      <div className="schedule-content">
-        <div className="schedule-sidebar">
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+        <div className="lg:col-span-1 space-y-6">
           <TagFilter onFilter={() => {}} compact={true} />
           <SelectedTags />
         </div>
 
-        <div className="schedule-main">
+        <div className="lg:col-span-3">
           {selectedDay === "day1" && (
             <TimelineDay
               date="2025-06-15"
@@ -147,11 +159,15 @@ const TimeSchedule = () => {
           )}
 
           {selectedDay === "day1" && filteredItems.day1.length === 0 && (
-            <div className="schedule-empty">{t("schedule.noEvents")}</div>
+            <div className="text-center py-12 text-gray-500 dark:text-gray-400 text-lg">
+              {t("schedule.noEvents")}
+            </div>
           )}
 
           {selectedDay === "day2" && filteredItems.day2.length === 0 && (
-            <div className="schedule-empty">{t("schedule.noEvents")}</div>
+            <div className="text-center py-12 text-gray-500 dark:text-gray-400 text-lg">
+              {t("schedule.noEvents")}
+            </div>
           )}
         </div>
       </div>

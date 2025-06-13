@@ -9,77 +9,93 @@ const FooterMobile = ({ setMenuOpen }: FooterMobileProps) => {
   const { t } = useLanguage();
 
   return (
-    <footer className="mobile-footer">
-      <nav className="footer-nav">
+    <footer className="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 z-50 sm:hidden">
+      <nav className="flex justify-around items-center py-2">
         <NavLink
           to="/"
           className={({ isActive }) =>
-            `footer-nav-item ${isActive ? "footer-nav-active" : ""}`
+            `flex flex-col items-center min-w-0 flex-1 py-2 px-1 text-center transition-colors ${
+              isActive 
+                ? "text-blue-600 dark:text-blue-400" 
+                : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"
+            }`
           }
           end
         >
-          <div className="footer-nav-icon">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+          <div className="mb-1">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
               <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" />
             </svg>
           </div>
-          <div className="footer-nav-label">{t("navigation.home")}</div>
+          <div className="text-xs truncate">{t("navigation.home")}</div>
         </NavLink>
 
         <NavLink
           to="/events"
           className={({ isActive }) =>
-            `footer-nav-item ${isActive ? "footer-nav-active" : ""}`
+            `flex flex-col items-center min-w-0 flex-1 py-2 px-1 text-center transition-colors ${
+              isActive 
+                ? "text-blue-600 dark:text-blue-400" 
+                : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"
+            }`
           }
         >
-          <div className="footer-nav-icon">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+          <div className="mb-1">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
               <path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z" />
             </svg>
           </div>
-          <div className="footer-nav-label">{t("navigation.events")}</div>
+          <div className="text-xs truncate">{t("navigation.events")}</div>
         </NavLink>
 
         <NavLink
           to="/exhibits"
           className={({ isActive }) =>
-            `footer-nav-item ${isActive ? "footer-nav-active" : ""}`
+            `flex flex-col items-center min-w-0 flex-1 py-2 px-1 text-center transition-colors ${
+              isActive 
+                ? "text-blue-600 dark:text-blue-400" 
+                : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"
+            }`
           }
         >
-          <div className="footer-nav-icon">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+          <div className="mb-1">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
               <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z" />
             </svg>
           </div>
-          <div className="footer-nav-label">{t("navigation.exhibits")}</div>
+          <div className="text-xs truncate">{t("navigation.exhibits")}</div>
         </NavLink>
 
         <NavLink
           to="/schedule"
           className={({ isActive }) =>
-            `footer-nav-item ${isActive ? "footer-nav-active" : ""}`
+            `flex flex-col items-center min-w-0 flex-1 py-2 px-1 text-center transition-colors ${
+              isActive 
+                ? "text-blue-600 dark:text-blue-400" 
+                : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"
+            }`
           }
         >
-          <div className="footer-nav-icon">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+          <div className="mb-1">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
               <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z" />
               <path d="M12.5 7H11v6l5.25 3.15.75-1.23-4.5-2.67z" />
             </svg>
           </div>
-          <div className="footer-nav-label">{t("navigation.schedule")}</div>
+          <div className="text-xs truncate">{t("navigation.schedule")}</div>
         </NavLink>
 
         <button
-          className="footer-menu-button"
+          className="flex flex-col items-center min-w-0 flex-1 py-2 px-1 text-center transition-colors text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"
           onClick={() => setMenuOpen(true)}
           aria-label={t("navigation.menu")}
         >
-          <div className="footer-nav-icon">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+          <div className="mb-1">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
               <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z" />
             </svg>
           </div>
-          <div className="footer-nav-label">{t("navigation.menu")}</div>
+          <div className="text-xs truncate">{t("navigation.menu")}</div>
         </button>
       </nav>
     </footer>

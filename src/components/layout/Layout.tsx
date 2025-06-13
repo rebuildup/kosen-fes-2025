@@ -119,8 +119,8 @@ const Layout = () => {
         {/* PC Sidebar - only shown on desktop */}
         {!isMobile && <Sidebar />}
 
-        <main className={`flex-1 ${!isMobile ? "ml-64 pt-16" : "pt-0"} min-h-screen`}>
-          <div className="p-4">
+        <main className={`flex-1 ${!isMobile ? "ml-64 pt-16" : "pt-0"} min-h-screen bg-gray-50 dark:bg-gray-950`}>
+          <div className="max-w-7xl mx-auto px-6 py-8 sm:px-8 lg:px-12">
             <PageTransition>
               <Outlet />
             </PageTransition>

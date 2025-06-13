@@ -33,22 +33,30 @@ const TagCloud = ({
   }
 
   return (
-    <div className="tag-cloud">
-      {title && <h3 className="tag-cloud-title">{title}</h3>}
-      <div className="tag-cloud-content">
-        {limitedTags.map((tag) => (
-          <Tag
-            key={tag}
-            tag={tag}
-            count={showCount ? tagCounts[tag] : undefined}
-            size={size}
-            onClick={onTagClick}
-          />
-        ))}
+    <div className="mb-5">
+      {title && (
+        <h3 className="text-base font-medium mb-3 text-gray-900 dark:text-gray-100">
+          {title}
+        </h3>
+      )}
+      <div className="overflow-x-auto">
+        <div className="flex gap-2 pb-2 min-w-max">
+          {limitedTags.map((tag) => (
+            <Tag
+              key={tag}
+              tag={tag}
+              count={showCount ? tagCounts[tag] : undefined}
+              size={size}
+              onClick={onTagClick}
+            />
+          ))}
 
-        {maxTags && displayTags.length > maxTags && (
-          <button className="tag-cloud-more">{t("tags.showMore")}</button>
-        )}
+          {maxTags && displayTags.length > maxTags && (
+            <button className="text-xs text-blue-600 dark:text-blue-400 hover:underline bg-none border-none cursor-pointer px-2 py-1 transition-colors">
+              {t("tags.showMore")}
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );

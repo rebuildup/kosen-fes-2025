@@ -41,14 +41,16 @@ const Header = () => {
               <NavLink
                 to="/"
                 className={({ isActive }) =>
-                  `flex items-center px-4 h-full text-gray-700 dark:text-gray-300 hover:text-blue-600 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors duration-200 relative ${isActive ? "text-blue-600 font-medium after:absolute after:bottom-0 after:left-0 after:w-full after:h-1 after:bg-blue-600" : ""}`
+                  `flex items-center justify-center w-32 h-full text-gray-700 dark:text-gray-300 hover:text-blue-600 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors duration-200 relative ${isActive ? "text-blue-600 font-medium after:absolute after:bottom-0 after:left-0 after:w-full after:h-1 after:bg-blue-600" : ""}`
                 }
                 end
               >
-                <span className="mr-2 flex items-center justify-center text-lg">
-                  <HomeIcon size={20} />
-                </span>
-                <span className="text-sm">{t("navigation.home")}</span>
+                <div className="flex flex-col items-center">
+                  <span className="mb-1 flex items-center justify-center text-lg">
+                    <HomeIcon size={18} />
+                  </span>
+                  <span className="text-xs leading-tight">{t("navigation.home")}</span>
+                </div>
               </NavLink>
             </li>
 
@@ -56,13 +58,15 @@ const Header = () => {
               <NavLink
                 to="/events"
                 className={({ isActive }) =>
-                  `flex items-center px-4 h-full text-gray-700 dark:text-gray-300 hover:text-blue-600 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors duration-200 relative ${isActive ? "text-blue-600 font-medium after:absolute after:bottom-0 after:left-0 after:w-full after:h-1 after:bg-blue-600" : ""}`
+                  `flex items-center justify-center w-32 h-full text-gray-700 dark:text-gray-300 hover:text-blue-600 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors duration-200 relative ${isActive ? "text-blue-600 font-medium after:absolute after:bottom-0 after:left-0 after:w-full after:h-1 after:bg-blue-600" : ""}`
                 }
               >
-                <span className="mr-2 flex items-center justify-center text-lg">
-                  <EventIcon size={20} />
-                </span>
-                <span className="text-sm">{t("navigation.events")}</span>
+                <div className="flex flex-col items-center">
+                  <span className="mb-1 flex items-center justify-center text-lg">
+                    <EventIcon size={18} />
+                  </span>
+                  <span className="text-xs leading-tight">{t("navigation.events")}</span>
+                </div>
               </NavLink>
             </li>
 
@@ -70,13 +74,15 @@ const Header = () => {
               <NavLink
                 to="/exhibits"
                 className={({ isActive }) =>
-                  `flex items-center px-4 h-full text-gray-700 dark:text-gray-300 hover:text-blue-600 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors duration-200 relative ${isActive ? "text-blue-600 font-medium after:absolute after:bottom-0 after:left-0 after:w-full after:h-1 after:bg-blue-600" : ""}`
+                  `flex items-center justify-center w-32 h-full text-gray-700 dark:text-gray-300 hover:text-blue-600 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors duration-200 relative ${isActive ? "text-blue-600 font-medium after:absolute after:bottom-0 after:left-0 after:w-full after:h-1 after:bg-blue-600" : ""}`
                 }
               >
-                <span className="mr-2 flex items-center justify-center text-lg">
-                  <ExhibitIcon size={20} />
-                </span>
-                <span className="text-sm">{t("navigation.exhibits")}</span>
+                <div className="flex flex-col items-center">
+                  <span className="mb-1 flex items-center justify-center text-lg">
+                    <ExhibitIcon size={18} />
+                  </span>
+                  <span className="text-xs leading-tight text-center">{t("navigation.exhibits")}</span>
+                </div>
               </NavLink>
             </li>
 
@@ -84,13 +90,15 @@ const Header = () => {
               <NavLink
                 to="/schedule"
                 className={({ isActive }) =>
-                  `flex items-center px-4 h-full text-gray-700 dark:text-gray-300 hover:text-blue-600 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors duration-200 relative ${isActive ? "text-blue-600 font-medium after:absolute after:bottom-0 after:left-0 after:w-full after:h-1 after:bg-blue-600" : ""}`
+                  `flex items-center justify-center w-32 h-full text-gray-700 dark:text-gray-300 hover:text-blue-600 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors duration-200 relative ${isActive ? "text-blue-600 font-medium after:absolute after:bottom-0 after:left-0 after:w-full after:h-1 after:bg-blue-600" : ""}`
                 }
               >
-                <span className="mr-2 flex items-center justify-center text-lg">
-                  <ScheduleIcon size={20} />
-                </span>
-                <span className="text-sm">{t("navigation.schedule")}</span>
+                <div className="flex flex-col items-center">
+                  <span className="mb-1 flex items-center justify-center text-lg">
+                    <ScheduleIcon size={18} />
+                  </span>
+                  <span className="text-xs leading-tight text-center">{t("navigation.schedule")}</span>
+                </div>
               </NavLink>
             </li>
 
@@ -98,13 +106,15 @@ const Header = () => {
               <NavLink
                 to="/map"
                 className={({ isActive }) =>
-                  `flex items-center px-4 h-full text-gray-700 dark:text-gray-300 hover:text-blue-600 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors duration-200 relative ${isActive ? "text-blue-600 font-medium after:absolute after:bottom-0 after:left-0 after:w-full after:h-1 after:bg-blue-600" : ""}`
+                  `flex items-center justify-center w-32 h-full text-gray-700 dark:text-gray-300 hover:text-blue-600 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors duration-200 relative ${isActive ? "text-blue-600 font-medium after:absolute after:bottom-0 after:left-0 after:w-full after:h-1 after:bg-blue-600" : ""}`
                 }
               >
-                <span className="mr-2 flex items-center justify-center text-lg">
-                  <MapIcon size={20} />
-                </span>
-                <span className="text-sm">{t("navigation.map")}</span>
+                <div className="flex flex-col items-center">
+                  <span className="mb-1 flex items-center justify-center text-lg">
+                    <MapIcon size={18} />
+                  </span>
+                  <span className="text-xs leading-tight">{t("navigation.map")}</span>
+                </div>
               </NavLink>
             </li>
           </ul>
