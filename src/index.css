@@ -12,7 +12,19 @@
   --gray-color: #334155;
   --white: #ffffff;
 
-  /* Tailwind utility classes for custom colors */
+  /* Extended color palette for better design */
+  --gray-50: #f8fafc;
+  --gray-100: #f1f5f9;
+  --gray-200: #e2e8f0;
+  --gray-300: #cbd5e1;
+  --gray-400: #94a3b8;
+  --gray-500: #64748b;
+  --gray-600: #475569;
+  --gray-700: #334155;
+  --gray-800: #1e293b;
+  --gray-900: #0f172a;
+
+  /* Custom color utilities */
   --color-main: var(--main);
   --color-bg: var(--bg-color);
   --color-accent: var(--accent);
@@ -37,6 +49,75 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   line-height: 1.6;
+  background-color: rgb(var(--bg-color));
+  color: rgb(var(--main));
+}
+
+/* カスタムコンポーネントクラス */
+@layer components {
+  .card {
+    @apply bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden;
+  }
+  
+  .card-image {
+    @apply aspect-video w-full object-cover;
+  }
+  
+  .card-content {
+    @apply p-4;
+  }
+  
+  .card-title {
+    @apply text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2 line-clamp-2;
+  }
+  
+  .card-description {
+    @apply text-sm text-gray-600 dark:text-gray-300 mb-3 line-clamp-3;
+  }
+  
+  .card-meta {
+    @apply flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 mb-2;
+  }
+  
+  .card-meta-icon {
+    @apply w-4 h-4 flex-shrink-0;
+  }
+  
+  .btn {
+    @apply inline-flex items-center justify-center rounded-lg px-4 py-2 text-sm font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2;
+  }
+  
+  .btn-primary {
+    @apply bg-[var(--accent)] text-white hover:bg-[var(--accent)]/90 focus:ring-[var(--accent)]/50 shadow-sm hover:shadow-md;
+  }
+  
+  .btn-secondary {
+    @apply bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100 hover:bg-gray-200 dark:hover:bg-gray-600 focus:ring-gray-500;
+  }
+  
+  .tag {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium transition-colors;
+  }
+  
+  .tag-default {
+    @apply bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600;
+  }
+  
+  .tag-accent {
+    @apply bg-[var(--accent)]/10 text-[var(--accent)] hover:bg-[var(--accent)]/20;
+  }
+  
+  .section {
+    @apply py-12 px-4 sm:px-6 lg:px-8;
+  }
+  
+  .section-title {
+    @apply text-2xl md:text-3xl font-bold text-gray-900 dark:text-gray-100 mb-6;
+  }
+  
+  .section-subtitle {
+    @apply text-lg text-gray-600 dark:text-gray-300 mb-8;
+  }
 }
 
 /* ヘッダー用のスクロール効果 */

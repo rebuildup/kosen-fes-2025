@@ -38,8 +38,6 @@ const Tag = ({
         { scale: 0.95 },
         {
           scale: 1,
-          backgroundColor: "var(--secondary)",
-          color: "white",
           duration: DURATION.FAST,
           ease: "back.out(1.7)",
         }
@@ -48,8 +46,6 @@ const Tag = ({
       // Animation for when tag becomes inactive
       gsap.to(tagRef.current, {
         scale: 1,
-        backgroundColor: "var(--bg-tertiary)",
-        color: "var(--text-secondary)",
         duration: DURATION.FAST,
         ease: EASE.SMOOTH,
       });
@@ -87,9 +83,9 @@ const Tag = ({
     large: "text-base px-3 py-1.5"
   };
 
-  const baseClasses = "inline-flex items-center gap-1 rounded-full font-medium transition-all duration-200 border";
-  const inactiveClasses = "bg-slate-100 text-slate-700 border-slate-200 hover:bg-slate-200 dark:bg-slate-700 dark:text-slate-300 dark:border-slate-600 dark:hover:bg-slate-600";
-  const activeClasses = "bg-primary-500 text-white border-primary-500 hover:bg-primary-600";
+  const baseClasses = "inline-flex items-center gap-1 rounded-full font-medium transition-all duration-200 border cursor-pointer";
+  const inactiveClasses = "bg-gray-100 text-gray-700 border-gray-200 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-600";
+  const activeClasses = "bg-[var(--accent)] text-white border-[var(--accent)] hover:bg-[var(--accent)]/90";
 
   return (
     <button

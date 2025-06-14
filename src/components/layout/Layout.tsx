@@ -111,15 +111,16 @@ const Layout = () => {
   }, [isMobile, menuOpen]);
 
   return (
-    <div ref={layoutRef} className="min-h-screen">
-      {/* PC Header - only shown on desktop */}
-      {!isMobile && <Header />}
+    <div ref={layoutRef} className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      {/* Header - always shown */}
+      <Header />
 
       <div className="flex">
-        {/* PC Sidebar - only shown on desktop */}
+        {/* Desktop Sidebar */}
         {!isMobile && <Sidebar />}
 
-        <main className={`flex-1 ${!isMobile ? "pt-16" : ""}`}>
+        {/* Main Content */}
+        <main className={`flex-1 pt-16 ${!isMobile ? "ml-0" : ""}`}>
           <div className="min-h-screen">
             <PageTransition>
               <Outlet />

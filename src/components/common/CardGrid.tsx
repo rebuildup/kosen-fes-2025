@@ -58,18 +58,39 @@ const CardGrid = ({
       }
     : undefined;
 
+  // Get grid classes based on variant
+  const getGridClasses = () => {
+    switch (variant) {
+      case "compact":
+        return "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4";
+      case "list":
+        return "space-y-4";
+      case "grid":
+        return "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6";
+      default:
+        return "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6";
+    }
+  };
+
   // If no items and we have an empty message
   if (filteredItems.length === 0) {
     return (
-      <div className="card-grid-empty">
-        {emptyMessage || getDefaultEmptyMessage()}
+      <div className="flex flex-col items-center justify-center py-16 text-center">
+        <div className="text-gray-400 dark:text-gray-500 mb-4">
+          <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2M4 13h2m13-8V4a1 1 0 00-1-1H7a1 1 0 00-1 1v1" />
+          </svg>
+        </div>
+        <p className="text-lg text-gray-600 dark:text-gray-400">
+          {emptyMessage || getDefaultEmptyMessage()}
+        </p>
       </div>
     );
   }
 
   return (
     <div
-      className={`card-grid card-grid-${variant} ${className}`}
+      className={`${getGridClasses()} ${className}`}
       style={gridStyle}
     >
       {filteredItems.map((item) => (

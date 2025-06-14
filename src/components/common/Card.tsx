@@ -275,99 +275,162 @@ const Card = ({
   // Get the actual image source
   const imageSrc = determineImageSrc();
 
+  // Get variant-specific classes
+  const getCardClasses = () => {
+    const baseClasses = "card group cursor-pointer transform transition-all duration-200";
+    
+    switch (variant) {
+      case "compact":
+        return `${baseClasses} hover:-translate-y-2`;
+      case "featured":
+        return `${baseClasses} md:flex md:h-64 hover:-translate-y-3 shadow-lg`;
+      case "list":
+        return `${baseClasses} flex flex-row hover:-translate-y-1`;
+      case "grid":
+        return `${baseClasses} max-w-sm mx-auto hover:-translate-y-2`;
+      default:
+        return `${baseClasses} hover:-translate-y-2`;
+    }
+  };
+
+  const getImageClasses = () => {
+    switch (variant) {
+      case "featured":
+        return "card-image md:w-1/2 md:h-full group-hover:scale-105 transition-transform duration-200";
+      case "list":
+        return "w-24 h-24 sm:w-32 sm:h-32 object-cover rounded-lg flex-shrink-0 group-hover:scale-105 transition-transform duration-200";
+      case "compact":
+        return "card-image group-hover:scale-105 transition-transform duration-200";
+      default:
+        return "card-image group-hover:scale-105 transition-transform duration-200";
+    }
+  };
+
+  const getContentClasses = () => {
+    switch (variant) {
+      case "featured":
+        return "card-content md:w-1/2 flex flex-col justify-between p-6";
+      case "list":
+        return "flex-1 px-4 py-2 min-w-0";
+      case "compact":
+        return "card-content p-3";
+      default:
+        return "card-content";
+    }
+  };
+
   return (
-    <div ref={cardRef}>
-      <Link to={`/detail/${item.type}/${item.id}`} onClick={handleCardClick}>
-        <div>
-          <div>
-            <img
-              src={imageSrc}
-              alt={item.title}
-              onLoad={handleImageLoad}
-              onError={handleImageError}
-              ref={imageRef}
-            />
-            {!isImageLoaded && !hasImageError && (
-              <div>
-                <div></div>
-              </div>
-            )}
-          </div>
+    <article ref={cardRef} className={getCardClasses()}>
+      <Link to={`/detail/${item.type}/${item.id}`} onClick={handleCardClick} className="block h-full">
+        {/* Image Container */}
+        <div className="relative overflow-hidden">
+          <img
+            src={imageSrc}
+            alt={item.title}
+            onLoad={handleImageLoad}
+            onError={handleImageError}
+            ref={imageRef}
+            className={getImageClasses()}
+            style={{ opacity: isImageLoaded ? 1 : 0 }}
+          />
+          
+          {/* Loading Skeleton */}
+          {!isImageLoaded && !hasImageError && (
+            <div className="absolute inset-0 bg-gray-200 dark:bg-gray-700 animate-pulse">
+              <div className="w-full h-full bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 dark:from-gray-700 dark:via-gray-600 dark:to-gray-700"></div>
+            </div>
+          )}
 
-          <div>
+          {/* Type Badge */}
+          <div className="absolute top-3 left-3 flex items-center gap-1.5 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-full px-2.5 py-1 text-xs font-medium">
             <ItemTypeIcon type={item.type} size="small" />
-            <span>{getTypeLabel()}</span>
+            <span className="text-gray-700 dark:text-gray-300">{getTypeLabel()}</span>
           </div>
 
+          {/* Bookmark Button */}
           <button
             onClick={handleBookmarkToggle}
+            className="absolute top-3 right-3 w-8 h-8 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-full flex items-center justify-center text-lg transition-all duration-200 hover:bg-white dark:hover:bg-gray-800 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-[var(--accent)]/50"
             aria-label={
               isBookmarked(item.id)
                 ? t("actions.removeBookmark")
                 : t("actions.bookmark")
             }
           >
-            {isBookmarked(item.id) ? "★" : "☆"}
+            <span className={isBookmarked(item.id) ? "text-[var(--second)]" : "text-gray-400 dark:text-gray-500"}>
+              {isBookmarked(item.id) ? "★" : "☆"}
+            </span>
           </button>
         </div>
 
-        <div>
-          <h3>{formatText(item.title)}</h3>
+        {/* Content */}
+        <div className={getContentClasses()}>
+          <div>
+            <h3 className="card-title group-hover:text-[var(--accent)] transition-colors duration-200">
+              {formatText(item.title)}
+            </h3>
 
-          {showDescription && <p>{formatText(item.description)}</p>}
+            {showDescription && (
+              <p className="card-description">
+                {formatText(item.description)}
+              </p>
+            )}
 
-          <div
-            ref={metaRef}
-            style={{
-              opacity: variant === "list" ? 1 : undefined,
-              transform: variant === "list" ? "none" : undefined,
-            }}
-          >
-            <div>
-              <span>
-                <TimeIcon size={16} />
-              </span>
-              <span>
-                {item.date} | {item.time}
-              </span>
+            {/* Meta Information */}
+            <div
+              ref={metaRef}
+              className="space-y-2"
+              style={{
+                opacity: variant === "list" ? 1 : undefined,
+                transform: variant === "list" ? "none" : undefined,
+              }}
+            >
+              <div className="card-meta">
+                <TimeIcon size={16} className="card-meta-icon" />
+                <span className="truncate">
+                  {item.date} | {item.time}
+                </span>
+              </div>
+
+              <div className="card-meta">
+                <LocationIcon size={16} className="card-meta-icon" />
+                <span className="truncate">{formatText(item.location)}</span>
+              </div>
+
+              {getOrganization() && (
+                <div className="card-meta">
+                  <PeopleIcon size={16} className="card-meta-icon" />
+                  <span className="truncate">
+                    {getOrganizationLabel()}: {formatText(getOrganization())}
+                  </span>
+                </div>
+              )}
             </div>
 
-            <div>
-              <span>
-                <LocationIcon size={16} />
-              </span>
-              <span>{formatText(item.location)}</span>
-            </div>
-
-            {getOrganization() && (
-              <div>
-                <span>
-                  <PeopleIcon size={16} />
-                </span>
-                <span>
-                  {getOrganizationLabel()}: {formatText(getOrganization())}
-                </span>
+            {/* Tags */}
+            {showTags && item.tags && item.tags.length > 0 && (
+              <div
+                ref={tagsRef}
+                className="flex flex-wrap gap-1.5 mt-3"
+                style={{
+                  opacity: 0,
+                  transform: "translateY(10px)",
+                }}
+              >
+                {item.tags.slice(0, 3).map((tag) => (
+                  <Tag key={tag} tag={tag} size="small" />
+                ))}
+                {item.tags.length > 3 && (
+                  <span className="tag tag-default text-xs">
+                    +{item.tags.length - 3}
+                  </span>
+                )}
               </div>
             )}
           </div>
-
-          {showTags && item.tags && item.tags.length > 0 && (
-            <div
-              ref={tagsRef}
-              style={{
-                opacity: 0,
-                transform: "translateY(10px)",
-              }}
-            >
-              {item.tags.slice(0, 3).map((tag) => (
-                <Tag key={tag} tag={tag} size="small" />
-              ))}
-              {item.tags.length > 3 && <span>+{item.tags.length - 3}</span>}
-            </div>
-          )}
         </div>
       </Link>
-    </div>
+    </article>
   );
 };
 
