@@ -151,10 +151,7 @@ const Menu = ({ setMenuOpen, closeButtonRef }: MenuProps) => {
 
   return (
     <div>
-      <div
-        ref={backdropRef}
-        onClick={() => closeWithAnimation()}
-      ></div>
+      <div ref={backdropRef} onClick={() => closeWithAnimation()}></div>
 
       <div ref={menuRef}>
         <div>
@@ -178,55 +175,35 @@ const Menu = ({ setMenuOpen, closeButtonRef }: MenuProps) => {
           <div>
             <h3>{t("navigation.main")}</h3>
             <nav>
-              <NavLink
-                to="/"
-                onClick={handleMenuItemClick}
-                end
-              >
+              <NavLink to="/" onClick={handleMenuItemClick} end>
                 <span>
                   <HomeIcon size={18} />
                 </span>
                 <span>{t("navigation.home")}</span>
               </NavLink>
 
-              <NavLink
-                to="/events"
-                onClick={handleMenuItemClick}
-              >
+              <NavLink to="/events" onClick={handleMenuItemClick}>
                 <span>
                   <EventIcon size={18} />
                 </span>
                 <span>{t("navigation.events")}</span>
               </NavLink>
 
-              <NavLink
-                to="/exhibits"
-                onClick={handleMenuItemClick}
-              >
+              <NavLink to="/exhibits" onClick={handleMenuItemClick}>
                 <span>
                   <ExhibitIcon size={18} />
                 </span>
-                <span>
-                  {t("navigation.exhibits")}
-                </span>
+                <span>{t("navigation.exhibits")}</span>
               </NavLink>
 
-              <NavLink
-                to="/schedule"
-                onClick={handleMenuItemClick}
-              >
+              <NavLink to="/schedule" onClick={handleMenuItemClick}>
                 <span>
                   <ScheduleIcon size={18} />
                 </span>
-                <span>
-                  {t("navigation.schedule")}
-                </span>
+                <span>{t("navigation.schedule")}</span>
               </NavLink>
 
-              <NavLink
-                to="/map"
-                onClick={handleMenuItemClick}
-              >
+              <NavLink to="/map" onClick={handleMenuItemClick}>
                 <span>
                   <MapIcon size={18} />
                 </span>
@@ -236,11 +213,13 @@ const Menu = ({ setMenuOpen, closeButtonRef }: MenuProps) => {
           </div>
 
           <div>
-            <h3 className="menu-section-title text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">{t("navigation.quickLinks")}</h3>
+            <h3 className="menu-section-title text-sm font-medium text-[var(--gray-color)] dark:text-[var(--bg-color)] uppercase tracking-wide">
+              {t("navigation.quickLinks")}
+            </h3>
             <div className="space-y-1">
               <Link
                 to="/bookmarks"
-                className="menu-link-item flex items-center justify-between px-3 py-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                className="menu-link-item flex items-center justify-between px-3 py-2 rounded-lg text-[var(--main)] dark:text-[var(--bg-color)] hover:bg-[var(--bg-color)] dark:hover:bg-[var(--gray-color)] transition-colors"
                 onClick={handleMenuItemClick}
               >
                 <div className="flex items-center">
@@ -250,7 +229,7 @@ const Menu = ({ setMenuOpen, closeButtonRef }: MenuProps) => {
                   <span>{t("bookmarks.title")}</span>
                 </div>
                 {bookmarks.length > 0 && (
-                  <span className="bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400 text-xs font-medium px-2 py-1 rounded-full">
+                  <span className="bg-[var(--accent)]/10 dark:bg-[var(--accent)]/20 text-[var(--accent)] dark:text-[var(--accent)] text-xs font-medium px-2 py-1 rounded-full">
                     {bookmarks.length}
                   </span>
                 )}
@@ -258,7 +237,7 @@ const Menu = ({ setMenuOpen, closeButtonRef }: MenuProps) => {
 
               <Link
                 to="/search"
-                className="menu-link-item flex items-center px-3 py-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                className="menu-link-item flex items-center px-3 py-2 rounded-lg text-[var(--main)] dark:text-[var(--bg-color)] hover:bg-[var(--bg-color)] dark:hover:bg-[var(--gray-color)] transition-colors"
                 onClick={handleMenuItemClick}
               >
                 <span>
@@ -273,16 +252,12 @@ const Menu = ({ setMenuOpen, closeButtonRef }: MenuProps) => {
             <h3>{t("settings.title")}</h3>
             <div>
               <div>
-                <span>
-                  {t("settings.theme.title")}
-                </span>
+                <span>{t("settings.theme.title")}</span>
                 <ThemeToggle />
               </div>
 
               <div>
-                <span>
-                  {t("settings.language.title")}
-                </span>
+                <span>{t("settings.language.title")}</span>
                 <LanguageToggle />
               </div>
             </div>

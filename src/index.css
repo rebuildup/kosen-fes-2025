@@ -1,14 +1,60 @@
 @import "tailwindcss";
 
 @theme {
+  --main: #252525;
+  --bg-color: #fafafa;
+  --accent: #3136ef;
+  --second: #f1f000;
+  --third: #e42022;
+  --fourth: #38c539;
+  --fifth: #ef3be5;
+  --rich-black: #000000;
+  --gray-color: #334155;
+  --white: #ffffff;
+
+  /* Tailwind utility classes for custom colors */
+  --color-main: var(--main);
+  --color-bg: var(--bg-color);
+  --color-accent: var(--accent);
+  --color-second: var(--second);
+  --color-third: var(--third);
+  --color-fourth: var(--fourth);
+  --color-fifth: var(--fifth);
+  --color-rich-black: var(--rich-black);
+  --color-gray: var(--gray-color);
+  --color-white: var(--white);
+}
+
+/* ベーススタイル */
+* {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  line-height: 1.6;
+}
+
+/* ヘッダー用のスクロール効果 */
+.header-blur {
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
 }
 
 /* ダークモード設定 (メディアクエリベース) */
 @media (prefers-color-scheme: dark) {
   @theme {
+    --main: #fafafa;
+    --bg-color: #252525;
   }
 }
 
 /* ダークモード設定 (クラスベース - 手動切り替え用) */
 :root[data-theme="dark"] {
+  --main: #fafafa;
+  --bg-color: #252525;
 }

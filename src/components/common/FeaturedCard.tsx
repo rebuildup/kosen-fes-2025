@@ -94,39 +94,41 @@ const FeaturedCard = ({
     : item.imageUrl || getPlaceholderImage();
 
   return (
-    <div className={`bg-white dark:bg-gray-900 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-xl transition-all duration-300 ${className}`}>
+    <div
+      className={`bg-[var(--white)] dark:bg-[var(--main)] rounded-xl shadow-lg border border-[var(--gray-color)]/20 dark:border-[var(--gray-color)] overflow-hidden hover:shadow-xl transition-all duration-300 ${className}`}
+    >
       <div className="flex flex-col lg:flex-row lg:h-64">
         <div className="flex-1 p-6 space-y-4">
           <div className="flex items-center space-x-3">
             <ItemTypeIcon type={item.type} size="medium" />
-            <span className="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+            <span className="text-sm font-medium text-[var(--gray-color)] dark:text-[var(--bg-color)] uppercase tracking-wide">
               {getTypeLabel()}
             </span>
           </div>
 
-          <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 leading-tight line-clamp-2">
+          <h2 className="text-xl font-bold text-[var(--main)] dark:text-[var(--bg-color)] leading-tight line-clamp-2">
             {formatText(item.title)}
           </h2>
 
-          <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed line-clamp-3">
+          <p className="text-[var(--gray-color)] dark:text-[var(--bg-color)] text-sm leading-relaxed line-clamp-3">
             {formatText(item.description)}
           </p>
 
           <div className="space-y-2">
-            <div className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400">
+            <div className="flex items-center space-x-2 text-sm text-[var(--gray-color)] dark:text-[var(--bg-color)]">
               <span>🕒</span>
               <span>
                 {item.date} | {item.time}
               </span>
             </div>
 
-            <div className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400">
+            <div className="flex items-center space-x-2 text-sm text-[var(--gray-color)] dark:text-[var(--bg-color)]">
               <span>📍</span>
               <span>{formatText(item.location)}</span>
             </div>
 
             {getOrganization() && (
-              <div className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400">
+              <div className="flex items-center space-x-2 text-sm text-[var(--gray-color)] dark:text-[var(--bg-color)]">
                 <span>👥</span>
                 <span>
                   {getOrganizationLabel()}: {formatText(getOrganization())}
@@ -146,7 +148,7 @@ const FeaturedCard = ({
           <div className="flex items-center justify-between pt-4">
             <Link
               to={`/detail/${item.type}/${item.id}`}
-              className="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors"
+              className="inline-flex items-center px-4 py-2 bg-[var(--accent)] hover:bg-[var(--accent)]/80 text-[var(--white)] text-sm font-medium rounded-lg transition-colors"
             >
               {t("actions.viewDetails")}
             </Link>
@@ -154,8 +156,8 @@ const FeaturedCard = ({
             <button
               className={`flex items-center space-x-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                 isBookmarked(item.id)
-                  ? "text-yellow-600 bg-yellow-50 dark:bg-yellow-900/20 dark:text-yellow-400"
-                  : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800"
+                  ? "text-[var(--second)] bg-[var(--second)]/10 dark:bg-[var(--second)]/20 dark:text-[var(--second)]"
+                  : "text-[var(--gray-color)] dark:text-[var(--bg-color)] hover:text-[var(--main)] dark:hover:text-[var(--white)] hover:bg-[var(--bg-color)] dark:hover:bg-[var(--gray-color)]"
               }`}
               onClick={handleBookmarkToggle}
               aria-label={
@@ -164,7 +166,9 @@ const FeaturedCard = ({
                   : t("actions.bookmark")
               }
             >
-              <span className="text-lg">{isBookmarked(item.id) ? "★" : "☆"}</span>
+              <span className="text-lg">
+                {isBookmarked(item.id) ? "★" : "☆"}
+              </span>
               <span className="hidden sm:inline">
                 {isBookmarked(item.id)
                   ? t("actions.removeBookmark")
@@ -174,10 +178,10 @@ const FeaturedCard = ({
           </div>
         </div>
 
-        <div className="lg:w-80 h-48 lg:h-full bg-gray-100 dark:bg-gray-800 flex-shrink-0">
-          <img 
-            src={imageSrc} 
-            alt={item.title} 
+        <div className="lg:w-80 h-48 lg:h-full bg-[var(--bg-color)] dark:bg-[var(--gray-color)] flex-shrink-0">
+          <img
+            src={imageSrc}
+            alt={item.title}
             onError={handleImageError}
             className="w-full h-full object-cover"
           />

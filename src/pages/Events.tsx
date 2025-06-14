@@ -40,12 +40,12 @@ const Events = () => {
 
     setFilteredEvents(filtered);
   }, [dateFilter, selectedTags, filterItemsByTags]);
-
+  /*
   // Handle day filter change
   const handleDayFilterChange = (day: "all" | "2025-06-15" | "2025-06-16") => {
     setDateFilter(day);
   };
-
+*/
   return (
     <div>
       <div>

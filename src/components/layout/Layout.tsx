@@ -37,8 +37,8 @@ const Layout = () => {
   useEffect(() => {
     if (layoutRef.current) {
       gsap.to(layoutRef.current, {
-        backgroundColor: "var(--bg-primary)",
-        color: "var(--text-primary)",
+        backgroundColor: "var(--bg-color)",
+        color: "var(--main)",
         duration: DURATION.NORMAL,
         ease: EASE.SMOOTH,
       });
@@ -111,16 +111,16 @@ const Layout = () => {
   }, [isMobile, menuOpen]);
 
   return (
-    <div ref={layoutRef}>
+    <div ref={layoutRef} className="min-h-screen">
       {/* PC Header - only shown on desktop */}
       {!isMobile && <Header />}
 
-      <div>
+      <div className="flex">
         {/* PC Sidebar - only shown on desktop */}
         {!isMobile && <Sidebar />}
 
-        <main>
-          <div>
+        <main className={`flex-1 ${!isMobile ? "pt-16" : ""}`}>
+          <div className="min-h-screen">
             <PageTransition>
               <Outlet />
             </PageTransition>
