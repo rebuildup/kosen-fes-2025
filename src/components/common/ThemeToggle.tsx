@@ -9,7 +9,6 @@ const ThemeToggle = () => {
 
   return (
     <button
-      className="theme-toggle"
       onClick={toggleTheme}
       aria-label={
         theme === "light"
@@ -19,17 +18,17 @@ const ThemeToggle = () => {
     >
       {theme === "light" ? (
         <>
-          <span className="toggle-icon">
+          <span>
             <MoonIcon size={16} />
           </span>
-          <span className="toggle-text">{t("settings.theme.dark")}</span>
+          <span>{t("settings.theme.dark")}</span>
         </>
       ) : (
         <>
-          <span className="toggle-icon">
+          <span>
             <SunIcon size={16} />
           </span>
-          <span className="toggle-text">{t("settings.theme.light")}</span>
+          <span>{t("settings.theme.light")}</span>
         </>
       )}
     </button>

@@ -76,8 +76,8 @@ const BookmarksList = () => {
 
   if (bookmarkedItems.length === 0) {
     return (
-      <div className="bookmarks-empty">
-        <div className="bookmarks-empty-icon">🔖</div>
+      <div>
+        <div>🔖</div>
         <h3>{t("bookmarks.noBookmarks")}</h3>
         <p>{t("bookmarks.startBookmarking")}</p>
       </div>
@@ -87,15 +87,12 @@ const BookmarksList = () => {
   const dates = Object.keys(groupedItems).sort();
 
   return (
-    <div className="bookmarks-list">
-      <div className="bookmarks-header">
-        <div className="bookmarks-filters">
+    <div>
+      <div>
+        <div>
           {filterOptions.map((option) => (
             <button
               key={option.type}
-              className={`filter-button ${
-                filter === option.type ? "active" : ""
-              }`}
               onClick={() => setFilter(option.type)}
             >
               {option.label}
@@ -103,11 +100,10 @@ const BookmarksList = () => {
           ))}
         </div>
 
-        <div className="bookmarks-actions">
+        <div>
           <CardListToggle viewMode={viewMode} setViewMode={setViewMode} />
 
           <button
-            className="clear-bookmarks-button"
             onClick={clearAllBookmarks}
           >
             {t("bookmarks.clearAll")}
@@ -116,15 +112,15 @@ const BookmarksList = () => {
       </div>
 
       {dates.length === 0 ? (
-        <div className="bookmarks-empty">
+        <div>
           <p>{t("bookmarks.noItemsOfType")}</p>
         </div>
       ) : (
         <>
           {dates.map((date) => (
-            <div key={date} className="bookmarks-day">
-              <h3 className="bookmarks-day-title">{formatDate(date)}</h3>
-              <div className="bookmarks-grid">
+            <div key={date}>
+              <h3>{formatDate(date)}</h3>
+              <div>
                 <CardGrid
                   items={groupedItems[date]}
                   variant={viewMode}

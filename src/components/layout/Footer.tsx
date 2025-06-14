@@ -17,79 +17,63 @@ const Footer = ({ setMenuOpen, menuButtonRef }: FooterProps) => {
   const { t } = useLanguage();
 
   return (
-    <footer className="mobile-footer">
-      <nav className="footer-nav">
+    <footer>
+      <nav>
         <NavLink
           to="/"
-          className={({ isActive }) =>
-            `footer-nav-item ${isActive ? "footer-nav-active" : ""}`
-          }
           end
         >
-          <div className="footer-nav-icon">
+          <div>
             <HomeIcon size={20} />
           </div>
-          <div className="footer-nav-label">{t("navigation.home")}</div>
+          <div>{t("navigation.home")}</div>
         </NavLink>
 
         <NavLink
           to="/events"
-          className={({ isActive }) =>
-            `footer-nav-item ${isActive ? "footer-nav-active" : ""}`
-          }
         >
-          <div className="footer-nav-icon">
+          <div>
             <EventIcon size={20} />
           </div>
-          <div className="footer-nav-label">{t("navigation.events")}</div>
+          <div>{t("navigation.events")}</div>
         </NavLink>
 
         <NavLink
           to="/exhibits"
-          className={({ isActive }) =>
-            `footer-nav-item ${isActive ? "footer-nav-active" : ""}`
-          }
         >
-          <div className="footer-nav-icon">
+          <div>
             <ExhibitIcon size={20} />
           </div>
-          <div className="footer-nav-label">{t("navigation.exhibits")}</div>
+          <div>{t("navigation.exhibits")}</div>
         </NavLink>
 
         <NavLink
           to="/schedule"
-          className={({ isActive }) =>
-            `footer-nav-item ${isActive ? "footer-nav-active" : ""}`
-          }
         >
-          <div className="footer-nav-icon">
+          <div>
             <ScheduleIcon size={20} />
           </div>
-          <div className="footer-nav-label">{t("navigation.schedule")}</div>
+          <div>{t("navigation.schedule")}</div>
         </NavLink>
 
         <NavLink
           to="/map"
-          className={({ isActive }) =>
-            `footer-nav-item ${isActive ? "footer-nav-active" : ""}`
-          }
         >
-          <div className="footer-nav-icon">
+          <div>
             <MapIcon size={20} />
           </div>
-          <div className="footer-nav-label">{t("navigation.map")}</div>
+          <div>{t("navigation.map")}</div>
         </NavLink>
 
         <button
-          className="footer-menu-button"
           onClick={() => setMenuOpen(true)}
           aria-label={t("navigation.menu")}
           ref={menuButtonRef}
         >
-          <div className="footer-nav-icon">
+          <div>
             <MenuIcon size={20} />
           </div>
-          <div className="footer-nav-label">{t("navigation.menu")}</div>
+          <div>{t("navigation.menu")}</div>
         </button>
       </nav>
     </footer>

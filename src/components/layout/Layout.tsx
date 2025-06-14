@@ -111,16 +111,16 @@ const Layout = () => {
   }, [isMobile, menuOpen]);
 
   return (
-    <div className={`min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-300 ${theme}`} ref={layoutRef}>
+    <div ref={layoutRef}>
       {/* PC Header - only shown on desktop */}
       {!isMobile && <Header />}
 
-      <div className="flex">
+      <div>
         {/* PC Sidebar - only shown on desktop */}
         {!isMobile && <Sidebar />}
 
-        <main className={`flex-1 ${!isMobile ? "ml-64 pt-16" : "pt-0"} min-h-screen bg-gray-50 dark:bg-gray-950`}>
-          <div className="max-w-7xl mx-auto px-6 py-8 sm:px-8 lg:px-12">
+        <main>
+          <div>
             <PageTransition>
               <Outlet />
             </PageTransition>

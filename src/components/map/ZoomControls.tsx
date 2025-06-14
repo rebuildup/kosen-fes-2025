@@ -20,9 +20,8 @@ const ZoomControls = ({
   const { t } = useLanguage();
 
   return (
-    <div className="zoom-controls">
+    <div>
       <button
-        className="zoom-control-button zoom-in"
         onClick={onZoomIn}
         disabled={scale >= maxScale}
         aria-label={t("map.zoomIn")}
@@ -44,7 +43,6 @@ const ZoomControls = ({
       </button>
 
       <button
-        className="zoom-control-button zoom-out"
         onClick={onZoomOut}
         disabled={scale <= minScale}
         aria-label={t("map.zoomOut")}
@@ -65,7 +63,6 @@ const ZoomControls = ({
       </button>
 
       <button
-        className="zoom-control-button zoom-reset"
         onClick={onReset}
         aria-label={t("map.resetZoom")}
         title={t("map.resetZoom")}
@@ -85,7 +82,7 @@ const ZoomControls = ({
         </svg>
       </button>
 
-      <div className="zoom-level">{Math.round(scale * 100)}%</div>
+      <div>{Math.round(scale * 100)}%</div>
     </div>
   );
 };

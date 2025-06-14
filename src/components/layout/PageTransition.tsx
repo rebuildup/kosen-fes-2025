@@ -35,7 +35,7 @@ const PageTransition = ({ children }: PageTransitionProps) => {
   }, [pathname]);
 
   return (
-    <div className="page-transition-wrapper" ref={pageRef}>
+    <div ref={pageRef}>
       {children}
     </div>
   );

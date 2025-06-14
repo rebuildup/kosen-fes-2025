@@ -9,9 +9,9 @@ const FilterPanel = ({ onFilterChange }: FilterPanelProps) => {
   const { t } = useLanguage();
 
   return (
-    <div className="filter-panel">
-      <div className="filter-section">
-        <h3 className="filter-section-title">{t("tags.filterByTag")}</h3>
+    <div>
+      <div>
+        <h3>{t("tags.filterByTag")}</h3>
         <TagFilter onFilter={onFilterChange} />
       </div>
     </div>

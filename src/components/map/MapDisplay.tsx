@@ -77,8 +77,8 @@ const MapDisplay = ({
   }, [hoveredLocation, selectedLocation, locations]);
 
   return (
-    <div className="map-display" ref={mapContainerRef}>
-      <div className="school-map">
+    <div ref={mapContainerRef}>
+      <div>
         {/* Zoom Controls */}
         <ZoomControls
           onZoomIn={zoomIn}
@@ -92,7 +92,6 @@ const MapDisplay = ({
         {/* Accurate Campus Map SVG */}
         <svg
           viewBox={CAMPUS_MAP_BOUNDS.viewBox}
-          className="school-map-svg"
           ref={svgRef}
         >
           <defs>
@@ -430,17 +429,17 @@ const MapDisplay = ({
           })}
         </svg>
 
-        <div className="map-legend">
-          <div className="legend-item">
-            <div className="legend-dot event-dot"></div>
+        <div>
+          <div>
+            <div></div>
             <span>Events</span>
           </div>
-          <div className="legend-item">
-            <div className="legend-dot exhibit-dot"></div>
+          <div>
+            <div></div>
             <span>Exhibits</span>
           </div>
-          <div className="legend-item">
-            <div className="legend-dot stall-dot"></div>
+          <div>
+            <div></div>
             <span>Stalls</span>
           </div>
         </div>

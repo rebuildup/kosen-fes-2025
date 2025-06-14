@@ -28,19 +28,15 @@ const EventCard = ({ event, showDetails = false }: EventCardProps) => {
   };
 
   return (
-    <div className="event-card">
-      <Link to={`/detail/event/${event.id}`} className="event-card-link">
-        <div className="event-card-image">
+    <div>
+      <Link to={`/detail/event/${event.id}`}>
+        <div>
           <img
             src={event.imageUrl || "/images/placeholder-event.jpg"}
             alt={event.title}
-            className="event-image"
           />
 
           <button
-            className={`event-bookmark ${
-              isBookmarked(event.id) ? "bookmarked" : ""
-            }`}
             onClick={(e) => {
               e.preventDefault();
               toggleBookmark(event.id);
@@ -55,46 +51,46 @@ const EventCard = ({ event, showDetails = false }: EventCardProps) => {
           </button>
         </div>
 
-        <div className="event-card-content">
-          <h3 className="event-title">{event.title}</h3>
+        <div>
+          <h3>{event.title}</h3>
 
           {showDetails && (
-            <p className="event-description">{event.description}</p>
+            <p>{event.description}</p>
           )}
 
-          <div className="event-meta">
-            <div className="event-date-time">
-              <span className="event-icon">🕒</span>
+          <div>
+            <div>
+              <span>🕒</span>
               <span>
                 {event.date} | {event.time}
               </span>
             </div>
 
-            <div className="event-location">
-              <span className="event-icon">📍</span>
+            <div>
+              <span>📍</span>
               <span>{event.location}</span>
             </div>
 
-            <div className="event-organizer">
-              <span className="event-icon">👥</span>
+            <div>
+              <span>👥</span>
               <span>
                 {t("detail.organizer")}: {event.organizer}
               </span>
             </div>
 
-            <div className="event-duration">
-              <span className="event-duration-icon">⏱️</span>
+            <div>
+              <span>⏱️</span>
               <span>{formatDuration(event.duration)}</span>
             </div>
           </div>
 
           {event.tags && event.tags.length > 0 && (
-            <div className="event-tags">
+            <div>
               {event.tags.slice(0, 3).map((tag) => (
                 <Tag key={tag} tag={tag} size="small" />
               ))}
               {event.tags.length > 3 && (
-                <span className="event-tags-more">
+                <span>
                   +{event.tags.length - 3}
                 </span>
               )}

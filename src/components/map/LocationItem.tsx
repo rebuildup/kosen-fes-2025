@@ -40,54 +40,47 @@ const LocationItem = ({
 
   return (
     <div
-      className={`location-item ${isHovered ? "hovered" : ""} ${
-        isSelected ? "selected" : ""
-      }`}
       onMouseEnter={() => onHover(location)}
       onMouseLeave={() => onHover(null)}
       onClick={() => onSelect(location)}
     >
-      <div className="location-item-header">
-        <h3 className="location-item-title">{location}</h3>
-        <div className="location-item-count">
+      <div>
+        <h3>{location}</h3>
+        <div>
           {items.length} {items.length === 1 ? t("map.item") : t("map.items")}
         </div>
       </div>
 
       {(isHovered || isSelected) && (
-        <div className="location-item-content">
+        <div>
           {eventItems.length > 0 && (
-            <div className="location-item-section">
-              <h4 className="location-item-section-title">
+            <div>
+              <h4>
                 <ItemTypeIcon type="event" size="small" />
                 <span>{t("detail.event")}</span>
               </h4>
-              <ul className="location-item-list">
+              <ul>
                 {eventItems.map((item) => (
                   <li
                     key={item.id}
-                    className={`location-item-list-item ${
-                      expandedItem === item.id ? "expanded" : ""
-                    }`}
                     onMouseEnter={() => handleItemHover(item.id)}
                     onMouseLeave={() => handleItemHover(null)}
                   >
                     <Link
                       to={`/detail/${item.type}/${item.id}`}
-                      className="location-item-link"
                     >
-                      <span className="location-item-name">{item.title}</span>
-                      <span className="location-item-time">{item.time}</span>
+                      <span>{item.title}</span>
+                      <span>{item.time}</span>
                     </Link>
 
                     {expandedItem === item.id && (
-                      <div className="location-item-expanded">
+                      <div>
                         {item.imageUrl && (
-                          <div className="location-item-image">
+                          <div>
                             <img src={item.imageUrl} alt={item.title} />
                           </div>
                         )}
-                        <p className="location-item-description">
+                        <p>
                           {item.description}
                         </p>
                       </div>
@@ -99,37 +92,33 @@ const LocationItem = ({
           )}
 
           {exhibitItems.length > 0 && (
-            <div className="location-item-section">
-              <h4 className="location-item-section-title">
+            <div>
+              <h4>
                 <ItemTypeIcon type="exhibit" size="small" />
                 <span>{t("detail.exhibit")}</span>
               </h4>
-              <ul className="location-item-list">
+              <ul>
                 {exhibitItems.map((item) => (
                   <li
                     key={item.id}
-                    className={`location-item-list-item ${
-                      expandedItem === item.id ? "expanded" : ""
-                    }`}
                     onMouseEnter={() => handleItemHover(item.id)}
                     onMouseLeave={() => handleItemHover(null)}
                   >
                     <Link
                       to={`/detail/${item.type}/${item.id}`}
-                      className="location-item-link"
                     >
-                      <span className="location-item-name">{item.title}</span>
-                      <span className="location-item-time">{item.time}</span>
+                      <span>{item.title}</span>
+                      <span>{item.time}</span>
                     </Link>
 
                     {expandedItem === item.id && (
-                      <div className="location-item-expanded">
+                      <div>
                         {item.imageUrl && (
-                          <div className="location-item-image">
+                          <div>
                             <img src={item.imageUrl} alt={item.title} />
                           </div>
                         )}
-                        <p className="location-item-description">
+                        <p>
                           {item.description}
                         </p>
                       </div>
@@ -141,37 +130,33 @@ const LocationItem = ({
           )}
 
           {stallItems.length > 0 && (
-            <div className="location-item-section">
-              <h4 className="location-item-section-title">
+            <div>
+              <h4>
                 <ItemTypeIcon type="stall" size="small" />
                 <span>{t("detail.stall")}</span>
               </h4>
-              <ul className="location-item-list">
+              <ul>
                 {stallItems.map((item) => (
                   <li
                     key={item.id}
-                    className={`location-item-list-item ${
-                      expandedItem === item.id ? "expanded" : ""
-                    }`}
                     onMouseEnter={() => handleItemHover(item.id)}
                     onMouseLeave={() => handleItemHover(null)}
                   >
                     <Link
                       to={`/detail/${item.type}/${item.id}`}
-                      className="location-item-link"
                     >
-                      <span className="location-item-name">{item.title}</span>
-                      <span className="location-item-time">{item.time}</span>
+                      <span>{item.title}</span>
+                      <span>{item.time}</span>
                     </Link>
 
                     {expandedItem === item.id && (
-                      <div className="location-item-expanded">
+                      <div>
                         {item.imageUrl && (
-                          <div className="location-item-image">
+                          <div>
                             <img src={item.imageUrl} alt={item.title} />
                           </div>
                         )}
-                        <p className="location-item-description">
+                        <p>
                           {item.description}
                         </p>
                       </div>

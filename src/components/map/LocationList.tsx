@@ -29,13 +29,13 @@ const LocationList = ({
   const sortedLocations = [...locations].sort();
 
   return (
-    <div className="location-list">
-      <h2 className="location-list-title">{t("map.viewLocations")}</h2>
+    <div>
+      <h2>{t("map.viewLocations")}</h2>
 
       {sortedLocations.length === 0 ? (
-        <div className="location-list-empty">{t("map.noLocations")}</div>
+        <div>{t("map.noLocations")}</div>
       ) : (
-        <div className="location-items">
+        <div>
           {sortedLocations.map((location) => (
             <LocationItem
               key={location}

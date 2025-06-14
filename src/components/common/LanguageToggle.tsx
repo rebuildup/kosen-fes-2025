@@ -5,7 +5,6 @@ const LanguageToggle = () => {
 
   return (
     <button
-      className="language-toggle"
       onClick={() => setLanguage(language === "en" ? "ja" : "en")}
       aria-label={
         language === "en"
@@ -15,13 +14,13 @@ const LanguageToggle = () => {
     >
       {language === "en" ? (
         <>
-          <span className="toggle-icon">🇯🇵</span>
-          <span className="toggle-text">日本語</span>
+          <span>🇯🇵</span>
+          <span>日本語</span>
         </>
       ) : (
         <>
-          <span className="toggle-icon">🇺🇸</span>
-          <span className="toggle-text">English</span>
+          <span>🇺🇸</span>
+          <span>English</span>
         </>
       )}
     </button>

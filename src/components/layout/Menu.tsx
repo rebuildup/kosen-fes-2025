@@ -150,129 +150,92 @@ const Menu = ({ setMenuOpen, closeButtonRef }: MenuProps) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 sm:hidden">
+    <div>
       <div
-        className="absolute inset-0 bg-black bg-opacity-50"
         ref={backdropRef}
         onClick={() => closeWithAnimation()}
       ></div>
 
-      <div className="absolute right-0 top-0 h-full w-80 bg-white dark:bg-gray-900 shadow-xl overflow-y-auto" ref={menuRef}>
-        <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
-          <div className="text-lg font-medium text-gray-900 dark:text-gray-100">{t("navigation.menu")}</div>
+      <div ref={menuRef}>
+        <div>
+          <div>{t("navigation.menu")}</div>
           <button
-            className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
             onClick={() => closeWithAnimation()}
             aria-label={t("actions.close")}
             ref={closeButtonRef}
           >
-            <span className="text-gray-500 dark:text-gray-400">
+            <span>
               <XIcon size={18} />
             </span>
           </button>
         </div>
 
-        <div className="p-4 space-y-6" ref={menuContentRef}>
-          <div className="space-y-3">
+        <div ref={menuContentRef}>
+          <div>
             <SearchBar variant="default" onSearch={handleMenuItemClick} />
           </div>
 
-          <div className="space-y-4">
-            <h3 className="menu-section-title text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">{t("navigation.main")}</h3>
-            <nav className="space-y-1">
+          <div>
+            <h3>{t("navigation.main")}</h3>
+            <nav>
               <NavLink
                 to="/"
-                className={({ isActive }) =>
-                  `menu-nav-item flex items-center px-3 py-2 rounded-lg transition-colors ${
-                    isActive 
-                      ? "menu-nav-active bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400" 
-                      : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
-                  }`
-                }
                 onClick={handleMenuItemClick}
                 end
               >
-                <span className="mr-3 text-gray-500 dark:text-gray-400">
+                <span>
                   <HomeIcon size={18} />
                 </span>
-                <span className="font-medium">{t("navigation.home")}</span>
+                <span>{t("navigation.home")}</span>
               </NavLink>
 
               <NavLink
                 to="/events"
-                className={({ isActive }) =>
-                  `menu-nav-item flex items-center px-3 py-2 rounded-lg transition-colors ${
-                    isActive 
-                      ? "menu-nav-active bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400" 
-                      : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
-                  }`
-                }
                 onClick={handleMenuItemClick}
               >
-                <span className="mr-3 text-gray-500 dark:text-gray-400">
+                <span>
                   <EventIcon size={18} />
                 </span>
-                <span className="font-medium">{t("navigation.events")}</span>
+                <span>{t("navigation.events")}</span>
               </NavLink>
 
               <NavLink
                 to="/exhibits"
-                className={({ isActive }) =>
-                  `menu-nav-item flex items-center px-3 py-2 rounded-lg transition-colors ${
-                    isActive 
-                      ? "menu-nav-active bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400" 
-                      : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
-                  }`
-                }
                 onClick={handleMenuItemClick}
               >
-                <span className="mr-3 text-gray-500 dark:text-gray-400">
+                <span>
                   <ExhibitIcon size={18} />
                 </span>
-                <span className="font-medium">
+                <span>
                   {t("navigation.exhibits")}
                 </span>
               </NavLink>
 
               <NavLink
                 to="/schedule"
-                className={({ isActive }) =>
-                  `menu-nav-item flex items-center px-3 py-2 rounded-lg transition-colors ${
-                    isActive 
-                      ? "menu-nav-active bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400" 
-                      : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
-                  }`
-                }
                 onClick={handleMenuItemClick}
               >
-                <span className="mr-3 text-gray-500 dark:text-gray-400">
+                <span>
                   <ScheduleIcon size={18} />
                 </span>
-                <span className="font-medium">
+                <span>
                   {t("navigation.schedule")}
                 </span>
               </NavLink>
 
               <NavLink
                 to="/map"
-                className={({ isActive }) =>
-                  `menu-nav-item flex items-center px-3 py-2 rounded-lg transition-colors ${
-                    isActive 
-                      ? "menu-nav-active bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400" 
-                      : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
-                  }`
-                }
                 onClick={handleMenuItemClick}
               >
-                <span className="mr-3 text-gray-500 dark:text-gray-400">
+                <span>
                   <MapIcon size={18} />
                 </span>
-                <span className="font-medium">{t("navigation.map")}</span>
+                <span>{t("navigation.map")}</span>
               </NavLink>
             </nav>
           </div>
 
-          <div className="space-y-4">
+          <div>
             <h3 className="menu-section-title text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">{t("navigation.quickLinks")}</h3>
             <div className="space-y-1">
               <Link
@@ -281,10 +244,10 @@ const Menu = ({ setMenuOpen, closeButtonRef }: MenuProps) => {
                 onClick={handleMenuItemClick}
               >
                 <div className="flex items-center">
-                  <span className="mr-3 text-gray-500 dark:text-gray-400">
+                  <span>
                     <BookmarkIcon size={18} />
                   </span>
-                  <span className="font-medium">{t("bookmarks.title")}</span>
+                  <span>{t("bookmarks.title")}</span>
                 </div>
                 {bookmarks.length > 0 && (
                   <span className="bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400 text-xs font-medium px-2 py-1 rounded-full">
@@ -298,26 +261,26 @@ const Menu = ({ setMenuOpen, closeButtonRef }: MenuProps) => {
                 className="menu-link-item flex items-center px-3 py-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
                 onClick={handleMenuItemClick}
               >
-                <span className="mr-3 text-gray-500 dark:text-gray-400">
+                <span>
                   <SearchIcon size={18} />
                 </span>
-                <span className="font-medium">{t("search.title")}</span>
+                <span>{t("search.title")}</span>
               </Link>
             </div>
           </div>
 
-          <div className="space-y-4">
-            <h3 className="menu-section-title text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">{t("settings.title")}</h3>
-            <div className="space-y-3">
-              <div className="menu-setting-item flex items-center justify-between px-3 py-2">
-                <span className="font-medium text-gray-700 dark:text-gray-300">
+          <div>
+            <h3>{t("settings.title")}</h3>
+            <div>
+              <div>
+                <span>
                   {t("settings.theme.title")}
                 </span>
                 <ThemeToggle />
               </div>
 
-              <div className="menu-setting-item flex items-center justify-between px-3 py-2">
-                <span className="font-medium text-gray-700 dark:text-gray-300">
+              <div>
+                <span>
                   {t("settings.language.title")}
                 </span>
                 <LanguageToggle />
@@ -325,9 +288,9 @@ const Menu = ({ setMenuOpen, closeButtonRef }: MenuProps) => {
             </div>
           </div>
 
-          <div className="space-y-4">
-            <h3 className="menu-section-title text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">{t("info.title")}</h3>
-            <div className="px-3 py-2 space-y-1 text-sm text-gray-600 dark:text-gray-400">
+          <div>
+            <h3>{t("info.title")}</h3>
+            <div>
               <p>{t("info.festivalDates")}: 2025/06/15 - 2025/06/16</p>
               <p>{t("info.location")}: Ube Kosen, Yamaguchi</p>
               <p>{t("info.organizer")}: Festival Committee</p>
