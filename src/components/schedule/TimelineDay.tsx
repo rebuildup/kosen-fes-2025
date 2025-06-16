@@ -1,7 +1,7 @@
 // src/components/schedule/TimelineDay.tsx
 import { useLanguage } from "../../context/LanguageContext";
 import { Event, Exhibit, Stall } from "../../types/common";
-import TimelineItem from "./TimelineItem";
+import UnifiedCard from "../../shared/components/ui/UnifiedCard";
 
 // Type for non-sponsor items
 type NonSponsorItem = Event | Exhibit | Stall;
@@ -87,7 +87,13 @@ const TimelineDay = ({
 
               <div className="flex-1 space-y-4">
                 {groupedItems[timeSlot].map((item) => (
-                  <TimelineItem key={item.id} item={item} />
+                  <UnifiedCard 
+                    key={item.id} 
+                    item={item} 
+                    variant="timeline"
+                    showDescription={true}
+                    showTags={true}
+                  />
                 ))}
               </div>
             </div>
