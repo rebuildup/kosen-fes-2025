@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { useLanguage } from "../context/LanguageContext";
 import { useTheme } from "../context/ThemeContext";
 import { useData } from "../context/DataContext";
 import { Item, Event, Exhibit, Stall, Sponsor } from "../types/common";
@@ -30,7 +29,6 @@ interface FormData {
 }
 
 const ContentPreview = () => {
-  const { t } = useLanguage();
   const { theme, toggleTheme } = useTheme();
   const { getAllTags } = useData();
 
@@ -195,6 +193,7 @@ const ContentPreview = () => {
           ...baseItem,
           type: "sponsor",
           website: formData.website || "https://example.com",
+          tier: "bronze",
         } as Sponsor;
       default:
         return baseItem as Event;
@@ -545,7 +544,7 @@ const ContentPreview = () => {
                     className="block text-sm font-medium mb-2"
                     style={{ color: "var(--color-text-primary)" }}
                   >
-                    販売商品（1行に1つ）
+                    販売商品(1行に1つ)
                   </label>
                   <textarea
                     value={formData.products?.join("\n") || ""}
@@ -740,34 +739,6 @@ const ContentPreview = () => {
                           {formData.coordinates.y.toFixed(1)}
                         </p>
                       </div>
-                      <button
-                        onClick={async () => {
-                          const coordText = `${formData.coordinates!.x.toFixed(
-                            1
-                          )},${formData.coordinates!.y.toFixed(1)}`;
-                          try {
-                            await navigator.clipboard.writeText(coordText);
-                            // Show temporary success message
-                            const button = event?.target as HTMLButtonElement;
-                            if (button) {
-                              const originalText = button.textContent;
-                              button.textContent = "✅ コピー済み";
-                              setTimeout(() => {
-                                button.textContent = originalText;
-                              }, 1500);
-                            }
-                          } catch (err) {
-                            console.error("Failed to copy:", err);
-                          }
-                        }}
-                        className="px-3 py-1 rounded text-sm transition-all hover:scale-105"
-                        style={{
-                          backgroundColor: "var(--color-accent)",
-                          color: "white",
-                        }}
-                      >
-                        📋 コピー
-                      </button>
                     </div>
                   ) : (
                     <p className="text-sm text-orange-500">

@@ -1,6 +1,7 @@
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect, useState, useCallback } from "react";
 import { useMapZoomPan } from "../../hooks/useMapZoomPan";
 import { CAMPUS_MAP_BOUNDS } from "../../data/buildings";
+import gsap from "gsap";
 
 interface Coordinate {
   x: number;
@@ -18,26 +19,26 @@ interface LocationMarker {
 interface UnifiedMapProps {
   // Map mode - affects behavior and interactions
   mode?: "display" | "detail" | "interactive";
-  
+
   // Location markers to display
   markers?: LocationMarker[];
-  
+
   // Interaction handlers
   onLocationHover?: (location: string | null) => void;
   onLocationSelect?: (location: string | null) => void;
   onCoordinateSelect?: (coordinate: Coordinate) => void;
-  
+
   // Detail mode specific props
   highlightLocation?: string;
   highlightCoordinate?: Coordinate;
-  
+
   // Interactive mode specific props
   selectedCoordinate?: Coordinate | null;
-  
+
   // Styling
   className?: string;
   height?: string;
-  
+
   // Advanced controls
   showZoomControls?: boolean;
   allowInteraction?: boolean;
@@ -64,8 +65,10 @@ const UnifiedMap = ({
   minZoom = 0.5,
 }: UnifiedMapProps) => {
   const mapContainerRef = useRef<HTMLDivElement>(null);
+  const overlayRef = useRef<SVGSVGElement>(null);
   const [svgContent, setSvgContent] = useState<string>("");
   const [isDragging, setIsDragging] = useState(false);
+  const [currentScale, setCurrentScale] = useState(initialZoom);
 
   // Initialize zoom/pan functionality
   const { svgRef, zoomPan, zoomIn, zoomOut, resetZoom, zoomToLocation } =
@@ -76,6 +79,10 @@ const UnifiedMap = ({
       mapWidth: CAMPUS_MAP_BOUNDS.width,
       mapHeight: CAMPUS_MAP_BOUNDS.height,
       containerRef: mapContainerRef,
+      overlayRef: overlayRef,
+      onTransformUpdate: useCallback((scale: number) => {
+        setCurrentScale(scale);
+      }, []),
     });
 
   // Load SVG content dynamically
@@ -93,26 +100,125 @@ const UnifiedMap = ({
     loadSvgContent();
   }, []);
 
+  // Calculate marker size based on actual current scale
+  const getMarkerSize = (baseSize: number = 20) => {
+    // ズームレベルに応じてサイズを調整（最小10px、最大40px）
+    const scaledSize = baseSize / currentScale;
+    return Math.max(10, Math.min(40, scaledSize));
+  };
+
+  // Calculate text size based on actual current scale
+  const getTextSize = (baseSize: number = 12) => {
+    const scaledSize = baseSize / currentScale;
+    return Math.max(8, Math.min(16, scaledSize));
+  };
+
+  // Calculate stroke width based on actual current scale
+  const getStrokeWidth = (baseWidth: number = 1) => {
+    return baseWidth / currentScale;
+  };
+
   // Handle coordinate selection for interactive mode
   const handleMapClick = (event: React.MouseEvent<SVGSVGElement>) => {
     if (!allowInteraction || mode !== "interactive" || isDragging) return;
 
     const svg = event.currentTarget;
-    const rect = svg.getBoundingClientRect();
+    const container = mapContainerRef.current;
+    if (!container || !svgRef.current) return;
 
-    // Calculate position relative to the SVG element
-    const relativeX = (event.clientX - rect.left) / rect.width;
-    const relativeY = (event.clientY - rect.top) / rect.height;
+    try {
+      // SVGの現在の変換行列を取得
+      const svgMatrix = svg.getScreenCTM();
+      if (!svgMatrix) {
+        console.warn("Could not get SVG screen CTM");
+        return;
+      }
 
-    // Convert to SVG coordinate space
-    const x = relativeX * CAMPUS_MAP_BOUNDS.width;
-    const y = relativeY * CAMPUS_MAP_BOUNDS.height;
+      // マウスの絶対座標を取得
+      const point = svg.createSVGPoint();
+      point.x = event.clientX;
+      point.y = event.clientY;
 
-    // Ensure coordinates are within bounds
-    const clampedX = Math.max(0, Math.min(CAMPUS_MAP_BOUNDS.width, x));
-    const clampedY = Math.max(0, Math.min(CAMPUS_MAP_BOUNDS.height, y));
+      // 変換行列を使用してSVG座標系に変換
+      const svgPoint = point.matrixTransform(svgMatrix.inverse());
 
-    onCoordinateSelect?.({ x: clampedX, y: clampedY });
+      // 座標を境界内にクランプ
+      const clampedX = Math.max(
+        0,
+        Math.min(CAMPUS_MAP_BOUNDS.width, svgPoint.x)
+      );
+      const clampedY = Math.max(
+        0,
+        Math.min(CAMPUS_MAP_BOUNDS.height, svgPoint.y)
+      );
+
+      console.log("Matrix-based click coordinates:", {
+        clientCoords: { x: event.clientX, y: event.clientY },
+        svgMatrix: {
+          a: svgMatrix.a,
+          b: svgMatrix.b,
+          c: svgMatrix.c,
+          d: svgMatrix.d,
+          e: svgMatrix.e,
+          f: svgMatrix.f,
+        },
+        svgPoint: { x: svgPoint.x, y: svgPoint.y },
+        clamped: { x: clampedX, y: clampedY },
+        bounds: CAMPUS_MAP_BOUNDS,
+      });
+
+      onCoordinateSelect?.({ x: clampedX, y: clampedY });
+    } catch (error) {
+      console.warn(
+        "SVG matrix transform failed, falling back to manual calculation:",
+        error
+      );
+
+      // フォールバック: 手動計算
+      const containerRect = container.getBoundingClientRect();
+      const clickX = event.clientX - containerRect.left;
+      const clickY = event.clientY - containerRect.top;
+
+      const actualScale =
+        (gsap.getProperty(svgRef.current!, "scaleX") as number) || currentScale;
+      const actualX = (gsap.getProperty(svgRef.current!, "x") as number) || 0;
+      const actualY = (gsap.getProperty(svgRef.current!, "y") as number) || 0;
+
+      const viewBoxWidth = CAMPUS_MAP_BOUNDS.width;
+      const viewBoxHeight = CAMPUS_MAP_BOUNDS.height;
+      const containerWidth = containerRect.width;
+      const containerHeight = containerRect.height;
+
+      const scaleX = containerWidth / viewBoxWidth;
+      const scaleY = containerHeight / viewBoxHeight;
+      const uniformScale = Math.min(scaleX, scaleY);
+
+      const scaledViewBoxWidth = viewBoxWidth * uniformScale;
+      const scaledViewBoxHeight = viewBoxHeight * uniformScale;
+      const offsetX = (containerWidth - scaledViewBoxWidth) / 2;
+      const offsetY = (containerHeight - scaledViewBoxHeight) / 2;
+
+      const adjustedClickX = clickX - offsetX;
+      const adjustedClickY = clickY - offsetY;
+
+      const preTransformX = (adjustedClickX - actualX) / actualScale;
+      const preTransformY = (adjustedClickY - actualY) / actualScale;
+
+      const svgX = preTransformX / uniformScale;
+      const svgY = preTransformY / uniformScale;
+
+      const clampedX = Math.max(0, Math.min(CAMPUS_MAP_BOUNDS.width, svgX));
+      const clampedY = Math.max(0, Math.min(CAMPUS_MAP_BOUNDS.height, svgY));
+
+      console.log("Fallback click coordinates:", {
+        screen: { x: clickX, y: clickY },
+        svg: { x: svgX, y: svgY },
+        clamped: { x: clampedX, y: clampedY },
+        actualTransform: { scale: actualScale, x: actualX, y: actualY },
+      });
+
+      onCoordinateSelect?.({ x: clampedX, y: clampedY });
+    }
   };
 
   // Handle mouse events for drag detection
@@ -146,7 +252,9 @@ const UnifiedMap = ({
         <div className="flex items-center justify-center h-full">
           <div className="text-center">
             <div className="animate-spin w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full mx-auto mb-2"></div>
-            <p style={{ color: "var(--color-text-secondary)" }}>Loading map...</p>
+            <p style={{ color: "var(--color-text-secondary)" }}>
+              Loading map...
+            </p>
           </div>
         </div>
       );
@@ -177,104 +285,107 @@ const UnifiedMap = ({
       {/* Main SVG Content */}
       <div className="absolute inset-0">
         {renderSvgWithOverlays()}
-        
-        {/* Overlay markers and interactive elements */}
+
+        {/* Overlay markers and interactive elements - ズーム・パンに正しく追従 */}
         {svgContent && (
           <svg
+            ref={overlayRef}
             viewBox={CAMPUS_MAP_BOUNDS.viewBox}
             className="absolute inset-0 w-full h-full pointer-events-none"
           >
             {/* Location markers for display mode */}
             {mode === "display" &&
-              markers.map((marker) => (
-                <g
-                  key={marker.id}
-                  className="location-marker pointer-events-auto"
-                  onMouseEnter={() => onLocationHover?.(marker.location)}
-                  onMouseLeave={() => onLocationHover?.(null)}
-                  onClick={() => onLocationSelect?.(marker.location)}
-                  style={{ cursor: "pointer" }}
-                >
-                  <circle
-                    cx={marker.coordinates.x}
-                    cy={marker.coordinates.y}
-                    r={
-                      marker.isSelected ? 30 : marker.isHovered ? 25 : 20
-                    }
-                    fill={
-                      marker.isSelected
-                        ? "var(--primary)"
-                        : marker.isHovered
-                        ? "var(--primary-light)"
-                        : "var(--secondary)"
-                    }
-                    stroke="white"
-                    strokeWidth="3"
-                  />
-                  <text
-                    x={marker.coordinates.x}
-                    y={marker.coordinates.y + 8}
-                    textAnchor="middle"
-                    className="text-sm font-medium pointer-events-none"
-                    fill="var(--color-text-primary)"
+              markers.map((marker) => {
+                const markerSize = getMarkerSize(
+                  marker.isSelected ? 30 : marker.isHovered ? 25 : 20
+                );
+                const textSize = getTextSize(12);
+
+                return (
+                  <g
+                    key={marker.id}
+                    className="location-marker pointer-events-auto"
+                    onMouseEnter={() => onLocationHover?.(marker.location)}
+                    onMouseLeave={() => onLocationHover?.(null)}
+                    onClick={() => onLocationSelect?.(marker.location)}
+                    style={{ cursor: "pointer" }}
                   >
-                    {marker.location.split(",")[0]}
-                  </text>
-                </g>
-              ))}
+                    {/* ピンの影 */}
+                    <circle
+                      cx={marker.coordinates.x + 2}
+                      cy={marker.coordinates.y + 2}
+                      r={markerSize}
+                      fill="rgba(0,0,0,0.2)"
+                      opacity="0.5"
+                    />
+
+                    {/* メインピン */}
+                    <circle
+                      cx={marker.coordinates.x}
+                      cy={marker.coordinates.y}
+                      r={markerSize}
+                      fill={
+                        marker.isSelected
+                          ? "var(--primary)"
+                          : marker.isHovered
+                          ? "var(--primary-light)"
+                          : "var(--secondary)"
+                      }
+                      stroke="white"
+                      strokeWidth={getStrokeWidth(3)}
+                      style={{
+                        filter: marker.isSelected
+                          ? "drop-shadow(0 0 10px var(--primary))"
+                          : "none",
+                        transition: "all 0.3s ease",
+                      }}
+                    />
+
+                    {/* 内側のドット */}
+                    <circle
+                      cx={marker.coordinates.x}
+                      cy={marker.coordinates.y}
+                      r={markerSize * 0.3}
+                      fill="white"
+                    />
+
+                    {/* ラベル */}
+                    <text
+                      x={marker.coordinates.x}
+                      y={marker.coordinates.y - markerSize - 5}
+                      textAnchor="middle"
+                      fontSize={textSize}
+                      fontWeight="500"
+                      fill="var(--color-text-primary)"
+                      stroke="white"
+                      strokeWidth={getStrokeWidth(2)}
+                      paintOrder="stroke"
+                      className="pointer-events-none"
+                    >
+                      {marker.location.split(",")[0]}
+                    </text>
+                  </g>
+                );
+              })}
 
             {/* Highlight marker for detail mode */}
             {mode === "detail" && highlightCoordinate && (
               <g>
+                {/* アニメーション付きリップル効果 */}
                 <circle
                   cx={highlightCoordinate.x}
                   cy={highlightCoordinate.y}
-                  r="30"
-                  fill="var(--primary)"
-                  stroke="white"
-                  strokeWidth="4"
-                >
-                  <animate
-                    attributeName="r"
-                    values="30;40;30"
-                    dur="2s"
-                    repeatCount="indefinite"
-                  />
-                  <animate
-                    attributeName="opacity"
-                    values="1;0.7;1"
-                    dur="2s"
-                    repeatCount="indefinite"
-                  />
-                </circle>
-                <text
-                  x={highlightCoordinate.x}
-                  y={highlightCoordinate.y - 50}
-                  textAnchor="middle"
-                  className="text-lg font-bold"
-                  fill="var(--primary)"
-                >
-                  {highlightLocation?.split(",")[0]}
-                </text>
-              </g>
-            )}
-
-            {/* Selected coordinate marker for interactive mode */}
-            {mode === "interactive" && selectedCoordinate && (
-              <g>
-                {/* Ripple effect */}
-                <circle
-                  cx={selectedCoordinate.x}
-                  cy={selectedCoordinate.y}
-                  r="25"
+                  r={getMarkerSize(30)}
                   fill="none"
                   stroke="var(--primary)"
-                  strokeWidth="2"
+                  strokeWidth={getStrokeWidth(2)}
                   opacity="0.6"
                 >
                   <animate
                     attributeName="r"
-                    values="25;45;25"
+                    values={`${getMarkerSize(30)};${getMarkerSize(
+                      50
+                    )};${getMarkerSize(30)}`}
                     dur="2s"
                     repeatCount="indefinite"
                   />
@@ -286,36 +397,122 @@ const UnifiedMap = ({
                   />
                 </circle>
 
-                {/* Main marker */}
+                {/* メインマーカー */}
                 <circle
-                  cx={selectedCoordinate.x}
-                  cy={selectedCoordinate.y}
-                  r="15"
+                  cx={highlightCoordinate.x}
+                  cy={highlightCoordinate.y}
+                  r={getMarkerSize(25)}
                   fill="var(--primary)"
                   stroke="white"
-                  strokeWidth="3"
+                  strokeWidth={getStrokeWidth(4)}
+                  style={{
+                    filter: "drop-shadow(0 0 15px var(--primary))",
+                  }}
                 />
 
-                {/* Center dot */}
+                {/* 中央のドット */}
                 <circle
-                  cx={selectedCoordinate.x}
-                  cy={selectedCoordinate.y}
-                  r="4"
+                  cx={highlightCoordinate.x}
+                  cy={highlightCoordinate.y}
+                  r={getMarkerSize(8)}
                   fill="white"
                 />
 
-                {/* Coordinate label */}
+                {/* ラベル */}
+                <text
+                  x={highlightCoordinate.x}
+                  y={highlightCoordinate.y - getMarkerSize(25) - 10}
+                  textAnchor="middle"
+                  fontSize={getTextSize(14)}
+                  fontWeight="bold"
+                  fill="var(--primary)"
+                  stroke="white"
+                  strokeWidth={getStrokeWidth(3)}
+                  paintOrder="stroke"
+                >
+                  {highlightLocation?.split(",")[0]}
+                </text>
+              </g>
+            )}
+
+            {/* Selected coordinate marker for interactive mode */}
+            {mode === "interactive" && selectedCoordinate && (
+              <g>
+                {/* リップル効果 */}
+                <circle
+                  cx={selectedCoordinate.x}
+                  cy={selectedCoordinate.y}
+                  r={getMarkerSize(25)}
+                  fill="none"
+                  stroke="var(--primary)"
+                  strokeWidth={getStrokeWidth(2)}
+                  opacity="0.6"
+                >
+                  <animate
+                    attributeName="r"
+                    values={`${getMarkerSize(25)};${getMarkerSize(
+                      45
+                    )};${getMarkerSize(25)}`}
+                    dur="2s"
+                    repeatCount="indefinite"
+                  />
+                  <animate
+                    attributeName="opacity"
+                    values="0.6;0;0.6"
+                    dur="2s"
+                    repeatCount="indefinite"
+                  />
+                </circle>
+
+                {/* メインマーカー */}
+                <circle
+                  cx={selectedCoordinate.x}
+                  cy={selectedCoordinate.y}
+                  r={getMarkerSize(15)}
+                  fill="var(--primary)"
+                  stroke="white"
+                  strokeWidth={getStrokeWidth(3)}
+                  style={{
+                    filter: "drop-shadow(0 0 8px var(--primary))",
+                  }}
+                />
+
+                {/* 中央のドット */}
+                <circle
+                  cx={selectedCoordinate.x}
+                  cy={selectedCoordinate.y}
+                  r={getMarkerSize(4)}
+                  fill="white"
+                />
+
+                {/* 座標ラベル */}
                 <text
                   x={selectedCoordinate.x}
-                  y={selectedCoordinate.y - 30}
+                  y={selectedCoordinate.y - getMarkerSize(15) - 8}
                   textAnchor="middle"
-                  className="text-sm font-bold"
+                  fontSize={getTextSize(12)}
+                  fontWeight="bold"
                   fill="var(--color-text-primary)"
                   stroke="white"
-                  strokeWidth="2"
+                  strokeWidth={getStrokeWidth(2)}
                   paintOrder="stroke"
                 >
                   📍 選択位置
+                </text>
+
+                {/* 座標値表示 */}
+                <text
+                  x={selectedCoordinate.x}
+                  y={selectedCoordinate.y + getMarkerSize(15) + 15}
+                  textAnchor="middle"
+                  fontSize={getTextSize(10)}
+                  fill="var(--color-text-secondary)"
+                  stroke="white"
+                  strokeWidth={getStrokeWidth(1)}
+                  paintOrder="stroke"
+                >
+                  ({selectedCoordinate.x.toFixed(0)},{" "}
+                  {selectedCoordinate.y.toFixed(0)})
                 </text>
               </g>
             )}

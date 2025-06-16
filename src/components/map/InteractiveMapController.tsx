@@ -1,6 +1,7 @@
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect, useState, useCallback } from "react";
 import { CAMPUS_MAP_BOUNDS, buildings } from "../../data/buildings";
 import { useMapZoomPan } from "../../hooks/useMapZoomPan";
+import gsap from "gsap";
 
 interface Coordinate {
   x: number;
@@ -20,6 +21,7 @@ const InteractiveMapController = ({
 }: InteractiveMapControllerProps) => {
   const mapRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [currentScale, setCurrentScale] = useState(1);
 
   const { svgRef, zoomPan, zoomIn, zoomOut, resetZoom, zoomToLocation } =
     useMapZoomPan({
@@ -29,36 +31,129 @@ const InteractiveMapController = ({
       mapWidth: CAMPUS_MAP_BOUNDS.width,
       mapHeight: CAMPUS_MAP_BOUNDS.height,
       containerRef: mapRef,
+      onTransformUpdate: useCallback((scale: number) => {
+        setCurrentScale(scale);
+      }, []),
     });
+
+  // Calculate marker size based on actual current scale
+  const getMarkerSize = (baseSize: number = 20) => {
+    const scaledSize = baseSize / currentScale;
+    return Math.max(8, Math.min(50, scaledSize));
+  };
+
+  // Calculate text size based on actual current scale
+  const getTextSize = (baseSize: number = 12) => {
+    const scaledSize = baseSize / currentScale;
+    return Math.max(6, Math.min(20, scaledSize));
+  };
+
+  // Calculate stroke width based on actual current scale
+  const getStrokeWidth = (baseWidth: number = 1) => {
+    return baseWidth / currentScale;
+  };
 
   // Handle map click for coordinate selection
   const handleMapClick = (event: React.MouseEvent<SVGSVGElement>) => {
     if (isDragging) return; // Don't select if user was dragging
 
     const svg = event.currentTarget;
-    const rect = svg.getBoundingClientRect();
+    const container = mapRef.current;
+    if (!container || !svgRef.current) return;
 
-    // Calculate position relative to the SVG element
-    const relativeX = (event.clientX - rect.left) / rect.width;
-    const relativeY = (event.clientY - rect.top) / rect.height;
+    try {
+      // SVGの現在の変換行列を取得
+      const svgMatrix = svg.getScreenCTM();
+      if (!svgMatrix) {
+        console.warn("Could not get SVG screen CTM");
+        return;
+      }
 
-    // Convert to SVG coordinate space
-    const x = relativeX * CAMPUS_MAP_BOUNDS.width;
-    const y = relativeY * CAMPUS_MAP_BOUNDS.height;
+      // マウスの絶対座標を取得
+      const point = svg.createSVGPoint();
+      point.x = event.clientX;
+      point.y = event.clientY;
 
-    // Ensure coordinates are within bounds
-    const clampedX = Math.max(0, Math.min(CAMPUS_MAP_BOUNDS.width, x));
-    const clampedY = Math.max(0, Math.min(CAMPUS_MAP_BOUNDS.height, y));
+      // 変換行列を使用してSVG座標系に変換
+      const svgPoint = point.matrixTransform(svgMatrix.inverse());
 
-    console.log("Click coordinates:", {
-      screen: { x: event.clientX, y: event.clientY },
-      relative: { x: relativeX, y: relativeY },
-      svg: { x, y },
-      clamped: { x: clampedX, y: clampedY },
-      bounds: CAMPUS_MAP_BOUNDS,
-    });
+      // 座標を境界内にクランプ
+      const clampedX = Math.max(
+        0,
+        Math.min(CAMPUS_MAP_BOUNDS.width, svgPoint.x)
+      );
+      const clampedY = Math.max(
+        0,
+        Math.min(CAMPUS_MAP_BOUNDS.height, svgPoint.y)
+      );
 
-    onCoordinateSelect({ x: clampedX, y: clampedY });
+      console.log("Interactive Matrix-based click coordinates:", {
+        clientCoords: { x: event.clientX, y: event.clientY },
+        svgMatrix: {
+          a: svgMatrix.a,
+          b: svgMatrix.b,
+          c: svgMatrix.c,
+          d: svgMatrix.d,
+          e: svgMatrix.e,
+          f: svgMatrix.f,
+        },
+        svgPoint: { x: svgPoint.x, y: svgPoint.y },
+        clamped: { x: clampedX, y: clampedY },
+        bounds: CAMPUS_MAP_BOUNDS,
+      });
+
+      onCoordinateSelect({ x: clampedX, y: clampedY });
+    } catch (error) {
+      console.warn(
+        "SVG matrix transform failed, falling back to manual calculation:",
+        error
+      );
+
+      // フォールバック: 手動計算
+      const containerRect = container.getBoundingClientRect();
+      const clickX = event.clientX - containerRect.left;
+      const clickY = event.clientY - containerRect.top;
+
+      const actualScale =
+        (gsap.getProperty(svgRef.current!, "scaleX") as number) || currentScale;
+      const actualX = (gsap.getProperty(svgRef.current!, "x") as number) || 0;
+      const actualY = (gsap.getProperty(svgRef.current!, "y") as number) || 0;
+
+      const viewBoxWidth = CAMPUS_MAP_BOUNDS.width;
+      const viewBoxHeight = CAMPUS_MAP_BOUNDS.height;
+      const containerWidth = containerRect.width;
+      const containerHeight = containerRect.height;
+
+      const scaleX = containerWidth / viewBoxWidth;
+      const scaleY = containerHeight / viewBoxHeight;
+      const uniformScale = Math.min(scaleX, scaleY);
+
+      const scaledViewBoxWidth = viewBoxWidth * uniformScale;
+      const scaledViewBoxHeight = viewBoxHeight * uniformScale;
+      const offsetX = (containerWidth - scaledViewBoxWidth) / 2;
+      const offsetY = (containerHeight - scaledViewBoxHeight) / 2;
+
+      const adjustedClickX = clickX - offsetX;
+      const adjustedClickY = clickY - offsetY;
+
+      const preTransformX = (adjustedClickX - actualX) / actualScale;
+      const preTransformY = (adjustedClickY - actualY) / actualScale;
+
+      const svgX = preTransformX / uniformScale;
+      const svgY = preTransformY / uniformScale;
+
+      const clampedX = Math.max(0, Math.min(CAMPUS_MAP_BOUNDS.width, svgX));
+      const clampedY = Math.max(0, Math.min(CAMPUS_MAP_BOUNDS.height, svgY));
+
+      console.log("Interactive Fallback click coordinates:", {
+        screen: { x: clickX, y: clickY },
+        svg: { x: svgX, y: svgY },
+        clamped: { x: clampedX, y: clampedY },
+        actualTransform: { scale: actualScale, x: actualX, y: actualY },
+      });
+
+      onCoordinateSelect({ x: clampedX, y: clampedY });
+    }
   };
 
   // Handle mouse events for drag detection
@@ -95,27 +190,20 @@ const InteractiveMapController = ({
           <style>
             {`
               .campus-bg { fill: #e8f4f8; }
-              .building { fill: #d1d5db; stroke: #9ca3af; stroke-width: 1; }
-              .location-marker { fill: #10b981; stroke: #065f46; stroke-width: 1; opacity: 0.7; }
-              .location-text { font-size: 10px; fill: #065f46; font-weight: bold; }
+              .building { fill: #d1d5db; stroke: #9ca3af; }
+              .location-text { fill: #065f46; font-weight: bold; }
               .selected-marker { 
                 filter: drop-shadow(0 0 12px var(--color-accent));
-                animation: mapPulse 2s infinite;
               }
               .marker-ring {
                 fill: none;
                 stroke: var(--color-accent);
-                stroke-width: 2;
                 opacity: 0.6;
                 animation: ripple 2s infinite;
               }
-              @keyframes mapPulse {
-                0%, 100% { opacity: 1; transform: scale(1); }
-                50% { opacity: 0.8; transform: scale(1.1); }
-              }
               @keyframes ripple {
-                0% { r: 20; opacity: 0.6; }
-                100% { r: 40; opacity: 0; }
+                0% { r: ${getMarkerSize(20)}; opacity: 0.6; }
+                100% { r: ${getMarkerSize(40)}; opacity: 0; }
               }
             `}
           </style>
@@ -140,7 +228,7 @@ const InteractiveMapController = ({
                 style={{
                   fill: "#d1d5db",
                   stroke: "#9ca3af",
-                  strokeWidth: 1,
+                  strokeWidth: getStrokeWidth(1),
                   cursor: "pointer",
                 }}
               >
@@ -152,7 +240,7 @@ const InteractiveMapController = ({
                 textAnchor="middle"
                 className="location-text"
                 style={{
-                  fontSize: "10px",
+                  fontSize: getTextSize(10),
                   fill: "#065f46",
                   fontWeight: "bold",
                   pointerEvents: "none",
@@ -176,7 +264,7 @@ const InteractiveMapController = ({
               d="M 100 0 L 0 0 0 100"
               fill="none"
               stroke="#e5e7eb"
-              strokeWidth="1"
+              strokeWidth={getStrokeWidth(1)}
               opacity="0.2"
             />
           </pattern>
@@ -186,19 +274,21 @@ const InteractiveMapController = ({
         {/* Selected coordinate marker */}
         {selectedCoordinate && (
           <g className="selected-marker">
-            {/* Ripple effect - fixed positioning */}
+            {/* Ripple effect - 動的サイズ */}
             <circle
               cx={selectedCoordinate.x}
               cy={selectedCoordinate.y}
-              r="25"
+              r={getMarkerSize(25)}
               fill="none"
               stroke="var(--color-accent)"
-              strokeWidth="2"
+              strokeWidth={getStrokeWidth(2)}
               opacity="0.6"
             >
               <animate
                 attributeName="r"
-                values="25;45;25"
+                values={`${getMarkerSize(25)};${getMarkerSize(
+                  45
+                )};${getMarkerSize(25)}`}
                 dur="2s"
                 repeatCount="indefinite"
               />
@@ -210,37 +300,55 @@ const InteractiveMapController = ({
               />
             </circle>
 
-            {/* Main marker - static */}
+            {/* Main marker - 動的サイズ */}
             <circle
               cx={selectedCoordinate.x}
               cy={selectedCoordinate.y}
-              r="15"
+              r={getMarkerSize(15)}
               fill="var(--color-accent)"
               stroke="white"
-              strokeWidth="3"
+              strokeWidth={getStrokeWidth(3)}
+              style={{
+                filter: "drop-shadow(0 0 8px var(--color-accent))",
+              }}
             />
 
-            {/* Center dot */}
+            {/* Center dot - 動的サイズ */}
             <circle
               cx={selectedCoordinate.x}
               cy={selectedCoordinate.y}
-              r="4"
+              r={getMarkerSize(4)}
               fill="white"
             />
 
-            {/* Coordinate label - improved positioning */}
+            {/* Coordinate label - 動的サイズとズームに応じた位置調整 */}
             <text
               x={selectedCoordinate.x}
-              y={selectedCoordinate.y - 30}
+              y={selectedCoordinate.y - getMarkerSize(15) - 8}
               textAnchor="middle"
-              fontSize="12"
+              fontSize={getTextSize(12)}
               fontWeight="bold"
               fill="var(--color-text-primary)"
               stroke="white"
-              strokeWidth="2"
+              strokeWidth={getStrokeWidth(2)}
               paintOrder="stroke"
             >
               📍 選択位置
+            </text>
+
+            {/* 座標値表示 */}
+            <text
+              x={selectedCoordinate.x}
+              y={selectedCoordinate.y + getMarkerSize(15) + 15}
+              textAnchor="middle"
+              fontSize={getTextSize(10)}
+              fill="var(--color-text-secondary)"
+              stroke="white"
+              strokeWidth={getStrokeWidth(1)}
+              paintOrder="stroke"
+            >
+              X={selectedCoordinate.x.toFixed(1)}, Y=
+              {selectedCoordinate.y.toFixed(1)}
             </text>
           </g>
         )}

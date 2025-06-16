@@ -22,6 +22,8 @@ interface UseMapZoomPanOptions {
   mapWidth: number;
   mapHeight: number;
   containerRef: React.RefObject<HTMLElement>;
+  onTransformUpdate?: (scale: number) => void;
+  overlayRef?: React.RefObject<SVGSVGElement>;
 }
 
 interface Point {
@@ -36,6 +38,8 @@ export const useMapZoomPan = ({
   mapWidth,
   mapHeight,
   containerRef,
+  onTransformUpdate,
+  overlayRef,
 }: UseMapZoomPanOptions) => {
   const [zoomPan, setZoomPan] = useState<ZoomPanState>({
     scale: initialScale,
@@ -53,12 +57,29 @@ export const useMapZoomPan = ({
       if (!containerRef.current) return point;
 
       const container = containerRef.current.getBoundingClientRect();
-      const svgPoint = {
-        x: (point.x / CAMPUS_MAP_BOUNDS.width) * container.width * scale,
-        y: (point.y / CAMPUS_MAP_BOUNDS.height) * container.height * scale,
-      };
 
-      return svgPoint;
+      // Calculate SVG viewBox scaling factor
+      const viewBoxWidth = CAMPUS_MAP_BOUNDS.width;
+      const viewBoxHeight = CAMPUS_MAP_BOUNDS.height;
+      const containerWidth = container.width;
+      const containerHeight = container.height;
+
+      // Calculate the aspect ratio scaling
+      const scaleX = containerWidth / viewBoxWidth;
+      const scaleY = containerHeight / viewBoxHeight;
+      const uniformScale = Math.min(scaleX, scaleY); // SVG maintains aspect ratio
+
+      // Calculate the offset due to aspect ratio centering
+      const scaledViewBoxWidth = viewBoxWidth * uniformScale;
+      const scaledViewBoxHeight = viewBoxHeight * uniformScale;
+      const offsetX = (containerWidth - scaledViewBoxWidth) / 2;
+      const offsetY = (containerHeight - scaledViewBoxHeight) / 2;
+
+      // Convert SVG coordinates to screen coordinates
+      const screenX = point.x * uniformScale * scale + offsetX;
+      const screenY = point.y * uniformScale * scale + offsetY;
+
+      return { x: screenX, y: screenY };
     },
     [containerRef]
   );
@@ -69,14 +90,46 @@ export const useMapZoomPan = ({
       if (!containerRef.current) return { x: 0, y: 0 };
 
       const container = containerRef.current.getBoundingClientRect();
-      const screenPoint = svgToScreen(point, scale);
 
-      return {
-        x: container.width / 2 - screenPoint.x,
-        y: container.height / 2 - screenPoint.y,
-      };
+      // Calculate SVG viewBox scaling factor
+      const viewBoxWidth = CAMPUS_MAP_BOUNDS.width;
+      const viewBoxHeight = CAMPUS_MAP_BOUNDS.height;
+      const containerWidth = container.width;
+      const containerHeight = container.height;
+
+      // Calculate the aspect ratio scaling
+      const scaleX = containerWidth / viewBoxWidth;
+      const scaleY = containerHeight / viewBoxHeight;
+      const uniformScale = Math.min(scaleX, scaleY); // SVG maintains aspect ratio
+
+      // Calculate the offset due to aspect ratio centering
+      const scaledViewBoxWidth = viewBoxWidth * uniformScale;
+      const scaledViewBoxHeight = viewBoxHeight * uniformScale;
+      const offsetX = (containerWidth - scaledViewBoxWidth) / 2;
+      const offsetY = (containerHeight - scaledViewBoxHeight) / 2;
+
+      // Convert target point to screen coordinates at the given scale
+      const targetScreenX = point.x * uniformScale * scale + offsetX;
+      const targetScreenY = point.y * uniformScale * scale + offsetY;
+
+      // Calculate position to center the target point
+      const centerX = container.width / 2 - targetScreenX;
+      const centerY = container.height / 2 - targetScreenY;
+
+      console.log("Center calculation:", {
+        targetPoint: point,
+        scale: scale,
+        viewBox: { width: viewBoxWidth, height: viewBoxHeight },
+        container: { width: containerWidth, height: containerHeight },
+        uniformScale: uniformScale,
+        offset: { x: offsetX, y: offsetY },
+        targetScreen: { x: targetScreenX, y: targetScreenY },
+        center: { x: centerX, y: centerY },
+      });
+
+      return { x: centerX, y: centerY };
     },
-    [svgToScreen]
+    [containerRef]
   );
 
   // Calculate map bounds to prevent over-panning
@@ -87,21 +140,38 @@ export const useMapZoomPan = ({
       }
 
       const container = containerRef.current.getBoundingClientRect();
-      const scaledWidth = mapWidth * scale;
-      const scaledHeight = mapHeight * scale;
 
-      // Add padding equal to half the container size
-      const paddingX = container.width / 2;
-      const paddingY = container.height / 2;
+      // Calculate SVG viewBox scaling factor
+      const viewBoxWidth = CAMPUS_MAP_BOUNDS.width;
+      const viewBoxHeight = CAMPUS_MAP_BOUNDS.height;
+      const containerWidth = container.width;
+      const containerHeight = container.height;
+
+      // Calculate the aspect ratio scaling
+      const scaleX = containerWidth / viewBoxWidth;
+      const scaleY = containerHeight / viewBoxHeight;
+      const uniformScale = Math.min(scaleX, scaleY);
+
+      // Calculate actual scaled dimensions
+      const scaledWidth = viewBoxWidth * uniformScale * scale;
+      const scaledHeight = viewBoxHeight * uniformScale * scale;
+
+      // Calculate offsets for centering
+      const offsetX = (containerWidth - viewBoxWidth * uniformScale) / 2;
+      const offsetY = (containerHeight - viewBoxHeight * uniformScale) / 2;
+
+      // Allow generous padding for smooth panning
+      const paddingX = containerWidth * 0.1; // 10% padding
+      const paddingY = containerHeight * 0.1; // 10% padding
 
       return {
-        minX: container.width - scaledWidth - paddingX,
-        maxX: paddingX,
-        minY: container.height - scaledHeight - paddingY,
-        maxY: paddingY,
+        minX: containerWidth - scaledWidth - paddingX + offsetX,
+        maxX: paddingX + offsetX,
+        minY: containerHeight - scaledHeight - paddingY + offsetY,
+        maxY: paddingY + offsetY,
       };
     },
-    [mapWidth, mapHeight, containerRef]
+    [containerRef]
   );
 
   // Constrain position within bounds
@@ -130,25 +200,50 @@ export const useMapZoomPan = ({
 
       setZoomPan(finalState);
 
+      // Notify about scale changes immediately for smooth UI updates
+      onTransformUpdate?.(finalState.scale);
+
+      const transformConfig = {
+        scale: finalState.scale,
+        x: finalState.x,
+        y: finalState.y,
+        transformOrigin: "0px 0px",
+      };
+
       if (animate) {
         gsap.to(svgRef.current, {
-          scale: finalState.scale,
-          x: finalState.x,
-          y: finalState.y,
+          ...transformConfig,
           duration: duration,
           ease: "power2.inOut",
-          transformOrigin: "0 0",
+          onUpdate: () => {
+            // Update scale callback during animation for smooth pin scaling
+            const currentScale = gsap.getProperty(
+              svgRef.current!,
+              "scaleX"
+            ) as number;
+            onTransformUpdate?.(currentScale);
+
+            // Sync overlay element with main SVG
+            if (overlayRef?.current) {
+              gsap.set(overlayRef.current, {
+                scale: currentScale,
+                x: gsap.getProperty(svgRef.current!, "x"),
+                y: gsap.getProperty(svgRef.current!, "y"),
+                transformOrigin: "0px 0px",
+              });
+            }
+          },
         });
       } else {
-        gsap.set(svgRef.current, {
-          scale: finalState.scale,
-          x: finalState.x,
-          y: finalState.y,
-          transformOrigin: "0 0",
-        });
+        gsap.set(svgRef.current, transformConfig);
+
+        // Sync overlay element immediately
+        if (overlayRef?.current) {
+          gsap.set(overlayRef.current, transformConfig);
+        }
       }
     },
-    [constrainPosition]
+    [constrainPosition, onTransformUpdate, overlayRef]
   );
 
   // Zoom to specific location
@@ -156,20 +251,61 @@ export const useMapZoomPan = ({
     (x: number, y: number, targetScale: number = 4, duration: number = 1) => {
       if (!containerRef.current || !svgRef.current) return;
 
-      const targetPoint = { x, y };
-      const centerPos = calculateCenterPosition(targetPoint, targetScale);
+      const container = containerRef.current.getBoundingClientRect();
+
+      // Calculate SVG viewBox scaling factor
+      const viewBoxWidth = CAMPUS_MAP_BOUNDS.width;
+      const viewBoxHeight = CAMPUS_MAP_BOUNDS.height;
+      const containerWidth = container.width;
+      const containerHeight = container.height;
+
+      // Calculate the aspect ratio scaling
+      const scaleX = containerWidth / viewBoxWidth;
+      const scaleY = containerHeight / viewBoxHeight;
+      const uniformScale = Math.min(scaleX, scaleY); // SVG maintains aspect ratio
+
+      // Calculate the offset due to aspect ratio centering
+      const scaledViewBoxWidth = viewBoxWidth * uniformScale;
+      const scaledViewBoxHeight = viewBoxHeight * uniformScale;
+      const offsetX = (containerWidth - scaledViewBoxWidth) / 2;
+      const offsetY = (containerHeight - scaledViewBoxHeight) / 2;
+
+      // Target point in SVG coordinates: (x, y)
+      // We want this point to be at the center of the viewport
+
+      // Convert target SVG coordinates to final screen coordinates at target scale
+      const targetScreenX = x * uniformScale * targetScale;
+      const targetScreenY = y * uniformScale * targetScale;
+
+      // Calculate the translation needed to center the target point
+      // We want: targetScreenX + translateX + offsetX = containerWidth / 2
+      // So: translateX = containerWidth / 2 - targetScreenX - offsetX
+      const translateX = containerWidth / 2 - targetScreenX - offsetX;
+      const translateY = containerHeight / 2 - targetScreenY - offsetY;
+
+      console.log("ZoomToLocation detailed calculation:", {
+        targetSVG: { x, y },
+        targetScale: targetScale,
+        container: { width: containerWidth, height: containerHeight },
+        viewBox: { width: viewBoxWidth, height: viewBoxHeight },
+        uniformScale: uniformScale,
+        offset: { x: offsetX, y: offsetY },
+        targetScreen: { x: targetScreenX, y: targetScreenY },
+        finalTranslate: { x: translateX, y: translateY },
+        centerTarget: { x: containerWidth / 2, y: containerHeight / 2 },
+      });
 
       applyTransform(
         {
           scale: targetScale,
-          x: centerPos.x,
-          y: centerPos.y,
+          x: translateX,
+          y: translateY,
         },
         true,
         duration
       );
     },
-    [containerRef, calculateCenterPosition, applyTransform]
+    [containerRef, applyTransform]
   );
 
   // Basic zoom functions

@@ -15,6 +15,7 @@ export const sponsors: Sponsor[] = [
     tags: ["技術", "産業", "地域"],
     website: "https://www.yamaguchi-tech.co.jp/",
     contactEmail: "sponsor@yamaguchi-tech.co.jp",
+    tier: "gold",
   },
   {
     id: "sponsor-2",
@@ -28,6 +29,7 @@ export const sponsors: Sponsor[] = [
     location: "メインホール",
     tags: ["電機", "製造", "地域"],
     website: "https://www.ube-electronics.co.jp/",
+    tier: "silver",
   },
   {
     id: "sponsor-3",
@@ -41,6 +43,7 @@ export const sponsors: Sponsor[] = [
     location: "メインホール",
     tags: ["エンジニアリング", "コンサルティング", "地域"],
     website: "https://www.chugoku-eng.co.jp/",
+    tier: "bronze",
   },
   {
     id: "sponsor-4",
@@ -54,6 +57,7 @@ export const sponsors: Sponsor[] = [
     location: "メインホール",
     tags: ["ソフトウェア", "IT", "開発"],
     website: "https://www.sanyo-software.co.jp/",
+    tier: "silver",
   },
   {
     id: "sponsor-5",
@@ -66,6 +70,7 @@ export const sponsors: Sponsor[] = [
     location: "メインホール",
     tags: ["金融", "銀行", "地域"],
     website: "https://www.ubecity-bank.co.jp/",
+    tier: "gold",
   },
   {
     id: "sponsor-6",
@@ -78,6 +83,7 @@ export const sponsors: Sponsor[] = [
     location: "メインホール",
     tags: ["教育", "協会", "県内"],
     website: "https://www.yamaguchi-edu.org/",
+    tier: "bronze",
   },
   {
     id: "sponsor-7",
@@ -90,6 +96,7 @@ export const sponsors: Sponsor[] = [
     location: "メインホール",
     tags: ["半導体", "技術", "製造"],
     website: "https://www.westjapan-semi.co.jp/",
+    tier: "gold",
   },
   {
     id: "sponsor-8",
@@ -102,6 +109,7 @@ export const sponsors: Sponsor[] = [
     location: "メインホール",
     tags: ["資材", "産業", "製造"],
     website: "https://www.ube-materials.co.jp/",
+    tier: "bronze",
   },
   {
     id: "sponsor-9",
@@ -114,6 +122,7 @@ export const sponsors: Sponsor[] = [
     location: "メインホール",
     tags: ["書籍", "教育", "技術"],
     website: "https://www.sanyo-books.co.jp/",
+    tier: "silver",
   },
   {
     id: "sponsor-10",
@@ -127,5 +136,6 @@ export const sponsors: Sponsor[] = [
     location: "メインホール",
     tags: ["イノベーション", "スタートアップ", "インキュベーター"],
     website: "https://www.yamaguchi-innovation.org/",
+    tier: "bronze",
   },
 ];

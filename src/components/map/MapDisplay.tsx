@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import {
   getBuildingCoordinates,
   buildings,
@@ -23,6 +23,7 @@ const MapDisplay = ({
   locations,
 }: MapDisplayProps) => {
   const mapContainerRef = useRef<HTMLDivElement>(null);
+  const [currentScale, setCurrentScale] = useState(1);
 
   // Initialize zoom/pan functionality
   const { svgRef, zoomPan, zoomIn, zoomOut, resetZoom, zoomToLocation } =
@@ -33,7 +34,27 @@ const MapDisplay = ({
       mapWidth: CAMPUS_MAP_BOUNDS.width,
       mapHeight: CAMPUS_MAP_BOUNDS.height,
       containerRef: mapContainerRef,
+      onTransformUpdate: useCallback((scale: number) => {
+        setCurrentScale(scale);
+      }, []),
     });
+
+  // Calculate marker size based on actual current scale
+  const getMarkerSize = (baseSize: number = 20) => {
+    const scaledSize = baseSize / currentScale;
+    return Math.max(8, Math.min(40, scaledSize));
+  };
+
+  // Calculate text size based on actual current scale
+  const getTextSize = (baseSize: number = 12) => {
+    const scaledSize = baseSize / currentScale;
+    return Math.max(6, Math.min(18, scaledSize));
+  };
+
+  // Calculate stroke width based on actual current scale
+  const getStrokeWidth = (baseWidth: number = 1) => {
+    return baseWidth / currentScale;
+  };
 
   // Get coordinates for each location using the building data
   const getLocationCoordinates = (
@@ -104,6 +125,7 @@ const MapDisplay = ({
                 .building-interactive { 
                   cursor: pointer; 
                   transition: all 0.2s ease;
+                  stroke-width: ${getStrokeWidth(1)};
                 }
                 .building-interactive:hover { 
                   fill: var(--primary-light) !important; 
@@ -113,17 +135,18 @@ const MapDisplay = ({
                   cursor: pointer; 
                   transition: all 0.2s ease;
                 }
-                .location-marker.hovered circle { 
-                  r: 25; 
+                .location-marker.hovered .location-dot { 
+                  r: ${getMarkerSize(25)}; 
                   fill: var(--primary-light);
                 }
-                .location-marker.selected circle { 
-                  r: 30; 
+                .location-marker.selected .location-dot { 
+                  r: ${getMarkerSize(30)}; 
                   fill: var(--primary);
+                  filter: drop-shadow(0 0 10px var(--primary));
                 }
                 .location-label {
                   font-family: inherit;
-                  font-size: 24px;
+                  font-size: ${getTextSize(12)}px;
                   font-weight: 500;
                   pointer-events: none;
                   text-shadow: 1px 1px 2px rgba(255,255,255,0.8);
@@ -374,60 +397,105 @@ const MapDisplay = ({
                 key={building.id}
                 className="cls-2 building-interactive"
                 points={building.polygon}
+                style={{
+                  strokeWidth: 1 / zoomPan.scale,
+                }}
               >
                 <title>{building.name}</title>
               </polygon>
             ))}
           </g>
 
-          {/* Location markers for events, exhibits, and stalls */}
-          {locations.map((location) => {
-            const coords = getLocationCoordinates(location);
-            if (!coords) return null;
+          {/* Location markers for events, exhibits, and stalls - ズーム・パンに正しく追従 */}
+          <g
+            style={{
+              transform: `scale(${zoomPan.scale}) translate(${
+                zoomPan.x / zoomPan.scale
+              }px, ${zoomPan.y / zoomPan.scale}px)`,
+              transformOrigin: "0 0",
+            }}
+          >
+            {locations.map((location) => {
+              const coords = getLocationCoordinates(location);
+              if (!coords) return null;
 
-            return (
-              <g
-                key={location}
-                className={`location-marker ${
-                  hoveredLocation === location ? "hovered" : ""
-                } ${selectedLocation === location ? "selected" : ""}`}
-                onMouseEnter={() => onLocationHover(location)}
-                onMouseLeave={() => onLocationHover(null)}
-                onClick={() => onLocationSelect(location)}
-              >
-                <circle
-                  cx={coords.x}
-                  cy={coords.y}
-                  r={
-                    selectedLocation === location
-                      ? 30
-                      : hoveredLocation === location
-                      ? 25
-                      : 20
-                  }
-                  fill={
-                    selectedLocation === location
-                      ? "var(--primary)"
-                      : hoveredLocation === location
-                      ? "var(--primary-light)"
-                      : "var(--secondary)"
-                  }
-                  stroke="white"
-                  strokeWidth="3"
-                  className="location-dot"
-                />
-                <text
-                  x={coords.x}
-                  y={coords.y + 8}
-                  textAnchor="middle"
-                  className="location-label"
-                  fill="var(--text-primary)"
+              const isHovered = hoveredLocation === location;
+              const isSelected = selectedLocation === location;
+              const markerSize = getMarkerSize(
+                isSelected ? 30 : isHovered ? 25 : 20
+              );
+              const textSize = getTextSize(12);
+
+              return (
+                <g
+                  key={location}
+                  className={`location-marker ${isHovered ? "hovered" : ""} ${
+                    isSelected ? "selected" : ""
+                  }`}
+                  onMouseEnter={() => onLocationHover(location)}
+                  onMouseLeave={() => onLocationHover(null)}
+                  onClick={() => onLocationSelect(location)}
+                  style={{ cursor: "pointer" }}
                 >
-                  {location.split(",")[0]}
-                </text>
-              </g>
-            );
-          })}
+                  {/* ピンの影 */}
+                  <circle
+                    cx={coords.x + 2}
+                    cy={coords.y + 2}
+                    r={markerSize}
+                    fill="rgba(0,0,0,0.2)"
+                    opacity="0.5"
+                  />
+
+                  {/* メインマーカー */}
+                  <circle
+                    cx={coords.x}
+                    cy={coords.y}
+                    r={markerSize}
+                    fill={
+                      isSelected
+                        ? "var(--primary)"
+                        : isHovered
+                        ? "var(--primary-light)"
+                        : "var(--secondary)"
+                    }
+                    stroke="white"
+                    strokeWidth={3 / zoomPan.scale}
+                    className="location-dot"
+                    style={{
+                      filter: isSelected
+                        ? "drop-shadow(0 0 10px var(--primary))"
+                        : "none",
+                      transition: "all 0.3s ease",
+                    }}
+                  />
+
+                  {/* 内側のドット */}
+                  <circle
+                    cx={coords.x}
+                    cy={coords.y}
+                    r={markerSize * 0.3}
+                    fill="white"
+                  />
+
+                  {/* ラベル */}
+                  <text
+                    x={coords.x}
+                    y={coords.y - markerSize - 5}
+                    textAnchor="middle"
+                    fontSize={textSize}
+                    fontWeight="500"
+                    fill="var(--color-text-primary)"
+                    stroke="white"
+                    strokeWidth={2 / zoomPan.scale}
+                    paintOrder="stroke"
+                    className="location-label pointer-events-none"
+                  >
+                    {location.split(",")[0]}
+                  </text>
+                </g>
+              );
+            })}
+          </g>
         </svg>
 
         <div>

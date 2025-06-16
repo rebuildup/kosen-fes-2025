@@ -46,6 +46,7 @@ const convertItemCoreToItem = (itemCore: ItemCore): Item => {
         ...baseItem,
         type: "sponsor",
         website: "",
+        tier: "bronze",
       };
     default:
       // デフォルトはeventとして扱う
