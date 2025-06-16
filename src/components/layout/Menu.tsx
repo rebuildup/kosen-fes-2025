@@ -1,10 +1,10 @@
 import { useRef, useEffect, MutableRefObject } from "react";
 import { NavLink, Link } from "react-router-dom";
+import { createPortal } from "react-dom";
 import { useLanguage } from "../../context/LanguageContext";
 import { useBookmark } from "../../context/BookmarkContext";
 import ThemeToggle from "../common/ThemeToggle";
 import LanguageToggle from "../common/LanguageToggle";
-import SearchBar from "../common/SearchBar";
 import { gsap } from "gsap";
 import { DURATION, EASE } from "../../utils/animations";
 import { HomeIcon } from "../icons/HomeIcon";
@@ -47,9 +47,9 @@ const Menu = ({ setMenuOpen, closeButtonRef }: MenuProps) => {
     if (menuRef.current && backdropRef.current) {
       const tl = gsap.timeline();
 
-      // Initial state
-      tl.set(menuRef.current, { x: "100%" });
-      tl.set(backdropRef.current, { autoAlpha: 0 });
+      // Initial state - ensure menu starts off screen
+      gsap.set(menuRef.current, { x: "100%" });
+      gsap.set(backdropRef.current, { autoAlpha: 0 });
 
       // Animation
       tl.to(backdropRef.current, {
@@ -149,62 +149,111 @@ const Menu = ({ setMenuOpen, closeButtonRef }: MenuProps) => {
     closeWithAnimation();
   };
 
-  return (
-    <div>
-      <div ref={backdropRef} onClick={() => closeWithAnimation()}></div>
+  return createPortal(
+    <div className="mobile-menu-overlay">
+      {/* Backdrop */}
+      <div
+        ref={backdropRef}
+        className="mobile-menu-backdrop"
+        onClick={() => closeWithAnimation()}
+      ></div>
 
-      <div ref={menuRef}>
-        <div>
-          <div>{t("navigation.menu")}</div>
+      {/* Menu Panel */}
+      <div ref={menuRef} className="mobile-menu-panel">
+        {/* Header */}
+        <div className="mobile-menu-header">
+          <div className="mobile-menu-title">{t("navigation.menu")}</div>
           <button
             onClick={() => closeWithAnimation()}
             aria-label={t("actions.close")}
             ref={closeButtonRef}
+            className="mobile-menu-close-button"
           >
-            <span>
+            <span className="mobile-menu-close-icon">
               <XIcon size={18} />
             </span>
           </button>
         </div>
 
-        <div ref={menuContentRef}>
-          <div>
-            <SearchBar variant="default" />
-          </div>
-
-          <div>
-            <h3>{t("navigation.main")}</h3>
-            <nav>
-              <NavLink to="/" onClick={handleMenuItemClick} end>
-                <span>
+        {/* Content */}
+        <div ref={menuContentRef} className="mobile-menu-content">
+          {/* Main Navigation */}
+          <div className="mobile-menu-section">
+            <h3 className="mobile-menu-section-title">
+              {t("navigation.main")}
+            </h3>
+            <nav className="mobile-menu-nav">
+              <NavLink
+                to="/"
+                onClick={handleMenuItemClick}
+                end
+                className={({ isActive }) =>
+                  `mobile-menu-nav-item ${
+                    isActive ? "mobile-menu-nav-item-active" : ""
+                  }`
+                }
+              >
+                <span className="mobile-menu-nav-icon">
                   <HomeIcon size={18} />
                 </span>
                 <span>{t("navigation.home")}</span>
               </NavLink>
 
-              <NavLink to="/events" onClick={handleMenuItemClick}>
-                <span>
+              <NavLink
+                to="/events"
+                onClick={handleMenuItemClick}
+                className={({ isActive }) =>
+                  `mobile-menu-nav-item ${
+                    isActive ? "mobile-menu-nav-item-active" : ""
+                  }`
+                }
+              >
+                <span className="mobile-menu-nav-icon">
                   <EventIcon size={18} />
                 </span>
                 <span>{t("navigation.events")}</span>
               </NavLink>
 
-              <NavLink to="/exhibits" onClick={handleMenuItemClick}>
-                <span>
+              <NavLink
+                to="/exhibits"
+                onClick={handleMenuItemClick}
+                className={({ isActive }) =>
+                  `mobile-menu-nav-item ${
+                    isActive ? "mobile-menu-nav-item-active" : ""
+                  }`
+                }
+              >
+                <span className="mobile-menu-nav-icon">
                   <ExhibitIcon size={18} />
                 </span>
                 <span>{t("navigation.exhibits")}</span>
               </NavLink>
 
-              <NavLink to="/schedule" onClick={handleMenuItemClick}>
-                <span>
+              <NavLink
+                to="/schedule"
+                onClick={handleMenuItemClick}
+                className={({ isActive }) =>
+                  `mobile-menu-nav-item ${
+                    isActive ? "mobile-menu-nav-item-active" : ""
+                  }`
+                }
+              >
+                <span className="mobile-menu-nav-icon">
                   <ScheduleIcon size={18} />
                 </span>
                 <span>{t("navigation.schedule")}</span>
               </NavLink>
 
-              <NavLink to="/map" onClick={handleMenuItemClick}>
-                <span>
+              <NavLink
+                to="/map"
+                onClick={handleMenuItemClick}
+                className={({ isActive }) =>
+                  `mobile-menu-nav-item ${
+                    isActive ? "mobile-menu-nav-item-active" : ""
+                  }`
+                }
+              >
+                <span className="mobile-menu-nav-icon">
                   <MapIcon size={18} />
                 </span>
                 <span>{t("navigation.map")}</span>
@@ -212,68 +261,82 @@ const Menu = ({ setMenuOpen, closeButtonRef }: MenuProps) => {
             </nav>
           </div>
 
-          <div>
-            <h3 className="menu-section-title text-sm font-medium text-[var(--gray-color)] dark:text-[var(--bg-color)] uppercase tracking-wide">
+          {/* Quick Links */}
+          <div className="mobile-menu-section">
+            <h3 className="mobile-menu-section-title">
               {t("navigation.quickLinks")}
             </h3>
-            <div className="space-y-1">
+            <div className="mobile-menu-links">
               <Link
                 to="/bookmarks"
-                className="menu-link-item flex items-center justify-between px-3 py-2 rounded-lg text-[var(--main)] dark:text-[var(--bg-color)] hover:bg-[var(--bg-color)] dark:hover:bg-[var(--gray-color)] transition-colors"
+                className="mobile-menu-link-item"
                 onClick={handleMenuItemClick}
               >
-                <div className="flex items-center">
-                  <span>
+                <div className="mobile-menu-link-content">
+                  <span className="mobile-menu-nav-icon">
                     <BookmarkIcon size={18} />
                   </span>
                   <span>{t("bookmarks.title")}</span>
                 </div>
                 {bookmarks.length > 0 && (
-                  <span className="bg-[var(--accent)]/10 dark:bg-[var(--accent)]/20 text-[var(--accent)] dark:text-[var(--accent)] text-xs font-medium px-2 py-1 rounded-full">
-                    {bookmarks.length}
-                  </span>
+                  <span className="mobile-menu-badge">{bookmarks.length}</span>
                 )}
               </Link>
 
               <Link
                 to="/search"
-                className="menu-link-item flex items-center px-3 py-2 rounded-lg text-[var(--main)] dark:text-[var(--bg-color)] hover:bg-[var(--bg-color)] dark:hover:bg-[var(--gray-color)] transition-colors"
+                className="mobile-menu-link-item"
                 onClick={handleMenuItemClick}
               >
-                <span>
-                  <SearchIcon size={18} />
-                </span>
-                <span>{t("search.title")}</span>
+                <div className="mobile-menu-link-content">
+                  <span className="mobile-menu-nav-icon">
+                    <SearchIcon size={18} />
+                  </span>
+                  <span>{t("search.title")}</span>
+                </div>
               </Link>
             </div>
           </div>
 
-          <div>
-            <h3>{t("settings.title")}</h3>
-            <div>
-              <div>
-                <span>{t("settings.theme.title")}</span>
+          {/* Settings */}
+          <div className="mobile-menu-section">
+            <h3 className="mobile-menu-section-title">{t("settings.title")}</h3>
+            <div className="mobile-menu-settings">
+              <div className="mobile-menu-setting-item">
+                <span className="mobile-menu-setting-label">
+                  {t("settings.theme.title")}
+                </span>
                 <ThemeToggle />
               </div>
 
-              <div>
-                <span>{t("settings.language.title")}</span>
+              <div className="mobile-menu-setting-item">
+                <span className="mobile-menu-setting-label">
+                  {t("settings.language.title")}
+                </span>
                 <LanguageToggle />
               </div>
             </div>
           </div>
 
-          <div>
-            <h3>{t("info.title")}</h3>
-            <div>
-              <p>{t("info.festivalDates")}: 2025/06/15 - 2025/06/16</p>
-              <p>{t("info.location")}: Ube Kosen, Yamaguchi</p>
-              <p>{t("info.organizer")}: Festival Committee</p>
+          {/* Info */}
+          <div className="mobile-menu-section">
+            <h3 className="mobile-menu-section-title">{t("info.title")}</h3>
+            <div className="mobile-menu-info">
+              <p className="mobile-menu-info-item">
+                {t("info.festivalDates")}: 2025/06/15 - 2025/06/16
+              </p>
+              <p className="mobile-menu-info-item">
+                {t("info.location")}: Ube Kosen, Yamaguchi
+              </p>
+              <p className="mobile-menu-info-item">
+                {t("info.organizer")}: Festival Committee
+              </p>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };
 

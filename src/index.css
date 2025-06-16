@@ -362,13 +362,241 @@
   }
 
   .map-legend {
-    @apply absolute bottom-4 left-4 bg-white/90 backdrop-blur-sm p-3 rounded-lg shadow-md;
+    @apply absolute bottom-4 left-4 backdrop-blur-sm p-3 rounded-lg shadow-lg z-10;
     background-color: color-mix(
       in srgb,
       var(--color-bg-primary) 90%,
       transparent
     );
-    z-index: 10;
+    border: 1px solid var(--color-border-primary);
+  }
+
+  /* Mobile Footer Navigation */
+  .mobile-footer {
+    @apply fixed bottom-0 left-0 right-0 z-50 border-t backdrop-blur-md;
+    background-color: var(--color-bg-primary);
+    border-color: var(--color-border-primary);
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+  }
+
+  .mobile-footer-nav {
+    @apply flex items-center justify-around h-16 max-w-lg mx-auto px-2;
+  }
+
+  .mobile-footer-item {
+    @apply flex flex-col items-center justify-center flex-1 py-2 px-1 transition-all duration-200 rounded-lg text-xs font-medium;
+    color: var(--color-text-secondary);
+    min-height: 3rem;
+    min-width: 0; /* Allow shrinking */
+  }
+
+  .mobile-footer-item:hover {
+    @apply transform scale-105;
+    color: var(--color-accent);
+    background-color: color-mix(in srgb, var(--color-accent) 5%, transparent);
+  }
+
+  .mobile-footer-item-active {
+    color: var(--color-accent);
+    background-color: color-mix(in srgb, var(--color-accent) 10%, transparent);
+  }
+
+  .mobile-footer-icon {
+    @apply mb-1 transition-transform duration-200;
+  }
+
+  .mobile-footer-item:hover .mobile-footer-icon {
+    @apply transform scale-110;
+  }
+
+  .mobile-footer-label {
+    @apply leading-tight text-center;
+    font-size: 0.625rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+  }
+
+  /* Dark mode styles for mobile footer */
+  :root[data-theme="dark"] .mobile-footer {
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.3);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme]) .mobile-footer {
+      box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.3);
+    }
+  }
+
+  /* Mobile Menu Styles */
+  .mobile-menu-overlay {
+    @apply fixed inset-0;
+    z-index: 9999;
+  }
+
+  .mobile-menu-backdrop {
+    @apply absolute inset-0 transition-opacity duration-300;
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+
+  .mobile-menu-panel {
+    @apply absolute top-0 right-0 h-full w-80 max-w-[85vw] flex flex-col shadow-xl;
+    background-color: var(--color-bg-primary);
+    border-left: 1px solid var(--color-border-primary);
+    overflow: hidden;
+  }
+
+  .mobile-menu-header {
+    @apply flex items-center justify-between p-4 border-b;
+    border-color: var(--color-border-primary);
+    background-color: var(--color-bg-secondary);
+  }
+
+  .mobile-menu-title {
+    @apply text-lg font-semibold;
+    color: var(--color-text-primary);
+  }
+
+  .mobile-menu-close-button {
+    @apply p-2 rounded-lg transition-colors duration-200;
+    color: var(--color-text-secondary);
+  }
+
+  .mobile-menu-close-button:hover {
+    background-color: var(--color-bg-tertiary);
+    color: var(--color-accent);
+  }
+
+  .mobile-menu-close-icon {
+    @apply block;
+  }
+
+  .mobile-menu-content {
+    @apply flex-1 p-4 space-y-6;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  /* Custom scrollbar for mobile menu */
+  .mobile-menu-content::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .mobile-menu-content::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .mobile-menu-content::-webkit-scrollbar-thumb {
+    background-color: var(--color-border-secondary);
+    border-radius: 3px;
+  }
+
+  .mobile-menu-content::-webkit-scrollbar-thumb:hover {
+    background-color: var(--color-accent);
+  }
+
+  /* Firefox scrollbar */
+  .mobile-menu-content {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-border-secondary) transparent;
+  }
+
+  .mobile-menu-section {
+    @apply space-y-3;
+  }
+
+  .mobile-menu-section-title {
+    @apply text-sm font-medium uppercase tracking-wide;
+    color: var(--color-text-tertiary);
+  }
+
+  .mobile-menu-nav {
+    @apply space-y-1;
+  }
+
+  .mobile-menu-nav-item {
+    @apply flex items-center gap-3 px-3 py-3 rounded-lg transition-all duration-200 text-base font-medium;
+    color: var(--color-text-primary);
+  }
+
+  .mobile-menu-nav-item:hover {
+    background-color: var(--color-bg-secondary);
+    color: var(--color-accent);
+    transform: translateX(4px);
+  }
+
+  .mobile-menu-nav-item-active {
+    background-color: color-mix(in srgb, var(--color-accent) 10%, transparent);
+    color: var(--color-accent);
+  }
+
+  .mobile-menu-nav-icon {
+    @apply flex-shrink-0 transition-transform duration-200;
+  }
+
+  .mobile-menu-nav-item:hover .mobile-menu-nav-icon {
+    @apply transform scale-110;
+  }
+
+  .mobile-menu-links {
+    @apply space-y-1;
+  }
+
+  .mobile-menu-link-item {
+    @apply flex items-center justify-between px-3 py-3 rounded-lg transition-all duration-200;
+    color: var(--color-text-primary);
+  }
+
+  .mobile-menu-link-item:hover {
+    background-color: var(--color-bg-secondary);
+    color: var(--color-accent);
+    transform: translateX(4px);
+  }
+
+  .mobile-menu-link-content {
+    @apply flex items-center gap-3;
+  }
+
+  .mobile-menu-badge {
+    @apply px-2 py-1 text-xs font-medium rounded-full;
+    background-color: color-mix(in srgb, var(--color-accent) 10%, transparent);
+    color: var(--color-accent);
+  }
+
+  .mobile-menu-settings {
+    @apply space-y-3;
+  }
+
+  .mobile-menu-setting-item {
+    @apply flex items-center justify-between px-3 py-3 rounded-lg;
+    background-color: var(--color-bg-secondary);
+  }
+
+  .mobile-menu-setting-label {
+    @apply text-sm font-medium;
+    color: var(--color-text-primary);
+  }
+
+  .mobile-menu-info {
+    @apply space-y-2;
+  }
+
+  .mobile-menu-info-item {
+    @apply text-sm px-3 py-2 rounded-lg;
+    background-color: var(--color-bg-secondary);
+    color: var(--color-text-secondary);
+  }
+
+  /* Dark mode adjustments for mobile menu */
+  :root[data-theme="dark"] .mobile-menu-panel {
+    box-shadow: -4px 0 20px rgba(0, 0, 0, 0.3);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme]) .mobile-menu-panel {
+      box-shadow: -4px 0 20px rgba(0, 0, 0, 0.3);
+    }
   }
 }
 

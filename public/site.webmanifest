@@ -6,46 +6,30 @@
   "start_url": "/",
   "display": "standalone",
   "orientation": "portrait-primary",
-  "theme_color": "#3b82f6",
+  "theme_color": "#3136ef",
   "background_color": "#ffffff",
   "scope": "/",
   "icons": [
     {
-      "src": "/android-chrome-192x192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "maskable any"
-    },
-    {
-      "src": "/android-chrome-512x512.png",
+      "src": "/icons/android-chrome-512x512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable any"
     },
     {
-      "src": "/apple-touch-icon.png",
+      "src": "/icons/apple-touch-icon.png",
       "sizes": "180x180",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/favicon-32x32.png",
+      "src": "/icons/favicon-32x32.png",
       "sizes": "32x32",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/favicon-16x16.png",
-      "sizes": "16x16",
       "type": "image/png",
       "purpose": "any"
     }
   ],
-  "categories": [
-    "education",
-    "entertainment",
-    "lifestyle"
-  ],
+  "categories": ["education", "entertainment", "lifestyle"],
   "shortcuts": [
     {
       "name": "イベント一覧",
@@ -54,7 +38,7 @@
       "url": "/events",
       "icons": [
         {
-          "src": "/favicon-32x32.png",
+          "src": "/icons/favicon-32x32.png",
           "sizes": "32x32",
           "type": "image/png"
         }
@@ -67,7 +51,7 @@
       "url": "/exhibits",
       "icons": [
         {
-          "src": "/favicon-32x32.png",
+          "src": "/icons/favicon-32x32.png",
           "sizes": "32x32",
           "type": "image/png"
         }
@@ -80,7 +64,7 @@
       "url": "/map",
       "icons": [
         {
-          "src": "/favicon-32x32.png",
+          "src": "/icons/favicon-32x32.png",
           "sizes": "32x32",
           "type": "image/png"
         }
@@ -93,7 +77,7 @@
       "url": "/bookmarks",
       "icons": [
         {
-          "src": "/favicon-32x32.png",
+          "src": "/icons/favicon-32x32.png",
           "sizes": "32x32",
           "type": "image/png"
         }

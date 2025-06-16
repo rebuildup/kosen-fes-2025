@@ -76,8 +76,8 @@ const Layout = () => {
       // Menu opening animation handled in Menu component
     } else {
       // Menu closing animation can be triggered here if needed
-      const menuOverlay = document.querySelector(".menu-overlay");
-      const mobileMenu = document.querySelector(".mobile-menu");
+      const menuOverlay = document.querySelector(".mobile-menu-backdrop");
+      const mobileMenu = document.querySelector(".mobile-menu-panel");
 
       if (menuOverlay && mobileMenu) {
         const tl = gsap.timeline({
@@ -116,14 +116,14 @@ const Layout = () => {
       className="min-h-screen transition-colors duration-300"
       style={{ backgroundColor: "var(--color-bg)", color: "var(--color-main)" }}
     >
-      {/* Header - always shown */}
-      <Header />
+      {/* Header - only shown on desktop */}
+      {!isMobile && <Header />}
 
       {/* Full width container */}
       <div className="w-full">
         {isMobile ? (
-          /* Mobile Layout - Full width main content */
-          <main className="pt-16 px-4 sm:px-6">
+          /* Mobile Layout - Full width main content with bottom padding for footer */
+          <main className="px-4 sm:px-6 pb-20">
             <div
               className="min-h-screen"
               style={{

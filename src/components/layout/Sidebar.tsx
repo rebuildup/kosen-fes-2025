@@ -220,7 +220,7 @@ const Sidebar = () => {
                   </strong>
                   <span className="lg:block xl:inline">
                     {" "}
-                    2025/06/15 - 2025/06/16
+                    2025/11/8 - 2025/11/9
                   </span>
                 </p>
                 <p
