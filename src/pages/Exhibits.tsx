@@ -7,6 +7,7 @@ import CardGrid from "../components/common/CardGrid";
 import CardListToggle from "../components/common/CardListToggle";
 import TagFilter from "../components/common/TagFilter";
 import SelectedTags from "../components/common/SelectedTags";
+import TabButtons from "../components/common/TabButtons";
 
 const Exhibits = () => {
   const { t } = useLanguage();
@@ -44,57 +45,60 @@ const Exhibits = () => {
     setFilteredItems(filtered);
   }, [typeFilter, selectedTags, filterItemsByTags]);
 
-  // Handle type filter change
-  const handleTypeFilterChange = (type: "all" | "exhibit" | "stall") => {
-    setTypeFilter(type);
-  };
+  // Tab options for type filter
+  const typeOptions = [
+    { value: "all", label: t("exhibits.filters.all") },
+    { value: "exhibit", label: t("exhibits.filters.exhibits") },
+    { value: "stall", label: t("exhibits.filters.stalls") },
+  ];
 
   return (
-    <div>
-      <div>
-        <h1>{t("exhibits.title")}</h1>
+    <div className="min-h-screen">
+      <section
+        className="section"
+        style={{ backgroundColor: "var(--color-bg-primary)" }}
+      >
+        <div className="max-w-7xl mx-auto">
+          <div className="mb-8">
+            <h1 className="section-title">{t("exhibits.title")}</h1>
 
-        <div>
-          <div>
-            <button onClick={() => handleTypeFilterChange("all")}>
-              {t("exhibits.filters.all")}
-            </button>
-            <button onClick={() => handleTypeFilterChange("exhibit")}>
-              {t("exhibits.filters.exhibits")}
-            </button>
-            <button onClick={() => handleTypeFilterChange("stall")}>
-              {t("exhibits.filters.stalls")}
-            </button>
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+              <TabButtons
+                options={typeOptions}
+                activeValue={typeFilter}
+                onChange={(value) => setTypeFilter(value as typeof typeFilter)}
+                className="rounded-lg overflow-hidden"
+              />
+
+              <CardListToggle viewMode={viewMode} setViewMode={setViewMode} />
+            </div>
           </div>
 
-          <CardListToggle viewMode={viewMode} setViewMode={setViewMode} />
-        </div>
-      </div>
+          <div className="space-y-6">
+            <div className="space-y-4">
+              <TagFilter onFilter={() => {}} compact={true} />
+              <SelectedTags />
+            </div>
 
-      <div>
-        <div>
-          <TagFilter onFilter={() => {}} />
+            <div>
+              <CardGrid
+                items={filteredItems}
+                variant={viewMode}
+                showTags={true}
+                showDescription={viewMode === "list"}
+                emptyMessage={
+                  typeFilter === "exhibit"
+                    ? t("exhibits.noExhibits")
+                    : typeFilter === "stall"
+                    ? t("exhibits.noStalls")
+                    : t("common.noItems")
+                }
+                filterType={typeFilter === "all" ? undefined : typeFilter}
+              />
+            </div>
+          </div>
         </div>
-
-        <div>
-          <SelectedTags />
-
-          <CardGrid
-            items={filteredItems}
-            variant={viewMode}
-            showTags={true}
-            showDescription={viewMode === "list"}
-            emptyMessage={
-              typeFilter === "exhibit"
-                ? t("exhibits.noExhibits")
-                : typeFilter === "stall"
-                ? t("exhibits.noStalls")
-                : t("common.noItems")
-            }
-            filterType={typeFilter === "all" ? undefined : typeFilter}
-          />
-        </div>
-      </div>
+      </section>
     </div>
   );
 };

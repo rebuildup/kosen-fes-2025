@@ -169,7 +169,7 @@ const Menu = ({ setMenuOpen, closeButtonRef }: MenuProps) => {
 
         <div ref={menuContentRef}>
           <div>
-            <SearchBar variant="default" onSearch={handleMenuItemClick} />
+            <SearchBar variant="default" />
           </div>
 
           <div>

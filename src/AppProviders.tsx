@@ -4,6 +4,8 @@ import { ThemeProvider } from "./context/ThemeContext";
 import { LanguageProvider } from "./context/LanguageContext";
 import { DataProvider } from "./context/DataContext";
 import { BookmarkProvider } from "./context/BookmarkContext";
+import { TagProvider } from "./context/TagContext";
+import { SearchProvider } from "./context/SearchContext";
 
 interface AppProvidersProps {
   children: ReactNode;
@@ -14,7 +16,11 @@ export const AppProviders = ({ children }: AppProvidersProps) => {
     <DataProvider>
       <ThemeProvider>
         <LanguageProvider>
-          <BookmarkProvider>{children}</BookmarkProvider>
+          <TagProvider>
+            <SearchProvider>
+              <BookmarkProvider>{children}</BookmarkProvider>
+            </SearchProvider>
+          </TagProvider>
         </LanguageProvider>
       </ThemeProvider>
     </DataProvider>

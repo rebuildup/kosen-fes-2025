@@ -11,15 +11,30 @@ const SelectedTags = () => {
   }
 
   return (
-    <div className="selected-tags">
-      <div className="selected-tags-header">
-        <span className="selected-tags-label">{t("tags.activeFilters")}:</span>
-        <button className="selected-tags-clear" onClick={clearTags}>
+    <div
+      className="p-4 rounded-lg border"
+      style={{
+        backgroundColor: "var(--color-bg-secondary)",
+        borderColor: "var(--color-border-primary)",
+      }}
+    >
+      <div className="flex items-center justify-between mb-3">
+        <span
+          className="text-sm font-medium"
+          style={{ color: "var(--color-text-primary)" }}
+        >
+          {t("tags.activeFilters")}:
+        </span>
+        <button
+          className="text-xs font-medium cursor-pointer transition-colors hover:underline"
+          style={{ color: "var(--color-accent)" }}
+          onClick={clearTags}
+        >
           {t("tags.clearAll")}
         </button>
       </div>
 
-      <div className="selected-tags-list">
+      <div className="flex flex-wrap gap-2">
         {selectedTags.map((tag) => (
           <Tag key={tag} tag={tag} onClick={toggleTag} size="medium" />
         ))}

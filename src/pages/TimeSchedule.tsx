@@ -99,64 +99,137 @@ const TimeSchedule = () => {
     return timeSlots.sort();
   };
 
-  // Handle day tab click
-  const handleDayChange = (day: "day1" | "day2") => {
-    setSelectedDay(day);
-  };
-
   return (
-    <div>
-      <div>
-        <h1>{t("schedule.title")}</h1>
+    <div className="min-h-screen">
+      <section
+        className="section"
+        style={{ backgroundColor: "var(--color-bg-primary)" }}
+      >
+        <div className="max-w-7xl mx-auto">
+          <h1 className="section-title">{t("schedule.title")}</h1>
 
-        <div>
-          <div>
-            <button onClick={() => setSelectedDay("day1")}>
-              {t("schedule.day1")}
-            </button>
-            <button onClick={() => setSelectedDay("day2")}>
-              {t("schedule.day2")}
-            </button>
+          <div className="space-y-8">
+            {/* Day selector */}
+            <div className="flex space-x-2">
+              <button
+                onClick={() => setSelectedDay("day1")}
+                className={`px-6 py-3 rounded-lg font-medium transition-all duration-200 ${
+                  selectedDay === "day1" ? "text-white" : ""
+                }`}
+                style={{
+                  backgroundColor:
+                    selectedDay === "day1"
+                      ? "var(--color-accent)"
+                      : "var(--color-bg-secondary)",
+                  color:
+                    selectedDay === "day1"
+                      ? "white"
+                      : "var(--color-text-primary)",
+                  borderColor:
+                    selectedDay === "day1"
+                      ? "var(--color-accent)"
+                      : "var(--color-border-primary)",
+                }}
+                onMouseEnter={(e) => {
+                  if (selectedDay !== "day1") {
+                    e.currentTarget.style.backgroundColor =
+                      "var(--color-bg-tertiary)";
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (selectedDay !== "day1") {
+                    e.currentTarget.style.backgroundColor =
+                      "var(--color-bg-secondary)";
+                  }
+                }}
+              >
+                {t("schedule.day1")}
+              </button>
+              <button
+                onClick={() => setSelectedDay("day2")}
+                className={`px-6 py-3 rounded-lg font-medium transition-all duration-200 ${
+                  selectedDay === "day2" ? "text-white" : ""
+                }`}
+                style={{
+                  backgroundColor:
+                    selectedDay === "day2"
+                      ? "var(--color-accent)"
+                      : "var(--color-bg-secondary)",
+                  color:
+                    selectedDay === "day2"
+                      ? "white"
+                      : "var(--color-text-primary)",
+                  borderColor:
+                    selectedDay === "day2"
+                      ? "var(--color-accent)"
+                      : "var(--color-border-primary)",
+                }}
+                onMouseEnter={(e) => {
+                  if (selectedDay !== "day2") {
+                    e.currentTarget.style.backgroundColor =
+                      "var(--color-bg-tertiary)";
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (selectedDay !== "day2") {
+                    e.currentTarget.style.backgroundColor =
+                      "var(--color-bg-secondary)";
+                  }
+                }}
+              >
+                {t("schedule.day2")}
+              </button>
+            </div>
+
+            {/* Filters */}
+            <div className="space-y-4">
+              <TagFilter onFilter={() => {}} compact={true} />
+              <SelectedTags />
+            </div>
+
+            {/* Timeline content */}
+            <div>
+              {selectedDay === "day1" && (
+                <TimelineDay
+                  date="2025-06-15"
+                  items={filteredItems.day1}
+                  timeSlots={getOrderedTimeSlots(filteredItems.day1)}
+                  groupedItems={groupItemsByTimeSlot(filteredItems.day1)}
+                  dayName={t("schedule.day1")}
+                />
+              )}
+
+              {selectedDay === "day2" && (
+                <TimelineDay
+                  date="2025-06-16"
+                  items={filteredItems.day2}
+                  timeSlots={getOrderedTimeSlots(filteredItems.day2)}
+                  groupedItems={groupItemsByTimeSlot(filteredItems.day2)}
+                  dayName={t("schedule.day2")}
+                />
+              )}
+
+              {selectedDay === "day1" && filteredItems.day1.length === 0 && (
+                <div
+                  className="text-center py-12 text-lg"
+                  style={{ color: "var(--color-text-secondary)" }}
+                >
+                  {t("schedule.noEvents")}
+                </div>
+              )}
+
+              {selectedDay === "day2" && filteredItems.day2.length === 0 && (
+                <div
+                  className="text-center py-12 text-lg"
+                  style={{ color: "var(--color-text-secondary)" }}
+                >
+                  {t("schedule.noEvents")}
+                </div>
+              )}
+            </div>
           </div>
         </div>
-
-        <div>
-          <div>
-            <TagFilter onFilter={() => {}} compact={true} />
-            <SelectedTags />
-          </div>
-
-          <div>
-            {selectedDay === "day1" && (
-              <TimelineDay
-                date="2025-06-15"
-                items={filteredItems.day1}
-                timeSlots={getOrderedTimeSlots(filteredItems.day1)}
-                groupedItems={groupItemsByTimeSlot(filteredItems.day1)}
-                dayName={t("schedule.day1")}
-              />
-            )}
-
-            {selectedDay === "day2" && (
-              <TimelineDay
-                date="2025-06-16"
-                items={filteredItems.day2}
-                timeSlots={getOrderedTimeSlots(filteredItems.day2)}
-                groupedItems={groupItemsByTimeSlot(filteredItems.day2)}
-                dayName={t("schedule.day2")}
-              />
-            )}
-
-            {selectedDay === "day1" && filteredItems.day1.length === 0 && (
-              <div>{t("schedule.noEvents")}</div>
-            )}
-
-            {selectedDay === "day2" && filteredItems.day2.length === 0 && (
-              <div>{t("schedule.noEvents")}</div>
-            )}
-          </div>
-        </div>
-      </div>
+      </section>
     </div>
   );
 };

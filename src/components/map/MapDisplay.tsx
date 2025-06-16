@@ -77,7 +77,7 @@ const MapDisplay = ({
   }, [hoveredLocation, selectedLocation, locations]);
 
   return (
-    <div ref={mapContainerRef}>
+    <div ref={mapContainerRef} className="relative">
       <div>
         {/* Zoom Controls */}
         <ZoomControls
@@ -93,6 +93,7 @@ const MapDisplay = ({
         <svg
           viewBox={CAMPUS_MAP_BOUNDS.viewBox}
           ref={svgRef}
+          className="w-full h-auto"
         >
           <defs>
             <style>

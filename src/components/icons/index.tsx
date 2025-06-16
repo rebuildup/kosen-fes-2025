@@ -4,6 +4,7 @@ export interface IconProps {
   size?: number;
   color?: string;
   fill?: string;
+  className?: string;
 }
 
 // Base Icon component with common props
@@ -11,6 +12,7 @@ export const Icon: React.FC<React.SVGProps<SVGSVGElement> & IconProps> = ({
   size = 24,
   color = "currentColor",
   fill = "none",
+  className,
   ...props
 }) => {
   return (
@@ -24,6 +26,7 @@ export const Icon: React.FC<React.SVGProps<SVGSVGElement> & IconProps> = ({
       strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
+      className={className}
       {...props}
     />
   );

@@ -6,10 +6,8 @@ interface LogoProps {
   withText?: boolean;
 }
 
-const Logo = ({ size = "medium", withText = true }: LogoProps) => {
+const Logo = ({ withText = true }: LogoProps) => {
   const { t } = useLanguage();
-
-  const sizeClass = `logo-${size}`;
 
   return (
     <div>

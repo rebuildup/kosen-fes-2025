@@ -19,21 +19,45 @@ const ZoomControls = ({
 }: ZoomControlsProps) => {
   const { t } = useLanguage();
 
+  const buttonBaseClass = `
+    flex items-center justify-center w-10 h-10 rounded-lg 
+    transition-all duration-200 shadow-md hover:shadow-lg 
+    disabled:opacity-50 disabled:cursor-not-allowed
+    hover:scale-105 active:scale-95
+  `;
+
+  const buttonStyle = {
+    backgroundColor: "var(--color-bg-secondary)",
+    color: "var(--color-text-primary)",
+    border: "1px solid var(--color-border-primary)",
+  };
+
+  const disabledButtonStyle = {
+    backgroundColor: "var(--color-bg-tertiary)",
+    color: "var(--color-text-tertiary)",
+    border: "1px solid var(--color-border-secondary)",
+  };
+
   return (
-    <div>
+    <div className="absolute top-4 right-4 z-10 flex flex-col gap-2">
+      {/* Zoom In Button */}
       <button
         onClick={onZoomIn}
         disabled={scale >= maxScale}
+        className={buttonBaseClass}
+        style={scale >= maxScale ? disabledButtonStyle : buttonStyle}
         aria-label={t("map.zoomIn")}
         title={t("map.zoomIn")}
       >
         <svg
-          width="24"
-          height="24"
+          width="20"
+          height="20"
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
           strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
         >
           <circle cx="11" cy="11" r="8" />
           <path d="m21 21-4.35-4.35" />
@@ -42,19 +66,24 @@ const ZoomControls = ({
         </svg>
       </button>
 
+      {/* Zoom Out Button */}
       <button
         onClick={onZoomOut}
         disabled={scale <= minScale}
+        className={buttonBaseClass}
+        style={scale <= minScale ? disabledButtonStyle : buttonStyle}
         aria-label={t("map.zoomOut")}
         title={t("map.zoomOut")}
       >
         <svg
-          width="24"
-          height="24"
+          width="20"
+          height="20"
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
           strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
         >
           <circle cx="11" cy="11" r="8" />
           <path d="m21 21-4.35-4.35" />
@@ -62,18 +91,23 @@ const ZoomControls = ({
         </svg>
       </button>
 
+      {/* Reset Zoom Button */}
       <button
         onClick={onReset}
+        className={buttonBaseClass}
+        style={buttonStyle}
         aria-label={t("map.resetZoom")}
         title={t("map.resetZoom")}
       >
         <svg
-          width="24"
-          height="24"
+          width="20"
+          height="20"
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
           strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
         >
           <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />
           <path d="M21 3v5h-5" />
@@ -82,7 +116,17 @@ const ZoomControls = ({
         </svg>
       </button>
 
-      <div>{Math.round(scale * 100)}%</div>
+      {/* Zoom Level Indicator */}
+      <div
+        className="flex items-center justify-center px-2 py-1 rounded-lg text-xs font-medium shadow-md"
+        style={{
+          backgroundColor: "var(--color-bg-secondary)",
+          color: "var(--color-text-secondary)",
+          border: "1px solid var(--color-border-primary)",
+        }}
+      >
+        {Math.round(scale * 100)}%
+      </div>
     </div>
   );
 };

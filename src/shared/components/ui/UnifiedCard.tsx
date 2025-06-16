@@ -41,9 +41,7 @@ export const UnifiedCard = React.memo(
     const { t, language } = useLanguage();
     const { isBookmarked, toggleBookmark } = useBookmark();
 
-    const [isImageLoaded, setIsImageLoaded] = useState(false);
     const [hasImageError, setHasImageError] = useState(false);
-    const [isHovered, setIsHovered] = useState(false);
 
     const cardRef = useRef<HTMLDivElement>(null);
     const imageRef = useRef<HTMLImageElement>(null);
@@ -155,7 +153,6 @@ export const UnifiedCard = React.memo(
     // Handle mouse events
     const handleMouseEnter = useCallback(() => {
       if (!showAnimation) return;
-      setIsHovered(true);
       const timeline = (cardRef.current as any)?._hoverTimeline;
       if (timeline) {
         timeline.play();
@@ -164,7 +161,6 @@ export const UnifiedCard = React.memo(
 
     const handleMouseLeave = useCallback(() => {
       if (!showAnimation) return;
-      setIsHovered(false);
       const timeline = (cardRef.current as any)?._hoverTimeline;
       if (timeline) {
         timeline.reverse();
@@ -183,12 +179,11 @@ export const UnifiedCard = React.memo(
 
     // Handle image loading
     const handleImageLoad = useCallback(() => {
-      setIsImageLoaded(true);
+      // Image loaded successfully
     }, []);
 
     const handleImageError = useCallback(() => {
       setHasImageError(true);
-      setIsImageLoaded(true);
     }, []);
 
     // Handle card click
@@ -197,11 +192,6 @@ export const UnifiedCard = React.memo(
         onClick();
       }
     }, [onClick]);
-
-    // Generate class names
-    const cardClasses = useMemo(() => {
-      return "";
-    }, [variant, isHovered, isImageLoaded]);
 
     const cardContent = (
       <div

@@ -46,26 +46,40 @@ export const ThemeProvider = ({ children }: ThemeProviderProps) => {
   // テーマ切り替え機能
   const toggleTheme = () => {
     const newTheme = theme === "light" ? "dark" : "light";
+    console.log(`Theme changing from ${theme} to ${newTheme}`);
     setTheme(newTheme);
     localStorage.setItem("theme", newTheme);
   };
 
   const isDark = theme === "dark";
 
-  // Tailwind CSS v4対応: データ属性を使用したダークモード管理
+  // テーマ変更時にHTMLにdata-theme属性を適用
   useEffect(() => {
     const root = document.documentElement;
 
+    console.log(`Applying theme: ${theme}`);
+
+    // data-theme属性を設定
+    root.setAttribute("data-theme", theme);
+
+    // Tailwind CSS v4のdarkクラスも設定
     if (theme === "dark") {
-      root.setAttribute("data-theme", "dark");
       root.classList.add("dark");
     } else {
-      root.setAttribute("data-theme", "light");
       root.classList.remove("dark");
     }
 
     // color-schemeプロパティを設定（スクロールバーなどのブラウザコンポーネント用）
     root.style.colorScheme = theme;
+
+    // デバッグ用：現在のCSS変数の値を確認
+    const computedStyles = getComputedStyle(root);
+    console.log("Current CSS variables:", {
+      bgColor: computedStyles.getPropertyValue("--color-bg"),
+      mainColor: computedStyles.getPropertyValue("--color-main"),
+      textPrimary: computedStyles.getPropertyValue("--color-text-primary"),
+      bgPrimary: computedStyles.getPropertyValue("--color-bg-primary"),
+    });
   }, [theme]);
 
   // システム設定の変更を監視

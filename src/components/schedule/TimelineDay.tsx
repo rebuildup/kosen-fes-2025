@@ -36,7 +36,10 @@ const TimelineDay = ({
 
   if (items.length === 0) {
     return (
-      <div className="text-center py-12 text-gray-500 dark:text-gray-400 text-lg">
+      <div
+        className="text-center py-12 text-lg"
+        style={{ color: "var(--color-text-secondary)" }}
+      >
         {t("schedule.noEvents")}
       </div>
     );
@@ -44,11 +47,23 @@ const TimelineDay = ({
 
   return (
     <div className="space-y-6">
-      <div className="bg-white dark:bg-gray-900 rounded-lg p-6 shadow-sm border border-gray-200 dark:border-gray-700">
-        <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">
+      <div
+        className="rounded-lg p-6 shadow-sm border"
+        style={{
+          backgroundColor: "var(--color-bg-primary)",
+          borderColor: "var(--color-border-primary)",
+        }}
+      >
+        <h2
+          className="text-xl font-semibold mb-2"
+          style={{ color: "var(--color-text-primary)" }}
+        >
           {formatDate(date)}
         </h2>
-        <div className="text-sm text-blue-600 dark:text-blue-400 font-medium">
+        <div
+          className="text-sm font-medium"
+          style={{ color: "var(--color-accent)" }}
+        >
           {dayName}
         </div>
       </div>
@@ -58,8 +73,14 @@ const TimelineDay = ({
           <div key={timeSlot} className="relative">
             <div className="flex items-start gap-6">
               <div className="flex items-center space-x-3 min-w-0 flex-shrink-0">
-                <div className="w-3 h-3 bg-blue-600 dark:bg-blue-400 rounded-full"></div>
-                <div className="text-lg font-semibold text-gray-900 dark:text-gray-100 min-w-max">
+                <div
+                  className="w-3 h-3 rounded-full"
+                  style={{ backgroundColor: "var(--color-accent)" }}
+                ></div>
+                <div
+                  className="text-lg font-semibold min-w-max"
+                  style={{ color: "var(--color-text-primary)" }}
+                >
                   {timeSlot}
                 </div>
               </div>
@@ -70,10 +91,13 @@ const TimelineDay = ({
                 ))}
               </div>
             </div>
-            
+
             {/* Connection line to next time slot */}
             {timeSlot !== timeSlots[timeSlots.length - 1] && (
-              <div className="absolute left-1.5 top-8 bottom-0 w-0.5 bg-gray-200 dark:bg-gray-700"></div>
+              <div
+                className="absolute left-1.5 top-8 bottom-0 w-0.5"
+                style={{ backgroundColor: "var(--color-border-secondary)" }}
+              ></div>
             )}
           </div>
         ))}

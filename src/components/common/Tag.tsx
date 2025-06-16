@@ -80,16 +80,34 @@ const Tag = ({
   const sizeClasses = {
     small: "text-xs px-2 py-0.5",
     medium: "text-sm px-2.5 py-1",
-    large: "text-base px-3 py-1.5"
+    large: "text-base px-3 py-1.5",
   };
 
-  const baseClasses = "inline-flex items-center gap-1 rounded-full font-medium transition-all duration-200 border cursor-pointer";
-  const inactiveClasses = "bg-gray-100 text-gray-700 border-gray-200 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-600";
-  const activeClasses = "bg-[var(--accent)] text-white border-[var(--accent)] hover:bg-[var(--accent)]/90";
+  const baseClasses =
+    "inline-flex items-center gap-1 rounded-full font-medium transition-all duration-200 border cursor-pointer";
 
   return (
     <button
-      className={`${baseClasses} ${sizeClasses[size]} ${isActive ? activeClasses : inactiveClasses}`}
+      className={`${baseClasses} ${sizeClasses[size]}`}
+      style={{
+        backgroundColor: isActive
+          ? "var(--color-accent)"
+          : "var(--color-bg-secondary)",
+        color: isActive ? "white" : "var(--color-text-primary)",
+        borderColor: isActive
+          ? "var(--color-accent)"
+          : "var(--color-border-primary)",
+      }}
+      onMouseEnter={(e) => {
+        if (!isActive) {
+          e.currentTarget.style.backgroundColor = "var(--color-bg-tertiary)";
+        }
+      }}
+      onMouseLeave={(e) => {
+        if (!isActive) {
+          e.currentTarget.style.backgroundColor = "var(--color-bg-secondary)";
+        }
+      }}
       onClick={handleClick}
       type="button"
       role={role}
@@ -98,7 +116,11 @@ const Tag = ({
       ref={tagRef}
     >
       <span>#{tag}</span>
-      {count !== undefined && <span className="ml-1 px-1.5 py-0.5 bg-black/10 dark:bg-white/10 rounded text-xs">{count}</span>}
+      {count !== undefined && (
+        <span className="ml-1 px-1.5 py-0.5 rounded text-xs opacity-70">
+          {count}
+        </span>
+      )}
     </button>
   );
 };

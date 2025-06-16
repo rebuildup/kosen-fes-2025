@@ -37,8 +37,8 @@ const Layout = () => {
   useEffect(() => {
     if (layoutRef.current) {
       gsap.to(layoutRef.current, {
-        backgroundColor: "var(--bg-color)",
-        color: "var(--main)",
+        backgroundColor: "var(--color-bg)",
+        color: "var(--color-main)",
         duration: DURATION.NORMAL,
         ease: EASE.SMOOTH,
       });
@@ -111,22 +111,57 @@ const Layout = () => {
   }, [isMobile, menuOpen]);
 
   return (
-    <div ref={layoutRef} className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div
+      ref={layoutRef}
+      className="min-h-screen transition-colors duration-300"
+      style={{ backgroundColor: "var(--color-bg)", color: "var(--color-main)" }}
+    >
       {/* Header - always shown */}
       <Header />
 
-      <div className="flex">
-        {/* Desktop Sidebar */}
-        {!isMobile && <Sidebar />}
+      {/* Full width container */}
+      <div className="w-full">
+        {isMobile ? (
+          /* Mobile Layout - Full width main content */
+          <main className="pt-16 px-4 sm:px-6">
+            <div
+              className="min-h-screen"
+              style={{
+                backgroundColor: "var(--color-bg)",
+                color: "var(--color-main)",
+              }}
+            >
+              <PageTransition>
+                <Outlet />
+              </PageTransition>
+            </div>
+          </main>
+        ) : (
+          /* Desktop Layout - Aligned with header content width */
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex gap-6">
+              {/* Desktop Sidebar - Fixed width */}
+              <div className="flex-shrink-0">
+                <Sidebar />
+              </div>
 
-        {/* Main Content */}
-        <main className={`flex-1 pt-16 ${!isMobile ? "ml-0" : ""}`}>
-          <div className="min-h-screen">
-            <PageTransition>
-              <Outlet />
-            </PageTransition>
+              {/* Main Content - Controlled width within header bounds */}
+              <main className="flex-1 min-w-0 pt-16">
+                <div
+                  className="min-h-screen max-w-full main-content"
+                  style={{
+                    backgroundColor: "var(--color-bg)",
+                    color: "var(--color-main)",
+                  }}
+                >
+                  <PageTransition>
+                    <Outlet />
+                  </PageTransition>
+                </div>
+              </main>
+            </div>
           </div>
-        </main>
+        )}
       </div>
 
       {/* Mobile Footer - only shown on mobile */}

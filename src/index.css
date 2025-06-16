@@ -1,141 +1,392 @@
 @import "tailwindcss";
 
-@theme {
-  --main: #252525;
-  --bg-color: #fafafa;
-  --accent: #3136ef;
-  --second: #f1f000;
-  --third: #e42022;
-  --fourth: #38c539;
-  --fifth: #ef3be5;
-  --rich-black: #000000;
-  --gray-color: #334155;
-  --white: #ffffff;
+/* Tailwind CSS v4対応のテーマ実装 */
+@layer base {
+  :root {
+    /* アクセントカラー（両モード共通） */
+    --color-accent: #3136ef;
+    --color-second: #f1f000;
+    --color-third: #e42022;
+    --color-fourth: #38c539;
+    --color-fifth: #ef3be5;
+  }
 
-  /* Extended color palette for better design */
-  --gray-50: #f8fafc;
-  --gray-100: #f1f5f9;
-  --gray-200: #e2e8f0;
-  --gray-300: #cbd5e1;
-  --gray-400: #94a3b8;
-  --gray-500: #64748b;
-  --gray-600: #475569;
-  --gray-700: #334155;
-  --gray-800: #1e293b;
-  --gray-900: #0f172a;
+  /* ライトモード（デフォルト） */
+  :root {
+    --color-bg: #fafafa;
+    --color-main: #252525;
+    --color-bg-primary: #ffffff;
+    --color-bg-secondary: #f8fafc;
+    --color-bg-tertiary: #f1f5f9;
+    --color-text-primary: #0f172a;
+    --color-text-secondary: #475569;
+    --color-text-tertiary: #64748b;
+    --color-border-primary: #e2e8f0;
+    --color-border-secondary: #cbd5e1;
+  }
 
-  /* Custom color utilities */
-  --color-main: var(--main);
-  --color-bg: var(--bg-color);
-  --color-accent: var(--accent);
-  --color-second: var(--second);
-  --color-third: var(--third);
-  --color-fourth: var(--fourth);
-  --color-fifth: var(--fifth);
-  --color-rich-black: var(--rich-black);
-  --color-gray: var(--gray-color);
-  --color-white: var(--white);
+  /* ダークモード */
+  :root[data-theme="dark"] {
+    --color-bg: #1a202c;
+    --color-main: #f7fafc;
+    --color-bg-primary: #1a202c;
+    --color-bg-secondary: #2d3748;
+    --color-bg-tertiary: #4a5568;
+    --color-text-primary: #f7fafc;
+    --color-text-secondary: #e2e8f0;
+    --color-text-tertiary: #a0aec0;
+    --color-border-primary: #4a5568;
+    --color-border-secondary: #2d3748;
+  }
+
+  /* システム設定に基づくダークモード */
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme]) {
+      --color-bg: #1a202c;
+      --color-main: #f7fafc;
+      --color-bg-primary: #1a202c;
+      --color-bg-secondary: #2d3748;
+      --color-bg-tertiary: #4a5568;
+      --color-text-primary: #f7fafc;
+      --color-text-secondary: #e2e8f0;
+      --color-text-tertiary: #a0aec0;
+      --color-border-primary: #4a5568;
+      --color-border-secondary: #2d3748;
+    }
+  }
+
+  * {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
+      "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans",
+      "Helvetica Neue", sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    line-height: 1.6;
+    background-color: var(--color-bg);
+    color: var(--color-main);
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
 }
 
-/* ベーススタイル */
-* {
-  scroll-behavior: smooth;
-}
-
-body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
-    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  line-height: 1.6;
-  background-color: rgb(var(--bg-color));
-  color: rgb(var(--main));
-}
-
-/* カスタムコンポーネントクラス */
+/* カスタムコンポーネントクラス - CSS変数を直接使用 */
 @layer components {
   .card {
-    @apply bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden;
+    @apply border rounded-lg shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden relative;
+    background-color: var(--color-bg-primary);
+    color: var(--color-text-primary);
+    border-color: var(--color-border-primary);
   }
-  
+
+  .card-image-container {
+    @apply relative overflow-hidden;
+  }
+
   .card-image {
-    @apply aspect-video w-full object-cover;
+    @apply aspect-video w-full object-cover transition-transform duration-300;
   }
-  
+
+  .card:hover .card-image {
+    @apply scale-105;
+  }
+
+  .card-gradient-overlay {
+    @apply absolute inset-0 opacity-0 transition-opacity duration-300;
+    background: linear-gradient(
+      to top,
+      rgba(0, 0, 0, 0.8) 0%,
+      rgba(0, 0, 0, 0.4) 50%,
+      rgba(0, 0, 0, 0.1) 80%,
+      transparent 100%
+    );
+  }
+
+  .card:hover .card-gradient-overlay {
+    @apply opacity-100;
+  }
+
+  .card-text-overlay {
+    @apply absolute bottom-0 left-0 right-0 p-4 text-white opacity-0 transition-all duration-300;
+    transform: translateY(10px);
+  }
+
+  .card:hover .card-text-overlay {
+    @apply opacity-100;
+    transform: translateY(0);
+  }
+
   .card-content {
     @apply p-4;
   }
-  
+
   .card-title {
-    @apply text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2 line-clamp-2;
+    @apply text-lg font-semibold mb-2 line-clamp-2;
+    color: var(--color-text-primary);
   }
-  
+
   .card-description {
-    @apply text-sm text-gray-600 dark:text-gray-300 mb-3 line-clamp-3;
+    @apply text-sm mb-3 line-clamp-3;
+    color: var(--color-text-secondary);
   }
-  
+
   .card-meta {
-    @apply flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 mb-2;
+    @apply flex items-center gap-2 text-sm mb-2;
+    color: var(--color-text-tertiary);
   }
-  
+
   .card-meta-icon {
     @apply w-4 h-4 flex-shrink-0;
   }
-  
+
+  .card-type-badge {
+    @apply absolute top-3 left-3 px-2 py-1 rounded-full text-xs font-medium z-10 transition-all duration-200;
+    background-color: var(--color-accent);
+    color: white;
+  }
+
+  .card-bookmark-button {
+    @apply absolute top-3 right-3 w-8 h-8 rounded-full flex items-center justify-center text-lg transition-all duration-200 z-10;
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+  }
+
+  .card-bookmark-button:hover {
+    background-color: var(--color-accent);
+    transform: scale(1.1);
+  }
+
+  .card-bookmark-button.bookmarked {
+    background-color: var(--color-accent);
+    color: white;
+  }
+
   .btn {
     @apply inline-flex items-center justify-center rounded-lg px-4 py-2 text-sm font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2;
   }
-  
+
   .btn-primary {
-    @apply bg-[var(--accent)] text-white hover:bg-[var(--accent)]/90 focus:ring-[var(--accent)]/50 shadow-sm hover:shadow-md;
+    background-color: var(--color-accent);
+    color: white;
+    @apply hover:opacity-90 focus:ring-2 shadow-sm hover:shadow-md;
   }
-  
+
   .btn-secondary {
-    @apply bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100 hover:bg-gray-200 dark:hover:bg-gray-600 focus:ring-gray-500;
+    @apply border hover:opacity-90 focus:ring-2;
+    background-color: var(--color-bg-secondary);
+    color: var(--color-text-primary);
+    border-color: var(--color-border-primary);
   }
-  
+
   .tag {
     @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium transition-colors;
   }
-  
+
   .tag-default {
-    @apply bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600;
+    @apply hover:opacity-80;
+    background-color: var(--color-bg-secondary);
+    color: var(--color-text-primary);
   }
-  
+
   .tag-accent {
-    @apply bg-[var(--accent)]/10 text-[var(--accent)] hover:bg-[var(--accent)]/20;
+    background-color: color-mix(in srgb, var(--color-accent) 10%, transparent);
+    color: var(--color-accent);
+    @apply hover:opacity-80;
   }
-  
+
   .section {
     @apply py-12 px-4 sm:px-6 lg:px-8;
   }
-  
+
   .section-title {
-    @apply text-2xl md:text-3xl font-bold text-gray-900 dark:text-gray-100 mb-6;
+    @apply text-2xl md:text-3xl font-bold mb-6;
+    color: var(--color-text-primary);
   }
-  
+
   .section-subtitle {
-    @apply text-lg text-gray-600 dark:text-gray-300 mb-8;
+    @apply text-lg mb-8;
+    color: var(--color-text-secondary);
+  }
+
+  /* レイアウト用スタイル */
+  .main-content-container {
+    @apply max-w-5xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  .balanced-layout {
+    @apply flex gap-6 items-start;
+  }
+
+  .content-area {
+    @apply flex-1 min-w-0;
+    max-width: calc(100% - 16rem); /* サイドバー幅を考慮 */
+  }
+
+  /* メインコンテンツエリアのオーバーフロー制御 */
+  .main-content {
+    @apply overflow-hidden;
+  }
+
+  .main-content > * {
+    @apply max-w-full;
+  }
+
+  /* スケジュールカード専用スタイル */
+  .schedule-card {
+    @apply relative rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-200 border h-32;
+    background-color: var(--color-bg-primary);
+    border-color: var(--color-border-primary);
+  }
+
+  .schedule-card-image {
+    @apply w-full h-full object-cover;
+  }
+
+  .schedule-card-overlay {
+    @apply absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent text-white flex items-end p-3;
+  }
+
+  .schedule-card-content {
+    @apply flex-1;
+  }
+
+  .schedule-card-time {
+    @apply text-xs font-medium opacity-90 mb-1;
+  }
+
+  .schedule-card-title {
+    @apply text-sm font-semibold line-clamp-2;
+  }
+
+  /* サイドバー専用スタイル */
+  .sidebar {
+    @apply border-r;
+    background-color: var(--color-bg-primary);
+    border-color: var(--color-border-primary);
+    color: var(--color-text-primary);
+  }
+
+  .sidebar-heading {
+    color: var(--color-text-primary);
+  }
+
+  .sidebar-text {
+    color: var(--color-text-secondary);
+  }
+
+  .sidebar-link {
+    @apply transition-colors;
+    color: var(--color-text-secondary);
+  }
+
+  .sidebar-link:hover {
+    background-color: var(--color-bg-secondary);
+    color: var(--color-accent);
+  }
+
+  .sidebar-button {
+    @apply transition-colors;
+    background-color: var(--color-bg-secondary);
+    color: var(--color-text-primary);
+  }
+
+  .sidebar-button:hover {
+    background-color: var(--color-bg-tertiary);
+  }
+
+  /* ヘッダー専用スタイル */
+  .header {
+    @apply backdrop-blur-md border-b;
+    background-color: color-mix(
+      in srgb,
+      var(--color-bg-primary) 80%,
+      transparent
+    );
+    border-color: var(--color-border-primary);
+  }
+
+  .nav-link {
+    @apply px-3 py-2 text-sm font-medium transition-all duration-200 relative;
+    color: var(--color-text-secondary);
+  }
+
+  .nav-link::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 0;
+    height: 2px;
+    background-color: var(--color-accent);
+    transition: all 0.2s ease;
+    transform: translateX(-50%);
+  }
+
+  .nav-link:hover {
+    color: var(--color-accent);
+  }
+
+  .nav-link:hover::after {
+    width: 80%;
+  }
+
+  .nav-link-active {
+    color: var(--color-accent);
+  }
+
+  .nav-link-active::after {
+    width: 80%;
+  }
+
+  /* マップページ専用スタイル */
+  .map-container {
+    @apply relative rounded-lg overflow-hidden border shadow-lg;
+    background-color: var(--color-bg-primary);
+    border-color: var(--color-border-primary);
+    height: 500px;
+    max-width: 100%;
+    position: relative;
+    z-index: 1;
+  }
+
+  .map-container > * {
+    position: relative;
+    z-index: 2;
+  }
+
+  .map-controls {
+    @apply absolute top-4 right-4 flex gap-2;
+    z-index: 10;
+  }
+
+  .map-legend {
+    @apply absolute bottom-4 left-4 bg-white/90 backdrop-blur-sm p-3 rounded-lg shadow-md;
+    background-color: color-mix(
+      in srgb,
+      var(--color-bg-primary) 90%,
+      transparent
+    );
+    z-index: 10;
   }
 }
 
-/* ヘッダー用のスクロール効果 */
 .header-blur {
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 
-/* ダークモード設定 (メディアクエリベース) */
-@media (prefers-color-scheme: dark) {
-  @theme {
-    --main: #fafafa;
-    --bg-color: #252525;
+/* Marquee animation for scrollable text */
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-100%);
   }
 }
 
-/* ダークモード設定 (クラスベース - 手動切り替え用) */
-:root[data-theme="dark"] {
-  --main: #fafafa;
-  --bg-color: #252525;
+.animate-marquee {
+  animation: marquee 8s linear infinite;
 }

@@ -1,4 +1,5 @@
-import { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { useSearch } from "../../context/SearchContext";
 import { useLanguage } from "../../context/LanguageContext";
 import { gsap } from "gsap";
@@ -7,28 +8,31 @@ import { SearchIcon } from "../icons/SearchIcon";
 
 interface SearchBarProps {
   variant?: "default" | "large" | "inline";
-  onSearch?: () => void;
+  placeholder?: string;
   autoFocus?: boolean;
   showSuggestions?: boolean;
+  className?: string;
 }
 
 const SearchBar = ({
   variant = "default",
-  onSearch,
+  placeholder,
   autoFocus = false,
   showSuggestions = false,
+  className = "",
 }: SearchBarProps) => {
+  const { t } = useLanguage();
   const { searchQuery, setSearchQuery, performSearch, recentSearches } =
     useSearch();
-  const { t } = useLanguage();
+  const navigate = useNavigate();
 
-  const [inputValue, setInputValue] = useState(searchQuery);
-  const [isFocused, setIsFocused] = useState(false);
-  const [showSuggestionsList, setShowSuggestionsList] = useState(false);
-
+  const [localQuery, setLocalQuery] = useState(searchQuery);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [highlightedIndex, setHighlightedIndex] = useState(-1);
   const inputRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLFormElement>(null);
   const suggestionsRef = useRef<HTMLDivElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Auto focus input if needed
   useEffect(() => {
@@ -39,14 +43,14 @@ const SearchBar = ({
 
   // Update input value when searchQuery changes
   useEffect(() => {
-    setInputValue(searchQuery);
+    setLocalQuery(searchQuery);
   }, [searchQuery]);
 
   // Animate container on focus/blur
   useEffect(() => {
     if (!containerRef.current) return;
 
-    if (isFocused) {
+    if (showDropdown) {
       // Focus animation
       gsap.to(containerRef.current, {
         boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
@@ -63,13 +67,13 @@ const SearchBar = ({
         ease: EASE.SMOOTH,
       });
     }
-  }, [isFocused]);
+  }, [showDropdown]);
 
   // Animate suggestions appearance
   useEffect(() => {
     if (!suggestionsRef.current) return;
 
-    if (showSuggestionsList) {
+    if (showDropdown) {
       // Show suggestions animation
       gsap.fromTo(
         suggestionsRef.current,
@@ -93,182 +97,203 @@ const SearchBar = ({
         ease: EASE.SMOOTH,
       });
     }
-  }, [showSuggestionsList]);
+  }, [showDropdown]);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setLocalQuery(value);
+    setSearchQuery(value);
+    setHighlightedIndex(-1);
+
+    if (showSuggestions && value.trim()) {
+      setShowDropdown(true);
+    } else {
+      setShowDropdown(false);
+    }
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (inputValue.trim()) {
-      // Search button animation
-      const searchButton = (e.currentTarget as HTMLFormElement).querySelector(
-        ".search-button"
-      );
-      if (searchButton) {
-        gsap.fromTo(
-          searchButton,
-          { scale: 0.9 },
-          {
-            scale: 1,
-            duration: DURATION.FAST,
-            ease: "back.out(3)",
-          }
+    if (localQuery.trim()) {
+      performSearch(localQuery.trim());
+      navigate(`/search?q=${encodeURIComponent(localQuery.trim())}`);
+      setShowDropdown(false);
+    }
+  };
+
+  const handleSuggestionClick = (suggestion: string) => {
+    setLocalQuery(suggestion);
+    setSearchQuery(suggestion);
+    performSearch(suggestion);
+    navigate(`/search?q=${encodeURIComponent(suggestion)}`);
+    setShowDropdown(false);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (!showDropdown) return;
+
+    const suggestions = recentSearches;
+
+    switch (e.key) {
+      case "ArrowDown":
+        e.preventDefault();
+        setHighlightedIndex((prev) =>
+          prev < suggestions.length - 1 ? prev + 1 : prev
         );
-      }
-
-      performSearch(inputValue);
-      if (onSearch) onSearch();
-      setShowSuggestionsList(false);
-    }
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setInputValue(e.target.value);
-
-    // Show suggestions if we have recent searches and showSuggestions is enabled
-    if (showSuggestions && recentSearches.length > 0) {
-      setShowSuggestionsList(true);
-    }
-  };
-
-  const handleClear = () => {
-    // Clear button animation
-    const clearButton = document.querySelector(".search-clear-button");
-    if (clearButton) {
-      gsap.fromTo(
-        clearButton,
-        { rotation: 0 },
-        {
-          rotation: 90,
-          duration: DURATION.FAST,
-          ease: EASE.SMOOTH,
-          onComplete: () => {
-            setInputValue("");
-            setSearchQuery("");
-            setShowSuggestionsList(false);
-            if (inputRef.current) {
-              inputRef.current.focus();
-            }
-          },
+        break;
+      case "ArrowUp":
+        e.preventDefault();
+        setHighlightedIndex((prev) => (prev > 0 ? prev - 1 : prev));
+        break;
+      case "Enter":
+        e.preventDefault();
+        if (highlightedIndex >= 0 && suggestions[highlightedIndex]) {
+          handleSuggestionClick(suggestions[highlightedIndex]);
+        } else {
+          handleSubmit(e);
         }
-      );
-    } else {
-      setInputValue("");
-      setSearchQuery("");
-      setShowSuggestionsList(false);
-      if (inputRef.current) {
-        inputRef.current.focus();
-      }
+        break;
+      case "Escape":
+        setShowDropdown(false);
+        setHighlightedIndex(-1);
+        break;
     }
   };
 
   const handleFocus = () => {
-    setIsFocused(true);
-    if (
-      showSuggestions &&
-      recentSearches.length > 0 &&
-      inputValue.trim() === ""
-    ) {
-      setShowSuggestionsList(true);
+    if (showSuggestions && localQuery.trim()) {
+      setShowDropdown(true);
     }
   };
 
-  const handleBlur = () => {
-    setIsFocused(false);
-    // Use a timeout to allow clicking on suggestions
+  const handleBlur = (e: React.FocusEvent) => {
+    // Delay hiding dropdown to allow for suggestion clicks
     setTimeout(() => {
-      setShowSuggestionsList(false);
-    }, 200);
+      if (
+        !dropdownRef.current?.contains(e.relatedTarget as Node) &&
+        e.relatedTarget !== inputRef.current
+      ) {
+        setShowDropdown(false);
+        setHighlightedIndex(-1);
+      }
+    }, 150);
   };
 
-  const handleSuggestionClick = (
-    suggestion: string,
-    e: React.MouseEvent<HTMLLIElement>
-  ) => {
-    // Animation for suggestion selection
-    gsap.to(`.search-suggestion-item`, {
-      backgroundColor: "var(--bg-tertiary)",
-      duration: DURATION.FAST,
-      ease: EASE.SMOOTH,
-    });
-
-    gsap.to(e.currentTarget, {
-      backgroundColor: "var(--primary-light)",
-      color: "white",
-      duration: DURATION.FAST,
-      ease: EASE.SMOOTH,
-      onComplete: () => {
-        setInputValue(suggestion);
-        performSearch(suggestion);
-        if (onSearch) onSearch();
-        setShowSuggestionsList(false);
-      },
-    });
-  };
+  const suggestions = showSuggestions ? recentSearches : [];
 
   // Classes based on variant using TailwindCSS
   const containerClass = `bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg transition-all duration-200 ${
     variant === "large" ? "p-4" : variant === "inline" ? "p-2" : "p-3"
-  } ${isFocused ? "border-primary-500 shadow-md" : "shadow-sm hover:shadow-md"}`;
+  } ${
+    showDropdown ? "border-primary-500 shadow-md" : "shadow-sm hover:shadow-md"
+  }`;
+
+  const getInputClasses = () => {
+    const baseClasses = `
+      w-full pl-12 pr-4 rounded-lg border transition-all duration-200
+      focus:outline-none focus:ring-2 backdrop-blur-md bg-white/10 border-white/20
+    `;
+
+    switch (variant) {
+      case "large":
+        return `${baseClasses} py-4 text-lg focus:ring-4`;
+      default:
+        return `${baseClasses} py-3 text-base`;
+    }
+  };
+
+  const getIconSize = () => {
+    return variant === "large" ? 24 : 20;
+  };
 
   return (
-    <div className="relative">
+    <div className={`relative ${className}`}>
       <form
         className={containerClass}
         onSubmit={handleSubmit}
         ref={containerRef}
       >
-        <div className="relative flex items-center">
+        <div className="relative">
+          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <SearchIcon size={getIconSize()} className="text-white/70" />
+          </div>
           <input
+            ref={inputRef}
             type="text"
-            value={inputValue}
-            onChange={handleChange}
+            value={localQuery}
+            onChange={handleInputChange}
+            onKeyDown={handleKeyDown}
             onFocus={handleFocus}
             onBlur={handleBlur}
-            placeholder={t("search.placeholder")}
-            aria-label={t("search.placeholder")}
-            className={`w-full px-4 py-2 pr-20 bg-transparent border-none outline-none text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 ${
-              variant === "large" ? "text-lg" : "text-base"
-            }`}
-            ref={inputRef}
+            placeholder={placeholder || t("search.placeholder")}
+            className={getInputClasses()}
+            style={{
+              color: "var(--color-text-primary)",
+              backgroundColor: "rgba(255, 255, 255, 0.1)",
+              borderColor: "rgba(255, 255, 255, 0.2)",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor =
+                "rgba(255, 255, 255, 0.15)";
+              e.currentTarget.style.borderColor = "var(--color-accent)";
+            }}
+            onMouseLeave={(e) => {
+              if (document.activeElement !== e.currentTarget) {
+                e.currentTarget.style.backgroundColor =
+                  "rgba(255, 255, 255, 0.1)";
+                e.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.2)";
+              }
+            }}
+            onFocusCapture={(e) => {
+              e.currentTarget.style.backgroundColor =
+                "rgba(255, 255, 255, 0.15)";
+              e.currentTarget.style.borderColor = "var(--color-accent)";
+              e.currentTarget.style.boxShadow = `0 0 0 3px color-mix(in srgb, var(--color-accent) 25%, transparent)`;
+            }}
+            onBlurCapture={(e) => {
+              e.currentTarget.style.backgroundColor =
+                "rgba(255, 255, 255, 0.1)";
+              e.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.2)";
+              e.currentTarget.style.boxShadow = "none";
+            }}
           />
-
-          {inputValue && (
-            <button
-              type="button"
-              onClick={handleClear}
-              className="search-clear-button absolute right-12 top-1/2 -translate-y-1/2 w-6 h-6 flex items-center justify-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors duration-200"
-              aria-label={t("actions.clear")}
-            >
-              ✕
-            </button>
-          )}
-
-          <button
-            type="submit"
-            className="search-button absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center text-slate-500 hover:text-primary-600 dark:text-slate-400 dark:hover:text-primary-400 transition-colors duration-200"
-            aria-label={t("actions.search")}
-          >
-            <SearchIcon size={20} />
-          </button>
         </div>
       </form>
 
-      {showSuggestions && showSuggestionsList && recentSearches.length > 0 && (
-        <div className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-lg z-50" ref={suggestionsRef}>
-          <div className="px-3 py-2 text-sm font-medium text-slate-600 dark:text-slate-400 border-b border-slate-200 dark:border-slate-700">
-            {t("search.recentSearches")}
-          </div>
-          <ul className="py-1">
-            {recentSearches.map((suggestion, index) => (
-              <li
-                key={index}
-                className="search-suggestion-item px-3 py-2 flex items-center gap-2 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 cursor-pointer transition-colors duration-150"
-                onClick={(e) => handleSuggestionClick(suggestion, e)}
-              >
-                <span className="text-slate-400 dark:text-slate-500">🕒</span>
-                <span>{suggestion}</span>
-              </li>
-            ))}
-          </ul>
+      {/* Suggestions Dropdown */}
+      {showDropdown && suggestions.length > 0 && (
+        <div
+          ref={dropdownRef}
+          className="absolute top-full left-0 right-0 mt-2 backdrop-blur-md bg-white/10 border border-white/20 rounded-lg shadow-lg z-50 max-h-60 overflow-y-auto"
+          style={{
+            backgroundColor: "var(--color-bg-secondary)",
+            borderColor: "var(--color-border-primary)",
+          }}
+        >
+          {suggestions.map((suggestion, index) => (
+            <button
+              key={`${suggestion}-${index}`}
+              type="button"
+              onClick={() => handleSuggestionClick(suggestion)}
+              className={`w-full px-4 py-3 text-left transition-all duration-200 flex items-center gap-3 first:rounded-t-lg last:rounded-b-lg ${
+                index === highlightedIndex ? "bg-white/20" : "hover:bg-white/10"
+              }`}
+              style={{
+                color: "var(--color-text-primary)",
+              }}
+            >
+              <SearchIcon size={16} className="opacity-60" />
+              <span>{suggestion}</span>
+              {recentSearches.includes(suggestion) && (
+                <span
+                  className="ml-auto text-xs opacity-60"
+                  style={{ color: "var(--color-text-tertiary)" }}
+                >
+                  {t("search.recent")}
+                </span>
+              )}
+            </button>
+          ))}
         </div>
       )}
     </div>

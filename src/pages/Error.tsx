@@ -78,39 +78,68 @@ const Error = () => {
   };
 
   return (
-    <div>
-      <div>
-        <div>
-          <svg
-            width="80"
-            height="80"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.5"
-          >
-            <circle cx="12" cy="12" r="10" />
-            <line x1="12" y1="8" x2="12" y2="12" />
-            <line x1="12" y1="16" x2="12.01" y2="16" />
-          </svg>
-        </div>
+    <div className="min-h-screen">
+      <section
+        className="section"
+        style={{ backgroundColor: "var(--color-bg-primary)" }}
+      >
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center py-12">
+            <div className="mb-8">
+              <svg
+                width="80"
+                height="80"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                className="mx-auto mb-6"
+                style={{ color: "var(--color-accent)" }}
+              >
+                <circle cx="12" cy="12" r="10" />
+                <line x1="12" y1="8" x2="12" y2="12" />
+                <line x1="12" y1="16" x2="12.01" y2="16" />
+              </svg>
+            </div>
 
-        <h1>{errorDetails.title}</h1>
-        <p>{errorDetails.message}</p>
+            <h1 className="section-title">{errorDetails.title}</h1>
+            <p className="section-subtitle">{errorDetails.message}</p>
 
-        <div>
-          <Link to="/">{t("errors.backToHome")}</Link>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+              <Link to="/" className="btn btn-primary">
+                {t("errors.backToHome")}
+              </Link>
 
-          <button onClick={handleReload}>{t("errors.tryAgain")}</button>
-        </div>
+              <button onClick={handleReload} className="btn btn-secondary">
+                {t("errors.tryAgain")}
+              </button>
+            </div>
 
-        {import.meta.env.DEV && isErrorWithStack(error) && (
-          <div>
-            <h3>Debug Information</h3>
-            <pre>{error.stack}</pre>
+            {import.meta.env.DEV && isErrorWithStack(error) && (
+              <div
+                className="mt-12 p-6 rounded-lg text-left"
+                style={{ backgroundColor: "var(--color-bg-secondary)" }}
+              >
+                <h3
+                  className="text-lg font-semibold mb-4"
+                  style={{ color: "var(--color-text-primary)" }}
+                >
+                  Debug Information
+                </h3>
+                <pre
+                  className="text-sm overflow-auto max-h-64 p-4 rounded"
+                  style={{
+                    backgroundColor: "var(--color-bg-tertiary)",
+                    color: "var(--color-text-secondary)",
+                  }}
+                >
+                  {error.stack}
+                </pre>
+              </div>
+            )}
           </div>
-        )}
-      </div>
+        </div>
+      </section>
     </div>
   );
 };

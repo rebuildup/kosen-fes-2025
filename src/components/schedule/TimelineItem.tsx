@@ -1,10 +1,9 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useLanguage } from "../../context/LanguageContext";
 import { useBookmark } from "../../context/BookmarkContext";
 import { Item } from "../../types/common";
 import ItemTypeIcon from "../common/ItemTypeIcon";
-import Tag from "../common/Tag";
 
 interface TimelineItemProps {
   item: Item;
@@ -13,18 +12,8 @@ interface TimelineItemProps {
 const TimelineItem = ({ item }: TimelineItemProps) => {
   const { t } = useLanguage();
   const { isBookmarked, toggleBookmark } = useBookmark();
-  const [expanded, setExpanded] = useState(false);
-
-  // Get type label
-  const getTypeLabel = () => {
-    if (item.type === "event") {
-      return t("detail.event");
-    } else if (item.type === "exhibit") {
-      return t("detail.exhibit");
-    } else {
-      return t("detail.stall");
-    }
-  };
+  const navigate = useNavigate();
+  const [isHovered, setIsHovered] = useState(false);
 
   // Get organization name based on item type
   const getOrganization = () => {
@@ -50,9 +39,30 @@ const TimelineItem = ({ item }: TimelineItemProps) => {
     return "";
   };
 
-  // Toggle expanded state
-  const handleToggleExpand = () => {
-    setExpanded(!expanded);
+  // Determine image source with proper fallback
+  const getImageSrc = () => {
+    if (item.imageUrl) {
+      return item.imageUrl;
+    }
+
+    // Create path to the item image based on type and ID
+    if (item.type === "event") {
+      const eventNumber = item.id.split("-")[1];
+      return `/images/events/event-${eventNumber}.jpg`;
+    } else if (item.type === "exhibit") {
+      const exhibitNumber = item.id.split("-")[1];
+      return `/images/exhibits/exhibit-${exhibitNumber}.jpg`;
+    } else if (item.type === "stall") {
+      const stallNumber = item.id.split("-")[1];
+      return `/images/stalls/stall-${stallNumber}.jpg`;
+    }
+
+    return `/images/placeholder.jpg`;
+  };
+
+  // Handle card click to navigate to detail page
+  const handleCardClick = () => {
+    navigate(`/detail/${item.type}/${item.id}`);
   };
 
   // Handle bookmark toggle
@@ -64,100 +74,129 @@ const TimelineItem = ({ item }: TimelineItemProps) => {
 
   return (
     <div
-      className={`bg-white dark:bg-gray-900 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 cursor-pointer transition-all duration-200 hover:shadow-md ${
-        expanded ? "ring-2 ring-blue-500 ring-opacity-50" : ""
-      }`}
-      onClick={handleToggleExpand}
+      className={`
+        schedule-card group cursor-pointer relative overflow-hidden
+        transition-all duration-300 ease-out border rounded-lg
+        ${isHovered ? "h-64" : "h-32"}
+      `}
+      style={{
+        backgroundColor: "var(--color-bg-primary)",
+        borderColor: "var(--color-border-primary)",
+      }}
+      onClick={handleCardClick}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
     >
-      <div className="p-4 space-y-3">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <ItemTypeIcon type={item.type} size="small" />
-            <span className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
-              {getTypeLabel()}
-            </span>
-          </div>
-          <button
-            className={`p-1 rounded-lg transition-colors ${
-              isBookmarked(item.id)
-                ? "text-yellow-500 hover:text-yellow-600"
-                : "text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
-            }`}
-            onClick={handleBookmarkToggle}
-            aria-label={
-              isBookmarked(item.id)
-                ? t("actions.removeBookmark")
-                : t("actions.bookmark")
-            }
-          >
-            {isBookmarked(item.id) ? "★" : "☆"}
-          </button>
-        </div>
+      {/* Full background image */}
+      <img
+        src={getImageSrc()}
+        alt={item.title}
+        className="w-full h-full object-cover"
+      />
 
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 leading-tight">
-          <Link
-            to={`/detail/${item.type}/${item.id}`}
-            className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {item.title}
-          </Link>
-        </h3>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm text-gray-600 dark:text-gray-400">
-          <div className="flex items-center space-x-2">
-            <span>🕒</span>
-            <span>{item.time}</span>
-          </div>
-          <div className="flex items-center space-x-2">
+      {/* Gradient overlay with content */}
+      <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/20 to-transparent text-white">
+        {/* Always visible basic content */}
+        <div className="absolute bottom-0 left-0 right-0 p-3">
+          <div className="schedule-card-time">{item.time}</div>
+          <h3 className="schedule-card-title mb-1">{item.title}</h3>
+          <div className="flex items-center gap-1 text-xs opacity-80">
             <span>📍</span>
-            <span>{item.location}</span>
+            <span className="truncate">{item.location}</span>
           </div>
         </div>
 
-        {expanded && (
-          <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700 space-y-4">
-            {item.imageUrl && (
-              <div className="w-full h-48 rounded-lg overflow-hidden">
-                <img 
-                  src={item.imageUrl} 
-                  alt={item.title} 
-                  className="w-full h-full object-cover"
-                />
-              </div>
-            )}
-            
-            <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
+        {/* Expanded content on hover */}
+        <div
+          className={`
+            absolute inset-0 p-4 flex flex-col justify-center
+            transition-all duration-300 ease-out
+            ${
+              isHovered
+                ? "opacity-100 translate-y-0"
+                : "opacity-0 translate-y-4 pointer-events-none"
+            }
+          `}
+          style={{
+            background:
+              "linear-gradient(to right, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.4) 50%, rgba(0,0,0,0.1) 100%)",
+          }}
+        >
+          <div className="space-y-3 max-h-full overflow-y-auto">
+            <h3 className="text-lg font-semibold">{item.title}</h3>
+
+            <p className="text-sm leading-relaxed opacity-90 line-clamp-3">
               {item.description}
             </p>
-            
-            {getOrganization() && (
-              <div className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400">
-                <span>👥</span>
-                <span>
-                  {getOrganizationLabel()}: {getOrganization()}
-                </span>
+
+            <div className="space-y-2 text-sm opacity-80">
+              <div className="flex items-center gap-2">
+                <span>🕒</span>
+                <span>{item.time}</span>
               </div>
-            )}
-            
+              <div className="flex items-center gap-2">
+                <span>📍</span>
+                <span>{item.location}</span>
+              </div>
+              {getOrganization() && (
+                <div className="flex items-center gap-2">
+                  <span>👥</span>
+                  <span className="truncate">
+                    {getOrganizationLabel()}: {getOrganization()}
+                  </span>
+                </div>
+              )}
+            </div>
+
             {item.tags && item.tags.length > 0 && (
-              <div className="flex flex-wrap gap-2">
-                {item.tags.map((tag) => (
-                  <Tag key={tag} tag={tag} size="small" />
+              <div className="flex flex-wrap gap-1">
+                {item.tags.slice(0, 3).map((tag) => (
+                  <span
+                    key={tag}
+                    className="px-2 py-1 bg-white/20 backdrop-blur-sm rounded-full text-xs"
+                  >
+                    {tag}
+                  </span>
                 ))}
+                {item.tags.length > 3 && (
+                  <span className="px-2 py-1 bg-white/20 backdrop-blur-sm rounded-full text-xs">
+                    +{item.tags.length - 3}
+                  </span>
+                )}
               </div>
             )}
-            
-            <Link
-              to={`/detail/${item.type}/${item.id}`}
-              className="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors"
-              onClick={(e) => e.stopPropagation()}
-            >
-              {t("actions.viewDetails")}
-            </Link>
+
+            <div className="pt-2">
+              <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-3 py-1.5 text-sm font-medium">
+                {t("actions.viewDetails")}
+                <span>→</span>
+              </div>
+            </div>
           </div>
-        )}
+        </div>
       </div>
+
+      {/* Type Badge */}
+      <div className="absolute top-2 left-2 flex items-center gap-1 bg-white/20 backdrop-blur-sm rounded-full px-2 py-1 text-xs">
+        <ItemTypeIcon type={item.type} size="small" />
+      </div>
+
+      {/* Bookmark Button */}
+      <button
+        onClick={handleBookmarkToggle}
+        className={`absolute top-2 right-2 p-1.5 rounded-full transition-all duration-200 ${
+          isBookmarked(item.id)
+            ? "bg-yellow-500 text-white"
+            : "bg-white/20 backdrop-blur-sm text-white hover:bg-white/30"
+        }`}
+        aria-label={
+          isBookmarked(item.id)
+            ? t("actions.removeBookmark")
+            : t("actions.bookmark")
+        }
+      >
+        <span className="text-sm">{isBookmarked(item.id) ? "★" : "☆"}</span>
+      </button>
     </div>
   );
 };

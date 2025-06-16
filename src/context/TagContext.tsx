@@ -6,7 +6,7 @@ import {
   useEffect,
 } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { dataManager } from "../data/dataManager";
+import { useData } from "./DataContext";
 
 interface TagContextType {
   tags: string[];
@@ -39,25 +39,29 @@ interface TagProviderProps {
 }
 
 export const TagProvider = ({ children }: TagProviderProps) => {
-  const [tags, setTags] = useState<string[]>([]);
-  const [tagCounts, setTagCounts] = useState<Record<string, number>>({});
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
-  const [popularTags, setPopularTags] = useState<string[]>([]);
 
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Initialize tags from dataManager
-  useEffect(() => {
-    // Use dataManager to get tags and counts
-    const allTags = dataManager.getAllTags();
-    const tagFrequency = dataManager.getTagCounts();
-    const popular = dataManager.getPopularTags(10);
+  // Get tag data from DataContext
+  const { getAllTags, getPopularTags, getTagCounts } = useData();
 
-    setTags(allTags);
-    setTagCounts(tagFrequency);
-    setPopularTags(popular);
-  }, []);
+  const allTags = getAllTags();
+  const tagCounts = getTagCounts();
+  const popularTags = getPopularTags(10);
+
+  // Sort all tags by popularity (count), then alphabetically
+  const tags = [...allTags].sort((a, b) => {
+    const countA = tagCounts[a] || 0;
+    const countB = tagCounts[b] || 0;
+
+    // Sort by count first (descending), then alphabetically
+    if (countA !== countB) {
+      return countB - countA;
+    }
+    return a.localeCompare(b);
+  });
 
   // Extract tag from URL when location changes
   useEffect(() => {
@@ -116,7 +120,10 @@ export const TagProvider = ({ children }: TagProviderProps) => {
 
   // Filter items by selected tags
   const filterItemsByTags = (items: any[]): any[] => {
-    return dataManager.filterItemsByTags(items, selectedTags);
+    if (selectedTags.length === 0) return items;
+    return items.filter((item) =>
+      selectedTags.every((tag) => item.tags?.includes(tag))
+    );
   };
 
   return (

@@ -31,7 +31,6 @@ const Card = ({
   const { t } = useLanguage();
   const { isBookmarked, toggleBookmark } = useBookmark();
 
-  const [isImageLoaded, setIsImageLoaded] = useState(false);
   const [hasImageError, setHasImageError] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
 
@@ -201,7 +200,7 @@ const Card = ({
           gsap.to(target, {
             scale: 1,
             duration: DURATION.FAST / 2,
-            ease: "back.out(1.7)",
+            ease: EASE.SMOOTH,
           });
         },
       });
@@ -216,221 +215,212 @@ const Card = ({
           gsap.to(target, {
             scale: 1,
             duration: DURATION.FAST / 2,
-            ease: "elastic.out(1, 0.3)",
+            ease: EASE.SMOOTH,
           });
         },
       });
     }
   };
 
-  // Handle image load event with fade-in animation
+  // Determine image source with fallback
   const handleImageLoad = () => {
-    if (imageRef.current) {
-      gsap.fromTo(
-        imageRef.current,
-        { autoAlpha: 0 },
-        {
-          autoAlpha: 1,
-          duration: DURATION.NORMAL,
-          ease: EASE.SMOOTH,
-          onComplete: () => setIsImageLoaded(true),
-        }
-      );
-    } else {
-      setIsImageLoaded(true);
-    }
+    setHasImageError(false);
   };
 
-  // Handle image error event
   const handleImageError = () => {
-    console.warn(`Failed to load image for ${item.title}`, item.imageUrl);
     setHasImageError(true);
   };
 
-  // Correctly determine image source with proper fallback
-  // This attempts to use the item's imageUrl first, or falls back to a type-specific image
   const determineImageSrc = () => {
-    // First try the item's specified image URL
-    if (item.imageUrl && !hasImageError) {
+    if (hasImageError) {
+      return getPlaceholderImage();
+    }
+
+    if (item.imageUrl) {
       return item.imageUrl;
     }
 
-    // If there's no imageUrl or loading failed, use type-specific placeholder
+    // Create path to the item image based on type and ID
     if (item.type === "event") {
-      // Create path to the event image based on ID (for example, event-1.jpg)
       const eventNumber = item.id.split("-")[1];
-      return `/images/events/event-${eventNumber}.jpg`;
+      return `./images/events/event-${eventNumber}.jpg`;
     } else if (item.type === "exhibit") {
       const exhibitNumber = item.id.split("-")[1];
-      return `/images/exhibits/exhibit-${exhibitNumber}.jpg`;
+      return `./images/exhibits/exhibit-${exhibitNumber}.jpg`;
     } else if (item.type === "stall") {
       const stallNumber = item.id.split("-")[1];
-      return `/images/stalls/stall-${stallNumber}.jpg`;
+      return `./images/stalls/stall-${stallNumber}.jpg`;
+    } else if (item.type === "sponsor") {
+      const sponsorNumber = item.id.split("-")[1];
+      return `./images/sponsors/sponsor-${sponsorNumber}.jpg`;
     }
 
-    // Final fallback to generic placeholder
     return getPlaceholderImage();
   };
 
-  // Get the actual image source
-  const imageSrc = determineImageSrc();
+  // Component for text with intelligent marquee
+  const SmartScrollableText = ({
+    children,
+    className = "",
+  }: {
+    children: React.ReactNode;
+    className?: string;
+  }) => {
+    const textString =
+      typeof children === "string" ? children : String(children);
+    const shouldMarquee = textString.length > 30; // Threshold for marquee
 
-  // Get variant-specific classes
-  const getCardClasses = () => {
-    const baseClasses = "card group cursor-pointer transform transition-all duration-200";
-    
-    switch (variant) {
-      case "compact":
-        return `${baseClasses} hover:-translate-y-2`;
-      case "featured":
-        return `${baseClasses} md:flex md:h-64 hover:-translate-y-3 shadow-lg`;
-      case "list":
-        return `${baseClasses} flex flex-row hover:-translate-y-1`;
-      case "grid":
-        return `${baseClasses} max-w-sm mx-auto hover:-translate-y-2`;
-      default:
-        return `${baseClasses} hover:-translate-y-2`;
-    }
+    return (
+      <div className={`overflow-hidden ${className}`}>
+        {shouldMarquee && isHovered ? (
+          <div className="whitespace-nowrap animate-marquee">{children}</div>
+        ) : (
+          <div className="truncate">{children}</div>
+        )}
+      </div>
+    );
   };
 
-  const getImageClasses = () => {
-    switch (variant) {
-      case "featured":
-        return "card-image md:w-1/2 md:h-full group-hover:scale-105 transition-transform duration-200";
-      case "list":
-        return "w-24 h-24 sm:w-32 sm:h-32 object-cover rounded-lg flex-shrink-0 group-hover:scale-105 transition-transform duration-200";
-      case "compact":
-        return "card-image group-hover:scale-105 transition-transform duration-200";
-      default:
-        return "card-image group-hover:scale-105 transition-transform duration-200";
-    }
-  };
+  const cardContent = (
+    <div
+      ref={cardRef}
+      className="relative group cursor-pointer rounded-lg overflow-hidden aspect-[4/3] backdrop-blur-sm bg-white/5 border border-white/10"
+    >
+      {/* Background Image */}
+      <img
+        ref={imageRef}
+        src={determineImageSrc()}
+        alt={item.title}
+        className="w-full h-full object-cover transition-transform duration-300 ease-out group-hover:scale-105"
+        onLoad={handleImageLoad}
+        onError={handleImageError}
+        loading="lazy"
+      />
 
-  const getContentClasses = () => {
-    switch (variant) {
-      case "featured":
-        return "card-content md:w-1/2 flex flex-col justify-between p-6";
-      case "list":
-        return "flex-1 px-4 py-2 min-w-0";
-      case "compact":
-        return "card-content p-3";
-      default:
-        return "card-content";
-    }
-  };
-
-  return (
-    <article ref={cardRef} className={getCardClasses()}>
-      <Link to={`/detail/${item.type}/${item.id}`} onClick={handleCardClick} className="block h-full">
-        {/* Image Container */}
-        <div className="relative overflow-hidden">
-          <img
-            src={imageSrc}
-            alt={item.title}
-            onLoad={handleImageLoad}
-            onError={handleImageError}
-            ref={imageRef}
-            className={getImageClasses()}
-            style={{ opacity: isImageLoaded ? 1 : 0 }}
-          />
-          
-          {/* Loading Skeleton */}
-          {!isImageLoaded && !hasImageError && (
-            <div className="absolute inset-0 bg-gray-200 dark:bg-gray-700 animate-pulse">
-              <div className="w-full h-full bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 dark:from-gray-700 dark:via-gray-600 dark:to-gray-700"></div>
-            </div>
-          )}
-
-          {/* Type Badge */}
-          <div className="absolute top-3 left-3 flex items-center gap-1.5 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-full px-2.5 py-1 text-xs font-medium">
-            <ItemTypeIcon type={item.type} size="small" />
-            <span className="text-gray-700 dark:text-gray-300">{getTypeLabel()}</span>
-          </div>
-
-          {/* Bookmark Button */}
-          <button
-            onClick={handleBookmarkToggle}
-            className="absolute top-3 right-3 w-8 h-8 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-full flex items-center justify-center text-lg transition-all duration-200 hover:bg-white dark:hover:bg-gray-800 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-[var(--accent)]/50"
-            aria-label={
-              isBookmarked(item.id)
-                ? t("actions.removeBookmark")
-                : t("actions.bookmark")
-            }
-          >
-            <span className={isBookmarked(item.id) ? "text-[var(--second)]" : "text-gray-400 dark:text-gray-500"}>
-              {isBookmarked(item.id) ? "★" : "☆"}
-            </span>
-          </button>
+      {/* Glassmorphism overlay */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/10 to-transparent text-white">
+        {/* Type Badge - Top Left */}
+        <div className="absolute top-2 left-2 bg-white/20 backdrop-blur-md rounded-full p-1.5 border border-white/20">
+          <ItemTypeIcon type={item.type} size="small" />
         </div>
 
-        {/* Content */}
-        <div className={getContentClasses()}>
-          <div>
-            <h3 className="card-title group-hover:text-[var(--accent)] transition-colors duration-200">
-              {formatText(item.title)}
-            </h3>
+        {/* Bookmark Button - Top Right */}
+        <button
+          onClick={handleBookmarkToggle}
+          className={`absolute top-2 right-2 p-1.5 rounded-full transition-all duration-200 backdrop-blur-md border border-white/20 pointer-events-auto z-10 ${
+            isBookmarked(item.id)
+              ? "bg-yellow-500/90 text-white"
+              : "bg-white/20 text-white hover:bg-white/30"
+          }`}
+          aria-label={
+            isBookmarked(item.id)
+              ? t("actions.removeBookmark")
+              : t("actions.bookmark")
+          }
+        >
+          <span className="text-sm">{isBookmarked(item.id) ? "★" : "☆"}</span>
+        </button>
 
-            {showDescription && (
-              <p className="card-description">
+        {/* Basic Info - Visible when not hovered */}
+        <div
+          className={`absolute bottom-0 left-0 right-0 p-3 space-y-1 transition-opacity duration-300 ${
+            isHovered ? "opacity-0" : "opacity-100"
+          }`}
+        >
+          <SmartScrollableText className="font-semibold text-lg">
+            {formatText(item.title)}
+          </SmartScrollableText>
+
+          <div className="space-y-0.5 text-sm opacity-90">
+            <SmartScrollableText>🕒 {item.time}</SmartScrollableText>
+            <SmartScrollableText>📍 {item.location}</SmartScrollableText>
+          </div>
+        </div>
+
+        {/* Detailed overlay on hover */}
+        <div
+          ref={metaRef}
+          className={`absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent p-4 flex flex-col justify-center transition-all duration-300 pointer-events-none ${
+            isHovered ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+          }`}
+          style={{ visibility: isHovered ? "visible" : "hidden" }}
+        >
+          <div className="space-y-3">
+            <SmartScrollableText className="text-lg font-semibold">
+              {formatText(item.title)}
+            </SmartScrollableText>
+
+            {showDescription && item.description && (
+              <p className="text-sm opacity-90 line-clamp-3">
                 {formatText(item.description)}
               </p>
             )}
 
-            {/* Meta Information */}
-            <div
-              ref={metaRef}
-              className="space-y-2"
-              style={{
-                opacity: variant === "list" ? 1 : undefined,
-                transform: variant === "list" ? "none" : undefined,
-              }}
-            >
-              <div className="card-meta">
-                <TimeIcon size={16} className="card-meta-icon" />
-                <span className="truncate">
-                  {item.date} | {item.time}
-                </span>
+            <div className="space-y-2 text-sm opacity-80">
+              <div className="flex items-center gap-2">
+                <TimeIcon size={16} />
+                <SmartScrollableText>{item.time}</SmartScrollableText>
               </div>
-
-              <div className="card-meta">
-                <LocationIcon size={16} className="card-meta-icon" />
-                <span className="truncate">{formatText(item.location)}</span>
+              <div className="flex items-center gap-2">
+                <LocationIcon size={16} />
+                <SmartScrollableText>{item.location}</SmartScrollableText>
               </div>
-
               {getOrganization() && (
-                <div className="card-meta">
-                  <PeopleIcon size={16} className="card-meta-icon" />
-                  <span className="truncate">
-                    {getOrganizationLabel()}: {formatText(getOrganization())}
-                  </span>
+                <div className="flex items-center gap-2">
+                  <PeopleIcon size={16} />
+                  <SmartScrollableText>
+                    {getOrganizationLabel()}: {getOrganization()}
+                  </SmartScrollableText>
                 </div>
               )}
             </div>
-
-            {/* Tags */}
-            {showTags && item.tags && item.tags.length > 0 && (
-              <div
-                ref={tagsRef}
-                className="flex flex-wrap gap-1.5 mt-3"
-                style={{
-                  opacity: 0,
-                  transform: "translateY(10px)",
-                }}
-              >
-                {item.tags.slice(0, 3).map((tag) => (
-                  <Tag key={tag} tag={tag} size="small" />
-                ))}
-                {item.tags.length > 3 && (
-                  <span className="tag tag-default text-xs">
-                    +{item.tags.length - 3}
-                  </span>
-                )}
-              </div>
-            )}
           </div>
         </div>
-      </Link>
-    </article>
+
+        {/* Tags overlay */}
+        {showTags && item.tags && item.tags.length > 0 && (
+          <div
+            ref={tagsRef}
+            className={`absolute bottom-3 left-3 right-3 transition-all duration-300 pointer-events-none ${
+              isHovered
+                ? "opacity-100 translate-y-0"
+                : "opacity-0 translate-y-4"
+            }`}
+            style={{ visibility: isHovered ? "visible" : "hidden" }}
+          >
+            <div className="flex flex-wrap gap-1">
+              {item.tags.slice(0, 3).map((tagName) => (
+                <Tag
+                  key={tagName}
+                  tag={tagName}
+                  size="small"
+                  interactive={false}
+                />
+              ))}
+              {item.tags.length > 3 && (
+                <span className="px-2 py-1 bg-white/20 backdrop-blur-sm rounded-full text-xs border border-white/10">
+                  +{item.tags.length - 3}
+                </span>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+
+  if (onClick) {
+    return <div onClick={handleCardClick}>{cardContent}</div>;
+  }
+
+  return (
+    <Link
+      to={`/detail/${item.type}/${item.id}`}
+      className="block"
+      aria-label={`${getTypeLabel()}: ${item.title}`}
+    >
+      {cardContent}
+    </Link>
   );
 };
 

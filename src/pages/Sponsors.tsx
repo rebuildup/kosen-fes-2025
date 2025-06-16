@@ -8,6 +8,7 @@ import CardGrid from "../components/common/CardGrid";
 import CardListToggle from "../components/common/CardListToggle";
 import TagFilter from "../components/common/TagFilter";
 import SelectedTags from "../components/common/SelectedTags";
+import TabButtons from "../components/common/TabButtons";
 
 const Sponsors = () => {
   const { t } = useLanguage();
@@ -40,78 +41,58 @@ const Sponsors = () => {
     setFilteredSponsors(filtered);
   }, [tierFilter, selectedTags, filterItemsByTags]);
 
-  // Handle tier filter change
-  const handleTierFilterChange = (
-    tier: "all" | "platinum" | "gold" | "silver" | "bronze"
-  ) => {
-    setTierFilter(tier);
-  };
-
-  // Translations for tier labels
-  const getTierLabel = (tier: string) => {
-    switch (tier) {
-      case "all":
-        return t("sponsors.filters.all");
-      case "platinum":
-        return t("sponsors.filters.platinum");
-      case "gold":
-        return t("sponsors.filters.gold");
-      case "silver":
-        return t("sponsors.filters.silver");
-      case "bronze":
-        return t("sponsors.filters.bronze");
-      default:
-        return tier;
-    }
-  };
+  // Tab options for tier filter
+  const tierOptions = [
+    { value: "all", label: t("sponsors.filters.all") },
+    { value: "platinum", label: t("sponsors.filters.platinum") },
+    { value: "gold", label: t("sponsors.filters.gold") },
+    { value: "silver", label: t("sponsors.filters.silver") },
+    { value: "bronze", label: t("sponsors.filters.bronze") },
+  ];
 
   return (
-    <div>
-      <div>
-        <h1>{t("sponsors.title")}</h1>
+    <div className="min-h-screen">
+      <section
+        className="section"
+        style={{ backgroundColor: "var(--color-bg-primary)" }}
+      >
+        <div className="max-w-7xl mx-auto">
+          <div className="mb-8">
+            <h1 className="section-title">{t("sponsors.title")}</h1>
 
-        <div>
-          <div>
-            <button onClick={() => handleTierFilterChange("all")}>
-              {getTierLabel("all")}
-            </button>
-            <button onClick={() => handleTierFilterChange("platinum")}>
-              {getTierLabel("platinum")}
-            </button>
-            <button onClick={() => handleTierFilterChange("gold")}>
-              {getTierLabel("gold")}
-            </button>
-            <button onClick={() => handleTierFilterChange("silver")}>
-              {getTierLabel("silver")}
-            </button>
-            <button onClick={() => handleTierFilterChange("bronze")}>
-              {getTierLabel("bronze")}
-            </button>
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+              <TabButtons
+                options={tierOptions}
+                activeValue={tierFilter}
+                onChange={(value) => setTierFilter(value as typeof tierFilter)}
+                className="rounded-lg overflow-hidden"
+              />
+
+              <CardListToggle viewMode={viewMode} setViewMode={setViewMode} />
+            </div>
           </div>
 
-          <CardListToggle viewMode={viewMode} setViewMode={setViewMode} />
-        </div>
-      </div>
+          <div className="space-y-6">
+            {/* Tag filter at the top - single column */}
+            <div className="space-y-4">
+              <TagFilter onFilter={() => {}} />
+              <SelectedTags />
+            </div>
 
-      <div>
-        {/* Tag filter at the top - single column */}
-        <div>
-          <TagFilter onFilter={() => {}} />
-          <SelectedTags />
+            {/* Sponsors grid below */}
+            <div>
+              <CardGrid
+                items={filteredSponsors}
+                variant={viewMode}
+                showTags={true}
+                showDescription={viewMode === "list"}
+                emptyMessage={t("sponsors.noSponsors")}
+                filterType="all"
+              />
+            </div>
+          </div>
         </div>
-
-        {/* Sponsors grid below */}
-        <div>
-          <CardGrid
-            items={filteredSponsors}
-            variant={viewMode}
-            showTags={true}
-            showDescription={viewMode === "list"}
-            emptyMessage={t("sponsors.noSponsors")}
-            filterType="all"
-          />
-        </div>
-      </div>
+      </section>
     </div>
   );
 };
