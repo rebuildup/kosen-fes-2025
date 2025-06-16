@@ -10,7 +10,7 @@ import { Item, Event, Exhibit, Stall, Sponsor } from "../types/common";
 import Tag from "../components/common/Tag";
 import ItemTypeIcon from "../components/common/ItemTypeIcon";
 import PillButton from "../components/common/PillButton";
-import Card from "../components/common/Card";
+import UnifiedCard from "../shared/components/ui/UnifiedCard";
 import MapDisplay from "../components/map/MapDisplay";
 
 const Detail = () => {
@@ -512,7 +512,7 @@ const Detail = () => {
                   >
                     {relatedItems.map((relatedItem) => (
                       <div key={relatedItem.id} className="w-64 flex-shrink-0">
-                        <Card item={relatedItem} showTags={true} />
+                        <UnifiedCard item={relatedItem} showTags={true} variant="compact" />
                       </div>
                     ))}
                   </div>

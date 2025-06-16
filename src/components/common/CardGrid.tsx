@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { Item } from "../../types/common";
-import Card from "./Card";
+import UnifiedCard from "../../shared/components/ui/UnifiedCard";
 import { useLanguage } from "../../context/LanguageContext";
 
 // Update the filterType prop type
@@ -94,7 +94,7 @@ const CardGrid = ({
       style={gridStyle}
     >
       {filteredItems.map((item) => (
-        <Card
+        <UnifiedCard
           key={item.id}
           item={item}
           variant={variant}

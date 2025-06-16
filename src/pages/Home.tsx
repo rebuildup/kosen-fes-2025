@@ -3,7 +3,7 @@ import { useLanguage } from "../context/LanguageContext";
 import { useData } from "../context/DataContext";
 import { ItemCore } from "../types/data";
 import { Item } from "../types/common";
-import FeaturedCard from "../components/common/FeaturedCard";
+import UnifiedCard from "../shared/components/ui/UnifiedCard";
 import CardGrid from "../components/common/CardGrid";
 import TagCloud from "../components/common/TagCloud";
 import PillButton from "../components/common/PillButton";
@@ -183,7 +183,7 @@ const Home = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
             {featuredEvents.map((event) => (
-              <FeaturedCard key={event.id} item={event} />
+              <UnifiedCard key={event.id} item={event} variant="featured" />
             ))}
           </div>
         </div>

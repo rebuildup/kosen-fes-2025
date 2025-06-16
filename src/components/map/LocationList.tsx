@@ -1,7 +1,7 @@
 // src/components/map/LocationList.tsx
 import { useLanguage } from "../../context/LanguageContext";
 import { Event, Exhibit, Stall } from "../../types/common";
-import Card from "../common/Card";
+import UnifiedCard from "../../shared/components/ui/UnifiedCard";
 
 // Type for non-sponsor items
 type NonSponsorItem = Event | Exhibit | Stall;
@@ -79,7 +79,7 @@ const LocationList = ({
                   onClick={() => onLocationSelect(location)}
                 >
                   <div className="relative">
-                    <Card
+                    <UnifiedCard
                       item={firstItem}
                       variant="compact"
                       showTags={false}
