@@ -6,7 +6,8 @@ import { events } from "../data/events";
 import { exhibits } from "../data/exhibits";
 import { stalls } from "../data/stalls";
 import { Item, Event, Exhibit, Stall } from "../types/common";
-import MapDisplay from "../components/map/MapDisplay";
+import UnifiedMap from "../components/map/UnifiedMap";
+import { getBuildingCoordinates } from "../data/buildings";
 import LocationList from "../components/map/LocationList";
 import TagFilter from "../components/common/TagFilter";
 import SelectedTags from "../components/common/SelectedTags";
@@ -133,12 +134,19 @@ const Map = () => {
                 <div className="relative">
                   {/* Map Display */}
                   <div className="map-container relative min-h-96 w-full">
-                    <MapDisplay
-                      hoveredLocation={hoveredLocation}
-                      selectedLocation={selectedLocation}
+                    <UnifiedMap
+                      mode="display"
+                      markers={locationsWithItems.map((location) => ({
+                        id: location,
+                        location,
+                        coordinates: getBuildingCoordinates(location) || { x: 1000, y: 700 },
+                        isSelected: selectedLocation === location,
+                        isHovered: hoveredLocation === location,
+                      }))}
                       onLocationHover={handleLocationHover}
                       onLocationSelect={handleLocationSelect}
-                      locations={locationsWithItems}
+                      height="400px"
+                      className="rounded-lg"
                     />
                   </div>
 
