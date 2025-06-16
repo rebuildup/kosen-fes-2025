@@ -15,6 +15,7 @@ const Search = lazy(() => import("./pages/Search"));
 const Bookmarks = lazy(() => import("./pages/Bookmarks"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const Sponsors = lazy(() => import("./pages/Sponsors"));
+const ContentPreview = lazy(() => import("./pages/ContentPreview"));
 
 const withSuspense = (Component: React.ComponentType) => (
   <Suspense fallback={<LoadingIndicator />}>
@@ -43,6 +44,12 @@ const routes: RouteObject[] = [
       { path: "sponsors", element: withSuspense(Sponsors) },
       { path: "*", element: withSuspense(NotFound) },
     ],
+  },
+  // Content Submission route - separate from main layout
+  {
+    path: "/content-submission",
+    element: <AppProviders>{withSuspense(ContentPreview)}</AppProviders>,
+    errorElement: <Error />,
   },
 ];
 

@@ -31,3 +31,23 @@ export const Icon: React.FC<React.SVGProps<SVGSVGElement> & IconProps> = ({
     />
   );
 };
+
+export { AlertIcon } from "./AlertIcon";
+export { BookmarkIcon } from "./BookmarkIcon";
+export { EventIcon } from "./EventIcon";
+export { ExhibitIcon } from "./ExhibitIcon";
+export { HomeIcon } from "./HomeIcon";
+export { LocationIcon } from "./LocationIcon";
+export { MapIcon } from "./MapIcon";
+export { MenuIcon } from "./MenuIcon";
+export { MoonIcon } from "./MoonIcon";
+export { PeopleIcon } from "./PeopleIcon";
+export { ScheduleIcon } from "./ScheduleIcon";
+export { SearchIcon } from "./SearchIcon";
+export { SponsorIcon } from "./SponsorIcon";
+export { SunIcon } from "./SunIcon";
+export { TimeIcon } from "./TimeIcon";
+export { XIcon } from "./XIcon";
+export { SettingsIcon } from "./SettingsIcon";
+export { InfoIcon } from "./InfoIcon";
+export { JPIcon, ENIcon } from "./LanguageIcon";

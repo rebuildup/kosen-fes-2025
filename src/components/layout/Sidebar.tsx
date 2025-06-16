@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { useLanguage } from "../../context/LanguageContext";
 import { useBookmark } from "../../context/BookmarkContext";
-import ThemeToggle from "../common/ThemeToggle";
-import LanguageToggle from "../common/LanguageToggle";
+import ThemeToggleIcon from "../common/ThemeToggleIcon";
+import LanguageToggleIcon from "../common/LanguageToggleIcon";
 import SidebarLink from "./SidebarLink";
 import { BookmarkIcon } from "../icons/BookmarkIcon";
 import { EventIcon } from "../icons/EventIcon";
@@ -12,6 +12,8 @@ import { MapIcon } from "../icons/MapIcon";
 import { SponsorIcon } from "../icons/SponsorIcon";
 import { SearchIcon } from "../icons/SearchIcon";
 import { HomeIcon } from "../icons/HomeIcon";
+import { SettingsIcon } from "../icons/SettingsIcon";
+import { InfoIcon } from "../icons/InfoIcon";
 
 const Sidebar = () => {
   const { t } = useLanguage();
@@ -32,12 +34,6 @@ const Sidebar = () => {
       <div className="h-full overflow-y-auto p-6 lg:p-3">
         {/* Quick Links */}
         <div className="mb-6">
-          <h3
-            className="text-sm font-semibold mb-3"
-            style={{ color: "var(--color-text-primary)" }}
-          >
-            {t("sidebar.quickLinks")}
-          </h3>
           <div className="space-y-2 mb-6">
             <SidebarLink
               to="/bookmarks"
@@ -99,46 +95,34 @@ const Sidebar = () => {
 
         {/* Settings Section */}
         <div className="mb-6">
-          <h3
+          {/* Settings toggle icon only - always visible */}
+          <button
             onClick={() => toggleSection("settings")}
-            className="text-sm font-semibold mb-3 cursor-pointer hover:text-[var(--color-accent)] transition-colors flex items-center justify-between lg:hidden xl:flex"
-            style={{ color: "var(--color-text-primary)" }}
+            className="w-full p-3 rounded-lg transition-colors flex items-center justify-center"
+            style={{
+              backgroundColor:
+                expanded === "settings"
+                  ? "var(--color-bg-tertiary)"
+                  : "var(--color-bg-secondary)",
+              color: "var(--color-text-primary)",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor =
+                "var(--color-bg-tertiary)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor =
+                expanded === "settings"
+                  ? "var(--color-bg-tertiary)"
+                  : "var(--color-bg-secondary)";
+            }}
+            title={t("settings.title")}
           >
-            <span className="lg:hidden xl:inline">{t("settings.title")}</span>
-            <span
-              className={`transform transition-transform ${
-                expanded === "settings" ? "rotate-180" : ""
-              } lg:hidden xl:inline`}
-            >
-              ▾
-            </span>
-          </h3>
-
-          {/* Settings toggle for compact mode */}
-          <div className="lg:block xl:hidden mb-3">
-            <button
-              onClick={() => toggleSection("settings")}
-              className="w-full p-3 rounded-lg transition-colors"
-              style={{
-                backgroundColor: "var(--color-bg-secondary)",
-                color: "var(--color-text-primary)",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor =
-                  "var(--color-bg-tertiary)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor =
-                  "var(--color-bg-secondary)";
-              }}
-              title={t("settings.title")}
-            >
-              ⚙️
-            </button>
-          </div>
+            <SettingsIcon size={18} />
+          </button>
 
           {expanded === "settings" && (
-            <div className="space-y-3">
+            <div className="mt-3 space-y-3">
               <div className="flex items-center justify-between">
                 <span
                   className="text-sm font-medium"
@@ -146,7 +130,7 @@ const Sidebar = () => {
                 >
                   {t("settings.theme.title")}:
                 </span>
-                <ThemeToggle />
+                <ThemeToggleIcon />
               </div>
 
               <div className="flex items-center justify-between">
@@ -156,7 +140,7 @@ const Sidebar = () => {
                 >
                   {t("settings.language.title")}:
                 </span>
-                <LanguageToggle />
+                <LanguageToggleIcon />
               </div>
             </div>
           )}
@@ -164,94 +148,67 @@ const Sidebar = () => {
 
         {/* Info Section */}
         <div className="mb-6">
-          <h3
+          {/* Info toggle icon only - always visible */}
+          <button
             onClick={() => toggleSection("info")}
-            className="text-sm font-semibold mb-3 cursor-pointer hover:text-[var(--color-accent)] transition-colors flex items-center justify-between lg:hidden xl:flex"
-            style={{ color: "var(--color-text-primary)" }}
+            className="w-full p-3 rounded-lg transition-colors flex items-center justify-center"
+            style={{
+              backgroundColor:
+                expanded === "info"
+                  ? "var(--color-bg-tertiary)"
+                  : "var(--color-bg-secondary)",
+              color: "var(--color-text-primary)",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor =
+                "var(--color-bg-tertiary)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor =
+                expanded === "info"
+                  ? "var(--color-bg-tertiary)"
+                  : "var(--color-bg-secondary)";
+            }}
+            title={t("info.title")}
           >
-            <span className="lg:hidden xl:inline">{t("info.title")}</span>
-            <span
-              className={`transform transition-transform ${
-                expanded === "info" ? "rotate-180" : ""
-              } lg:hidden xl:inline`}
-            >
-              ▾
-            </span>
-          </h3>
-
-          {/* Info toggle for compact mode */}
-          <div className="lg:block xl:hidden mb-3">
-            <button
-              onClick={() => toggleSection("info")}
-              className="w-full p-3 rounded-lg transition-colors"
-              style={{
-                backgroundColor: "var(--color-bg-secondary)",
-                color: "var(--color-text-primary)",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor =
-                  "var(--color-bg-tertiary)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor =
-                  "var(--color-bg-secondary)";
-              }}
-              title={t("info.title")}
-            >
-              ℹ️
-            </button>
-          </div>
+            <InfoIcon size={18} />
+          </button>
 
           {expanded === "info" && (
-            <div className="space-y-3">
+            <div className="mt-3 space-y-3">
               <div
                 className="p-3 rounded-md"
                 style={{ backgroundColor: "var(--color-bg-secondary)" }}
               >
                 <p
-                  className="text-sm mb-1 lg:text-xs xl:text-sm"
+                  className="text-sm mb-1"
                   style={{ color: "var(--color-text-secondary)" }}
                 >
-                  <strong
-                    className="lg:hidden xl:inline"
-                    style={{ color: "var(--color-text-primary)" }}
-                  >
+                  <strong style={{ color: "var(--color-text-primary)" }}>
                     {t("info.festivalDates")}:
                   </strong>
-                  <span className="lg:block xl:inline">
-                    {" "}
-                    2025/11/8 - 2025/11/9
-                  </span>
+                  <br />
+                  2025/11/8 - 2025/11/9
                 </p>
                 <p
-                  className="text-sm mb-1 lg:text-xs xl:text-sm"
+                  className="text-sm mb-1"
                   style={{ color: "var(--color-text-secondary)" }}
                 >
-                  <strong
-                    className="lg:hidden xl:inline"
-                    style={{ color: "var(--color-text-primary)" }}
-                  >
+                  <strong style={{ color: "var(--color-text-primary)" }}>
                     {t("info.location")}:
                   </strong>
-                  <span className="lg:block xl:inline">
-                    {" "}
-                    Ube Kosen, Yamaguchi
-                  </span>
+                  <br />
+                  Ube Kosen, Yamaguchi
                 </p>
                 <p
-                  className="text-sm lg:text-xs xl:text-sm"
+                  className="text-sm"
                   style={{ color: "var(--color-text-secondary)" }}
                 >
-                  <strong
-                    className="lg:hidden xl:inline"
-                    style={{ color: "var(--color-text-primary)" }}
-                  >
+                  <strong style={{ color: "var(--color-text-primary)" }}>
                     {t("info.organizer")}:
                   </strong>
-                  <span className="lg:block xl:inline">
-                    {" "}
-                    Festival Committee
-                  </span>
+                  <br />
+                  Festival Committee
                 </p>
               </div>
             </div>

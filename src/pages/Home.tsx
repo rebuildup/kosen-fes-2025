@@ -46,7 +46,6 @@ const convertItemCoreToItem = (itemCore: ItemCore): Item => {
         ...baseItem,
         type: "sponsor",
         website: "",
-        tier: "bronze",
       };
     default:
       // デフォルトはeventとして扱う
@@ -69,15 +68,20 @@ const Home = () => {
     [date: string]: Item[];
   }>({});
   const [popularTags, setPopularTags] = useState<string[]>([]);
+  const [allDates, setAllDates] = useState<string[]>([]);
 
-  // Get unique dates from all items
-  const allDates = [
-    ...new Set(
-      [...events, ...exhibits, ...stalls].map((item) => item.date || "")
-    ),
-  ]
-    .filter((date) => date !== "")
-    .sort();
+  // Update dates when items change
+  useEffect(() => {
+    const dates = [
+      ...new Set(
+        [...events, ...exhibits, ...stalls].map((item) => item.date || "")
+      ),
+    ]
+      .filter((date) => date !== "")
+      .sort();
+
+    setAllDates(dates);
+  }, [events, exhibits, stalls]);
 
   // Group items by date
   useEffect(() => {

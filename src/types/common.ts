@@ -30,7 +30,6 @@ export interface Stall extends BaseItem {
 export interface Sponsor extends BaseItem {
   type: "sponsor";
   website: string;
-  tier: "platinum" | "gold" | "silver" | "bronze"; // Sponsorship level
   contactEmail?: string;
 }
 
