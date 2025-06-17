@@ -12,6 +12,7 @@ export const exhibits: Exhibit[] = [
     date: "2025-06-15",
     time: "10:00 - 18:00",
     location: "工学部棟 101教室",
+    coordinates: { x: 254.9, y: 752.5 }, // 機電棟エリア
     tags: ["ロボット", "技術", "ゲーム"],
     creator: "ロボット研究部",
   },
@@ -25,6 +26,7 @@ export const exhibits: Exhibit[] = [
     date: "2025-06-15",
     time: "10:00 - 18:00",
     location: "理学部棟 203教室",
+    coordinates: { x: 704.0, y: 929.4 }, // 一般棟エリア
     tags: ["技術", "イノベーション", "工学"],
     creator: "マスターピース技術研究",
   },
@@ -38,6 +40,7 @@ export const exhibits: Exhibit[] = [
     date: "2025-06-15",
     time: "9:30 - 16:00",
     location: "ペリカン食堂 学生会館1F",
+    coordinates: { x: 588.6, y: 733.5 }, // 学生会館
     tags: ["健康", "コミュニティ", "ボランティア"],
     creator: "保健委員会",
   },
@@ -51,6 +54,7 @@ export const exhibits: Exhibit[] = [
     date: "2025-06-15",
     time: "10:00 - 18:00",
     location: "教養棟 展示ホール",
+    coordinates: { x: 590.5, y: 497.7 }, // 図書館棟
     tags: ["写真", "アート", "ポストカード"],
     creator: "写真部",
   },
@@ -64,6 +68,7 @@ export const exhibits: Exhibit[] = [
     date: "2025-06-15",
     time: "10:00 - 18:00",
     location: "教養棟 美術室",
+    coordinates: { x: 590.5, y: 497.7 }, // 図書館棟
     tags: ["アート", "展示", "ポストカード"],
     creator: "美術部",
   },
@@ -76,6 +81,7 @@ export const exhibits: Exhibit[] = [
     date: "2025-06-15",
     time: "10:00 - 18:00",
     location: "教養棟 102教室",
+    coordinates: { x: 590.5, y: 497.7 }, // 図書館棟
     tags: ["文学", "雑誌", "創作"],
     creator: "文芸部",
   },
@@ -89,6 +95,7 @@ export const exhibits: Exhibit[] = [
     date: "2025-06-15",
     time: "10:00 - 18:00",
     location: "学生会館 2F",
+    coordinates: { x: 588.6, y: 733.5 }, // 学生会館
     tags: ["ファッション", "アクセサリー", "デザイン"],
     creator: "平成フォトスタジオ",
   },
@@ -101,6 +108,7 @@ export const exhibits: Exhibit[] = [
     date: "2025-06-15",
     time: "10:00 - 18:00",
     location: "工学部棟 201教室",
+    coordinates: { x: 254.9, y: 752.5 }, // 機電棟エリア
     tags: ["ロボット", "コンテスト", "技術"],
     creator: "ETロボコンチーム",
   },
@@ -113,6 +121,7 @@ export const exhibits: Exhibit[] = [
     date: "2025-06-15",
     time: "10:00 - 18:00",
     location: "電気工学棟 第1実験室",
+    coordinates: { x: 254.9, y: 752.5 }, // 機電棟エリア
     tags: ["電気", "工学", "プロジェクト"],
     creator: "Eプロジェクト",
   },
@@ -126,6 +135,7 @@ export const exhibits: Exhibit[] = [
     date: "2025-06-15",
     time: "10:00 - 18:00",
     location: "情報科学棟 103教室",
+    coordinates: { x: 886.4, y: 859.4 }, // 経営情報学科棟
     tags: ["コンピュータ", "ソフトウェア", "プログラミング"],
     creator: "コンピュータ部",
   },
@@ -138,6 +148,7 @@ export const exhibits: Exhibit[] = [
     date: "2025-06-15",
     time: "10:00 - 18:00",
     location: "工学部棟 105教室",
+    coordinates: { x: 254.9, y: 752.5 }, // 機電棟エリア
     tags: ["クラフト", "キーホルダー", "手作り"],
     creator: "篠田研究室",
   },
@@ -151,6 +162,7 @@ export const exhibits: Exhibit[] = [
     date: "2025-06-15",
     time: "10:00 - 18:00",
     location: "機械工学棟 第2実験室",
+    coordinates: { x: 254.9, y: 752.5 }, // 機電棟エリア
     tags: ["船舶", "機械", "工学"],
     creator: "機械工学科",
   },
@@ -164,6 +176,7 @@ export const exhibits: Exhibit[] = [
     date: "2025-06-15",
     time: "10:00 - 18:00",
     location: "電気工学棟 メインホール",
+    coordinates: { x: 254.9, y: 752.5 }, // 機電棟エリア
     tags: ["電気", "ゲーム", "VR"],
     creator: "電気工学科",
   },
@@ -177,6 +190,7 @@ export const exhibits: Exhibit[] = [
     date: "2025-06-15",
     time: "10:00 - 18:00",
     location: "制御工学棟 101教室",
+    coordinates: { x: 368.7, y: 534.6 }, // 制御情報工学科棟
     tags: ["センサー", "ゲーム", "技術"],
     creator: "制御工学科",
   },
@@ -190,6 +204,7 @@ export const exhibits: Exhibit[] = [
     date: "2025-06-15",
     time: "10:00 - 18:00",
     location: "材料工学棟 メイン実験室",
+    coordinates: { x: 709.6, y: 1103.2 }, // 物質棟
     tags: ["材料", "化学", "工学"],
     creator: "材料工学科",
   },
@@ -198,12 +213,13 @@ export const exhibits: Exhibit[] = [
     type: "exhibit",
     title: "ホームカミングデー",
     description:
-      "卒業生が在校生や教職員と再会し交流するための特別イベントです。",
+      "卒業生の皆様をお迎えする特別なイベント。懐かしい仲間との再会をお楽しみください。",
     imageUrl: "./images/exhibits/exhibit-16.jpg",
-    date: "2025-06-16",
-    time: "13:00 - 17:00",
-    location: "同窓会館",
-    tags: ["同窓会", "ネットワーキング", "再会"],
-    creator: "宇部白鳥会",
+    date: "2025-06-15",
+    time: "10:00 - 18:00",
+    location: "管理棟 会議室",
+    coordinates: { x: 227.3, y: 837.4 }, // 管理棟
+    tags: ["同窓会", "卒業生", "交流"],
+    creator: "同窓会",
   },
 ];

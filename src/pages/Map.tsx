@@ -11,6 +11,7 @@ import { getBuildingCoordinates } from "../data/buildings";
 import LocationList from "../components/map/LocationList";
 import TagFilter from "../components/common/TagFilter";
 import SelectedTags from "../components/common/SelectedTags";
+import { itemsToContentItems } from "../utils/itemHelpers";
 
 // Type for non-sponsor items
 type NonSponsorItem = Event | Exhibit | Stall;
@@ -139,10 +140,14 @@ const Map = () => {
                       markers={locationsWithItems.map((location) => ({
                         id: location,
                         location,
-                        coordinates: getBuildingCoordinates(location) || { x: 1000, y: 700 },
+                        coordinates: getBuildingCoordinates(location) || {
+                          x: 1000,
+                          y: 700,
+                        },
                         isSelected: selectedLocation === location,
                         isHovered: hoveredLocation === location,
                       }))}
+                      contentItems={itemsToContentItems(filteredItems)}
                       onLocationHover={handleLocationHover}
                       onLocationSelect={handleLocationSelect}
                       height="400px"

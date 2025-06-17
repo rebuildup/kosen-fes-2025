@@ -47,7 +47,7 @@ const ZoomControls = ({
         className={buttonBaseClass}
         style={scale >= maxScale ? disabledButtonStyle : buttonStyle}
         aria-label={t("map.zoomIn")}
-        title={t("map.zoomIn")}
+        title="画面中央を中心にズームイン"
       >
         <svg
           width="20"
@@ -73,7 +73,7 @@ const ZoomControls = ({
         className={buttonBaseClass}
         style={scale <= minScale ? disabledButtonStyle : buttonStyle}
         aria-label={t("map.zoomOut")}
-        title={t("map.zoomOut")}
+        title="画面中央を中心にズームアウト"
       >
         <svg
           width="20"
@@ -97,7 +97,7 @@ const ZoomControls = ({
         className={buttonBaseClass}
         style={buttonStyle}
         aria-label={t("map.resetZoom")}
-        title={t("map.resetZoom")}
+        title="ズームをリセット（全体表示）"
       >
         <svg
           width="20"

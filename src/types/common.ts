@@ -1,5 +1,10 @@
 export type ItemType = "event" | "exhibit" | "stall" | "sponsor";
 
+export interface Coordinate {
+  x: number;
+  y: number;
+}
+
 export interface BaseItem {
   id: string;
   title: string;
@@ -8,6 +13,7 @@ export interface BaseItem {
   date: string;
   time: string;
   location: string;
+  coordinates?: Coordinate; // マップ上の座標（オプショナル）
   tags: string[];
 }
 

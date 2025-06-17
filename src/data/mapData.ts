@@ -162,23 +162,11 @@ export function getLocationCoordinates(
   const fallbacks = [
     {
       patterns: ["Main Stage", "メインステージ", "main-stage"],
-      coords: { x: 1000, y: 800 },
-    },
-    {
-      patterns: ["Central Plaza", "中央広場", "central-plaza"],
-      coords: { x: 700, y: 900 },
-    },
-    {
-      patterns: ["Food Court", "フードコート", "food-court"],
-      coords: { x: 600, y: 750 },
-    },
-    {
-      patterns: ["Main Entrance", "正門", "main-entrance"],
-      coords: { x: 500, y: 400 },
+      coords: { x: 333.3, y: 1060 },
     },
     {
       patterns: ["第二体育館", "second-gym"],
-      coords: { x: 147.38, y: 188.82 },
+      coords: { x: 116.6, y: 183.1 },
     },
     {
       patterns: ["F棟", "F-building"],
@@ -214,7 +202,7 @@ export function getLocationCoordinates(
     },
     {
       patterns: ["機電棟", "engineering-building"],
-      coords: { x: 254.83, y: 751.49 },
+      coords: { x: 244, y: 751 },
     },
   ];
 

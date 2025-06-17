@@ -1,7 +1,10 @@
 import { useRef, useEffect, useState, useCallback } from "react";
 import { useMapZoomPan } from "../../hooks/useMapZoomPan";
-import { CAMPUS_MAP_BOUNDS } from "../../data/buildings";
-import gsap from "gsap";
+import {
+  CAMPUS_MAP_BOUNDS,
+  getBuildingCoordinates,
+} from "../../data/buildings";
+import ZoomControls from "./ZoomControls";
 
 interface Coordinate {
   x: number;
@@ -16,21 +19,41 @@ interface LocationMarker {
   isHovered?: boolean;
 }
 
+interface ContentItem {
+  id: string;
+  title: string;
+  type: "event" | "exhibit" | "stall" | "sponsor";
+  coordinates: Coordinate;
+  isSelected?: boolean;
+  isHovered?: boolean;
+}
+
 interface UnifiedMapProps {
   // Map mode - affects behavior and interactions
   mode?: "display" | "detail" | "interactive";
 
-  // Location markers to display
+  // Location markers to display (buildings, rooms, etc.)
   markers?: LocationMarker[];
 
-  // Interaction handlers
+  // Legacy location support for backward compatibility
+  locations?: string[];
+  hoveredLocation?: string | null;
+  selectedLocation?: string | null;
   onLocationHover?: (location: string | null) => void;
   onLocationSelect?: (location: string | null) => void;
+
+  // Content items to display (events, exhibits, stalls)
+  contentItems?: ContentItem[];
+
+  // Interaction handlers
+  onContentItemHover?: (item: ContentItem | null) => void;
+  onContentItemSelect?: (item: ContentItem | null) => void;
   onCoordinateSelect?: (coordinate: Coordinate) => void;
 
   // Detail mode specific props
   highlightLocation?: string;
   highlightCoordinate?: Coordinate;
+  highlightContentItem?: string;
 
   // Interactive mode specific props
   selectedCoordinate?: Coordinate | null;
@@ -42,6 +65,7 @@ interface UnifiedMapProps {
   // Advanced controls
   showZoomControls?: boolean;
   allowInteraction?: boolean;
+  allowCoordinateSelection?: boolean;
   initialZoom?: number;
   maxZoom?: number;
   minZoom?: number;
@@ -50,18 +74,26 @@ interface UnifiedMapProps {
 const UnifiedMap = ({
   mode = "display",
   markers = [],
+  locations = [],
+  hoveredLocation,
+  selectedLocation,
   onLocationHover,
   onLocationSelect,
+  contentItems = [],
+  onContentItemHover,
+  onContentItemSelect,
   onCoordinateSelect,
-  highlightLocation,
+  highlightLocation: _highlightLocation,
   highlightCoordinate,
+  highlightContentItem: _highlightContentItem,
   selectedCoordinate,
   className = "",
   height = "400px",
   showZoomControls = true,
   allowInteraction = true,
+  allowCoordinateSelection = false,
   initialZoom = 1,
-  maxZoom = 5,
+  maxZoom = 8,
   minZoom = 0.5,
 }: UnifiedMapProps) => {
   const mapContainerRef = useRef<HTMLDivElement>(null);
@@ -69,21 +101,47 @@ const UnifiedMap = ({
   const [svgContent, setSvgContent] = useState<string>("");
   const [isDragging, setIsDragging] = useState(false);
   const [currentScale, setCurrentScale] = useState(initialZoom);
+  const [centerCoordinate, setCenterCoordinate] = useState<Coordinate>({
+    x: CAMPUS_MAP_BOUNDS.width / 2,
+    y: CAMPUS_MAP_BOUNDS.height / 2,
+  });
 
   // Initialize zoom/pan functionality
-  const { svgRef, zoomPan, zoomIn, zoomOut, resetZoom, zoomToLocation } =
-    useMapZoomPan({
-      minScale: minZoom,
-      maxScale: maxZoom,
-      initialScale: initialZoom,
-      mapWidth: CAMPUS_MAP_BOUNDS.width,
-      mapHeight: CAMPUS_MAP_BOUNDS.height,
-      containerRef: mapContainerRef,
-      overlayRef: overlayRef,
-      onTransformUpdate: useCallback((scale: number) => {
+  const {
+    svgRef,
+    zoomPan: _,
+    zoomIn: _zoomIn,
+    zoomOut: _zoomOut,
+    zoomInToCoordinate,
+    zoomOutFromCoordinate,
+    resetZoom,
+    zoomToLocation,
+    screenToViewBox,
+  } = useMapZoomPan({
+    minScale: minZoom,
+    maxScale: maxZoom,
+    initialScale: initialZoom,
+    mapWidth: CAMPUS_MAP_BOUNDS.width,
+    mapHeight: CAMPUS_MAP_BOUNDS.height,
+    containerRef: mapContainerRef,
+    overlayRef: overlayRef,
+    onTransformUpdate: useCallback(
+      (scale: number, centerX: number, centerY: number) => {
         setCurrentScale(scale);
-      }, []),
-    });
+        setCenterCoordinate({ x: centerX, y: centerY });
+      },
+      []
+    ),
+  });
+
+  // Coordinate-based zoom functions that maintain center coordinate
+  const handleZoomIn = useCallback(() => {
+    zoomInToCoordinate(centerCoordinate);
+  }, [centerCoordinate, zoomInToCoordinate]);
+
+  const handleZoomOut = useCallback(() => {
+    zoomOutFromCoordinate(centerCoordinate);
+  }, [centerCoordinate, zoomOutFromCoordinate]);
 
   // Load SVG content dynamically
   useEffect(() => {
@@ -100,17 +158,70 @@ const UnifiedMap = ({
     loadSvgContent();
   }, []);
 
+  // Handle legacy location focus
+  useEffect(() => {
+    if (selectedLocation) {
+      const coords = getBuildingCoordinates(selectedLocation);
+      if (coords) {
+        zoomToLocation(coords.x, coords.y, 4, 1.5);
+      }
+    }
+  }, [selectedLocation, zoomToLocation]);
+
+  useEffect(() => {
+    if (hoveredLocation && !selectedLocation) {
+      const coords = getBuildingCoordinates(hoveredLocation);
+      if (coords) {
+        zoomToLocation(coords.x, coords.y, 3, 1);
+      }
+    }
+  }, [hoveredLocation, selectedLocation, zoomToLocation]);
+
+  // Handle highlight coordinate focus
+  useEffect(() => {
+    if (highlightCoordinate) {
+      zoomToLocation(highlightCoordinate.x, highlightCoordinate.y, 4, 1.5);
+    }
+  }, [highlightCoordinate, zoomToLocation]);
+
+  // Handle selected coordinate focus
+  useEffect(() => {
+    if (selectedCoordinate) {
+      const timer = setTimeout(() => {
+        zoomToLocation(selectedCoordinate.x, selectedCoordinate.y, 3, 1);
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [selectedCoordinate, zoomToLocation]);
+
+  // Reset zoom when no location is selected or hovered
+  useEffect(() => {
+    if (
+      !hoveredLocation &&
+      !selectedLocation &&
+      !highlightCoordinate &&
+      !selectedCoordinate
+    ) {
+      resetZoom();
+    }
+  }, [
+    hoveredLocation,
+    selectedLocation,
+    highlightCoordinate,
+    selectedCoordinate,
+    resetZoom,
+  ]);
+
   // Calculate marker size based on actual current scale
   const getMarkerSize = (baseSize: number = 20) => {
-    // ズームレベルに応じてサイズを調整（最小10px、最大40px）
     const scaledSize = baseSize / currentScale;
-    return Math.max(10, Math.min(40, scaledSize));
+    return Math.max(8, Math.min(50, scaledSize));
   };
 
   // Calculate text size based on actual current scale
   const getTextSize = (baseSize: number = 12) => {
     const scaledSize = baseSize / currentScale;
-    return Math.max(8, Math.min(16, scaledSize));
+    return Math.max(6, Math.min(20, scaledSize));
   };
 
   // Calculate stroke width based on actual current scale
@@ -118,529 +229,372 @@ const UnifiedMap = ({
     return baseWidth / currentScale;
   };
 
-  // Handle coordinate selection for interactive mode
+  // Handle coordinate selection using new coordinate system
   const handleMapClick = (event: React.MouseEvent<SVGSVGElement>) => {
-    if (!allowInteraction || mode !== "interactive" || isDragging) return;
+    if (!allowInteraction || isDragging) return;
 
-    const svg = event.currentTarget;
-    const container = mapContainerRef.current;
-    if (!container || !svgRef.current) return;
+    // Only allow coordinate selection in interactive mode or when explicitly enabled
+    if (!allowCoordinateSelection && mode !== "interactive") return;
 
-    try {
-      // SVGの現在の変換行列を取得
-      const svgMatrix = svg.getScreenCTM();
-      if (!svgMatrix) {
-        console.warn("Could not get SVG screen CTM");
-        return;
-      }
-
-      // マウスの絶対座標を取得
-      const point = svg.createSVGPoint();
-      point.x = event.clientX;
-      point.y = event.clientY;
-
-      // 変換行列を使用してSVG座標系に変換
-      const svgPoint = point.matrixTransform(svgMatrix.inverse());
-
-      // 座標を境界内にクランプ
-      const clampedX = Math.max(
-        0,
-        Math.min(CAMPUS_MAP_BOUNDS.width, svgPoint.x)
-      );
-      const clampedY = Math.max(
-        0,
-        Math.min(CAMPUS_MAP_BOUNDS.height, svgPoint.y)
-      );
-
-      console.log("Matrix-based click coordinates:", {
-        clientCoords: { x: event.clientX, y: event.clientY },
-        svgMatrix: {
-          a: svgMatrix.a,
-          b: svgMatrix.b,
-          c: svgMatrix.c,
-          d: svgMatrix.d,
-          e: svgMatrix.e,
-          f: svgMatrix.f,
-        },
-        svgPoint: { x: svgPoint.x, y: svgPoint.y },
-        clamped: { x: clampedX, y: clampedY },
-        bounds: CAMPUS_MAP_BOUNDS,
-      });
-
-      onCoordinateSelect?.({ x: clampedX, y: clampedY });
-    } catch (error) {
-      console.warn(
-        "SVG matrix transform failed, falling back to manual calculation:",
-        error
-      );
-
-      // フォールバック: 手動計算
-      const containerRect = container.getBoundingClientRect();
-      const clickX = event.clientX - containerRect.left;
-      const clickY = event.clientY - containerRect.top;
-
-      const actualScale =
-        (gsap.getProperty(svgRef.current!, "scaleX") as number) || currentScale;
-      const actualX = (gsap.getProperty(svgRef.current!, "x") as number) || 0;
-      const actualY = (gsap.getProperty(svgRef.current!, "y") as number) || 0;
-
-      const viewBoxWidth = CAMPUS_MAP_BOUNDS.width;
-      const viewBoxHeight = CAMPUS_MAP_BOUNDS.height;
-      const containerWidth = containerRect.width;
-      const containerHeight = containerRect.height;
-
-      const scaleX = containerWidth / viewBoxWidth;
-      const scaleY = containerHeight / viewBoxHeight;
-      const uniformScale = Math.min(scaleX, scaleY);
-
-      const scaledViewBoxWidth = viewBoxWidth * uniformScale;
-      const scaledViewBoxHeight = viewBoxHeight * uniformScale;
-      const offsetX = (containerWidth - scaledViewBoxWidth) / 2;
-      const offsetY = (containerHeight - scaledViewBoxHeight) / 2;
-
-      const adjustedClickX = clickX - offsetX;
-      const adjustedClickY = clickY - offsetY;
-
-      const preTransformX = (adjustedClickX - actualX) / actualScale;
-      const preTransformY = (adjustedClickY - actualY) / actualScale;
-
-      const svgX = preTransformX / uniformScale;
-      const svgY = preTransformY / uniformScale;
-
-      const clampedX = Math.max(0, Math.min(CAMPUS_MAP_BOUNDS.width, svgX));
-      const clampedY = Math.max(0, Math.min(CAMPUS_MAP_BOUNDS.height, svgY));
-
-      console.log("Fallback click coordinates:", {
-        screen: { x: clickX, y: clickY },
-        svg: { x: svgX, y: svgY },
-        clamped: { x: clampedX, y: clampedY },
-        actualTransform: { scale: actualScale, x: actualX, y: actualY },
-      });
-
-      onCoordinateSelect?.({ x: clampedX, y: clampedY });
-    }
+    // Use the new screenToViewBox function for accurate coordinate conversion
+    const viewCoord = screenToViewBox(event.clientX, event.clientY);
+    onCoordinateSelect?.(viewCoord);
   };
 
-  // Handle mouse events for drag detection
-  const handleMouseDown = () => setIsDragging(false);
-  const handleMouseMove = () => setIsDragging(true);
+  // Simplified drag detection - no actual dragging functionality
+  const handleMouseDown = useCallback(() => {
+    setIsDragging(false);
+  }, []);
 
-  // Auto-zoom to highlighted location or coordinate
-  useEffect(() => {
-    if (highlightCoordinate) {
-      const timer = setTimeout(() => {
-        zoomToLocation(highlightCoordinate.x, highlightCoordinate.y, 3, 1.5);
-      }, 300);
-      return () => clearTimeout(timer);
-    }
-  }, [highlightCoordinate, zoomToLocation]);
+  const handleMouseMove = useCallback(() => {
+    // Simplified - no dragging functionality
+  }, []);
 
-  // Auto-zoom to selected coordinate in interactive mode
-  useEffect(() => {
-    if (selectedCoordinate && mode === "interactive") {
-      const timer = setTimeout(() => {
-        zoomToLocation(selectedCoordinate.x, selectedCoordinate.y, 3, 1);
-      }, 100);
-      return () => clearTimeout(timer);
-    }
-  }, [selectedCoordinate, zoomToLocation, mode]);
+  // Get coordinates for legacy location support
+  const getLocationCoordinates = (location: string): Coordinate | null => {
+    const coords = getBuildingCoordinates(location);
+    return coords || null;
+  };
 
-  // Parse SVG content and add interactive elements
-  const renderSvgWithOverlays = () => {
+  // Combined markers from both legacy locations and new markers
+  const getAllMarkers = (): LocationMarker[] => {
+    const legacyMarkers: LocationMarker[] = locations.map((location) => ({
+      id: `legacy-${location}`,
+      location,
+      coordinates: getLocationCoordinates(location) || { x: 0, y: 0 },
+      isSelected: selectedLocation === location,
+      isHovered: hoveredLocation === location,
+    }));
+
+    return [...markers, ...legacyMarkers].filter(
+      (marker) => marker.coordinates.x !== 0 || marker.coordinates.y !== 0
+    );
+  };
+
+  // Render the complete map with all overlays
+  const renderMapWithOverlays = () => {
     if (!svgContent) {
       return (
-        <div className="flex items-center justify-center h-full">
-          <div className="text-center">
-            <div className="animate-spin w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full mx-auto mb-2"></div>
-            <p style={{ color: "var(--color-text-secondary)" }}>
-              Loading map...
-            </p>
-          </div>
+        <div className="flex items-center justify-center h-full bg-gray-100 rounded-lg">
+          <div className="text-gray-500">マップを読み込み中...</div>
         </div>
       );
     }
 
+    const allMarkers = getAllMarkers();
+
     return (
-      <svg
-        ref={svgRef}
-        viewBox={CAMPUS_MAP_BOUNDS.viewBox}
-        className="w-full h-full"
-        onClick={handleMapClick}
-        onMouseDown={handleMouseDown}
-        onMouseMove={handleMouseMove}
-        style={{ cursor: mode === "interactive" ? "crosshair" : "grab" }}
-        dangerouslySetInnerHTML={{
-          __html: svgContent.replace(/<svg[^>]*>|<\/svg>/g, ""),
-        }}
-      />
+      <div className="w-full h-full relative">
+        {/* Main SVG Map */}
+        <svg
+          ref={svgRef}
+          viewBox={CAMPUS_MAP_BOUNDS.viewBox}
+          className={`w-full h-full ${
+            allowCoordinateSelection || mode === "interactive"
+              ? "cursor-crosshair"
+              : ""
+          }`}
+          onClick={handleMapClick}
+          onMouseDown={handleMouseDown}
+          onMouseMove={handleMouseMove}
+          dangerouslySetInnerHTML={{ __html: svgContent }}
+        />
+
+        {/* Overlay SVG for markers and interactive elements */}
+        <svg
+          ref={overlayRef}
+          viewBox={CAMPUS_MAP_BOUNDS.viewBox}
+          className="absolute inset-0 w-full h-full pointer-events-none"
+          style={{ zIndex: 10 }}
+        >
+          <defs>
+            <style>
+              {`
+                .location-marker { cursor: pointer; pointer-events: all; }
+                .location-marker.hovered .location-dot { 
+                  r: ${getMarkerSize(25)}; 
+                  fill: var(--color-primary-light, #60a5fa);
+                }
+                .location-marker.selected .location-dot { 
+                  r: ${getMarkerSize(30)}; 
+                  fill: var(--color-primary, #3b82f6);
+                  filter: drop-shadow(0 0 10px var(--color-primary, #3b82f6));
+                }
+                .location-label {
+                  font-family: inherit;
+                  font-size: ${getTextSize(11)}px;
+                  font-weight: 600;
+                  pointer-events: none;
+                  text-shadow: 1px 1px 2px rgba(255,255,255,0.9);
+                  fill: #1f2937;
+                }
+                .content-marker { cursor: pointer; pointer-events: all; }
+                .content-marker.hovered .content-dot { 
+                  r: ${getMarkerSize(22)}; 
+                  opacity: 0.9;
+                }
+                .content-marker.selected .content-dot { 
+                  r: ${getMarkerSize(28)}; 
+                  filter: drop-shadow(0 0 8px currentColor);
+                }
+                .content-label {
+                  font-family: inherit;
+                  font-size: ${getTextSize(10)}px;
+                  font-weight: 500;
+                  pointer-events: none;
+                  text-shadow: 1px 1px 2px rgba(255,255,255,0.8);
+                  fill: #374151;
+                }
+                .coordinate-marker {
+                  fill: var(--color-accent, #f59e0b);
+                  filter: drop-shadow(0 0 12px var(--color-accent, #f59e0b));
+                }
+                .highlight-marker {
+                  fill: var(--color-secondary, #8b5cf6);
+                  filter: drop-shadow(0 0 15px var(--color-secondary, #8b5cf6));
+                }
+              `}
+            </style>
+          </defs>
+
+          {/* Location Markers */}
+          {allMarkers.map((marker) => (
+            <g
+              key={marker.id}
+              className={`location-marker ${
+                marker.isHovered ? "hovered" : ""
+              } ${marker.isSelected ? "selected" : ""}`}
+              onClick={() => onLocationSelect?.(marker.location)}
+              onMouseEnter={() => onLocationHover?.(marker.location)}
+              onMouseLeave={() => onLocationHover?.(null)}
+            >
+              <circle
+                className="location-dot"
+                cx={marker.coordinates.x}
+                cy={marker.coordinates.y}
+                r={getMarkerSize(
+                  marker.isSelected ? 25 : marker.isHovered ? 22 : 18
+                )}
+                fill={
+                  marker.isSelected
+                    ? "var(--color-primary, #3b82f6)"
+                    : marker.isHovered
+                    ? "var(--color-primary-light, #60a5fa)"
+                    : "var(--color-gray-600, #4b5563)"
+                }
+                stroke="white"
+                strokeWidth={getStrokeWidth(2)}
+              />
+              <text
+                className="location-label"
+                x={marker.coordinates.x}
+                y={marker.coordinates.y - getMarkerSize(25)}
+                textAnchor="middle"
+              >
+                {marker.location}
+              </text>
+            </g>
+          ))}
+
+          {/* Content Item Markers */}
+          {contentItems.map((item) => {
+            const getItemColor = (type: string) => {
+              switch (type) {
+                case "event":
+                  return "#f97316"; // orange
+                case "exhibit":
+                  return "#06b6d4"; // cyan
+                case "stall":
+                  return "#3b82f6"; // blue
+                case "sponsor":
+                  return "#10b981"; // emerald
+                default:
+                  return "#6b7280"; // gray
+              }
+            };
+
+            const getItemIcon = (type: string) => {
+              switch (type) {
+                case "event":
+                  return "🎪";
+                case "exhibit":
+                  return "🔬";
+                case "stall":
+                  return "🍴";
+                case "sponsor":
+                  return "🏢";
+                default:
+                  return "📍";
+              }
+            };
+
+            return (
+              <g
+                key={item.id}
+                className={`content-marker ${item.isHovered ? "hovered" : ""} ${
+                  item.isSelected ? "selected" : ""
+                }`}
+                onClick={() => onContentItemSelect?.(item)}
+                onMouseEnter={() => onContentItemHover?.(item)}
+                onMouseLeave={() => onContentItemHover?.(null)}
+              >
+                <circle
+                  className="content-dot"
+                  cx={item.coordinates.x}
+                  cy={item.coordinates.y}
+                  r={getMarkerSize(
+                    item.isSelected ? 24 : item.isHovered ? 20 : 16
+                  )}
+                  fill={getItemColor(item.type)}
+                  stroke="white"
+                  strokeWidth={getStrokeWidth(2)}
+                />
+                <text
+                  x={item.coordinates.x}
+                  y={item.coordinates.y + getTextSize(4)}
+                  textAnchor="middle"
+                  fontSize={getTextSize(14)}
+                  fill="white"
+                  fontWeight="bold"
+                >
+                  {getItemIcon(item.type)}
+                </text>
+                <text
+                  className="content-label"
+                  x={item.coordinates.x}
+                  y={item.coordinates.y - getMarkerSize(22)}
+                  textAnchor="middle"
+                >
+                  {item.title}
+                </text>
+              </g>
+            );
+          })}
+
+          {/* Highlight Coordinate Marker */}
+          {highlightCoordinate && (
+            <g className="highlight-marker" pointerEvents="none">
+              <circle
+                cx={highlightCoordinate.x}
+                cy={highlightCoordinate.y}
+                r={getMarkerSize(28)}
+                fill="var(--color-secondary, #8b5cf6)"
+                stroke="white"
+                strokeWidth={getStrokeWidth(3)}
+                opacity="0.9"
+              />
+              <circle
+                cx={highlightCoordinate.x}
+                cy={highlightCoordinate.y}
+                r={getMarkerSize(15)}
+                fill="white"
+                opacity="0.8"
+              />
+            </g>
+          )}
+
+          {/* Selected Coordinate Marker */}
+          {selectedCoordinate && (
+            <g className="coordinate-marker" pointerEvents="none">
+              <circle
+                cx={selectedCoordinate.x}
+                cy={selectedCoordinate.y}
+                r={getMarkerSize(26)}
+                fill="var(--color-accent, #f59e0b)"
+                stroke="white"
+                strokeWidth={getStrokeWidth(3)}
+                opacity="0.9"
+              />
+              <circle
+                cx={selectedCoordinate.x}
+                cy={selectedCoordinate.y}
+                r={getMarkerSize(12)}
+                fill="white"
+                opacity="0.9"
+              />
+              <text
+                x={selectedCoordinate.x}
+                y={selectedCoordinate.y - getMarkerSize(32)}
+                textAnchor="middle"
+                fontSize={getTextSize(11)}
+                fontWeight="bold"
+                fill="#1f2937"
+                className="location-label"
+              >
+                選択された位置
+              </text>
+            </g>
+          )}
+
+          {/* Development Guide: Center Coordinate Indicator */}
+          {process.env.NODE_ENV === "development" && (
+            <g className="dev-center-guide" pointerEvents="none">
+              {/* Center crosshair */}
+              <line
+                x1={centerCoordinate.x - 20}
+                y1={centerCoordinate.y}
+                x2={centerCoordinate.x + 20}
+                y2={centerCoordinate.y}
+                stroke="#ff0000"
+                strokeWidth={getStrokeWidth(2)}
+                opacity="0.7"
+              />
+              <line
+                x1={centerCoordinate.x}
+                y1={centerCoordinate.y - 20}
+                x2={centerCoordinate.x}
+                y2={centerCoordinate.y + 20}
+                stroke="#ff0000"
+                strokeWidth={getStrokeWidth(2)}
+                opacity="0.7"
+              />
+              {/* Center coordinate display */}
+              <rect
+                x={centerCoordinate.x + 25}
+                y={centerCoordinate.y - 15}
+                width="120"
+                height="30"
+                fill="rgba(255, 0, 0, 0.8)"
+                rx="5"
+              />
+              <text
+                x={centerCoordinate.x + 85}
+                y={centerCoordinate.y}
+                textAnchor="middle"
+                fontSize={getTextSize(10)}
+                fontWeight="bold"
+                fill="white"
+              >
+                CENTER: ({Math.round(centerCoordinate.x)},{" "}
+                {Math.round(centerCoordinate.y)})
+              </text>
+            </g>
+          )}
+        </svg>
+      </div>
     );
   };
 
   return (
     <div
       ref={mapContainerRef}
-      className={`relative overflow-hidden ${className}`}
-      style={{ height, backgroundColor: "var(--color-bg-secondary)" }}
+      className={`relative ${className}`}
+      style={{ height }}
     >
-      {/* Main SVG Content */}
-      <div className="absolute inset-0">
-        {renderSvgWithOverlays()}
-
-        {/* Overlay markers and interactive elements - ズーム・パンに正しく追従 */}
-        {svgContent && (
-          <svg
-            ref={overlayRef}
-            viewBox={CAMPUS_MAP_BOUNDS.viewBox}
-            className="absolute inset-0 w-full h-full pointer-events-none"
-          >
-            {/* Location markers for display mode */}
-            {mode === "display" &&
-              markers.map((marker) => {
-                const markerSize = getMarkerSize(
-                  marker.isSelected ? 30 : marker.isHovered ? 25 : 20
-                );
-                const textSize = getTextSize(12);
-
-                return (
-                  <g
-                    key={marker.id}
-                    className="location-marker pointer-events-auto"
-                    onMouseEnter={() => onLocationHover?.(marker.location)}
-                    onMouseLeave={() => onLocationHover?.(null)}
-                    onClick={() => onLocationSelect?.(marker.location)}
-                    style={{ cursor: "pointer" }}
-                  >
-                    {/* ピンの影 */}
-                    <circle
-                      cx={marker.coordinates.x + 2}
-                      cy={marker.coordinates.y + 2}
-                      r={markerSize}
-                      fill="rgba(0,0,0,0.2)"
-                      opacity="0.5"
-                    />
-
-                    {/* メインピン */}
-                    <circle
-                      cx={marker.coordinates.x}
-                      cy={marker.coordinates.y}
-                      r={markerSize}
-                      fill={
-                        marker.isSelected
-                          ? "var(--primary)"
-                          : marker.isHovered
-                          ? "var(--primary-light)"
-                          : "var(--secondary)"
-                      }
-                      stroke="white"
-                      strokeWidth={getStrokeWidth(3)}
-                      style={{
-                        filter: marker.isSelected
-                          ? "drop-shadow(0 0 10px var(--primary))"
-                          : "none",
-                        transition: "all 0.3s ease",
-                      }}
-                    />
-
-                    {/* 内側のドット */}
-                    <circle
-                      cx={marker.coordinates.x}
-                      cy={marker.coordinates.y}
-                      r={markerSize * 0.3}
-                      fill="white"
-                    />
-
-                    {/* ラベル */}
-                    <text
-                      x={marker.coordinates.x}
-                      y={marker.coordinates.y - markerSize - 5}
-                      textAnchor="middle"
-                      fontSize={textSize}
-                      fontWeight="500"
-                      fill="var(--color-text-primary)"
-                      stroke="white"
-                      strokeWidth={getStrokeWidth(2)}
-                      paintOrder="stroke"
-                      className="pointer-events-none"
-                    >
-                      {marker.location.split(",")[0]}
-                    </text>
-                  </g>
-                );
-              })}
-
-            {/* Highlight marker for detail mode */}
-            {mode === "detail" && highlightCoordinate && (
-              <g>
-                {/* アニメーション付きリップル効果 */}
-                <circle
-                  cx={highlightCoordinate.x}
-                  cy={highlightCoordinate.y}
-                  r={getMarkerSize(30)}
-                  fill="none"
-                  stroke="var(--primary)"
-                  strokeWidth={getStrokeWidth(2)}
-                  opacity="0.6"
-                >
-                  <animate
-                    attributeName="r"
-                    values={`${getMarkerSize(30)};${getMarkerSize(
-                      50
-                    )};${getMarkerSize(30)}`}
-                    dur="2s"
-                    repeatCount="indefinite"
-                  />
-                  <animate
-                    attributeName="opacity"
-                    values="0.6;0;0.6"
-                    dur="2s"
-                    repeatCount="indefinite"
-                  />
-                </circle>
-
-                {/* メインマーカー */}
-                <circle
-                  cx={highlightCoordinate.x}
-                  cy={highlightCoordinate.y}
-                  r={getMarkerSize(25)}
-                  fill="var(--primary)"
-                  stroke="white"
-                  strokeWidth={getStrokeWidth(4)}
-                  style={{
-                    filter: "drop-shadow(0 0 15px var(--primary))",
-                  }}
-                />
-
-                {/* 中央のドット */}
-                <circle
-                  cx={highlightCoordinate.x}
-                  cy={highlightCoordinate.y}
-                  r={getMarkerSize(8)}
-                  fill="white"
-                />
-
-                {/* ラベル */}
-                <text
-                  x={highlightCoordinate.x}
-                  y={highlightCoordinate.y - getMarkerSize(25) - 10}
-                  textAnchor="middle"
-                  fontSize={getTextSize(14)}
-                  fontWeight="bold"
-                  fill="var(--primary)"
-                  stroke="white"
-                  strokeWidth={getStrokeWidth(3)}
-                  paintOrder="stroke"
-                >
-                  {highlightLocation?.split(",")[0]}
-                </text>
-              </g>
-            )}
-
-            {/* Selected coordinate marker for interactive mode */}
-            {mode === "interactive" && selectedCoordinate && (
-              <g>
-                {/* リップル効果 */}
-                <circle
-                  cx={selectedCoordinate.x}
-                  cy={selectedCoordinate.y}
-                  r={getMarkerSize(25)}
-                  fill="none"
-                  stroke="var(--primary)"
-                  strokeWidth={getStrokeWidth(2)}
-                  opacity="0.6"
-                >
-                  <animate
-                    attributeName="r"
-                    values={`${getMarkerSize(25)};${getMarkerSize(
-                      45
-                    )};${getMarkerSize(25)}`}
-                    dur="2s"
-                    repeatCount="indefinite"
-                  />
-                  <animate
-                    attributeName="opacity"
-                    values="0.6;0;0.6"
-                    dur="2s"
-                    repeatCount="indefinite"
-                  />
-                </circle>
-
-                {/* メインマーカー */}
-                <circle
-                  cx={selectedCoordinate.x}
-                  cy={selectedCoordinate.y}
-                  r={getMarkerSize(15)}
-                  fill="var(--primary)"
-                  stroke="white"
-                  strokeWidth={getStrokeWidth(3)}
-                  style={{
-                    filter: "drop-shadow(0 0 8px var(--primary))",
-                  }}
-                />
-
-                {/* 中央のドット */}
-                <circle
-                  cx={selectedCoordinate.x}
-                  cy={selectedCoordinate.y}
-                  r={getMarkerSize(4)}
-                  fill="white"
-                />
-
-                {/* 座標ラベル */}
-                <text
-                  x={selectedCoordinate.x}
-                  y={selectedCoordinate.y - getMarkerSize(15) - 8}
-                  textAnchor="middle"
-                  fontSize={getTextSize(12)}
-                  fontWeight="bold"
-                  fill="var(--color-text-primary)"
-                  stroke="white"
-                  strokeWidth={getStrokeWidth(2)}
-                  paintOrder="stroke"
-                >
-                  📍 選択位置
-                </text>
-
-                {/* 座標値表示 */}
-                <text
-                  x={selectedCoordinate.x}
-                  y={selectedCoordinate.y + getMarkerSize(15) + 15}
-                  textAnchor="middle"
-                  fontSize={getTextSize(10)}
-                  fill="var(--color-text-secondary)"
-                  stroke="white"
-                  strokeWidth={getStrokeWidth(1)}
-                  paintOrder="stroke"
-                >
-                  ({selectedCoordinate.x.toFixed(0)},{" "}
-                  {selectedCoordinate.y.toFixed(0)})
-                </text>
-              </g>
-            )}
-          </svg>
-        )}
-      </div>
-
-      {/* Zoom Controls - Top Right Only */}
+      {/* Zoom Controls */}
       {showZoomControls && (
-        <div className="absolute top-4 right-4 z-10 flex flex-col gap-2">
-          <button
-            onClick={zoomIn}
-            disabled={zoomPan.scale >= maxZoom}
-            className="flex items-center justify-center w-10 h-10 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed hover:scale-105 active:scale-95"
-            style={{
-              backgroundColor: "var(--color-bg-secondary)",
-              color: "var(--color-text-primary)",
-              border: "1px solid var(--color-border-primary)",
-            }}
-            title="ズームイン"
-          >
-            <svg
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <circle cx="11" cy="11" r="8" />
-              <path d="m21 21-4.35-4.35" />
-              <line x1="8" y1="11" x2="14" y2="11" />
-              <line x1="11" y1="8" x2="11" y2="14" />
-            </svg>
-          </button>
-
-          <button
-            onClick={zoomOut}
-            disabled={zoomPan.scale <= minZoom}
-            className="flex items-center justify-center w-10 h-10 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed hover:scale-105 active:scale-95"
-            style={{
-              backgroundColor: "var(--color-bg-secondary)",
-              color: "var(--color-text-primary)",
-              border: "1px solid var(--color-border-primary)",
-            }}
-            title="ズームアウト"
-          >
-            <svg
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <circle cx="11" cy="11" r="8" />
-              <path d="m21 21-4.35-4.35" />
-              <line x1="8" y1="11" x2="14" y2="11" />
-            </svg>
-          </button>
-
-          <button
-            onClick={resetZoom}
-            className="flex items-center justify-center w-10 h-10 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg hover:scale-105 active:scale-95"
-            style={{
-              backgroundColor: "var(--color-bg-secondary)",
-              color: "var(--color-text-primary)",
-              border: "1px solid var(--color-border-primary)",
-            }}
-            title="リセット"
-          >
-            <svg
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />
-              <path d="M21 3v5h-5" />
-              <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" />
-              <path d="M3 21v-5h5" />
-            </svg>
-          </button>
-
-          {/* Zoom Level Indicator */}
-          <div
-            className="flex items-center justify-center px-2 py-1 rounded-lg text-xs font-medium shadow-md"
-            style={{
-              backgroundColor: "var(--color-bg-secondary)",
-              color: "var(--color-text-secondary)",
-              border: "1px solid var(--color-border-primary)",
-            }}
-          >
-            {Math.round(zoomPan.scale * 100)}%
-          </div>
-        </div>
+        <ZoomControls
+          onZoomIn={handleZoomIn}
+          onZoomOut={handleZoomOut}
+          onReset={resetZoom}
+          scale={currentScale}
+          minScale={minZoom}
+          maxScale={maxZoom}
+        />
       )}
 
-      {/* Interactive mode instructions */}
-      {mode === "interactive" && (
-        <div className="absolute bottom-4 left-4 bg-black/80 backdrop-blur-sm rounded-lg px-4 py-2 text-white text-sm">
-          <div className="flex items-center gap-2">
-            <span>🖱️</span>
-            <span>クリックして位置を選択</span>
-          </div>
-          {selectedCoordinate && (
-            <div className="text-xs mt-1 opacity-75">
-              選択中: X={selectedCoordinate.x.toFixed(1)}, Y=
-              {selectedCoordinate.y.toFixed(1)}
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* Zoom level indicator for non-interactive modes */}
-      {mode !== "interactive" && (
-        <div className="absolute bottom-4 right-4 bg-black/80 backdrop-blur-sm rounded-lg px-3 py-1 text-white text-xs">
-          ズーム: {(zoomPan.scale * 100).toFixed(0)}%
-        </div>
-      )}
+      {/* Map Display */}
+      {renderMapWithOverlays()}
     </div>
   );
 };

@@ -12,6 +12,7 @@ export const events: Event[] = [
     date: "2025-06-15",
     time: "9:30 - 10:30",
     location: "正門",
+    coordinates: { x: 500, y: 400 }, // 正門
     tags: ["セレモニー", "開会", "参加型"],
     organizer: "実行委員会",
     duration: 60,
@@ -26,6 +27,7 @@ export const events: Event[] = [
     date: "2025-06-15",
     time: "9:30 - 14:00",
     location: "キャンパス全域",
+    coordinates: { x: 1000, y: 700 }, // キャンパス中央
     tags: ["コンテスト", "インスタグラム", "写真"],
     organizer: "メディア部",
     duration: 1710, // from 9:30 on day 1 to 14:00 on day 2
@@ -40,6 +42,7 @@ export const events: Event[] = [
     date: "2025-06-15",
     time: "11:30 - 13:00",
     location: "メインステージ",
+    coordinates: { x: 168.8, y: 250 }, // 第二体育館近く（メインステージ）
     tags: ["コンテスト", "音楽", "パフォーマンス"],
     organizer: "音楽部",
     duration: 90,
@@ -53,6 +56,7 @@ export const events: Event[] = [
     date: "2025-06-16",
     time: "12:00 - 13:30",
     location: "メインステージ",
+    coordinates: { x: 168.8, y: 250 }, // 第二体育館近く（メインステージ）
     tags: ["コンテスト", "音楽", "パフォーマンス"],
     organizer: "音楽部",
     duration: 90,
@@ -67,6 +71,7 @@ export const events: Event[] = [
     date: "2025-06-15",
     time: "10:00 - 11:00",
     location: "メインステージ",
+    coordinates: { x: 168.8, y: 250 }, // 第二体育館近く（メインステージ）
     tags: ["ゲーム", "ビンゴ", "賞品"],
     organizer: "学生会",
     duration: 60,
@@ -81,6 +86,7 @@ export const events: Event[] = [
     date: "2025-06-15",
     time: "9:30 - 16:00",
     location: "ペリカン食堂 学生会館1F",
+    coordinates: { x: 588.6, y: 733.5 }, // 学生会館
     tags: ["ボランティア", "健康", "地域貢献"],
     organizer: "保健委員会",
     duration: 390, // 9:30-12:00 and 13:15-16:00 = 2.5 + 2.75 = 5.25 hours = 315 minutes
@@ -94,6 +100,7 @@ export const events: Event[] = [
     date: "2025-06-15",
     time: "10:00 - 16:00",
     location: "第2体育館",
+    coordinates: { x: 168.8, y: 193.8 }, // 第二体育館
     tags: ["ゲーム", "ダーツ", "無料"],
     organizer: "西日本自動車学校",
     duration: 360,
@@ -108,6 +115,7 @@ export const events: Event[] = [
     date: "2025-06-15",
     time: "10:00 - 16:00",
     location: "第2体育館",
+    coordinates: { x: 168.8, y: 193.8 }, // 第二体育館
     tags: ["ゲーム", "賞品", "すくい"],
     organizer: "宇部自動車学校",
     duration: 360,
@@ -122,6 +130,7 @@ export const events: Event[] = [
     date: "2025-06-16",
     time: "16:40 - 17:30",
     location: "第1体育館",
+    coordinates: { x: 1017.8, y: 1088.2 }, // 第一体育館
     tags: ["コンテスト", "コスプレ", "創作"],
     organizer: "エンターテイメント委員会",
     duration: 50,
@@ -136,6 +145,7 @@ export const events: Event[] = [
     date: "2025-06-16",
     time: "10:00 - 11:30",
     location: "メインステージ",
+    coordinates: { x: 168.8, y: 250 }, // 第二体育館近く（メインステージ）
     tags: ["クイズ", "コンテスト", "知識"],
     organizer: "クイズ研究会",
     duration: 90,
@@ -150,6 +160,7 @@ export const events: Event[] = [
     date: "2025-06-16",
     time: "10:00 - 16:00",
     location: "第2体育館",
+    coordinates: { x: 168.8, y: 193.8 }, // 第二体育館
     tags: ["ゲーム", "ゴルフ", "賞品"],
     organizer: "宇部中央自動車学校",
     duration: 360,
@@ -164,6 +175,7 @@ export const events: Event[] = [
     date: "2025-06-16",
     time: "16:00 - 17:00",
     location: "第1体育館",
+    coordinates: { x: 1017.8, y: 1088.2 }, // 第一体育館
     tags: ["抽選", "賞品", "抽選会"],
     organizer: "実行委員会",
     duration: 60,
@@ -177,6 +189,7 @@ export const events: Event[] = [
     date: "2025-06-16",
     time: "17:20 - 18:00",
     location: "第1体育館",
+    coordinates: { x: 1017.8, y: 1088.2 }, // 第一体育館
     tags: ["抽選", "賞品", "抽選会"],
     organizer: "実行委員会",
     duration: 40,
@@ -191,6 +204,7 @@ export const events: Event[] = [
     date: "2025-06-16",
     time: "18:10 - 19:00",
     location: "正門",
+    coordinates: { x: 500, y: 400 }, // 正門
     tags: ["セレモニー", "閉会", "風船"],
     organizer: "実行委員会",
     duration: 50,

@@ -1,18 +1,11 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { CAMPUS_MAP_BOUNDS } from "../data/buildings";
 
 interface ZoomPanState {
   scale: number;
-  x: number;
-  y: number;
-}
-
-interface MapBounds {
-  minX: number;
-  maxX: number;
-  minY: number;
-  maxY: number;
+  centerX: number; // SVG viewBox center X
+  centerY: number; // SVG viewBox center Y
 }
 
 interface UseMapZoomPanOptions {
@@ -22,447 +15,507 @@ interface UseMapZoomPanOptions {
   mapWidth: number;
   mapHeight: number;
   containerRef: React.RefObject<HTMLElement>;
-  onTransformUpdate?: (scale: number) => void;
+  onTransformUpdate?: (scale: number, centerX: number, centerY: number) => void;
   overlayRef?: React.RefObject<SVGSVGElement>;
-}
-
-interface Point {
-  x: number;
-  y: number;
 }
 
 export const useMapZoomPan = ({
   minScale = 0.5,
   maxScale = 5,
   initialScale = 1,
-  mapWidth,
-  mapHeight,
+  mapWidth: _mapWidth,
+  mapHeight: _mapHeight,
   containerRef,
   onTransformUpdate,
   overlayRef,
 }: UseMapZoomPanOptions) => {
-  const [zoomPan, setZoomPan] = useState<ZoomPanState>({
+  // Simple state: just scale and center coordinates
+  const [state, setState] = useState<ZoomPanState>({
     scale: initialScale,
-    x: 0,
-    y: 0,
+    centerX: CAMPUS_MAP_BOUNDS.width / 2,
+    centerY: CAMPUS_MAP_BOUNDS.height / 2,
   });
 
   const svgRef = useRef<SVGSVGElement>(null);
-  const isDragging = useRef(false);
-  const lastPointerPos = useRef({ x: 0, y: 0 });
 
-  // Convert SVG coordinates to screen coordinates
-  const svgToScreen = useCallback(
-    (point: Point, scale: number): Point => {
-      if (!containerRef.current) return point;
+  // Get current actual scale from GSAP (more reliable than React state during animations)
+  const getCurrentScale = useCallback(() => {
+    if (!svgRef.current) return state.scale;
+    const currentScale = gsap.getProperty(svgRef.current, "scaleX") as number;
+    return currentScale || state.scale;
+  }, [state.scale]);
 
-      const container = containerRef.current.getBoundingClientRect();
-
-      // Calculate SVG viewBox scaling factor
-      const viewBoxWidth = CAMPUS_MAP_BOUNDS.width;
-      const viewBoxHeight = CAMPUS_MAP_BOUNDS.height;
-      const containerWidth = container.width;
-      const containerHeight = container.height;
-
-      // Calculate the aspect ratio scaling
-      const scaleX = containerWidth / viewBoxWidth;
-      const scaleY = containerHeight / viewBoxHeight;
-      const uniformScale = Math.min(scaleX, scaleY); // SVG maintains aspect ratio
-
-      // Calculate the offset due to aspect ratio centering
-      const scaledViewBoxWidth = viewBoxWidth * uniformScale;
-      const scaledViewBoxHeight = viewBoxHeight * uniformScale;
-      const offsetX = (containerWidth - scaledViewBoxWidth) / 2;
-      const offsetY = (containerHeight - scaledViewBoxHeight) / 2;
-
-      // Convert SVG coordinates to screen coordinates
-      const screenX = point.x * uniformScale * scale + offsetX;
-      const screenY = point.y * uniformScale * scale + offsetY;
-
-      return { x: screenX, y: screenY };
-    },
-    [containerRef]
-  );
-
-  // Calculate the position to center a point
-  const calculateCenterPosition = useCallback(
-    (point: Point, scale: number): Point => {
-      if (!containerRef.current) return { x: 0, y: 0 };
-
-      const container = containerRef.current.getBoundingClientRect();
-
-      // Calculate SVG viewBox scaling factor
-      const viewBoxWidth = CAMPUS_MAP_BOUNDS.width;
-      const viewBoxHeight = CAMPUS_MAP_BOUNDS.height;
-      const containerWidth = container.width;
-      const containerHeight = container.height;
-
-      // Calculate the aspect ratio scaling
-      const scaleX = containerWidth / viewBoxWidth;
-      const scaleY = containerHeight / viewBoxHeight;
-      const uniformScale = Math.min(scaleX, scaleY); // SVG maintains aspect ratio
-
-      // Calculate the offset due to aspect ratio centering
-      const scaledViewBoxWidth = viewBoxWidth * uniformScale;
-      const scaledViewBoxHeight = viewBoxHeight * uniformScale;
-      const offsetX = (containerWidth - scaledViewBoxWidth) / 2;
-      const offsetY = (containerHeight - scaledViewBoxHeight) / 2;
-
-      // Convert target point to screen coordinates at the given scale
-      const targetScreenX = point.x * uniformScale * scale + offsetX;
-      const targetScreenY = point.y * uniformScale * scale + offsetY;
-
-      // Calculate position to center the target point
-      const centerX = container.width / 2 - targetScreenX;
-      const centerY = container.height / 2 - targetScreenY;
-
-      console.log("Center calculation:", {
-        targetPoint: point,
-        scale: scale,
-        viewBox: { width: viewBoxWidth, height: viewBoxHeight },
-        container: { width: containerWidth, height: containerHeight },
-        uniformScale: uniformScale,
-        offset: { x: offsetX, y: offsetY },
-        targetScreen: { x: targetScreenX, y: targetScreenY },
-        center: { x: centerX, y: centerY },
-      });
-
-      return { x: centerX, y: centerY };
-    },
-    [containerRef]
-  );
-
-  // Calculate map bounds to prevent over-panning
-  const getMapBounds = useCallback(
-    (scale: number): MapBounds => {
+  // Calculate GSAP transform to keep a specific coordinate at screen center
+  const calculateTransformToKeepCoordinateAtCenter = useCallback(
+    (targetState: ZoomPanState, fixedCoord: { x: number; y: number }) => {
       if (!containerRef.current) {
-        return { minX: 0, maxX: 0, minY: 0, maxY: 0 };
+        return { scale: targetState.scale, x: 0, y: 0 };
       }
 
       const container = containerRef.current.getBoundingClientRect();
 
-      // Calculate SVG viewBox scaling factor
-      const viewBoxWidth = CAMPUS_MAP_BOUNDS.width;
-      const viewBoxHeight = CAMPUS_MAP_BOUNDS.height;
-      const containerWidth = container.width;
-      const containerHeight = container.height;
-
-      // Calculate the aspect ratio scaling
-      const scaleX = containerWidth / viewBoxWidth;
-      const scaleY = containerHeight / viewBoxHeight;
+      // Calculate uniform scale for aspect ratio
+      const scaleX = container.width / CAMPUS_MAP_BOUNDS.width;
+      const scaleY = container.height / CAMPUS_MAP_BOUNDS.height;
       const uniformScale = Math.min(scaleX, scaleY);
 
-      // Calculate actual scaled dimensions
-      const scaledWidth = viewBoxWidth * uniformScale * scale;
-      const scaledHeight = viewBoxHeight * uniformScale * scale;
+      // Calculate center offsets for the base map
+      const offsetX =
+        (container.width - CAMPUS_MAP_BOUNDS.width * uniformScale) / 2;
+      const offsetY =
+        (container.height - CAMPUS_MAP_BOUNDS.height * uniformScale) / 2;
 
-      // Calculate offsets for centering
-      const offsetX = (containerWidth - viewBoxWidth * uniformScale) / 2;
-      const offsetY = (containerHeight - viewBoxHeight * uniformScale) / 2;
+      // Screen center where we want the fixed coordinate to appear
+      const targetScreenX = container.width / 2;
+      const targetScreenY = container.height / 2;
 
-      // Allow generous padding for smooth panning
-      const paddingX = containerWidth * 0.1; // 10% padding
-      const paddingY = containerHeight * 0.1; // 10% padding
+      // Calculate where the fixed coordinate will appear with the new scale
+      const coordScreenX = fixedCoord.x * uniformScale * targetState.scale;
+      const coordScreenY = fixedCoord.y * uniformScale * targetState.scale;
+
+      // Calculate translation needed to center the fixed coordinate
+      const translateX = targetScreenX - coordScreenX - offsetX;
+      const translateY = targetScreenY - coordScreenY - offsetY;
+
+      console.log("Fixed coordinate transform calculation:", {
+        fixedCoord,
+        targetState,
+        container: { width: container.width, height: container.height },
+        uniformScale,
+        offsets: { offsetX, offsetY },
+        coordScreen: { coordScreenX, coordScreenY },
+        translation: { translateX, translateY },
+      });
 
       return {
-        minX: containerWidth - scaledWidth - paddingX + offsetX,
-        maxX: paddingX + offsetX,
-        minY: containerHeight - scaledHeight - paddingY + offsetY,
-        maxY: paddingY + offsetY,
+        scale: targetState.scale,
+        x: translateX,
+        y: translateY,
       };
     },
     [containerRef]
   );
 
-  // Constrain position within bounds
-  const constrainPosition = useCallback(
-    (x: number, y: number, scale: number): Point => {
-      const bounds = getMapBounds(scale);
+  // Calculate GSAP transform from given state (for normal centering)
+  const calculateTransformForState = useCallback(
+    (targetState: ZoomPanState) => {
+      if (!containerRef.current) {
+        return { scale: targetState.scale, x: 0, y: 0 };
+      }
+
+      const container = containerRef.current.getBoundingClientRect();
+
+      // Calculate uniform scale for aspect ratio
+      const scaleX = container.width / CAMPUS_MAP_BOUNDS.width;
+      const scaleY = container.height / CAMPUS_MAP_BOUNDS.height;
+      const uniformScale = Math.min(scaleX, scaleY);
+
+      // Calculate center offsets
+      const offsetX =
+        (container.width - CAMPUS_MAP_BOUNDS.width * uniformScale) / 2;
+      const offsetY =
+        (container.height - CAMPUS_MAP_BOUNDS.height * uniformScale) / 2;
+
+      // Calculate where center should appear on screen
+      const targetScreenX = container.width / 2;
+      const targetScreenY = container.height / 2;
+
+      // Calculate where center currently appears
+      const currentScreenX =
+        targetState.centerX * uniformScale * targetState.scale;
+      const currentScreenY =
+        targetState.centerY * uniformScale * targetState.scale;
+
+      // Calculate required translation
+      const translateX = targetScreenX - currentScreenX - offsetX;
+      const translateY = targetScreenY - currentScreenY - offsetY;
+
       return {
-        x: Math.max(bounds.minX, Math.min(bounds.maxX, x)),
-        y: Math.max(bounds.minY, Math.min(bounds.maxY, y)),
+        scale: targetState.scale,
+        x: translateX,
+        y: translateY,
       };
     },
-    [getMapBounds]
+    [containerRef]
   );
 
-  // Apply transform with animation
+  // Apply transform to SVG elements
   const applyTransform = useCallback(
-    (newState: ZoomPanState, animate = true, duration = 0.3) => {
+    (newState: ZoomPanState, animate = true) => {
       if (!svgRef.current) return;
 
-      const constrainedPos = constrainPosition(
-        newState.x,
-        newState.y,
-        newState.scale
-      );
-      const finalState = { ...newState, ...constrainedPos };
+      // Constrain scale
+      const constrainedState = {
+        ...newState,
+        scale: Math.max(minScale, Math.min(maxScale, newState.scale)),
+      };
 
-      setZoomPan(finalState);
-
-      // Notify about scale changes immediately for smooth UI updates
-      onTransformUpdate?.(finalState.scale);
-
+      // Calculate transform BEFORE updating state
+      const transform = calculateTransformForState(constrainedState);
       const transformConfig = {
-        scale: finalState.scale,
-        x: finalState.x,
-        y: finalState.y,
+        scale: transform.scale,
+        x: transform.x,
+        y: transform.y,
         transformOrigin: "0px 0px",
       };
 
+      // Update state
+      setState(constrainedState);
+
+      console.log(
+        "Applying transform:",
+        transformConfig,
+        "for state:",
+        constrainedState
+      );
+
       if (animate) {
+        // Kill existing animations
+        gsap.killTweensOf(svgRef.current);
+        if (overlayRef?.current) {
+          gsap.killTweensOf(overlayRef.current);
+        }
+
+        // Animate to new transform
         gsap.to(svgRef.current, {
           ...transformConfig,
-          duration: duration,
-          ease: "power2.inOut",
-          onUpdate: () => {
-            // Update scale callback during animation for smooth pin scaling
-            const currentScale = gsap.getProperty(
-              svgRef.current!,
-              "scaleX"
-            ) as number;
-            onTransformUpdate?.(currentScale);
-
-            // Sync overlay element with main SVG
-            if (overlayRef?.current) {
-              gsap.set(overlayRef.current, {
-                scale: currentScale,
-                x: gsap.getProperty(svgRef.current!, "x"),
-                y: gsap.getProperty(svgRef.current!, "y"),
-                transformOrigin: "0px 0px",
-              });
-            }
+          duration: 0.3,
+          ease: "power2.out",
+          onComplete: () => {
+            console.log("Animation complete, final state:", constrainedState);
+            onTransformUpdate?.(
+              constrainedState.scale,
+              constrainedState.centerX,
+              constrainedState.centerY
+            );
           },
         });
-      } else {
-        gsap.set(svgRef.current, transformConfig);
 
-        // Sync overlay element immediately
+        // Sync overlay
+        if (overlayRef?.current) {
+          gsap.to(overlayRef.current, {
+            ...transformConfig,
+            duration: 0.3,
+            ease: "power2.out",
+          });
+        }
+      } else {
+        // Immediate transform
+        gsap.set(svgRef.current, transformConfig);
         if (overlayRef?.current) {
           gsap.set(overlayRef.current, transformConfig);
         }
+        onTransformUpdate?.(
+          constrainedState.scale,
+          constrainedState.centerX,
+          constrainedState.centerY
+        );
       }
     },
-    [constrainPosition, onTransformUpdate, overlayRef]
+    [
+      minScale,
+      maxScale,
+      calculateTransformForState,
+      onTransformUpdate,
+      overlayRef,
+    ]
   );
+
+  // Apply transform keeping a specific coordinate fixed at screen center
+  const applyTransformKeepingCoordinateFixed = useCallback(
+    (
+      newState: ZoomPanState,
+      fixedCoord: { x: number; y: number },
+      animate = true
+    ) => {
+      if (!svgRef.current) return;
+
+      // Constrain scale
+      const constrainedState = {
+        ...newState,
+        scale: Math.max(minScale, Math.min(maxScale, newState.scale)),
+      };
+
+      // Calculate transform to keep coordinate fixed
+      const transform = calculateTransformToKeepCoordinateAtCenter(
+        constrainedState,
+        fixedCoord
+      );
+      const transformConfig = {
+        scale: transform.scale,
+        x: transform.x,
+        y: transform.y,
+        transformOrigin: "0px 0px",
+      };
+
+      // Update state to reflect the fixed coordinate as new center
+      const finalState = {
+        ...constrainedState,
+        centerX: fixedCoord.x,
+        centerY: fixedCoord.y,
+      };
+      setState(finalState);
+
+      console.log(
+        "Applying fixed-coordinate transform:",
+        transformConfig,
+        "fixed at:",
+        fixedCoord,
+        "final state:",
+        finalState
+      );
+
+      if (animate) {
+        // Kill existing animations
+        gsap.killTweensOf(svgRef.current);
+        if (overlayRef?.current) {
+          gsap.killTweensOf(overlayRef.current);
+        }
+
+        // Animate to new transform
+        gsap.to(svgRef.current, {
+          ...transformConfig,
+          duration: 0.3,
+          ease: "power2.out",
+          onComplete: () => {
+            console.log(
+              "Fixed-coordinate animation complete, final state:",
+              finalState
+            );
+            onTransformUpdate?.(
+              finalState.scale,
+              finalState.centerX,
+              finalState.centerY
+            );
+          },
+        });
+
+        // Sync overlay
+        if (overlayRef?.current) {
+          gsap.to(overlayRef.current, {
+            ...transformConfig,
+            duration: 0.3,
+            ease: "power2.out",
+          });
+        }
+      } else {
+        // Immediate transform
+        gsap.set(svgRef.current, transformConfig);
+        if (overlayRef?.current) {
+          gsap.set(overlayRef.current, transformConfig);
+        }
+        onTransformUpdate?.(
+          finalState.scale,
+          finalState.centerX,
+          finalState.centerY
+        );
+      }
+    },
+    [
+      minScale,
+      maxScale,
+      calculateTransformToKeepCoordinateAtCenter,
+      onTransformUpdate,
+      overlayRef,
+    ]
+  );
+
+  // Zoom functions - maintain current center
+  const zoomIn = useCallback(() => {
+    console.log("Zoom in called, current state:", state);
+    const currentScale = getCurrentScale();
+    const newScale = Math.min(maxScale, currentScale * 1.3);
+    console.log("Current actual scale:", currentScale, "new scale:", newScale);
+
+    // Keep the current center coordinate fixed during zoom
+    applyTransformKeepingCoordinateFixed(
+      { ...state, scale: newScale },
+      { x: state.centerX, y: state.centerY }
+    );
+  }, [state, maxScale, getCurrentScale, applyTransformKeepingCoordinateFixed]);
+
+  const zoomOut = useCallback(() => {
+    console.log("Zoom out called, current state:", state);
+    const currentScale = getCurrentScale();
+    const newScale = Math.max(minScale, currentScale / 1.3);
+    console.log("Current actual scale:", currentScale, "new scale:", newScale);
+
+    // Keep the current center coordinate fixed during zoom
+    applyTransformKeepingCoordinateFixed(
+      { ...state, scale: newScale },
+      { x: state.centerX, y: state.centerY }
+    );
+  }, [state, minScale, getCurrentScale, applyTransformKeepingCoordinateFixed]);
+
+  // Reset to initial state
+  const resetZoom = useCallback(() => {
+    console.log("Reset zoom called");
+    const newState = {
+      scale: initialScale,
+      centerX: CAMPUS_MAP_BOUNDS.width / 2,
+      centerY: CAMPUS_MAP_BOUNDS.height / 2,
+    };
+    console.log("Reset state:", newState);
+    applyTransform(newState);
+  }, [initialScale, applyTransform]);
 
   // Zoom to specific location
   const zoomToLocation = useCallback(
     (x: number, y: number, targetScale: number = 4, duration: number = 1) => {
-      if (!containerRef.current || !svgRef.current) return;
+      const newState = {
+        scale: targetScale,
+        centerX: x,
+        centerY: y,
+      };
 
-      const container = containerRef.current.getBoundingClientRect();
+      if (!svgRef.current) return;
 
-      // Calculate SVG viewBox scaling factor
-      const viewBoxWidth = CAMPUS_MAP_BOUNDS.width;
-      const viewBoxHeight = CAMPUS_MAP_BOUNDS.height;
-      const containerWidth = container.width;
-      const containerHeight = container.height;
+      // Constrain scale
+      const constrainedState = {
+        ...newState,
+        scale: Math.max(minScale, Math.min(maxScale, newState.scale)),
+      };
 
-      // Calculate the aspect ratio scaling
-      const scaleX = containerWidth / viewBoxWidth;
-      const scaleY = containerHeight / viewBoxHeight;
-      const uniformScale = Math.min(scaleX, scaleY); // SVG maintains aspect ratio
+      // Calculate transform BEFORE updating state
+      const transform = calculateTransformForState(constrainedState);
+      const transformConfig = {
+        scale: transform.scale,
+        x: transform.x,
+        y: transform.y,
+        transformOrigin: "0px 0px",
+      };
 
-      // Calculate the offset due to aspect ratio centering
-      const scaledViewBoxWidth = viewBoxWidth * uniformScale;
-      const scaledViewBoxHeight = viewBoxHeight * uniformScale;
-      const offsetX = (containerWidth - scaledViewBoxWidth) / 2;
-      const offsetY = (containerHeight - scaledViewBoxHeight) / 2;
+      // Update state
+      setState(constrainedState);
 
-      // Target point in SVG coordinates: (x, y)
-      // We want this point to be at the center of the viewport
+      // Kill existing animations
+      gsap.killTweensOf(svgRef.current);
+      if (overlayRef?.current) {
+        gsap.killTweensOf(overlayRef.current);
+      }
 
-      // Convert target SVG coordinates to final screen coordinates at target scale
-      const targetScreenX = x * uniformScale * targetScale;
-      const targetScreenY = y * uniformScale * targetScale;
-
-      // Calculate the translation needed to center the target point
-      // We want: targetScreenX + translateX + offsetX = containerWidth / 2
-      // So: translateX = containerWidth / 2 - targetScreenX - offsetX
-      const translateX = containerWidth / 2 - targetScreenX - offsetX;
-      const translateY = containerHeight / 2 - targetScreenY - offsetY;
-
-      console.log("ZoomToLocation detailed calculation:", {
-        targetSVG: { x, y },
-        targetScale: targetScale,
-        container: { width: containerWidth, height: containerHeight },
-        viewBox: { width: viewBoxWidth, height: viewBoxHeight },
-        uniformScale: uniformScale,
-        offset: { x: offsetX, y: offsetY },
-        targetScreen: { x: targetScreenX, y: targetScreenY },
-        finalTranslate: { x: translateX, y: translateY },
-        centerTarget: { x: containerWidth / 2, y: containerHeight / 2 },
+      // Animate to location
+      gsap.to(svgRef.current, {
+        ...transformConfig,
+        duration: duration,
+        ease: "power2.out",
+        onComplete: () => {
+          onTransformUpdate?.(
+            constrainedState.scale,
+            constrainedState.centerX,
+            constrainedState.centerY
+          );
+        },
       });
 
-      applyTransform(
-        {
-          scale: targetScale,
-          x: translateX,
-          y: translateY,
-        },
-        true,
-        duration
-      );
+      if (overlayRef?.current) {
+        gsap.to(overlayRef.current, {
+          ...transformConfig,
+          duration: duration,
+          ease: "power2.out",
+        });
+      }
     },
-    [containerRef, applyTransform]
+    [
+      minScale,
+      maxScale,
+      calculateTransformForState,
+      onTransformUpdate,
+      overlayRef,
+    ]
   );
 
-  // Basic zoom functions
-  const zoomIn = useCallback(() => {
-    const newScale = Math.min(maxScale, zoomPan.scale * 1.5);
-    applyTransform({ ...zoomPan, scale: newScale });
-  }, [zoomPan, maxScale, applyTransform]);
-
-  const zoomOut = useCallback(() => {
-    const newScale = Math.max(minScale, zoomPan.scale / 1.5);
-    applyTransform({ ...zoomPan, scale: newScale });
-  }, [zoomPan, minScale, applyTransform]);
-
-  const resetZoom = useCallback(() => {
-    applyTransform({ scale: initialScale, x: 0, y: 0 });
-  }, [initialScale, applyTransform]);
-
-  // Mouse wheel handler
-  const handleWheel = useCallback(
-    (e: WheelEvent) => {
-      e.preventDefault();
-      if (!containerRef.current) return;
-
-      const rect = containerRef.current.getBoundingClientRect();
-      const mouseX = e.clientX - rect.left;
-      const mouseY = e.clientY - rect.top;
-
-      const zoomFactor = e.deltaY > 0 ? 0.9 : 1.1;
-      const newScale = Math.max(
-        minScale,
-        Math.min(maxScale, zoomPan.scale * zoomFactor)
+  // Coordinate-based zoom functions - use actual current scale
+  const zoomInToCoordinate = useCallback(
+    (coord: { x: number; y: number }) => {
+      console.log(
+        "zoomInToCoordinate called with coord:",
+        coord,
+        "current state:",
+        state
+      );
+      const currentScale = getCurrentScale();
+      const newScale = Math.min(maxScale, currentScale * 1.3);
+      console.log(
+        "Current actual scale:",
+        currentScale,
+        "new scale:",
+        newScale
       );
 
-      const scaleDiff = newScale - zoomPan.scale;
-      const newX = zoomPan.x - (mouseX * scaleDiff) / zoomPan.scale;
-      const newY = zoomPan.y - (mouseY * scaleDiff) / zoomPan.scale;
-
-      applyTransform({ scale: newScale, x: newX, y: newY });
+      // Keep the specified coordinate fixed during zoom
+      applyTransformKeepingCoordinateFixed(
+        { ...state, scale: newScale },
+        coord
+      );
     },
-    [zoomPan, minScale, maxScale, applyTransform, containerRef]
+    [state, maxScale, getCurrentScale, applyTransformKeepingCoordinateFixed]
   );
 
-  // Mouse drag handlers
-  const handleMouseDown = useCallback((e: MouseEvent) => {
-    e.preventDefault();
-    isDragging.current = true;
-    lastPointerPos.current = { x: e.clientX, y: e.clientY };
-  }, []);
-
-  const handleMouseMove = useCallback(
-    (e: MouseEvent) => {
-      if (!isDragging.current) return;
-
-      const deltaX = e.clientX - lastPointerPos.current.x;
-      const deltaY = e.clientY - lastPointerPos.current.y;
-
-      applyTransform(
-        {
-          ...zoomPan,
-          x: zoomPan.x + deltaX,
-          y: zoomPan.y + deltaY,
-        },
-        false
+  const zoomOutFromCoordinate = useCallback(
+    (coord: { x: number; y: number }) => {
+      console.log(
+        "zoomOutFromCoordinate called with coord:",
+        coord,
+        "current state:",
+        state
+      );
+      const currentScale = getCurrentScale();
+      const newScale = Math.max(minScale, currentScale / 1.3);
+      console.log(
+        "Current actual scale:",
+        currentScale,
+        "new scale:",
+        newScale
       );
 
-      lastPointerPos.current = { x: e.clientX, y: e.clientY };
+      // Keep the specified coordinate fixed during zoom
+      applyTransformKeepingCoordinateFixed(
+        { ...state, scale: newScale },
+        coord
+      );
     },
-    [zoomPan, applyTransform]
+    [state, minScale, getCurrentScale, applyTransformKeepingCoordinateFixed]
   );
 
-  const handleMouseUp = useCallback(() => {
-    isDragging.current = false;
-  }, []);
+  // Simple coordinate conversion for click handling
+  const screenToViewBox = useCallback(
+    (screenX: number, screenY: number) => {
+      if (!containerRef.current) {
+        return { x: state.centerX, y: state.centerY };
+      }
 
-  // Touch handlers
-  const handleTouchStart = useCallback((e: TouchEvent) => {
-    e.preventDefault();
-    if (e.touches.length === 1) {
-      isDragging.current = true;
-      lastPointerPos.current = {
-        x: e.touches[0].clientX,
-        y: e.touches[0].clientY,
+      const container = containerRef.current.getBoundingClientRect();
+      const relativeX = (screenX - container.left) / container.width;
+      const relativeY = (screenY - container.top) / container.height;
+
+      // Calculate visible area
+      const visibleWidth = CAMPUS_MAP_BOUNDS.width / state.scale;
+      const visibleHeight = CAMPUS_MAP_BOUNDS.height / state.scale;
+
+      // Calculate viewBox coordinates
+      const viewX = state.centerX - visibleWidth / 2 + relativeX * visibleWidth;
+      const viewY =
+        state.centerY - visibleHeight / 2 + relativeY * visibleHeight;
+
+      return {
+        x: Math.max(0, Math.min(CAMPUS_MAP_BOUNDS.width, viewX)),
+        y: Math.max(0, Math.min(CAMPUS_MAP_BOUNDS.height, viewY)),
       };
-    }
-  }, []);
-
-  const handleTouchMove = useCallback(
-    (e: TouchEvent) => {
-      e.preventDefault();
-      if (!isDragging.current || e.touches.length !== 1) return;
-
-      const touch = e.touches[0];
-      const deltaX = touch.clientX - lastPointerPos.current.x;
-      const deltaY = touch.clientY - lastPointerPos.current.y;
-
-      applyTransform(
-        {
-          ...zoomPan,
-          x: zoomPan.x + deltaX,
-          y: zoomPan.y + deltaY,
-        },
-        false
-      );
-
-      lastPointerPos.current = { x: touch.clientX, y: touch.clientY };
     },
-    [zoomPan, applyTransform]
+    [state, containerRef]
   );
-
-  const handleTouchEnd = useCallback(() => {
-    isDragging.current = false;
-  }, []);
-
-  // Set up event listeners
-  useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
-
-    container.addEventListener("wheel", handleWheel, { passive: false });
-    container.addEventListener("mousedown", handleMouseDown);
-    window.addEventListener("mousemove", handleMouseMove);
-    window.addEventListener("mouseup", handleMouseUp);
-    container.addEventListener("touchstart", handleTouchStart, {
-      passive: false,
-    });
-    container.addEventListener("touchmove", handleTouchMove, {
-      passive: false,
-    });
-    container.addEventListener("touchend", handleTouchEnd);
-
-    return () => {
-      container.removeEventListener("wheel", handleWheel);
-      container.removeEventListener("mousedown", handleMouseDown);
-      window.removeEventListener("mousemove", handleMouseMove);
-      window.removeEventListener("mouseup", handleMouseUp);
-      container.removeEventListener("touchstart", handleTouchStart);
-      container.removeEventListener("touchmove", handleTouchMove);
-      container.removeEventListener("touchend", handleTouchEnd);
-    };
-  }, [
-    containerRef,
-    handleWheel,
-    handleMouseDown,
-    handleMouseMove,
-    handleMouseUp,
-    handleTouchStart,
-    handleTouchMove,
-    handleTouchEnd,
-  ]);
 
   return {
     svgRef,
-    zoomPan,
+    zoomPan: state,
     zoomIn,
     zoomOut,
     resetZoom,
     applyTransform,
     zoomToLocation,
+    zoomInToCoordinate,
+    zoomOutFromCoordinate,
+    screenToViewBox,
   };
 };

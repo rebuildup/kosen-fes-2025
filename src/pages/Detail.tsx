@@ -11,7 +11,7 @@ import Tag from "../components/common/Tag";
 import ItemTypeIcon from "../components/common/ItemTypeIcon";
 import PillButton from "../components/common/PillButton";
 import UnifiedCard from "../shared/components/ui/UnifiedCard";
-import MapDisplay from "../components/map/MapDisplay";
+import UnifiedMap from "../components/map/UnifiedMap";
 
 const Detail = () => {
   const { type, id } = useParams<{ type: string; id: string }>();
@@ -424,7 +424,7 @@ const Detail = () => {
             )}
 
             {/* Location Map */}
-            {item.location && (
+            {(item.location || item.coordinates) && (
               <div
                 className="rounded-lg p-6 backdrop-blur-md bg-white/10 border border-white/20"
                 style={{ backgroundColor: "var(--color-bg-secondary)" }}
@@ -435,14 +435,35 @@ const Detail = () => {
                 >
                   <span>📍</span>
                   場所: {item.location}
+                  {item.coordinates && (
+                    <span className="text-sm text-gray-500 ml-2">
+                      ({item.coordinates.x.toFixed(0)},{" "}
+                      {item.coordinates.y.toFixed(0)})
+                    </span>
+                  )}
                 </h3>
                 <div className="map-container h-64 rounded-lg overflow-hidden">
-                  <MapDisplay
-                    hoveredLocation={item.location}
-                    selectedLocation={item.location}
-                    onLocationHover={() => {}}
-                    onLocationSelect={() => {}}
-                    locations={[item.location]}
+                  <UnifiedMap
+                    mode="detail"
+                    highlightCoordinate={item.coordinates}
+                    highlightLocation={item.location}
+                    contentItems={
+                      item.coordinates
+                        ? [
+                            {
+                              id: item.id,
+                              title: item.title,
+                              type: item.type,
+                              coordinates: item.coordinates,
+                              isSelected: true,
+                              isHovered: false,
+                            },
+                          ]
+                        : []
+                    }
+                    height="100%"
+                    initialZoom={item.coordinates ? 2 : 1}
+                    showZoomControls={true}
                   />
                 </div>
               </div>
@@ -512,7 +533,11 @@ const Detail = () => {
                   >
                     {relatedItems.map((relatedItem) => (
                       <div key={relatedItem.id} className="w-64 flex-shrink-0">
-                        <UnifiedCard item={relatedItem} showTags={true} variant="compact" />
+                        <UnifiedCard
+                          item={relatedItem}
+                          showTags={true}
+                          variant="compact"
+                        />
                       </div>
                     ))}
                   </div>
