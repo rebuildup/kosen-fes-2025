@@ -4,6 +4,7 @@ import {
   CAMPUS_MAP_BOUNDS,
   getBuildingCoordinates,
 } from "../../data/buildings";
+import { getLocationCoordinates } from "../../data/locationCoordinates";
 import ZoomControls from "./ZoomControls";
 
 interface Coordinate {
@@ -250,10 +251,17 @@ const UnifiedMap = ({
     // Simplified - no dragging functionality
   }, []);
 
-  // Get coordinates for legacy location support
-  const getLocationCoordinates = (location: string): Coordinate | null => {
-    const coords = getBuildingCoordinates(location);
-    return coords || null;
+  // Get coordinates for legacy location support (now using centralized system)
+  const getLegacyLocationCoordinates = (location: string): Coordinate | null => {
+    // Try new centralized system first
+    const newCoords = getLocationCoordinates(location);
+    if (newCoords) {
+      return newCoords;
+    }
+    
+    // Fallback to building coordinates for backward compatibility
+    const buildingCoords = getBuildingCoordinates(location);
+    return buildingCoords || null;
   };
 
   // Combined markers from both legacy locations and new markers
@@ -261,7 +269,7 @@ const UnifiedMap = ({
     const legacyMarkers: LocationMarker[] = locations.map((location) => ({
       id: `legacy-${location}`,
       location,
-      coordinates: getLocationCoordinates(location) || { x: 0, y: 0 },
+      coordinates: getLegacyLocationCoordinates(location) || { x: 0, y: 0 },
       isSelected: selectedLocation === location,
       isHovered: hoveredLocation === location,
     }));

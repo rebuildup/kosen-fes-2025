@@ -1,11 +1,28 @@
 import { useCallback, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { CAMPUS_MAP_BOUNDS } from "../data/buildings";
+import {
+  Point,
+  MapViewState,
+  worldToViewport,
+  viewportToWorld,
+  calculateZoomCenter,
+  calculateTransformParams,
+  constrainZoom,
+  constrainToMapBounds,
+} from "../utils/mapCoordinates";
 
 interface ZoomPanState {
   scale: number;
   centerX: number; // SVG viewBox center X
   centerY: number; // SVG viewBox center Y
+}
+
+// New interface using the coordinate utilities
+interface ModernZoomPanState {
+  viewCenter: Point;
+  zoom: number;
+  viewportSize: { width: number; height: number };
 }
 
 interface UseMapZoomPanOptions {
@@ -29,7 +46,17 @@ export const useMapZoomPan = ({
   onTransformUpdate,
   overlayRef,
 }: UseMapZoomPanOptions) => {
-  // Simple state: just scale and center coordinates
+  // Modern state using coordinate utilities
+  const [modernState, setModernState] = useState<ModernZoomPanState>({
+    viewCenter: {
+      x: CAMPUS_MAP_BOUNDS.width / 2,
+      y: CAMPUS_MAP_BOUNDS.height / 2,
+    },
+    zoom: initialScale,
+    viewportSize: { width: 800, height: 600 }, // Default, will be updated
+  });
+
+  // Legacy state for backward compatibility
   const [state, setState] = useState<ZoomPanState>({
     scale: initialScale,
     centerX: CAMPUS_MAP_BOUNDS.width / 2,
@@ -38,105 +65,104 @@ export const useMapZoomPan = ({
 
   const svgRef = useRef<SVGSVGElement>(null);
 
+  // Update viewport size when container changes
+  const updateViewportSize = useCallback(() => {
+    if (containerRef.current) {
+      const rect = containerRef.current.getBoundingClientRect();
+      const newViewportSize = { width: rect.width, height: rect.height };
+      
+      setModernState(prev => ({
+        ...prev,
+        viewportSize: newViewportSize,
+      }));
+    }
+  }, [containerRef]);
+
+  // Sync modern state with legacy state for backward compatibility
+  const syncStates = useCallback((newModernState: ModernZoomPanState) => {
+    setModernState(newModernState);
+    setState({
+      scale: newModernState.zoom,
+      centerX: newModernState.viewCenter.x,
+      centerY: newModernState.viewCenter.y,
+    });
+  }, []);
+
   // Get current actual scale from GSAP (more reliable than React state during animations)
   const getCurrentScale = useCallback(() => {
-    if (!svgRef.current) return state.scale;
+    if (!svgRef.current) return modernState.zoom;
     const currentScale = gsap.getProperty(svgRef.current, "scaleX") as number;
-    return currentScale || state.scale;
-  }, [state.scale]);
+    return currentScale || modernState.zoom;
+  }, [modernState.zoom]);
 
-  // Calculate GSAP transform to keep a specific coordinate at screen center
+  // Get current viewport size
+  const getViewportSize = useCallback(() => {
+    if (!containerRef.current) return modernState.viewportSize;
+    const rect = containerRef.current.getBoundingClientRect();
+    return { width: rect.width, height: rect.height };
+  }, [containerRef, modernState.viewportSize]);
+
+  // Calculate GSAP transform to keep a specific coordinate at screen center (using new utilities)
   const calculateTransformToKeepCoordinateAtCenter = useCallback(
     (targetState: ZoomPanState, fixedCoord: { x: number; y: number }) => {
-      if (!containerRef.current) {
-        return { scale: targetState.scale, x: 0, y: 0 };
-      }
-
-      const container = containerRef.current.getBoundingClientRect();
-
-      // Calculate uniform scale for aspect ratio
-      const scaleX = container.width / CAMPUS_MAP_BOUNDS.width;
-      const scaleY = container.height / CAMPUS_MAP_BOUNDS.height;
-      const uniformScale = Math.min(scaleX, scaleY);
-
-      // Calculate center offsets for the base map
-      const offsetX =
-        (container.width - CAMPUS_MAP_BOUNDS.width * uniformScale) / 2;
-      const offsetY =
-        (container.height - CAMPUS_MAP_BOUNDS.height * uniformScale) / 2;
-
-      // Screen center where we want the fixed coordinate to appear
-      const targetScreenX = container.width / 2;
-      const targetScreenY = container.height / 2;
-
-      // Calculate where the fixed coordinate will appear with the new scale
-      const coordScreenX = fixedCoord.x * uniformScale * targetState.scale;
-      const coordScreenY = fixedCoord.y * uniformScale * targetState.scale;
-
-      // Calculate translation needed to center the fixed coordinate
-      const translateX = targetScreenX - coordScreenX - offsetX;
-      const translateY = targetScreenY - coordScreenY - offsetY;
-
-      console.log("Fixed coordinate transform calculation:", {
+      const viewportSize = getViewportSize();
+      
+      // Calculate new view center to keep the fixed coordinate at screen center
+      const fixedViewportPoint = { x: viewportSize.width / 2, y: viewportSize.height / 2 };
+      const newViewCenter = calculateZoomCenter(
+        fixedCoord,
+        fixedViewportPoint,
+        targetState.scale,
+        viewportSize
+      );
+      
+      // Use the new coordinate utilities to calculate transform
+      const transformParams = calculateTransformParams(
+        newViewCenter,
+        targetState.scale,
+        viewportSize,
+        CAMPUS_MAP_BOUNDS
+      );
+      
+      console.log("Fixed coordinate transform calculation (using new utilities):", {
         fixedCoord,
         targetState,
-        container: { width: container.width, height: container.height },
-        uniformScale,
-        offsets: { offsetX, offsetY },
-        coordScreen: { coordScreenX, coordScreenY },
-        translation: { translateX, translateY },
+        newViewCenter,
+        transformParams,
       });
-
+      
       return {
-        scale: targetState.scale,
-        x: translateX,
-        y: translateY,
+        scale: transformParams.scale,
+        x: transformParams.translateX,
+        y: transformParams.translateY,
       };
     },
-    [containerRef]
+    [getViewportSize]
   );
 
-  // Calculate GSAP transform from given state (for normal centering)
+  // Calculate GSAP transform from given state (for normal centering) - using new utilities
   const calculateTransformForState = useCallback(
     (targetState: ZoomPanState) => {
-      if (!containerRef.current) {
-        return { scale: targetState.scale, x: 0, y: 0 };
-      }
-
-      const container = containerRef.current.getBoundingClientRect();
-
-      // Calculate uniform scale for aspect ratio
-      const scaleX = container.width / CAMPUS_MAP_BOUNDS.width;
-      const scaleY = container.height / CAMPUS_MAP_BOUNDS.height;
-      const uniformScale = Math.min(scaleX, scaleY);
-
-      // Calculate center offsets
-      const offsetX =
-        (container.width - CAMPUS_MAP_BOUNDS.width * uniformScale) / 2;
-      const offsetY =
-        (container.height - CAMPUS_MAP_BOUNDS.height * uniformScale) / 2;
-
-      // Calculate where center should appear on screen
-      const targetScreenX = container.width / 2;
-      const targetScreenY = container.height / 2;
-
-      // Calculate where center currently appears
-      const currentScreenX =
-        targetState.centerX * uniformScale * targetState.scale;
-      const currentScreenY =
-        targetState.centerY * uniformScale * targetState.scale;
-
-      // Calculate required translation
-      const translateX = targetScreenX - currentScreenX - offsetX;
-      const translateY = targetScreenY - currentScreenY - offsetY;
-
+      const viewportSize = getViewportSize();
+      
+      // Convert legacy state to modern state
+      const viewCenter = { x: targetState.centerX, y: targetState.centerY };
+      
+      // Use the new coordinate utilities to calculate transform
+      const transformParams = calculateTransformParams(
+        viewCenter,
+        targetState.scale,
+        viewportSize,
+        CAMPUS_MAP_BOUNDS
+      );
+      
       return {
-        scale: targetState.scale,
-        x: translateX,
-        y: translateY,
+        scale: transformParams.scale,
+        x: transformParams.translateX,
+        y: transformParams.translateY,
       };
     },
-    [containerRef]
+    [getViewportSize]
   );
 
   // Apply transform to SVG elements
@@ -163,7 +189,7 @@ export const useMapZoomPan = ({
       setState(constrainedState);
 
       console.log(
-        "Applying transform:",
+        "Applying transform (using new utilities):",
         transformConfig,
         "for state:",
         constrainedState
@@ -255,6 +281,13 @@ export const useMapZoomPan = ({
         centerY: fixedCoord.y,
       };
       setState(finalState);
+      
+      // Update modern state as well
+      setModernState(prev => ({
+        ...prev,
+        viewCenter: { x: fixedCoord.x, y: fixedCoord.y },
+        zoom: constrainedState.scale,
+      }));
 
       console.log(
         "Applying fixed-coordinate transform:",
@@ -320,11 +353,11 @@ export const useMapZoomPan = ({
     ]
   );
 
-  // Zoom functions - maintain current center
+  // Zoom functions - maintain current center (using new utilities)
   const zoomIn = useCallback(() => {
-    console.log("Zoom in called, current state:", state);
+    console.log("Zoom in called, current state:", state, "modern state:", modernState);
     const currentScale = getCurrentScale();
-    const newScale = Math.min(maxScale, currentScale * 1.3);
+    const newScale = constrainZoom(currentScale * 1.3, minScale, maxScale);
     console.log("Current actual scale:", currentScale, "new scale:", newScale);
 
     // Keep the current center coordinate fixed during zoom
@@ -332,12 +365,12 @@ export const useMapZoomPan = ({
       { ...state, scale: newScale },
       { x: state.centerX, y: state.centerY }
     );
-  }, [state, maxScale, getCurrentScale, applyTransformKeepingCoordinateFixed]);
+  }, [state, modernState, minScale, maxScale, getCurrentScale, applyTransformKeepingCoordinateFixed]);
 
   const zoomOut = useCallback(() => {
-    console.log("Zoom out called, current state:", state);
+    console.log("Zoom out called, current state:", state, "modern state:", modernState);
     const currentScale = getCurrentScale();
-    const newScale = Math.max(minScale, currentScale / 1.3);
+    const newScale = constrainZoom(currentScale / 1.3, minScale, maxScale);
     console.log("Current actual scale:", currentScale, "new scale:", newScale);
 
     // Keep the current center coordinate fixed during zoom
@@ -345,7 +378,7 @@ export const useMapZoomPan = ({
       { ...state, scale: newScale },
       { x: state.centerX, y: state.centerY }
     );
-  }, [state, minScale, getCurrentScale, applyTransformKeepingCoordinateFixed]);
+  }, [state, modernState, minScale, maxScale, getCurrentScale, applyTransformKeepingCoordinateFixed]);
 
   // Reset to initial state
   const resetZoom = useCallback(() => {
@@ -478,32 +511,45 @@ export const useMapZoomPan = ({
     [state, minScale, getCurrentScale, applyTransformKeepingCoordinateFixed]
   );
 
-  // Simple coordinate conversion for click handling
+  // Coordinate conversion for click handling (using new utilities)
   const screenToViewBox = useCallback(
     (screenX: number, screenY: number) => {
+      const viewportSize = getViewportSize();
+      
       if (!containerRef.current) {
-        return { x: state.centerX, y: state.centerY };
+        return modernState.viewCenter;
       }
 
       const container = containerRef.current.getBoundingClientRect();
-      const relativeX = (screenX - container.left) / container.width;
-      const relativeY = (screenY - container.top) / container.height;
-
-      // Calculate visible area
-      const visibleWidth = CAMPUS_MAP_BOUNDS.width / state.scale;
-      const visibleHeight = CAMPUS_MAP_BOUNDS.height / state.scale;
-
-      // Calculate viewBox coordinates
-      const viewX = state.centerX - visibleWidth / 2 + relativeX * visibleWidth;
-      const viewY =
-        state.centerY - visibleHeight / 2 + relativeY * visibleHeight;
-
-      return {
-        x: Math.max(0, Math.min(CAMPUS_MAP_BOUNDS.width, viewX)),
-        y: Math.max(0, Math.min(CAMPUS_MAP_BOUNDS.height, viewY)),
+      
+      // Convert screen coordinates to viewport coordinates relative to container
+      const viewportPoint = {
+        x: screenX - container.left,
+        y: screenY - container.top,
       };
+      
+      // Use the new coordinate utilities to convert to world coordinates
+      const worldPoint = viewportToWorld(
+        viewportPoint,
+        modernState.viewCenter,
+        modernState.zoom,
+        viewportSize
+      );
+      
+      // Constrain to map bounds
+      const constrainedPoint = constrainToMapBounds(worldPoint, CAMPUS_MAP_BOUNDS);
+      
+      console.log("Screen to world conversion:", {
+        screen: { x: screenX, y: screenY },
+        viewport: viewportPoint,
+        world: worldPoint,
+        constrained: constrainedPoint,
+        state: modernState,
+      });
+      
+      return constrainedPoint;
     },
-    [state, containerRef]
+    [modernState, containerRef, getViewportSize]
   );
 
   return {
