@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState, useCallback } from "react";
+import { useRef, useEffect, useState, useCallback, useMemo } from "react";
 import { useMapZoomPan } from "../../hooks/useMapZoomPan";
 import {
   CAMPUS_MAP_BOUNDS,
@@ -102,22 +102,19 @@ const UnifiedMap = ({
   const [svgContent, setSvgContent] = useState<string>("");
   const [isDragging, setIsDragging] = useState(false);
   const [currentScale, setCurrentScale] = useState(initialZoom);
-  const [centerCoordinate, setCenterCoordinate] = useState<Coordinate>({
-    x: CAMPUS_MAP_BOUNDS.width / 2,
-    y: CAMPUS_MAP_BOUNDS.height / 2,
-  });
 
   // Initialize zoom/pan functionality
   const {
     svgRef,
     zoomPan: _,
-    zoomIn: _zoomIn,
-    zoomOut: _zoomOut,
+    zoomIn,
+    zoomOut,
     zoomInToCoordinate,
     zoomOutFromCoordinate,
     resetZoom,
     zoomToLocation,
     screenToViewBox,
+    pan,
   } = useMapZoomPan({
     minScale: minZoom,
     maxScale: maxZoom,
@@ -126,23 +123,19 @@ const UnifiedMap = ({
     mapHeight: CAMPUS_MAP_BOUNDS.height,
     containerRef: mapContainerRef,
     overlayRef: overlayRef,
-    onTransformUpdate: useCallback(
-      (scale: number, centerX: number, centerY: number) => {
-        setCurrentScale(scale);
-        setCenterCoordinate({ x: centerX, y: centerY });
-      },
-      []
-    ),
+    onTransformUpdate: useCallback((scale: number) => {
+      setCurrentScale(scale);
+    }, []),
   });
 
   // Coordinate-based zoom functions that maintain center coordinate
   const handleZoomIn = useCallback(() => {
-    zoomInToCoordinate(centerCoordinate);
-  }, [centerCoordinate, zoomInToCoordinate]);
+    zoomIn();
+  }, [zoomIn]);
 
   const handleZoomOut = useCallback(() => {
-    zoomOutFromCoordinate(centerCoordinate);
-  }, [centerCoordinate, zoomOutFromCoordinate]);
+    zoomOut();
+  }, [zoomOut]);
 
   // Load SVG content dynamically
   useEffect(() => {
@@ -158,6 +151,145 @@ const UnifiedMap = ({
 
     loadSvgContent();
   }, []);
+
+  // Handle mouse interactions (wheel, drag) natively
+  useEffect(() => {
+    const container = mapContainerRef.current;
+    if (!container || !allowInteraction) return;
+
+    let isDragging = false;
+    let dragStart = { x: 0, y: 0 };
+    let lastMousePos = { x: 0, y: 0 };
+
+    // Handle wheel events for zooming
+    const handleWheelEvent = (e: WheelEvent) => {
+      // Always prevent page scroll
+      e.preventDefault();
+      e.stopPropagation();
+      e.stopImmediatePropagation();
+
+      // Convert to world coordinates
+      const cursorWorldPos = screenToViewBox(e.clientX, e.clientY);
+
+      // Determine zoom direction
+      const zoomDirection = e.deltaY > 0 ? "out" : "in";
+
+      if (zoomDirection === "in") {
+        zoomInToCoordinate(cursorWorldPos);
+      } else {
+        zoomOutFromCoordinate(cursorWorldPos);
+      }
+    };
+
+    // Handle mouse down for drag start
+    const handleMouseDown = (e: MouseEvent) => {
+      if (e.button !== 0) return; // Only left mouse button
+
+      isDragging = true;
+      dragStart = { x: e.clientX, y: e.clientY };
+      lastMousePos = { x: e.clientX, y: e.clientY };
+
+      container.style.cursor = "grabbing";
+
+      // ドラッグ開始時にユーザー選択を無効化
+      document.body.style.userSelect = "none";
+
+      // Prevent text selection during drag
+      e.preventDefault();
+    };
+
+    // Handle mouse move for dragging
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!isDragging) return;
+
+      e.preventDefault();
+
+      const deltaX = e.clientX - lastMousePos.x;
+      const deltaY = e.clientY - lastMousePos.y;
+
+      // 最小移動量でフィルタリング（パフォーマンス向上）
+      if (Math.abs(deltaX) < 1 && Math.abs(deltaY) < 1) return;
+
+      // Apply pan with the delta movement
+      pan(deltaX, deltaY);
+
+      lastMousePos = { x: e.clientX, y: e.clientY };
+    };
+
+    // Handle mouse up to end drag
+    const handleMouseUp = (e: MouseEvent) => {
+      if (!isDragging) return;
+
+      isDragging = false;
+      container.style.cursor = "grab";
+
+      // ドラッグ終了時にユーザー選択を復元
+      document.body.style.userSelect = "";
+
+      // Update isDragging state for click detection
+      const dragDistance = Math.sqrt(
+        Math.pow(e.clientX - dragStart.x, 2) +
+          Math.pow(e.clientY - dragStart.y, 2)
+      );
+
+      // If the drag distance is small, it's considered a click
+      setIsDragging(dragDistance > 5);
+
+      // Reset drag state after a short delay
+      setTimeout(() => setIsDragging(false), 100);
+    };
+
+    // Handle mouse leave to cancel drag
+    const handleMouseLeave = () => {
+      if (isDragging) {
+        isDragging = false;
+        container.style.cursor = "grab";
+        document.body.style.userSelect = "";
+        setIsDragging(false);
+      }
+    };
+
+    // Add event listeners
+    container.addEventListener("wheel", handleWheelEvent, {
+      passive: false,
+      capture: false, // Changed to false to allow normal event flow
+    });
+
+    container.addEventListener("mousedown", handleMouseDown, {
+      passive: false,
+    });
+    document.addEventListener("mousemove", handleMouseMove, { passive: false });
+    document.addEventListener("mouseup", handleMouseUp, { passive: false });
+    container.addEventListener("mouseleave", handleMouseLeave, {
+      passive: false,
+    });
+
+    // Firefox legacy support
+    const handleLegacyWheel = (e: Event) => {
+      e.preventDefault();
+      e.stopPropagation();
+    };
+
+    container.addEventListener("DOMMouseScroll", handleLegacyWheel, {
+      passive: false,
+      capture: false,
+    } as AddEventListenerOptions);
+
+    return () => {
+      container.removeEventListener("wheel", handleWheelEvent);
+      container.removeEventListener("mousedown", handleMouseDown);
+      document.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("mouseup", handleMouseUp);
+      container.removeEventListener("mouseleave", handleMouseLeave);
+      container.removeEventListener("DOMMouseScroll", handleLegacyWheel);
+    };
+  }, [
+    allowInteraction,
+    screenToViewBox,
+    zoomInToCoordinate,
+    zoomOutFromCoordinate,
+    pan,
+  ]);
 
   // Handle legacy location focus
   useEffect(() => {
@@ -242,30 +374,23 @@ const UnifiedMap = ({
     onCoordinateSelect?.(viewCoord);
   };
 
-  // Simplified drag detection - no actual dragging functionality
-  const handleMouseDown = useCallback(() => {
-    setIsDragging(false);
-  }, []);
-
-  const handleMouseMove = useCallback(() => {
-    // Simplified - no dragging functionality
-  }, []);
-
   // Get coordinates for legacy location support (now using centralized system)
-  const getLegacyLocationCoordinates = (location: string): Coordinate | null => {
+  const getLegacyLocationCoordinates = (
+    location: string
+  ): Coordinate | null => {
     // Try new centralized system first
     const newCoords = getLocationCoordinates(location);
     if (newCoords) {
       return newCoords;
     }
-    
+
     // Fallback to building coordinates for backward compatibility
     const buildingCoords = getBuildingCoordinates(location);
     return buildingCoords || null;
   };
 
   // Combined markers from both legacy locations and new markers
-  const getAllMarkers = (): LocationMarker[] => {
+  const allMarkers = useMemo((): LocationMarker[] => {
     const legacyMarkers: LocationMarker[] = locations.map((location) => ({
       id: `legacy-${location}`,
       location,
@@ -275,9 +400,10 @@ const UnifiedMap = ({
     }));
 
     return [...markers, ...legacyMarkers].filter(
-      (marker) => marker.coordinates.x !== 0 || marker.coordinates.y !== 0
+      (marker: LocationMarker) =>
+        marker.coordinates.x !== 0 || marker.coordinates.y !== 0
     );
-  };
+  }, [markers, locations, selectedLocation, hoveredLocation]);
 
   // Render the complete map with all overlays
   const renderMapWithOverlays = () => {
@@ -289,29 +415,26 @@ const UnifiedMap = ({
       );
     }
 
-    const allMarkers = getAllMarkers();
-
     return (
       <div className="w-full h-full relative">
         {/* Main SVG Map */}
         <svg
           ref={svgRef}
-          viewBox={CAMPUS_MAP_BOUNDS.viewBox}
+          viewBox={`0 0 ${CAMPUS_MAP_BOUNDS.width} ${CAMPUS_MAP_BOUNDS.height}`}
           className={`w-full h-full ${
             allowCoordinateSelection || mode === "interactive"
               ? "cursor-crosshair"
               : ""
           }`}
           onClick={handleMapClick}
-          onMouseDown={handleMouseDown}
-          onMouseMove={handleMouseMove}
+          style={{ touchAction: "none" }}
           dangerouslySetInnerHTML={{ __html: svgContent }}
         />
 
         {/* Overlay SVG for markers and interactive elements */}
         <svg
           ref={overlayRef}
-          viewBox={CAMPUS_MAP_BOUNDS.viewBox}
+          viewBox={`0 0 ${CAMPUS_MAP_BOUNDS.width} ${CAMPUS_MAP_BOUNDS.height}`}
           className="absolute inset-0 w-full h-full pointer-events-none"
           style={{ zIndex: 10 }}
         >
@@ -535,49 +658,62 @@ const UnifiedMap = ({
           )}
 
           {/* Development Guide: Center Coordinate Indicator */}
-          {process.env.NODE_ENV === "development" && (
-            <g className="dev-center-guide" pointerEvents="none">
-              {/* Center crosshair */}
-              <line
-                x1={centerCoordinate.x - 20}
-                y1={centerCoordinate.y}
-                x2={centerCoordinate.x + 20}
-                y2={centerCoordinate.y}
-                stroke="#ff0000"
-                strokeWidth={getStrokeWidth(2)}
-                opacity="0.7"
-              />
-              <line
-                x1={centerCoordinate.x}
-                y1={centerCoordinate.y - 20}
-                x2={centerCoordinate.x}
-                y2={centerCoordinate.y + 20}
-                stroke="#ff0000"
-                strokeWidth={getStrokeWidth(2)}
-                opacity="0.7"
-              />
-              {/* Center coordinate display */}
-              <rect
-                x={centerCoordinate.x + 25}
-                y={centerCoordinate.y - 15}
-                width="120"
-                height="30"
-                fill="rgba(255, 0, 0, 0.8)"
-                rx="5"
-              />
-              <text
-                x={centerCoordinate.x + 85}
-                y={centerCoordinate.y}
-                textAnchor="middle"
-                fontSize={getTextSize(10)}
-                fontWeight="bold"
-                fill="white"
-              >
-                CENTER: ({Math.round(centerCoordinate.x)},{" "}
-                {Math.round(centerCoordinate.y)})
-              </text>
-            </g>
-          )}
+          {process.env.NODE_ENV === "development" &&
+            (() => {
+              // Get the actual screen center coordinates using the current zoom/pan state
+              const actualCenterCoord = screenToViewBox(
+                mapContainerRef.current?.offsetWidth
+                  ? mapContainerRef.current.offsetWidth / 2
+                  : 400,
+                mapContainerRef.current?.offsetHeight
+                  ? mapContainerRef.current.offsetHeight / 2
+                  : 300
+              );
+
+              return (
+                <g className="dev-center-guide" pointerEvents="none">
+                  {/* Center crosshair */}
+                  <line
+                    x1={actualCenterCoord.x - 20}
+                    y1={actualCenterCoord.y}
+                    x2={actualCenterCoord.x + 20}
+                    y2={actualCenterCoord.y}
+                    stroke="#ff0000"
+                    strokeWidth={getStrokeWidth(2)}
+                    opacity="0.7"
+                  />
+                  <line
+                    x1={actualCenterCoord.x}
+                    y1={actualCenterCoord.y - 20}
+                    x2={actualCenterCoord.x}
+                    y2={actualCenterCoord.y + 20}
+                    stroke="#ff0000"
+                    strokeWidth={getStrokeWidth(2)}
+                    opacity="0.7"
+                  />
+                  {/* Center coordinate display */}
+                  <rect
+                    x={actualCenterCoord.x + 25}
+                    y={actualCenterCoord.y - 15}
+                    width="120"
+                    height="30"
+                    fill="rgba(255, 0, 0, 0.8)"
+                    rx="5"
+                  />
+                  <text
+                    x={actualCenterCoord.x + 85}
+                    y={actualCenterCoord.y}
+                    textAnchor="middle"
+                    fontSize={getTextSize(10)}
+                    fontWeight="bold"
+                    fill="white"
+                  >
+                    CENTER: ({Math.round(actualCenterCoord.x)},{" "}
+                    {Math.round(actualCenterCoord.y)})
+                  </text>
+                </g>
+              );
+            })()}
         </svg>
       </div>
     );
@@ -587,7 +723,25 @@ const UnifiedMap = ({
     <div
       ref={mapContainerRef}
       className={`relative ${className}`}
-      style={{ height }}
+      style={{
+        height,
+        touchAction: "none",
+        cursor: allowInteraction ? "grab" : "default",
+      }}
+      onWheel={(e) => {
+        // Prevent page scroll when hovering over the map
+        if (allowInteraction) {
+          e.preventDefault();
+          e.stopPropagation();
+        }
+      }}
+      onWheelCapture={(e) => {
+        // Capture phase - prevent any wheel events from bubbling up
+        if (allowInteraction) {
+          e.preventDefault();
+          e.stopPropagation();
+        }
+      }}
     >
       {/* Zoom Controls */}
       {showZoomControls && (

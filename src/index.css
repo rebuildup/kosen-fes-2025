@@ -349,6 +349,20 @@
     max-width: 100%;
     position: relative;
     z-index: 1;
+    /* マウスホイールイベントの制御 */
+    overscroll-behavior: contain;
+    touch-action: none;
+  }
+
+  /* マップ内のSVG要素でのスクロール制御 */
+  .map-container svg {
+    touch-action: none;
+    overscroll-behavior: none;
+  }
+
+  /* マップコンテナ内でのホイールイベント制御 */
+  .map-container * {
+    overscroll-behavior: none;
   }
 
   .map-container > * {

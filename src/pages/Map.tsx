@@ -1,5 +1,5 @@
 // src/pages/Map.tsx
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useLanguage } from "../context/LanguageContext";
 import { useTag } from "../context/TagContext";
 import { events } from "../data/events";
@@ -87,7 +87,10 @@ const Map = () => {
   };
 
   // Get all locations with items
-  const locationsWithItems = Object.keys(locationItems);
+  const locationsWithItems = useMemo(
+    () => Object.keys(locationItems),
+    [locationItems]
+  );
 
   return (
     <div className="min-h-screen">
