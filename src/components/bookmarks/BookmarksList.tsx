@@ -6,11 +6,6 @@ import CardGrid from "../common/CardGrid";
 import CardListToggle from "../common/CardListToggle";
 import TabButtons from "../common/TabButtons";
 
-interface BookmarkFilter {
-  type: "all" | "event" | "exhibit" | "stall";
-  label: string;
-}
-
 const BookmarksList = () => {
   const { bookmarkedItems, clearAllBookmarks } = useBookmark();
   const { t } = useLanguage();
@@ -123,7 +118,7 @@ const BookmarksList = () => {
       {dates.length === 0 ? (
         <div className="text-center py-8 bg-[var(--bg-secondary)] rounded-xl border border-[var(--border-color)]">
           <p className="text-[var(--text-secondary)]">
-            このカテゴリーにはブックマークされたアイテムがありません
+            {t("bookmarks.noCategoryItems")}
           </p>
         </div>
       ) : (
@@ -137,7 +132,7 @@ const BookmarksList = () => {
                 </h3>
                 <div className="flex-1 h-px bg-[var(--border-color)]"></div>
                 <span className="text-sm text-[var(--text-secondary)] bg-[var(--bg-secondary)] px-3 py-1 rounded-full">
-                  {groupedItems[date].length} アイテム
+                  {groupedItems[date].length} {t("bookmarks.itemCount")}
                 </span>
               </div>
 
@@ -147,7 +142,7 @@ const BookmarksList = () => {
                   variant={viewMode}
                   showTags={true}
                   showDescription={viewMode === "list"}
-                  emptyMessage="アイテムが見つかりません"
+                  emptyMessage={t("bookmarks.noItemsFound")}
                   filterType="all"
                 />
               </div>

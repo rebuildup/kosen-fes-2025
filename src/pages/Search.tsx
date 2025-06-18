@@ -47,7 +47,7 @@ const Search = () => {
               {t("search.title")}
             </h1>
             <p className="text-xl text-[var(--text-secondary)] max-w-2xl mx-auto mb-8">
-              イベント、展示、露店を検索して見つけよう
+              {t("search.subtitle")}
             </p>
 
             {/* Search Bar - Full width and prominent */}
@@ -95,15 +95,15 @@ const Search = () => {
                 <div className="space-y-3 text-sm text-[var(--text-secondary)]">
                   <div className="flex items-start gap-2">
                     <span className="text-[var(--primary-color)]">•</span>
-                    <span>キーワードで検索してイベントや展示を見つけよう</span>
+                    <span>{t("search.searchInstructions.keyword")}</span>
                   </div>
                   <div className="flex items-start gap-2">
                     <span className="text-[var(--primary-color)]">•</span>
-                    <span>タグを使って興味のあるカテゴリーを絞り込み</span>
+                    <span>{t("search.searchInstructions.tags")}</span>
                   </div>
                   <div className="flex items-start gap-2">
                     <span className="text-[var(--primary-color)]">•</span>
-                    <span>場所や時間でも検索できます</span>
+                    <span>{t("search.searchInstructions.location")}</span>
                   </div>
                 </div>
               </div>

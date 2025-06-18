@@ -34,7 +34,7 @@ const Sidebar = () => {
       <div className="h-full overflow-y-auto p-6 lg:p-3">
         {/* Quick Links */}
         <div className="mb-6">
-          <h3 className="text-sm font-semibold text-[var(--text-secondary)] uppercase tracking-wide mb-3">
+          <h3 className="text-sm font-semibold text-[var(--text-secondary)] uppercase tracking-wide mb-3 lg:hidden xl:block">
             {t("sidebar.quickAccess")}
           </h3>
           <div className="space-y-2">
@@ -56,7 +56,7 @@ const Sidebar = () => {
 
         {/* Navigation Links */}
         <div className="mb-6">
-          <h3 className="text-sm font-semibold text-[var(--text-secondary)] uppercase tracking-wide mb-3">
+          <h3 className="text-sm font-semibold text-[var(--text-secondary)] uppercase tracking-wide mb-3 lg:hidden xl:block">
             {t("sidebar.navigation")}
           </h3>
           <div className="space-y-2">
@@ -101,28 +101,28 @@ const Sidebar = () => {
 
         {/* Settings Section */}
         <div className="mb-6">
-          <h3 className="text-sm font-semibold text-[var(--text-secondary)] uppercase tracking-wide mb-3">
-            {t("sidebar.settings")}
-          </h3>
-
-          {/* Settings toggle button */}
-          <button
-            onClick={() => toggleSection("settings")}
-            className={`
-              w-full p-3 rounded-lg transition-all duration-200 flex items-center justify-center
-              ${
-                expanded === "settings"
-                  ? "bg-[var(--instagram-gradient-subtle)] text-[var(--primary-color)] shadow-sm"
-                  : "bg-[var(--bg-primary)] text-[var(--text-primary)] hover:bg-[var(--bg-tertiary)] hover:text-[var(--primary-color)]"
-              }
-            `}
-            title={t("settings.title")}
-          >
-            <SettingsIcon size={18} />
-          </button>
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-sm font-semibold text-[var(--text-secondary)] uppercase tracking-wide lg:hidden xl:block">
+              {t("sidebar.settings")}
+            </h3>
+            <button
+              onClick={() => toggleSection("settings")}
+              className={`
+                p-2 rounded-lg transition-all duration-200 flex items-center justify-center
+                ${
+                  expanded === "settings"
+                    ? "bg-[var(--instagram-gradient-subtle)] text-[var(--primary-color)] shadow-sm"
+                    : "bg-[var(--bg-primary)] text-[var(--text-primary)] hover:bg-[var(--bg-tertiary)] hover:text-[var(--primary-color)]"
+                }
+              `}
+              title={t("settings.title")}
+            >
+              <SettingsIcon size={18} />
+            </button>
+          </div>
 
           {expanded === "settings" && (
-            <div className="mt-3 space-y-3 p-3 bg-[var(--bg-primary)] rounded-lg border border-[var(--border-color)]">
+            <div className="space-y-3 p-3 bg-[var(--bg-primary)] rounded-lg border border-[var(--border-color)]">
               <div className="flex items-center justify-between">
                 <span className="text-sm font-medium text-[var(--text-secondary)]">
                   {t("settings.theme.title")}:
@@ -142,28 +142,28 @@ const Sidebar = () => {
 
         {/* Info Section */}
         <div className="mb-6">
-          <h3 className="text-sm font-semibold text-[var(--text-secondary)] uppercase tracking-wide mb-3">
-            {t("sidebar.information")}
-          </h3>
-
-          {/* Info toggle button */}
-          <button
-            onClick={() => toggleSection("info")}
-            className={`
-              w-full p-3 rounded-lg transition-all duration-200 flex items-center justify-center
-              ${
-                expanded === "info"
-                  ? "bg-[var(--instagram-gradient-subtle)] text-[var(--primary-color)] shadow-sm"
-                  : "bg-[var(--bg-primary)] text-[var(--text-primary)] hover:bg-[var(--bg-tertiary)] hover:text-[var(--primary-color)]"
-              }
-            `}
-            title={t("info.title")}
-          >
-            <InfoIcon size={18} />
-          </button>
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-sm font-semibold text-[var(--text-secondary)] uppercase tracking-wide lg:hidden xl:block">
+              {t("sidebar.information")}
+            </h3>
+            <button
+              onClick={() => toggleSection("info")}
+              className={`
+                p-2 rounded-lg transition-all duration-200 flex items-center justify-center
+                ${
+                  expanded === "info"
+                    ? "bg-[var(--instagram-gradient-subtle)] text-[var(--primary-color)] shadow-sm"
+                    : "bg-[var(--bg-primary)] text-[var(--text-primary)] hover:bg-[var(--bg-tertiary)] hover:text-[var(--primary-color)]"
+                }
+              `}
+              title={t("info.title")}
+            >
+              <InfoIcon size={18} />
+            </button>
+          </div>
 
           {expanded === "info" && (
-            <div className="mt-3 space-y-3 p-3 bg-[var(--bg-primary)] rounded-lg border border-[var(--border-color)]">
+            <div className="space-y-3 p-3 bg-[var(--bg-primary)] rounded-lg border border-[var(--border-color)]">
               <div className="space-y-2">
                 <div className="text-sm">
                   <span className="font-semibold text-[var(--text-primary)]">
@@ -171,7 +171,7 @@ const Sidebar = () => {
                   </span>
                   <br />
                   <span className="text-[var(--text-secondary)]">
-                    2025/11/8 - 2025/11/9
+                    2025/06/15 - 2025/06/16
                   </span>
                 </div>
 
@@ -194,36 +194,19 @@ const Sidebar = () => {
                     {t("info.accessInfo")}
                   </span>
                 </div>
+
+                <div className="text-sm">
+                  <span className="font-semibold text-[var(--text-primary)]">
+                    {t("info.organizer")}:
+                  </span>
+                  <br />
+                  <span className="text-[var(--text-secondary)]">
+                    宇部高専祭実行委員会
+                  </span>
+                </div>
               </div>
             </div>
           )}
-        </div>
-
-        {/* Festival Stats */}
-        <div className="bg-gradient-to-br from-[var(--accent-purple)]/10 to-[var(--accent-pink)]/10 rounded-lg p-4 border border-[var(--primary-color)]/20">
-          <h4 className="text-sm font-semibold text-[var(--text-primary)] mb-2">
-            {t("sidebar.festivalStats")}
-          </h4>
-          <div className="space-y-2 text-xs text-[var(--text-secondary)]">
-            <div className="flex justify-between">
-              <span>🎭 {t("navigation.events")}</span>
-              <span className="font-medium text-[var(--primary-color)]">
-                14+
-              </span>
-            </div>
-            <div className="flex justify-between">
-              <span>🎨 {t("navigation.exhibits")}</span>
-              <span className="font-medium text-[var(--primary-color)]">
-                16+
-              </span>
-            </div>
-            <div className="flex justify-between">
-              <span>🍜 {t("navigation.stalls")}</span>
-              <span className="font-medium text-[var(--primary-color)]">
-                23+
-              </span>
-            </div>
-          </div>
         </div>
       </div>
     </aside>

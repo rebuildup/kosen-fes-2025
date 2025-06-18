@@ -102,7 +102,7 @@ const SearchResults = () => {
     return (
       <div className="text-center py-12 text-[var(--text-secondary)]">
         <div className="text-6xl mb-4">🔍</div>
-        <p>キーワードを入力するかタグを選択して検索してください</p>
+        <p>{t("search.searchPrompt")}</p>
       </div>
     );
   }
@@ -116,7 +116,7 @@ const SearchResults = () => {
           {t("search.noResults")}
         </h2>
         <p className="text-[var(--text-secondary)]">
-          別のキーワードやタグで検索してみてください
+          {t("search.tryDifferentKeywords")}
         </p>
       </div>
     );
@@ -165,7 +165,7 @@ const SearchResults = () => {
                 highlightText={(text) =>
                   highlightSearchQuery(text, searchQuery)
                 }
-                emptyMessage="イベントが見つかりません"
+                emptyMessage={t("events.noEventsFound")}
                 filterType="all"
               />
             </div>
@@ -194,7 +194,7 @@ const SearchResults = () => {
                 highlightText={(text) =>
                   highlightSearchQuery(text, searchQuery)
                 }
-                emptyMessage="展示が見つかりません"
+                emptyMessage={t("exhibits.noExhibits")}
                 filterType="all"
               />
             </div>
@@ -223,7 +223,7 @@ const SearchResults = () => {
                 highlightText={(text) =>
                   highlightSearchQuery(text, searchQuery)
                 }
-                emptyMessage="露店が見つかりません"
+                emptyMessage={t("exhibits.noStalls")}
                 filterType="all"
               />
             </div>

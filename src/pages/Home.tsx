@@ -4,7 +4,6 @@ import { useData } from "../context/DataContext";
 import { ItemCore } from "../types/data";
 import { Item } from "../types/common";
 import UnifiedCard from "../shared/components/ui/UnifiedCard";
-import CardGrid from "../components/common/CardGrid";
 import TagCloud from "../components/common/TagCloud";
 import PillButton from "../components/common/PillButton";
 
@@ -242,7 +241,7 @@ const Home = () => {
             <span className="text-3xl mr-3">🏷️</span>
             {t("home.popularTags")}
           </h2>
-          <div className="flex justify-center">
+          <div className="w-full overflow-hidden">
             <TagCloud tags={popularTags} showCount />
           </div>
         </div>

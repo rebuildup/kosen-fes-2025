@@ -266,18 +266,16 @@ const Menu = ({ setMenuOpen, closeButtonRef }: MenuProps) => {
             <h3 className="mobile-menu-section-title">
               {t("navigation.quickLinks")}
             </h3>
-            <div className="mobile-menu-links">
+            <nav className="mobile-menu-nav">
               <Link
                 to="/bookmarks"
-                className="mobile-menu-link-item"
+                className="mobile-menu-nav-item"
                 onClick={handleMenuItemClick}
               >
-                <div className="mobile-menu-link-content">
-                  <span className="mobile-menu-nav-icon">
-                    <BookmarkIcon size={18} />
-                  </span>
-                  <span>{t("bookmarks.title")}</span>
-                </div>
+                <span className="mobile-menu-nav-icon">
+                  <BookmarkIcon size={18} />
+                </span>
+                <span>{t("bookmarks.title")}</span>
                 {bookmarks.length > 0 && (
                   <span className="mobile-menu-badge">{bookmarks.length}</span>
                 )}
@@ -285,17 +283,15 @@ const Menu = ({ setMenuOpen, closeButtonRef }: MenuProps) => {
 
               <Link
                 to="/search"
-                className="mobile-menu-link-item"
+                className="mobile-menu-nav-item"
                 onClick={handleMenuItemClick}
               >
-                <div className="mobile-menu-link-content">
-                  <span className="mobile-menu-nav-icon">
-                    <SearchIcon size={18} />
-                  </span>
-                  <span>{t("search.title")}</span>
-                </div>
+                <span className="mobile-menu-nav-icon">
+                  <SearchIcon size={18} />
+                </span>
+                <span>{t("search.title")}</span>
               </Link>
-            </div>
+            </nav>
           </div>
 
           {/* Settings */}
@@ -323,13 +319,19 @@ const Menu = ({ setMenuOpen, closeButtonRef }: MenuProps) => {
             <h3 className="mobile-menu-section-title">{t("info.title")}</h3>
             <div className="mobile-menu-info">
               <p className="mobile-menu-info-item">
-                {t("info.festivalDates")}: 2025/06/15 - 2025/06/16
+                <strong>{t("info.festivalDates")}:</strong>
+                <br />
+                2025/06/15 - 2025/06/16
               </p>
               <p className="mobile-menu-info-item">
-                {t("info.location")}: Ube Kosen, Yamaguchi
+                <strong>{t("info.location")}:</strong>
+                <br />
+                {t("info.schoolName")}
               </p>
               <p className="mobile-menu-info-item">
-                {t("info.organizer")}: Festival Committee
+                <strong>{t("info.organizer")}:</strong>
+                <br />
+                宇部高専祭実行委員会
               </p>
             </div>
           </div>

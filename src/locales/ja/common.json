@@ -1,5 +1,6 @@
 {
   "siteName": "宇部高専祭 2025",
+  "language": "ja",
   "navigation": {
     "home": "ホーム",
     "events": "イベント",
@@ -57,6 +58,7 @@
   "home": {
     "title": "宇部高専祭 2025へようこそ",
     "subtitle": "注目のイベントや展示をチェック！",
+    "dates": "2025年6月15日（土）- 16日（日）",
     "featuredEvents": "注目イベント",
     "featuredExhibits": "注目展示",
     "popularTags": "人気のタグ",
@@ -75,6 +77,7 @@
     "title": "イベント",
     "description": "楽しいイベントが盛りだくさん！",
     "noEvents": "イベントが見つかりません",
+    "noEventsFound": "イベントが見つかりません",
     "filters": {
       "all": "すべての日",
       "day1": "1日目",
@@ -90,6 +93,7 @@
     "culture": "文化",
     "noExhibits": "展示が見つかりません",
     "noStalls": "露店が見つかりません",
+    "noCategoryItems": "このカテゴリーには項目がありません",
     "filters": {
       "all": "すべて",
       "exhibits": "展示",
@@ -99,7 +103,8 @@
   "schedule": {
     "title": "タイムスケジュール",
     "day1": "1日目",
-    "day2": "2日目"
+    "day2": "2日目",
+    "noEvents": "この日にはイベントがありません"
   },
   "map": {
     "title": "会場マップ",
@@ -108,7 +113,8 @@
   },
   "sponsors": {
     "title": "スポンサー",
-    "description": "宇部高専祭を支援してくださるスポンサーの皆様"
+    "description": "宇部高専祭を支援してくださるスポンサーの皆様",
+    "noSponsors": "スポンサー情報がありません"
   },
   "detail": {
     "back": "一覧に戻る",
@@ -125,17 +131,28 @@
   },
   "search": {
     "title": "検索",
+    "subtitle": "イベント、展示、露店を検索して見つけよう",
     "placeholder": "イベント、展示などを検索",
     "noResults": "検索結果が見つかりません",
     "results": "検索結果",
-    "popularTags": "人気のタグ"
+    "popularTags": "人気のタグ",
+    "searchPrompt": "キーワードを入力するかタグを選択して検索してください",
+    "searchInstructions": {
+      "keyword": "キーワードで検索してイベントや展示を見つけよう",
+      "tags": "タグを使って興味のあるカテゴリーを絞り込み",
+      "location": "場所や時間でも検索できます"
+    },
+    "tryDifferentKeywords": "別のキーワードやタグで検索してみてください"
   },
   "bookmarks": {
     "title": "ブックマーク",
     "empty": "ブックマークはまだありません",
     "noBookmarks": "ブックマークはまだありません。",
     "bookmarkedItems": "ブックマークしたアイテム",
-    "startBookmarking": "気になるイベントや展示をブックマークしてみましょう"
+    "startBookmarking": "気になるイベントや展示をブックマークしてみましょう",
+    "noCategoryItems": "このカテゴリーにはブックマークされたアイテムがありません",
+    "itemCount": "アイテム",
+    "noItemsFound": "アイテムが見つかりません"
   },
   "tags": {
     "filterByTag": "タグでフィルター",
@@ -151,6 +168,18 @@
     "pageNotFoundMessage": "お探しのページは存在しません。",
     "backToHome": "ホームに戻る",
     "genericError": "エラーが発生しました",
-    "tryAgain": "再試行"
+    "genericErrorMessage": "予期しないエラーが発生しました。",
+    "serverError": "サーバーエラー",
+    "serverErrorMessage": "サーバーに問題が発生しています。しばらくしてから再度お試しください。",
+    "applicationError": "アプリケーションエラー",
+    "componentError": "コンポーネントエラー",
+    "componentErrorMessage": "このコンポーネントでエラーが発生しました。",
+    "itemNotFound": "アイテムが見つかりません",
+    "tryAgain": "再試行",
+    "titleRequired": "タイトルは必須です",
+    "descriptionRequired": "説明は必須です",
+    "locationRequired": "場所は必須です",
+    "coordinatesRequired": "マップ上で場所を選択してください",
+    "imageRequired": "画像を選択してください"
   }
 }

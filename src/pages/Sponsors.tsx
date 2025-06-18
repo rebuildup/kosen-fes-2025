@@ -67,7 +67,7 @@ const Sponsors = () => {
               variant={viewMode}
               showTags={false}
               showDescription={viewMode === "list"}
-              emptyMessage="スポンサー情報がありません"
+              emptyMessage={t("sponsors.noSponsors")}
               filterType="all"
             />
           </div>

@@ -1,5 +1,6 @@
 {
   "siteName": "Ube Kosen Festival 2025",
+  "language": "en",
   "navigation": {
     "home": "Home",
     "events": "Events",
@@ -57,6 +58,7 @@
   "home": {
     "title": "Welcome to Ube Kosen Festival 2025",
     "subtitle": "Check out featured events and exhibits!",
+    "dates": "June 15-16, 2025 (Sat-Sun)",
     "featuredEvents": "Featured Events",
     "featuredExhibits": "Featured Exhibits",
     "popularTags": "Popular Tags",
@@ -75,6 +77,7 @@
     "title": "Events",
     "description": "Exciting events await you!",
     "noEvents": "No events found",
+    "noEventsFound": "No events found",
     "filters": {
       "all": "All Days",
       "day1": "Day 1",
@@ -90,6 +93,7 @@
     "culture": "Culture",
     "noExhibits": "No exhibits found",
     "noStalls": "No stalls found",
+    "noCategoryItems": "No items in this category",
     "filters": {
       "all": "All",
       "exhibits": "Exhibits",
@@ -99,7 +103,8 @@
   "schedule": {
     "title": "Schedule",
     "day1": "Day 1",
-    "day2": "Day 2"
+    "day2": "Day 2",
+    "noEvents": "No events on this day"
   },
   "map": {
     "title": "Campus Map",
@@ -108,7 +113,8 @@
   },
   "sponsors": {
     "title": "Sponsors",
-    "description": "Thank you to our sponsors who support Ube Kosen Festival"
+    "description": "Thank you to our sponsors who support Ube Kosen Festival",
+    "noSponsors": "No sponsor information available"
   },
   "detail": {
     "back": "Back to List",
@@ -125,17 +131,28 @@
   },
   "search": {
     "title": "Search",
+    "subtitle": "Search and discover events, exhibits, and stalls",
     "placeholder": "Search events, exhibits, and more",
     "noResults": "No search results found",
     "results": "Search Results",
-    "popularTags": "Popular Tags"
+    "popularTags": "Popular Tags",
+    "searchPrompt": "Enter keywords or select tags to search",
+    "searchInstructions": {
+      "keyword": "Search for events and exhibits by keywords",
+      "tags": "Use tags to filter by interesting categories",
+      "location": "You can also search by location and time"
+    },
+    "tryDifferentKeywords": "Try different keywords or tags"
   },
   "bookmarks": {
     "title": "Bookmarks",
     "empty": "No bookmarks yet",
     "noBookmarks": "You haven't bookmarked anything yet.",
     "bookmarkedItems": "Bookmarked Items",
-    "startBookmarking": "Start bookmarking events and exhibits you're interested in"
+    "startBookmarking": "Start bookmarking events and exhibits you're interested in",
+    "noCategoryItems": "No bookmarked items in this category",
+    "itemCount": "items",
+    "noItemsFound": "No items found"
   },
   "tags": {
     "filterByTag": "Filter by Tag",
@@ -151,6 +168,18 @@
     "pageNotFoundMessage": "The page you're looking for doesn't exist.",
     "backToHome": "Back to Home",
     "genericError": "An error occurred",
-    "tryAgain": "Try Again"
+    "genericErrorMessage": "An unexpected error occurred.",
+    "serverError": "Server Error",
+    "serverErrorMessage": "There's a problem with the server. Please try again later.",
+    "applicationError": "Application Error",
+    "componentError": "Component Error",
+    "componentErrorMessage": "An error occurred in this component.",
+    "itemNotFound": "Item not found",
+    "tryAgain": "Try Again",
+    "titleRequired": "Title is required",
+    "descriptionRequired": "Description is required",
+    "locationRequired": "Location is required",
+    "coordinatesRequired": "Please select a location on the map",
+    "imageRequired": "Please select an image"
   }
 }

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useTheme } from "../context/ThemeContext";
 import { useData } from "../context/DataContext";
+import { useLanguage } from "../context/LanguageContext";
 import { Item, Event, Exhibit, Stall, Sponsor } from "../types/common";
 import UnifiedCard from "../shared/components/ui/UnifiedCard";
 import UnifiedMap from "../components/map/UnifiedMap";
@@ -31,6 +32,7 @@ interface FormData {
 const ContentPreview = () => {
   const { theme, toggleTheme } = useTheme();
   const { getAllTags } = useData();
+  const { t } = useLanguage();
 
   const [formData, setFormData] = useState<FormData>({
     type: "event",
@@ -204,13 +206,15 @@ const ContentPreview = () => {
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
 
-    if (!formData.title.trim()) newErrors.title = "タイトルは必須です";
-    if (!formData.description.trim()) newErrors.description = "説明は必須です";
-    if (!formData.location.trim()) newErrors.location = "場所は必須です";
+    if (!formData.title.trim()) newErrors.title = t("errors.titleRequired");
+    if (!formData.description.trim())
+      newErrors.description = t("errors.descriptionRequired");
+    if (!formData.location.trim())
+      newErrors.location = t("errors.locationRequired");
     if (!formData.coordinates)
-      newErrors.coordinates = "マップ上で場所を選択してください";
+      newErrors.coordinates = t("errors.coordinatesRequired");
     if (!formData.imageFile && !formData.imagePreviewUrl)
-      newErrors.image = "画像を選択してください";
+      newErrors.image = t("errors.imageRequired");
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
