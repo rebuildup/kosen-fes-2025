@@ -4,30 +4,51 @@
     "home": "Home",
     "events": "Events",
     "exhibits": "Exhibits & Stalls",
+    "stalls": "Stalls",
     "schedule": "Schedule",
     "map": "Map",
     "search": "Search",
-    "bookmarks": "Bookmarks"
+    "bookmarks": "Bookmarks",
+    "sponsors": "Sponsors"
+  },
+  "sidebar": {
+    "quickAccess": "Quick Access",
+    "navigation": "Navigation",
+    "settings": "Settings",
+    "information": "Information",
+    "festivalStats": "Festival Stats"
   },
   "settings": {
+    "title": "Settings",
     "theme": {
+      "title": "Theme",
       "light": "Light Mode",
       "dark": "Dark Mode",
       "switchToLight": "Switch to Light Theme",
       "switchToDark": "Switch to Dark Theme"
     },
     "language": {
+      "title": "Language",
       "en": "English",
       "ja": "Japanese",
       "switchToEn": "Switch to English",
       "switchToJa": "Switch to Japanese"
     }
   },
+  "info": {
+    "title": "Information",
+    "festivalDates": "Festival Dates",
+    "location": "Location",
+    "schoolName": "Ube National College of Technology",
+    "access": "Access",
+    "accessInfo": "15 minutes walk from JR Ube-Shinkawa Station"
+  },
   "actions": {
     "close": "Close",
     "save": "Save",
     "cancel": "Cancel",
     "delete": "Delete",
+    "deleteAll": "Delete All",
     "bookmark": "Bookmark",
     "removeBookmark": "Remove Bookmark",
     "search": "Search",
@@ -35,21 +56,38 @@
   },
   "home": {
     "title": "Welcome to Ube Kosen Festival 2025",
-    "subtitle": "Check out our featured events and exhibits!",
+    "subtitle": "Check out featured events and exhibits!",
     "featuredEvents": "Featured Events",
-    "featuredExhibits": "Featured Exhibits"
+    "featuredExhibits": "Featured Exhibits",
+    "popularTags": "Popular Tags",
+    "timeline": "Timeline",
+    "ctaTitle": "Join Us Now",
+    "ctaDescription": "Discover the charm of Ube Kosen Festival",
+    "viewBookmarks": "View Bookmarks",
+    "viewMap": "View Map",
+    "events": "Featured Events",
+    "exhibits": "Featured Exhibits",
+    "stalls": "Popular Stalls",
+    "viewAll": "View All",
+    "viewSchedule": "View Schedule"
   },
   "events": {
     "title": "Events",
+    "description": "Exciting events await you!",
     "noEvents": "No events found",
     "filters": {
-      "all": "All Events",
+      "all": "All Days",
       "day1": "Day 1",
       "day2": "Day 2"
     }
   },
   "exhibits": {
     "title": "Exhibits & Stalls",
+    "description": "Experience student creativity and delicious food stalls",
+    "allCategories": "All Categories",
+    "art": "Art",
+    "tech": "Technology",
+    "culture": "Culture",
     "noExhibits": "No exhibits found",
     "noStalls": "No stalls found",
     "filters": {
@@ -64,8 +102,13 @@
     "day2": "Day 2"
   },
   "map": {
-    "title": "Festival Map",
+    "title": "Campus Map",
+    "description": "Find your way around the campus and locate facilities",
     "viewLocations": "View Locations"
+  },
+  "sponsors": {
+    "title": "Sponsors",
+    "description": "Thank you to our sponsors who support Ube Kosen Festival"
   },
   "detail": {
     "back": "Back to List",
@@ -81,20 +124,33 @@
     "tags": "Tags"
   },
   "search": {
-    "placeholder": "Search for events, exhibits, etc.",
-    "noResults": "No results found",
-    "results": "Search Results"
+    "title": "Search",
+    "placeholder": "Search events, exhibits, and more",
+    "noResults": "No search results found",
+    "results": "Search Results",
+    "popularTags": "Popular Tags"
   },
   "bookmarks": {
     "title": "Bookmarks",
-    "noBookmarks": "No bookmarks yet.",
-    "bookmarkedItems": "Bookmarked Items"
+    "empty": "No bookmarks yet",
+    "noBookmarks": "You haven't bookmarked anything yet.",
+    "bookmarkedItems": "Bookmarked Items",
+    "startBookmarking": "Start bookmarking events and exhibits you're interested in"
+  },
+  "tags": {
+    "filterByTag": "Filter by Tag",
+    "searchTags": "Search tags",
+    "noTagsFound": "No tags found",
+    "clearFilters": "Clear Filters",
+    "selected": "selected",
+    "showMore": "Show More",
+    "popularTags": "Popular Tags"
   },
   "errors": {
     "pageNotFound": "Page Not Found",
     "pageNotFoundMessage": "The page you're looking for doesn't exist.",
-    "backToHome": "Go back to home",
-    "genericError": "Something went wrong",
+    "backToHome": "Back to Home",
+    "genericError": "An error occurred",
     "tryAgain": "Try Again"
   }
 }

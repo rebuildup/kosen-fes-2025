@@ -65,7 +65,12 @@ const SearchResults = () => {
         <>
           {parts.map((part, i) =>
             part.toLowerCase() === query.toLowerCase() ? (
-              <mark key={i}>{part}</mark>
+              <mark
+                key={i}
+                className="bg-gradient-to-r from-[var(--accent-yellow)] to-[var(--accent-orange)] text-[var(--text-primary)] px-1 rounded"
+              >
+                {part}
+              </mark>
             ) : (
               part
             )
@@ -85,9 +90,9 @@ const SearchResults = () => {
 
   if (isSearching) {
     return (
-      <div>
-        <div></div>
-        <span>{t("search.searching")}</span>
+      <div className="text-center py-12">
+        <div className="animate-spin w-8 h-8 border-4 border-[var(--primary-color)] border-t-transparent rounded-full mx-auto mb-4"></div>
+        <span className="text-[var(--text-secondary)]">検索中...</span>
       </div>
     );
   }
@@ -95,8 +100,9 @@ const SearchResults = () => {
   // No search query entered yet
   if (!searchQuery && selectedTags.length === 0) {
     return (
-      <div>
-        <p>{t("search.enterQuery")}</p>
+      <div className="text-center py-12 text-[var(--text-secondary)]">
+        <div className="text-6xl mb-4">🔍</div>
+        <p>キーワードを入力するかタグを選択して検索してください</p>
       </div>
     );
   }
@@ -104,73 +110,126 @@ const SearchResults = () => {
   // No results found
   if (totalResults === 0) {
     return (
-      <div>
-        <div>🔍</div>
-        <h2>{t("search.noResults")}</h2>
-        <p>{t("search.tryDifferentQuery")}</p>
+      <div className="text-center py-12">
+        <div className="text-6xl mb-4">🔍</div>
+        <h2 className="text-xl font-semibold text-[var(--text-primary)] mb-2">
+          {t("search.noResults")}
+        </h2>
+        <p className="text-[var(--text-secondary)]">
+          別のキーワードやタグで検索してみてください
+        </p>
       </div>
     );
   }
 
   return (
-    <div>
-      <div>
-        <div>
+    <div className="space-y-6">
+      {/* Results Header */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 p-6 bg-[var(--bg-secondary)] rounded-xl border border-[var(--border-color)]">
+        <div className="flex items-center gap-4">
+          <h2 className="text-xl font-semibold text-[var(--text-primary)]">
+            検索結果
+          </h2>
           {totalResults > 0 && (
-            <span>
-              {totalResults}{" "}
-              {t(totalResults === 1 ? "search.result" : "search.results")}
+            <span className="px-3 py-1 bg-[var(--primary-color)] text-white rounded-full text-sm font-medium">
+              {totalResults} 件
             </span>
           )}
         </div>
 
+        {/* View Mode Toggle - Right side */}
         <CardListToggle viewMode={viewMode} setViewMode={setViewMode} />
       </div>
 
-      {filteredResults.events.length > 0 && (
-        <section>
-          <h3>
-            {t("events.title")} ({filteredResults.events.length})
-          </h3>
-          <CardGrid
-            items={filteredResults.events}
-            variant={viewMode}
-            showTags={true}
-            showDescription={viewMode === "list"}
-            highlightText={(text) => highlightSearchQuery(text, searchQuery)}
-          />
-        </section>
-      )}
+      {/* Results Sections */}
+      <div className="space-y-8">
+        {filteredResults.events.length > 0 && (
+          <section className="space-y-4">
+            <div className="flex items-center gap-3">
+              <div className="w-1 h-8 bg-gradient-to-b from-[var(--accent-purple)] to-[var(--accent-pink)] rounded-full"></div>
+              <h3 className="text-xl font-semibold text-[var(--text-primary)]">
+                🎭 {t("navigation.events")}
+              </h3>
+              <div className="flex-1 h-px bg-[var(--border-color)]"></div>
+              <span className="text-sm text-[var(--text-secondary)] bg-[var(--bg-secondary)] px-3 py-1 rounded-full">
+                {filteredResults.events.length} 件
+              </span>
+            </div>
 
-      {filteredResults.exhibits.length > 0 && (
-        <section>
-          <h3>
-            {t("exhibits.title")} ({filteredResults.exhibits.length})
-          </h3>
-          <CardGrid
-            items={filteredResults.exhibits}
-            variant={viewMode}
-            showTags={true}
-            showDescription={viewMode === "list"}
-            highlightText={(text) => highlightSearchQuery(text, searchQuery)}
-          />
-        </section>
-      )}
+            <div className="bg-[var(--bg-secondary)] rounded-xl p-6">
+              <CardGrid
+                items={filteredResults.events}
+                variant={viewMode}
+                showTags={true}
+                showDescription={viewMode === "list"}
+                highlightText={(text) =>
+                  highlightSearchQuery(text, searchQuery)
+                }
+                emptyMessage="イベントが見つかりません"
+                filterType="all"
+              />
+            </div>
+          </section>
+        )}
 
-      {filteredResults.stalls.length > 0 && (
-        <section>
-          <h3>
-            {t("stalls.title")} ({filteredResults.stalls.length})
-          </h3>
-          <CardGrid
-            items={filteredResults.stalls}
-            variant={viewMode}
-            showTags={true}
-            showDescription={viewMode === "list"}
-            highlightText={(text) => highlightSearchQuery(text, searchQuery)}
-          />
-        </section>
-      )}
+        {filteredResults.exhibits.length > 0 && (
+          <section className="space-y-4">
+            <div className="flex items-center gap-3">
+              <div className="w-1 h-8 bg-gradient-to-b from-[var(--accent-blue)] to-[var(--accent-teal)] rounded-full"></div>
+              <h3 className="text-xl font-semibold text-[var(--text-primary)]">
+                🎨 {t("exhibits.filters.exhibits")}
+              </h3>
+              <div className="flex-1 h-px bg-[var(--border-color)]"></div>
+              <span className="text-sm text-[var(--text-secondary)] bg-[var(--bg-secondary)] px-3 py-1 rounded-full">
+                {filteredResults.exhibits.length} 件
+              </span>
+            </div>
+
+            <div className="bg-[var(--bg-secondary)] rounded-xl p-6">
+              <CardGrid
+                items={filteredResults.exhibits}
+                variant={viewMode}
+                showTags={true}
+                showDescription={viewMode === "list"}
+                highlightText={(text) =>
+                  highlightSearchQuery(text, searchQuery)
+                }
+                emptyMessage="展示が見つかりません"
+                filterType="all"
+              />
+            </div>
+          </section>
+        )}
+
+        {filteredResults.stalls.length > 0 && (
+          <section className="space-y-4">
+            <div className="flex items-center gap-3">
+              <div className="w-1 h-8 bg-gradient-to-b from-[var(--accent-orange)] to-[var(--accent-red)] rounded-full"></div>
+              <h3 className="text-xl font-semibold text-[var(--text-primary)]">
+                🍜 {t("exhibits.filters.stalls")}
+              </h3>
+              <div className="flex-1 h-px bg-[var(--border-color)]"></div>
+              <span className="text-sm text-[var(--text-secondary)] bg-[var(--bg-secondary)] px-3 py-1 rounded-full">
+                {filteredResults.stalls.length} 件
+              </span>
+            </div>
+
+            <div className="bg-[var(--bg-secondary)] rounded-xl p-6">
+              <CardGrid
+                items={filteredResults.stalls}
+                variant={viewMode}
+                showTags={true}
+                showDescription={viewMode === "list"}
+                highlightText={(text) =>
+                  highlightSearchQuery(text, searchQuery)
+                }
+                emptyMessage="露店が見つかりません"
+                filterType="all"
+              />
+            </div>
+          </section>
+        )}
+      </div>
     </div>
   );
 };

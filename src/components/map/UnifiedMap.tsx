@@ -128,6 +128,20 @@ const UnifiedMap = ({
     }, []),
   });
 
+  // 安定した関数参照を作成
+  const screenToViewBoxRef = useRef(screenToViewBox);
+  const zoomInToCoordinateRef = useRef(zoomInToCoordinate);
+  const zoomOutFromCoordinateRef = useRef(zoomOutFromCoordinate);
+  const panRef = useRef(pan);
+
+  // 関数参照を最新に保つ
+  useEffect(() => {
+    screenToViewBoxRef.current = screenToViewBox;
+    zoomInToCoordinateRef.current = zoomInToCoordinate;
+    zoomOutFromCoordinateRef.current = zoomOutFromCoordinate;
+    panRef.current = pan;
+  });
+
   // Coordinate-based zoom functions that maintain center coordinate
   const handleZoomIn = useCallback(() => {
     zoomIn();
@@ -155,141 +169,150 @@ const UnifiedMap = ({
   // Handle mouse interactions (wheel, drag) natively
   useEffect(() => {
     const container = mapContainerRef.current;
-    if (!container || !allowInteraction) return;
 
-    let isDragging = false;
-    let dragStart = { x: 0, y: 0 };
+    console.log(
+      "UseEffect triggered - allowInteraction:",
+      allowInteraction,
+      "container:",
+      container
+    );
+
+    if (!container || !allowInteraction) {
+      console.log("Early return - no container or interaction disabled");
+      return;
+    }
+
+    let isDragActive = false;
     let lastMousePos = { x: 0, y: 0 };
+    let dragMoved = false;
 
     // Handle wheel events for zooming
     const handleWheelEvent = (e: WheelEvent) => {
-      // Always prevent page scroll
       e.preventDefault();
       e.stopPropagation();
-      e.stopImmediatePropagation();
 
-      // Convert to world coordinates
-      const cursorWorldPos = screenToViewBox(e.clientX, e.clientY);
+      console.log("Wheel event detected:", e.deltaY); // デバッグ用
 
-      // Determine zoom direction
-      const zoomDirection = e.deltaY > 0 ? "out" : "in";
+      const cursorWorldPos = screenToViewBoxRef.current(e.clientX, e.clientY);
 
-      if (zoomDirection === "in") {
-        zoomInToCoordinate(cursorWorldPos);
+      if (e.deltaY < 0) {
+        console.log("Zoom in"); // デバッグ用
+        zoomInToCoordinateRef.current(cursorWorldPos);
       } else {
-        zoomOutFromCoordinate(cursorWorldPos);
+        console.log("Zoom out"); // デバッグ用
+        zoomOutFromCoordinateRef.current(cursorWorldPos);
       }
     };
 
     // Handle mouse down for drag start
     const handleMouseDown = (e: MouseEvent) => {
-      if (e.button !== 0) return; // Only left mouse button
+      if (e.button !== 0) return;
 
-      isDragging = true;
-      dragStart = { x: e.clientX, y: e.clientY };
+      console.log("Mouse down - starting drag"); // デバッグ用
+
+      isDragActive = true;
+      dragMoved = false;
       lastMousePos = { x: e.clientX, y: e.clientY };
 
-      container.style.cursor = "grabbing";
-
-      // ドラッグ開始時にユーザー選択を無効化
+      // CSSクラスでカーソル制御
+      container.classList.add("dragging");
       document.body.style.userSelect = "none";
 
-      // Prevent text selection during drag
       e.preventDefault();
+      e.stopPropagation();
     };
 
     // Handle mouse move for dragging
     const handleMouseMove = (e: MouseEvent) => {
-      if (!isDragging) return;
+      if (!isDragActive) return;
 
       e.preventDefault();
+      e.stopPropagation();
 
       const deltaX = e.clientX - lastMousePos.x;
       const deltaY = e.clientY - lastMousePos.y;
 
-      // 最小移動量でフィルタリング（パフォーマンス向上）
-      if (Math.abs(deltaX) < 1 && Math.abs(deltaY) < 1) return;
+      console.log("Mouse move delta:", deltaX, deltaY); // デバッグ用
 
-      // Apply pan with the delta movement
-      pan(deltaX, deltaY);
-
-      lastMousePos = { x: e.clientX, y: e.clientY };
+      // 小さな移動でも確実に反応
+      if (Math.abs(deltaX) > 0 || Math.abs(deltaY) > 0) {
+        panRef.current(deltaX, deltaY);
+        lastMousePos = { x: e.clientX, y: e.clientY };
+        dragMoved = true;
+      }
     };
 
     // Handle mouse up to end drag
     const handleMouseUp = (e: MouseEvent) => {
-      if (!isDragging) return;
+      if (!isDragActive) return;
 
-      isDragging = false;
-      container.style.cursor = "grab";
+      console.log("Mouse up - ending drag"); // デバッグ用
 
-      // ドラッグ終了時にユーザー選択を復元
+      isDragActive = false;
+
+      // CSSクラスでカーソル復元
+      container.classList.remove("dragging");
       document.body.style.userSelect = "";
 
-      // Update isDragging state for click detection
-      const dragDistance = Math.sqrt(
-        Math.pow(e.clientX - dragStart.x, 2) +
-          Math.pow(e.clientY - dragStart.y, 2)
-      );
+      const wasClick = !dragMoved;
+      setIsDragging(!wasClick);
 
-      // If the drag distance is small, it's considered a click
-      setIsDragging(dragDistance > 5);
+      setTimeout(() => {
+        setIsDragging(false);
+      }, 100);
 
-      // Reset drag state after a short delay
-      setTimeout(() => setIsDragging(false), 100);
+      e.preventDefault();
+      e.stopPropagation();
     };
 
     // Handle mouse leave to cancel drag
     const handleMouseLeave = () => {
-      if (isDragging) {
-        isDragging = false;
-        container.style.cursor = "grab";
+      if (isDragActive) {
+        console.log("Mouse leave - canceling drag"); // デバッグ用
+        isDragActive = false;
+        container.classList.remove("dragging");
         document.body.style.userSelect = "";
         setIsDragging(false);
       }
     };
 
-    // Add event listeners
+    // Add event listeners - より確実なイベント捕捉
+    console.log("Adding event listeners to container:", container);
+
     container.addEventListener("wheel", handleWheelEvent, {
       passive: false,
-      capture: false, // Changed to false to allow normal event flow
+      capture: true,
     });
-
     container.addEventListener("mousedown", handleMouseDown, {
       passive: false,
+      capture: true,
     });
-    document.addEventListener("mousemove", handleMouseMove, { passive: false });
-    document.addEventListener("mouseup", handleMouseUp, { passive: false });
+    document.addEventListener("mousemove", handleMouseMove, {
+      passive: false,
+      capture: true,
+    });
+    document.addEventListener("mouseup", handleMouseUp, {
+      passive: false,
+      capture: true,
+    });
     container.addEventListener("mouseleave", handleMouseLeave, {
       passive: false,
     });
 
-    // Firefox legacy support
-    const handleLegacyWheel = (e: Event) => {
-      e.preventDefault();
-      e.stopPropagation();
-    };
-
-    container.addEventListener("DOMMouseScroll", handleLegacyWheel, {
-      passive: false,
-      capture: false,
-    } as AddEventListenerOptions);
+    console.log("Event listeners attached successfully"); // デバッグ用
 
     return () => {
+      console.log("Cleaning up event listeners"); // デバッグ用
       container.removeEventListener("wheel", handleWheelEvent);
       container.removeEventListener("mousedown", handleMouseDown);
       document.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("mouseup", handleMouseUp);
       container.removeEventListener("mouseleave", handleMouseLeave);
-      container.removeEventListener("DOMMouseScroll", handleLegacyWheel);
+
+      document.body.style.userSelect = "";
+      container.classList.remove("dragging");
     };
-  }, [
-    allowInteraction,
-    screenToViewBox,
-    zoomInToCoordinate,
-    zoomOutFromCoordinate,
-    pan,
-  ]);
+  }, [allowInteraction]); // 依存配列を最小限に
 
   // Handle legacy location focus
   useEffect(() => {
@@ -327,8 +350,11 @@ const UnifiedMap = ({
     }
   }, [selectedCoordinate, zoomToLocation]);
 
-  // Reset zoom when no location is selected or hovered
+  // Reset zoom when no location is selected or hovered (only in certain modes)
   useEffect(() => {
+    // Only auto-reset in detail mode, not in display or interactive mode
+    if (mode !== "detail") return;
+
     if (
       !hoveredLocation &&
       !selectedLocation &&
@@ -338,6 +364,7 @@ const UnifiedMap = ({
       resetZoom();
     }
   }, [
+    mode,
     hoveredLocation,
     selectedLocation,
     highlightCoordinate,
@@ -370,7 +397,7 @@ const UnifiedMap = ({
     if (!allowCoordinateSelection && mode !== "interactive") return;
 
     // Use the new screenToViewBox function for accurate coordinate conversion
-    const viewCoord = screenToViewBox(event.clientX, event.clientY);
+    const viewCoord = screenToViewBoxRef.current(event.clientX, event.clientY);
     onCoordinateSelect?.(viewCoord);
   };
 
@@ -661,7 +688,7 @@ const UnifiedMap = ({
           {process.env.NODE_ENV === "development" &&
             (() => {
               // Get the actual screen center coordinates using the current zoom/pan state
-              const actualCenterCoord = screenToViewBox(
+              const actualCenterCoord = screenToViewBoxRef.current(
                 mapContainerRef.current?.offsetWidth
                   ? mapContainerRef.current.offsetWidth / 2
                   : 400,
@@ -722,25 +749,11 @@ const UnifiedMap = ({
   return (
     <div
       ref={mapContainerRef}
-      className={`relative ${className}`}
+      className={`relative ${className} map-container`}
       style={{
         height,
         touchAction: "none",
-        cursor: allowInteraction ? "grab" : "default",
-      }}
-      onWheel={(e) => {
-        // Prevent page scroll when hovering over the map
-        if (allowInteraction) {
-          e.preventDefault();
-          e.stopPropagation();
-        }
-      }}
-      onWheelCapture={(e) => {
-        // Capture phase - prevent any wheel events from bubbling up
-        if (allowInteraction) {
-          e.preventDefault();
-          e.stopPropagation();
-        }
+        // cursor はJavaScriptで動的に制御するため設定しない
       }}
     >
       {/* Zoom Controls */}

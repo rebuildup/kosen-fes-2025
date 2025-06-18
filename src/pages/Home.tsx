@@ -120,9 +120,14 @@ const Home = () => {
   };
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-[var(--bg-primary)]">
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-[var(--color-accent)] via-[var(--color-accent)]/90 to-[var(--color-fourth)] overflow-hidden">
+      <section className="relative overflow-hidden">
+        {/* Instagram風グラデーション背景 */}
+        <div
+          className="absolute inset-0"
+          style={{ background: "var(--instagram-gradient)" }}
+        ></div>
         <div className="absolute inset-0 bg-black/20"></div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 lg:py-32">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
@@ -133,7 +138,7 @@ const Home = () => {
               <p className="text-xl md:text-2xl text-white/90 leading-relaxed">
                 {t("home.subtitle")}
               </p>
-              <div className="flex items-center gap-3 text-lg bg-white/10 backdrop-blur-sm rounded-full px-6 py-3 w-fit">
+              <div className="flex items-center gap-3 text-lg bg-white/10 backdrop-blur-sm rounded-full px-6 py-3 w-fit border border-white/20">
                 <span className="text-2xl">📅</span>
                 <span className="font-medium">{t("home.dates")}</span>
               </div>
@@ -141,25 +146,25 @@ const Home = () => {
                 to="/schedule"
                 variant="secondary"
                 size="lg"
-                className="bg-white hover:bg-gray-100 text-[var(--color-accent)]"
+                className="bg-white hover:bg-gray-100 text-[var(--primary-color)] shadow-lg hover:shadow-xl transition-all duration-300"
               >
                 {t("home.viewSchedule")}
               </PillButton>
             </div>
             <div className="flex justify-center lg:justify-end">
               <div className="relative">
-                <div className="w-64 h-64 md:w-80 md:h-80 bg-white/10 backdrop-blur-sm rounded-full flex items-center justify-center border border-white/20">
+                <div className="w-64 h-64 md:w-80 md:h-80 bg-white/10 backdrop-blur-sm rounded-full flex items-center justify-center border border-white/20 shadow-2xl">
                   <span className="text-8xl md:text-9xl font-bold text-white/90">
                     祭
                   </span>
                 </div>
                 <div
-                  className="absolute -top-4 -right-4 w-16 h-16 rounded-full animate-pulse"
-                  style={{ backgroundColor: "var(--color-second)" }}
+                  className="absolute -top-4 -right-4 w-16 h-16 rounded-full animate-pulse shadow-lg"
+                  style={{ backgroundColor: "var(--accent-yellow)" }}
                 ></div>
                 <div
-                  className="absolute -bottom-8 -left-8 w-12 h-12 rounded-full animate-pulse delay-1000"
-                  style={{ backgroundColor: "var(--color-third)" }}
+                  className="absolute -bottom-8 -left-8 w-12 h-12 rounded-full animate-pulse delay-1000 shadow-lg"
+                  style={{ backgroundColor: "var(--accent-pink)" }}
                 ></div>
               </div>
             </div>
@@ -168,16 +173,10 @@ const Home = () => {
       </section>
 
       {/* Events Section */}
-      <section
-        className="section"
-        style={{ backgroundColor: "var(--color-bg-primary)" }}
-      >
+      <section className="section bg-[var(--bg-primary)]">
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center justify-between mb-8">
-            <h2
-              className="section-title flex items-center gap-3"
-              style={{ color: "var(--color-text-primary)" }}
-            >
+            <h2 className="section-title flex items-center gap-3 text-[var(--text-primary)]">
               <span className="text-3xl">🎭</span>
               {t("home.events")}
             </h2>
@@ -195,17 +194,11 @@ const Home = () => {
       </section>
 
       {/* Exhibits Section */}
-      <section
-        className="section"
-        style={{ backgroundColor: "var(--color-bg-secondary)" }}
-      >
+      <section className="section bg-[var(--bg-secondary)]">
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center justify-between mb-8">
-            <h2
-              className="section-title flex items-center gap-3"
-              style={{ color: "var(--color-text-primary)" }}
-            >
-              <span className="text-3xl">🖼️</span>
+            <h2 className="section-title flex items-center gap-3 text-[var(--text-primary)]">
+              <span className="text-3xl">🎨</span>
               {t("home.exhibits")}
             </h2>
             <PillButton to="/exhibits" variant="secondary">
@@ -213,91 +206,132 @@ const Home = () => {
             </PillButton>
           </div>
 
-          <div className="max-w-6xl mx-auto">
-            <CardGrid
-              items={[...featuredExhibits, ...featuredStalls]}
-              variant="default"
-              showTags
-              showDescription
-            />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+            {featuredExhibits.map((exhibit) => (
+              <UnifiedCard key={exhibit.id} item={exhibit} variant="featured" />
+            ))}
           </div>
         </div>
       </section>
 
-      {/* Schedule Section */}
-      <section
-        className="section"
-        style={{ backgroundColor: "var(--color-bg-primary)" }}
-      >
+      {/* Stalls Section */}
+      <section className="section bg-[var(--bg-primary)]">
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center justify-between mb-8">
-            <h2
-              className="section-title flex items-center gap-3"
-              style={{ color: "var(--color-text-primary)" }}
-            >
-              <span className="text-3xl">📅</span>
-              {t("home.schedule")}
+            <h2 className="section-title flex items-center gap-3 text-[var(--text-primary)]">
+              <span className="text-3xl">🍜</span>
+              {t("home.stalls")}
             </h2>
-            <PillButton to="/schedule" variant="secondary">
-              {t("home.viewFull")}
+            <PillButton to="/stalls" variant="secondary">
+              {t("home.viewAll")}
             </PillButton>
           </div>
 
-          <div className="space-y-8">
+          <div className="grid grid-cols-1 max-w-2xl mx-auto">
+            {featuredStalls.map((stall) => (
+              <UnifiedCard key={stall.id} item={stall} variant="featured" />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Tags Section */}
+      <section className="section bg-[var(--bg-secondary)]">
+        <div className="max-w-7xl mx-auto">
+          <h2 className="section-title text-center mb-8 text-[var(--text-primary)]">
+            <span className="text-3xl mr-3">🏷️</span>
+            {t("home.popularTags")}
+          </h2>
+          <div className="flex justify-center">
+            <TagCloud tags={popularTags} showCount />
+          </div>
+        </div>
+      </section>
+
+      {/* Timeline Section */}
+      <section className="section bg-[var(--bg-primary)]">
+        <div className="max-w-7xl mx-auto">
+          <h2 className="section-title text-center mb-12 text-[var(--text-primary)]">
+            <span className="text-3xl mr-3">📅</span>
+            {t("home.timeline")}
+          </h2>
+
+          <div className="space-y-12">
             {allDates.map((date) => (
-              <div
-                key={date}
-                className="rounded-xl p-6"
-                style={{ backgroundColor: "var(--color-bg-secondary)" }}
-              >
-                <h3
-                  className="text-xl font-semibold mb-4 pb-2 border-b"
-                  style={{
-                    color: "var(--color-text-primary)",
-                    borderColor: "var(--color-border-primary)",
-                  }}
-                >
-                  {formatDate(date)}
-                </h3>
-                <div className="max-w-4xl mx-auto">
-                  <CardGrid
-                    items={timelineItems[date]?.slice(0, 3) || []}
-                    variant="compact"
-                    showTags={false}
-                  />
+              <div key={date} className="relative">
+                {/* 日付ヘッダー */}
+                <div className="flex items-center justify-center mb-8">
+                  <div
+                    className="px-6 py-3 rounded-full text-white font-semibold text-lg shadow-lg"
+                    style={{ background: "var(--instagram-gradient)" }}
+                  >
+                    {formatDate(date)}
+                  </div>
                 </div>
+
+                {/* イベントカードグリッド */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {(timelineItems[date] || []).slice(0, 6).map((item) => (
+                    <UnifiedCard
+                      key={item.id}
+                      item={item}
+                      variant="timeline"
+                      showTags={true}
+                    />
+                  ))}
+                </div>
+
+                {(timelineItems[date] || []).length > 6 && (
+                  <div className="text-center mt-6">
+                    <PillButton
+                      to="/schedule"
+                      variant="secondary"
+                      className="text-[var(--primary-color)] hover:bg-[var(--bg-tertiary)]"
+                    >
+                      {t("home.viewAll")} (+
+                      {(timelineItems[date] || []).length - 6})
+                    </PillButton>
+                  </div>
+                )}
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Search Section */}
-      <section
-        className="section bg-gradient-to-br"
-        style={{
-          background: `linear-gradient(to bottom right, var(--color-bg-secondary), var(--color-bg-tertiary))`,
-        }}
-      >
-        <div className="max-w-7xl mx-auto">
-          <div className="flex items-center justify-between mb-8">
-            <h2
-              className="section-title flex items-center gap-3"
-              style={{ color: "var(--color-text-primary)" }}
-            >
-              <span className="text-3xl">#</span>
-              {t("home.explore")}
+      {/* CTA Section */}
+      <section className="relative overflow-hidden">
+        <div
+          className="absolute inset-0"
+          style={{ background: "var(--instagram-gradient)" }}
+        ></div>
+        <div className="absolute inset-0 bg-black/20"></div>
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+          <div className="text-center text-white space-y-6">
+            <h2 className="text-3xl md:text-4xl font-bold">
+              {t("home.ctaTitle")}
             </h2>
-            <PillButton to="/search" variant="primary">
-              {t("home.search")}
-            </PillButton>
-          </div>
-
-          <div
-            className="rounded-xl p-6 shadow-sm"
-            style={{ backgroundColor: "var(--color-bg-primary)" }}
-          >
-            <TagCloud tags={popularTags} showCount />
+            <p className="text-xl text-white/90 max-w-2xl mx-auto">
+              {t("home.ctaDescription")}
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <PillButton
+                to="/map"
+                variant="secondary"
+                size="lg"
+                className="bg-white hover:bg-gray-100 text-[var(--primary-color)] shadow-lg hover:shadow-xl"
+              >
+                {t("home.viewMap")}
+              </PillButton>
+              <PillButton
+                to="/bookmarks"
+                variant="secondary"
+                size="lg"
+                className="bg-white/10 hover:bg-white/20 text-white border border-white/30 backdrop-blur-sm"
+              >
+                {t("home.viewBookmarks")}
+              </PillButton>
+            </div>
           </div>
         </div>
       </section>

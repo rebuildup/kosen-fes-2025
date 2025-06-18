@@ -116,14 +116,14 @@ const Map = () => {
               <SelectedTags />
             </div>
 
-            {/* Full Width Map with margins */}
-            <div className="mx-4 sm:mx-6 lg:mx-8">
+            {/* Full Width Map */}
+            <div className="w-full">
               <div
                 className="rounded-lg overflow-hidden relative"
                 style={{ backgroundColor: "var(--color-bg-secondary)" }}
               >
                 <div
-                  className="p-6 border-b"
+                  className="p-4 border-b"
                   style={{ borderColor: "var(--color-border-primary)" }}
                 >
                   <h2
@@ -136,8 +136,11 @@ const Map = () => {
                 </div>
 
                 <div className="relative">
-                  {/* Map Display */}
-                  <div className="map-container relative min-h-96 w-full">
+                  {/* Map Display - Larger size */}
+                  <div
+                    className="map-container relative w-full"
+                    style={{ minHeight: "70vh" }}
+                  >
                     <UnifiedMap
                       mode="display"
                       markers={locationsWithItems.map((location) => ({
@@ -153,7 +156,7 @@ const Map = () => {
                       contentItems={itemsToContentItems(filteredItems)}
                       onLocationHover={handleLocationHover}
                       onLocationSelect={handleLocationSelect}
-                      height="400px"
+                      height="70vh"
                       className="rounded-lg"
                     />
                   </div>

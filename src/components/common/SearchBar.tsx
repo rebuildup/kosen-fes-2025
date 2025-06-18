@@ -54,7 +54,7 @@ const SearchBar = ({
       // Focus animation
       gsap.to(containerRef.current, {
         boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
-        borderColor: "var(--primary-light)",
+        borderColor: "var(--primary-color)",
         duration: DURATION.FAST,
         ease: EASE.SMOOTH,
       });
@@ -62,7 +62,7 @@ const SearchBar = ({
       // Blur animation
       gsap.to(containerRef.current, {
         boxShadow: "0 2px 8px rgba(0, 0, 0, 0.05)",
-        borderColor: "var(--border-light)",
+        borderColor: "var(--border-color)",
         duration: DURATION.FAST,
         ease: EASE.SMOOTH,
       });
@@ -179,44 +179,54 @@ const SearchBar = ({
     }, 150);
   };
 
-  const suggestions = showSuggestions ? recentSearches : [];
-
-  // Classes based on variant using TailwindCSS
-  const containerClass = `bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg transition-all duration-200 ${
-    variant === "large" ? "p-4" : variant === "inline" ? "p-2" : "p-3"
-  } ${
-    showDropdown ? "border-primary-500 shadow-md" : "shadow-sm hover:shadow-md"
-  }`;
-
   const getInputClasses = () => {
     const baseClasses = `
-      w-full pl-12 pr-4 rounded-lg border transition-all duration-200
-      focus:outline-none focus:ring-2 backdrop-blur-md bg-white/10 border-white/20
+      w-full pl-12 pr-6 border transition-all duration-200 focus:outline-none focus:ring-2
+      bg-[var(--bg-primary)] border-[var(--border-color)] text-[var(--text-primary)]
+      placeholder-[var(--text-secondary)] focus:border-[var(--primary-color)] 
+      focus:ring-[var(--primary-color)]/20
     `;
 
     switch (variant) {
       case "large":
-        return `${baseClasses} py-4 text-lg focus:ring-4`;
+        return `${baseClasses} py-4 text-lg rounded-full focus:ring-4`;
+      case "inline":
+        return `${baseClasses} py-2 text-sm rounded-full`;
       default:
-        return `${baseClasses} py-3 text-base`;
+        return `${baseClasses} py-3 text-base rounded-full`;
     }
   };
 
   const getIconSize = () => {
-    return variant === "large" ? 24 : 20;
+    switch (variant) {
+      case "large":
+        return 24;
+      case "inline":
+        return 16;
+      default:
+        return 20;
+    }
   };
 
+  const suggestions = showSuggestions ? recentSearches : [];
+
   return (
-    <div className={`relative ${className}`}>
+    <div className={`relative w-full ${className}`}>
       <form
-        className={containerClass}
-        onSubmit={handleSubmit}
         ref={containerRef}
+        onSubmit={handleSubmit}
+        className="relative w-full"
       >
         <div className="relative">
-          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <SearchIcon size={getIconSize()} className="text-white/70" />
+          {/* Search Icon */}
+          <div className="absolute left-4 top-1/2 transform -translate-y-1/2 z-10">
+            <SearchIcon
+              size={getIconSize()}
+              className="text-[var(--text-secondary)]"
+            />
           </div>
+
+          {/* Input Field */}
           <input
             ref={inputRef}
             type="text"
@@ -227,36 +237,21 @@ const SearchBar = ({
             onBlur={handleBlur}
             placeholder={placeholder || t("search.placeholder")}
             className={getInputClasses()}
-            style={{
-              color: "var(--color-text-primary)",
-              backgroundColor: "rgba(255, 255, 255, 0.1)",
-              borderColor: "rgba(255, 255, 255, 0.2)",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor =
-                "rgba(255, 255, 255, 0.15)";
-              e.currentTarget.style.borderColor = "var(--color-accent)";
-            }}
-            onMouseLeave={(e) => {
-              if (document.activeElement !== e.currentTarget) {
-                e.currentTarget.style.backgroundColor =
-                  "rgba(255, 255, 255, 0.1)";
-                e.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.2)";
-              }
-            }}
-            onFocusCapture={(e) => {
-              e.currentTarget.style.backgroundColor =
-                "rgba(255, 255, 255, 0.15)";
-              e.currentTarget.style.borderColor = "var(--color-accent)";
-              e.currentTarget.style.boxShadow = `0 0 0 3px color-mix(in srgb, var(--color-accent) 25%, transparent)`;
-            }}
-            onBlurCapture={(e) => {
-              e.currentTarget.style.backgroundColor =
-                "rgba(255, 255, 255, 0.1)";
-              e.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.2)";
-              e.currentTarget.style.boxShadow = "none";
-            }}
+            autoComplete="off"
+            role="searchbox"
+            aria-label={t("search.placeholder")}
+            aria-expanded={showDropdown}
+            aria-haspopup="listbox"
           />
+
+          {/* Submit Button */}
+          <button
+            type="submit"
+            className="absolute right-2 top-1/2 transform -translate-y-1/2 px-4 py-2 bg-[var(--instagram-gradient)] text-white rounded-full font-medium transition-all duration-200 hover:shadow-lg hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)]/20"
+            aria-label={t("actions.search")}
+          >
+            {variant === "large" ? t("actions.search") : "検索"}
+          </button>
         </div>
       </form>
 
@@ -264,36 +259,37 @@ const SearchBar = ({
       {showDropdown && suggestions.length > 0 && (
         <div
           ref={dropdownRef}
-          className="absolute top-full left-0 right-0 mt-2 backdrop-blur-md bg-white/10 border border-white/20 rounded-lg shadow-lg z-50 max-h-60 overflow-y-auto"
-          style={{
-            backgroundColor: "var(--color-bg-secondary)",
-            borderColor: "var(--color-border-primary)",
-          }}
+          className="absolute top-full left-0 right-0 mt-2 bg-[var(--bg-primary)] border border-[var(--border-color)] rounded-lg shadow-lg z-50 max-h-64 overflow-y-auto"
         >
-          {suggestions.map((suggestion, index) => (
-            <button
-              key={`${suggestion}-${index}`}
-              type="button"
-              onClick={() => handleSuggestionClick(suggestion)}
-              className={`w-full px-4 py-3 text-left transition-all duration-200 flex items-center gap-3 first:rounded-t-lg last:rounded-b-lg ${
-                index === highlightedIndex ? "bg-white/20" : "hover:bg-white/10"
-              }`}
-              style={{
-                color: "var(--color-text-primary)",
-              }}
-            >
-              <SearchIcon size={16} className="opacity-60" />
-              <span>{suggestion}</span>
-              {recentSearches.includes(suggestion) && (
-                <span
-                  className="ml-auto text-xs opacity-60"
-                  style={{ color: "var(--color-text-tertiary)" }}
-                >
-                  {t("search.recent")}
+          <div
+            ref={suggestionsRef}
+            className="py-2"
+            role="listbox"
+            aria-label={t("search.suggestions")}
+          >
+            {suggestions.map((suggestion, index) => (
+              <button
+                key={index}
+                onClick={() => handleSuggestionClick(suggestion)}
+                className={`w-full text-left px-4 py-3 flex items-center gap-3 transition-all duration-200 ${
+                  highlightedIndex === index
+                    ? "bg-[var(--bg-tertiary)] text-[var(--primary-color)]"
+                    : "text-[var(--text-primary)] hover:bg-[var(--bg-secondary)]"
+                }`}
+                role="option"
+                aria-selected={highlightedIndex === index}
+              >
+                <SearchIcon
+                  size={16}
+                  className="text-[var(--text-secondary)]"
+                />
+                <span className="flex-1">{suggestion}</span>
+                <span className="text-xs text-[var(--text-secondary)]">
+                  最近の検索
                 </span>
-              )}
-            </button>
-          ))}
+              </button>
+            ))}
+          </div>
         </div>
       )}
     </div>

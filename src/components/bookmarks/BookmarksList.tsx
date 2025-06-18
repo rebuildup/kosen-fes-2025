@@ -4,6 +4,7 @@ import { useLanguage } from "../../context/LanguageContext";
 import { Item } from "../../types/common";
 import CardGrid from "../common/CardGrid";
 import CardListToggle from "../common/CardListToggle";
+import TabButtons from "../common/TabButtons";
 
 interface BookmarkFilter {
   type: "all" | "event" | "exhibit" | "stall";
@@ -19,11 +20,11 @@ const BookmarksList = () => {
   >("default");
   const [groupedItems, setGroupedItems] = useState<Record<string, Item[]>>({});
 
-  const filterOptions: BookmarkFilter[] = [
-    { type: "all", label: t("bookmarks.all") },
-    { type: "event", label: t("detail.event") },
-    { type: "exhibit", label: t("detail.exhibit") },
-    { type: "stall", label: t("detail.stall") },
+  const filterOptions = [
+    { value: "all", label: t("exhibits.filters.all") },
+    { value: "event", label: t("navigation.events") },
+    { value: "exhibit", label: t("exhibits.filters.exhibits") },
+    { value: "stall", label: t("exhibits.filters.stalls") },
   ];
 
   useEffect(() => {
@@ -76,10 +77,14 @@ const BookmarksList = () => {
 
   if (bookmarkedItems.length === 0) {
     return (
-      <div>
-        <div>🔖</div>
-        <h3>{t("bookmarks.noBookmarks")}</h3>
-        <p>{t("bookmarks.startBookmarking")}</p>
+      <div className="text-center py-12 bg-[var(--bg-secondary)] rounded-xl border border-[var(--border-color)]">
+        <div className="text-6xl mb-4">🔖</div>
+        <h3 className="text-xl font-semibold text-[var(--text-primary)] mb-2">
+          {t("bookmarks.empty")}
+        </h3>
+        <p className="text-[var(--text-secondary)]">
+          {t("bookmarks.startBookmarking")}
+        </p>
       </div>
     );
   }
@@ -87,50 +92,68 @@ const BookmarksList = () => {
   const dates = Object.keys(groupedItems).sort();
 
   return (
-    <div>
-      <div>
-        <div>
-          {filterOptions.map((option) => (
-            <button
-              key={option.type}
-              onClick={() => setFilter(option.type)}
-            >
-              {option.label}
-            </button>
-          ))}
+    <div className="space-y-6">
+      {/* Filter Controls */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 p-6 bg-[var(--bg-secondary)] rounded-xl border border-[var(--border-color)]">
+        {/* Filter Tabs */}
+        <div className="flex-grow">
+          <TabButtons
+            options={filterOptions}
+            activeValue={filter}
+            onChange={setFilter}
+            className="rounded-lg overflow-hidden shadow-sm"
+          />
         </div>
 
-        <div>
+        {/* Controls */}
+        <div className="flex items-center gap-4">
           <CardListToggle viewMode={viewMode} setViewMode={setViewMode} />
 
           <button
             onClick={clearAllBookmarks}
+            className="px-4 py-2 bg-gradient-to-r from-red-500 to-pink-500 text-white rounded-lg font-medium transition-all duration-200 hover:from-red-600 hover:to-pink-600 hover:shadow-lg hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-red-500/20"
           >
-            {t("bookmarks.clearAll")}
+            <span className="mr-2">🗑️</span>
+            {t("actions.deleteAll")}
           </button>
         </div>
       </div>
 
+      {/* Bookmarked Items */}
       {dates.length === 0 ? (
-        <div>
-          <p>{t("bookmarks.noItemsOfType")}</p>
+        <div className="text-center py-8 bg-[var(--bg-secondary)] rounded-xl border border-[var(--border-color)]">
+          <p className="text-[var(--text-secondary)]">
+            このカテゴリーにはブックマークされたアイテムがありません
+          </p>
         </div>
       ) : (
-        <>
+        <div className="space-y-8">
           {dates.map((date) => (
-            <div key={date}>
-              <h3>{formatDate(date)}</h3>
-              <div>
+            <div key={date} className="space-y-4">
+              <div className="flex items-center gap-3">
+                <div className="w-1 h-8 bg-gradient-to-b from-[var(--accent-purple)] to-[var(--accent-pink)] rounded-full"></div>
+                <h3 className="text-xl font-semibold text-[var(--text-primary)]">
+                  {formatDate(date)}
+                </h3>
+                <div className="flex-1 h-px bg-[var(--border-color)]"></div>
+                <span className="text-sm text-[var(--text-secondary)] bg-[var(--bg-secondary)] px-3 py-1 rounded-full">
+                  {groupedItems[date].length} アイテム
+                </span>
+              </div>
+
+              <div className="bg-[var(--bg-primary)] rounded-xl p-6">
                 <CardGrid
                   items={groupedItems[date]}
                   variant={viewMode}
                   showTags={true}
                   showDescription={viewMode === "list"}
+                  emptyMessage="アイテムが見つかりません"
+                  filterType="all"
                 />
               </div>
             </div>
           ))}
-        </>
+        </div>
       )}
     </div>
   );

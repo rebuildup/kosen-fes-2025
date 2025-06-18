@@ -4,30 +4,51 @@
     "home": "ホーム",
     "events": "イベント",
     "exhibits": "展示・露店",
+    "stalls": "露店",
     "schedule": "タイムスケジュール",
     "map": "マップ",
     "search": "検索",
-    "bookmarks": "ブックマーク"
+    "bookmarks": "ブックマーク",
+    "sponsors": "スポンサー"
+  },
+  "sidebar": {
+    "quickAccess": "クイックアクセス",
+    "navigation": "ナビゲーション",
+    "settings": "設定",
+    "information": "情報",
+    "festivalStats": "祭り統計"
   },
   "settings": {
+    "title": "設定",
     "theme": {
+      "title": "テーマ",
       "light": "ライトモード",
       "dark": "ダークモード",
       "switchToLight": "ライトテーマに切り替え",
       "switchToDark": "ダークテーマに切り替え"
     },
     "language": {
+      "title": "言語",
       "en": "英語",
       "ja": "日本語",
       "switchToEn": "英語に切り替え",
       "switchToJa": "日本語に切り替え"
     }
   },
+  "info": {
+    "title": "情報",
+    "festivalDates": "開催日程",
+    "location": "開催場所",
+    "schoolName": "宇部工業高等専門学校",
+    "access": "アクセス",
+    "accessInfo": "JR宇部線宇部新川駅から徒歩15分"
+  },
   "actions": {
     "close": "閉じる",
     "save": "保存",
     "cancel": "キャンセル",
     "delete": "削除",
+    "deleteAll": "すべて削除",
     "bookmark": "ブックマーク",
     "removeBookmark": "ブックマークを解除",
     "search": "検索",
@@ -37,19 +58,36 @@
     "title": "宇部高専祭 2025へようこそ",
     "subtitle": "注目のイベントや展示をチェック！",
     "featuredEvents": "注目イベント",
-    "featuredExhibits": "注目展示"
+    "featuredExhibits": "注目展示",
+    "popularTags": "人気のタグ",
+    "timeline": "タイムライン",
+    "ctaTitle": "今すぐ参加しよう",
+    "ctaDescription": "宇部高専祭の魅力を発見してください",
+    "viewBookmarks": "ブックマークを表示",
+    "viewMap": "マップを表示",
+    "events": "注目イベント",
+    "exhibits": "注目展示",
+    "stalls": "人気の露店",
+    "viewAll": "すべて表示",
+    "viewSchedule": "スケジュールを見る"
   },
   "events": {
     "title": "イベント",
+    "description": "楽しいイベントが盛りだくさん！",
     "noEvents": "イベントが見つかりません",
     "filters": {
-      "all": "すべてのイベント",
+      "all": "すべての日",
       "day1": "1日目",
       "day2": "2日目"
     }
   },
   "exhibits": {
     "title": "展示・露店",
+    "description": "学生の創造力が光る展示と美味しい露店をお楽しみください",
+    "allCategories": "すべてのカテゴリー",
+    "art": "芸術",
+    "tech": "技術",
+    "culture": "文化",
     "noExhibits": "展示が見つかりません",
     "noStalls": "露店が見つかりません",
     "filters": {
@@ -65,7 +103,12 @@
   },
   "map": {
     "title": "会場マップ",
+    "description": "会場内の案内図と各施設の場所をご確認ください",
     "viewLocations": "場所を表示"
+  },
+  "sponsors": {
+    "title": "スポンサー",
+    "description": "宇部高専祭を支援してくださるスポンサーの皆様"
   },
   "detail": {
     "back": "一覧に戻る",
@@ -81,14 +124,27 @@
     "tags": "タグ"
   },
   "search": {
+    "title": "検索",
     "placeholder": "イベント、展示などを検索",
     "noResults": "検索結果が見つかりません",
-    "results": "検索結果"
+    "results": "検索結果",
+    "popularTags": "人気のタグ"
   },
   "bookmarks": {
     "title": "ブックマーク",
+    "empty": "ブックマークはまだありません",
     "noBookmarks": "ブックマークはまだありません。",
-    "bookmarkedItems": "ブックマークしたアイテム"
+    "bookmarkedItems": "ブックマークしたアイテム",
+    "startBookmarking": "気になるイベントや展示をブックマークしてみましょう"
+  },
+  "tags": {
+    "filterByTag": "タグでフィルター",
+    "searchTags": "タグを検索",
+    "noTagsFound": "タグが見つかりません",
+    "clearFilters": "フィルターをクリア",
+    "selected": "選択中",
+    "showMore": "さらに表示",
+    "popularTags": "人気のタグ"
   },
   "errors": {
     "pageNotFound": "ページが見つかりません",

@@ -33,12 +33,12 @@ const Layout = () => {
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
-  // Theme transition effect
+  // Enhanced theme transition effect with smooth color interpolation
   useEffect(() => {
     if (layoutRef.current) {
       gsap.to(layoutRef.current, {
-        backgroundColor: "var(--color-bg)",
-        color: "var(--color-main)",
+        backgroundColor: "var(--bg-primary)",
+        color: "var(--text-primary)",
         duration: DURATION.NORMAL,
         ease: EASE.SMOOTH,
       });
@@ -68,14 +68,14 @@ const Layout = () => {
     };
   }, [menuOpen]);
 
-  // Menu open/close animation
+  // Enhanced menu open/close animation with backdrop blur
   const toggleMenu = (open: boolean) => {
     setMenuOpen(open);
 
     if (open) {
       // Menu opening animation handled in Menu component
     } else {
-      // Menu closing animation can be triggered here if needed
+      // Enhanced menu closing animation
       const menuOverlay = document.querySelector(".mobile-menu-backdrop");
       const mobileMenu = document.querySelector(".mobile-menu-panel");
 
@@ -94,6 +94,7 @@ const Layout = () => {
           menuOverlay,
           {
             autoAlpha: 0,
+            backdropFilter: "blur(0px)",
             duration: DURATION.FAST,
             ease: EASE.SMOOTH,
           },
@@ -113,8 +114,7 @@ const Layout = () => {
   return (
     <div
       ref={layoutRef}
-      className="min-h-screen transition-colors duration-300"
-      style={{ backgroundColor: "var(--color-bg)", color: "var(--color-main)" }}
+      className="min-h-screen transition-all duration-300 bg-[var(--bg-primary)] text-[var(--text-primary)]"
     >
       {/* Header - only shown on desktop */}
       {!isMobile && <Header />}
@@ -124,13 +124,7 @@ const Layout = () => {
         {isMobile ? (
           /* Mobile Layout - Full width main content with bottom padding for footer */
           <main className="px-4 sm:px-6 pb-20">
-            <div
-              className="min-h-screen"
-              style={{
-                backgroundColor: "var(--color-bg)",
-                color: "var(--color-main)",
-              }}
-            >
+            <div className="min-h-screen bg-[var(--bg-primary)] text-[var(--text-primary)]">
               <PageTransition>
                 <Outlet />
               </PageTransition>
@@ -147,13 +141,7 @@ const Layout = () => {
 
               {/* Main Content - Controlled width within header bounds */}
               <main className="flex-1 min-w-0 pt-16">
-                <div
-                  className="min-h-screen max-w-full main-content"
-                  style={{
-                    backgroundColor: "var(--color-bg)",
-                    color: "var(--color-main)",
-                  }}
-                >
+                <div className="min-h-screen max-w-full main-content bg-[var(--bg-primary)] text-[var(--text-primary)]">
                   <PageTransition>
                     <Outlet />
                   </PageTransition>

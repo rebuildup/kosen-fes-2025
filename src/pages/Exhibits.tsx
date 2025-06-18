@@ -16,25 +16,26 @@ const Exhibits = () => {
   const [viewMode, setViewMode] = useState<
     "default" | "compact" | "grid" | "list"
   >("default");
-  const [filteredItems, setFilteredItems] = useState<Item[]>([]);
-  const [typeFilter, setTypeFilter] = useState<"all" | "exhibit" | "stall">(
-    "all"
-  );
+  const [filteredExhibits, setFilteredExhibits] = useState<Item[]>([]);
+  const [categoryFilter, setCategoryFilter] = useState<
+    "all" | "exhibits" | "stalls"
+  >("all");
 
-  // Filter items by selected type and tags
+  // Filter exhibits by category and tags
   useEffect(() => {
     let filtered: Item[] = [];
 
-    // Filter by type using dataManager
-    if (typeFilter === "all") {
+    // Get items based on category filter
+    if (categoryFilter === "exhibits") {
+      filtered = dataManager.getAllExhibits() as Item[];
+    } else if (categoryFilter === "stalls") {
+      filtered = dataManager.getAllStalls() as Item[];
+    } else {
+      // "all" - combine both exhibits and stalls
       filtered = [
         ...dataManager.getAllExhibits(),
         ...dataManager.getAllStalls(),
-      ];
-    } else if (typeFilter === "exhibit") {
-      filtered = dataManager.getAllExhibits();
-    } else {
-      filtered = dataManager.getAllStalls();
+      ] as Item[];
     }
 
     // Apply tag filtering
@@ -42,32 +43,60 @@ const Exhibits = () => {
       filtered = filterItemsByTags(filtered);
     }
 
-    setFilteredItems(filtered);
-  }, [typeFilter, selectedTags, filterItemsByTags]);
+    setFilteredExhibits(filtered);
+  }, [categoryFilter, selectedTags, filterItemsByTags]);
 
-  // Tab options for type filter
-  const typeOptions = [
+  // Tab options for category filter
+  const categoryOptions = [
     { value: "all", label: t("exhibits.filters.all") },
-    { value: "exhibit", label: t("exhibits.filters.exhibits") },
-    { value: "stall", label: t("exhibits.filters.stalls") },
+    { value: "exhibits", label: t("exhibits.filters.exhibits") },
+    { value: "stalls", label: t("exhibits.filters.stalls") },
   ];
 
+  // Get appropriate empty message based on filter
+  const getEmptyMessage = () => {
+    if (categoryFilter === "exhibits") {
+      return t("exhibits.noExhibits");
+    } else if (categoryFilter === "stalls") {
+      return t("exhibits.noStalls");
+    }
+    return t("exhibits.noExhibits");
+  };
+
   return (
-    <div className="min-h-screen">
-      <section
-        className="section"
-        style={{ backgroundColor: "var(--color-bg-primary)" }}
-      >
+    <div className="min-h-screen bg-[var(--bg-primary)]">
+      {/* Hero Section */}
+      <section className="relative overflow-hidden py-16">
+        <div
+          className="absolute inset-0 opacity-10"
+          style={{ background: "var(--instagram-gradient)" }}
+        ></div>
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <h1 className="text-4xl md:text-5xl font-bold text-[var(--text-primary)] mb-4">
+              <span className="text-4xl mr-3">🎨</span>
+              {t("exhibits.title")}
+            </h1>
+            <p className="text-xl text-[var(--text-secondary)] max-w-2xl mx-auto">
+              {t("exhibits.description")}
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Main Content */}
+      <section className="section bg-[var(--bg-primary)]">
         <div className="max-w-7xl mx-auto">
           <div className="mb-8">
-            <h1 className="section-title">{t("exhibits.title")}</h1>
-
+            {/* Filter Controls */}
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
               <TabButtons
-                options={typeOptions}
-                activeValue={typeFilter}
-                onChange={(value) => setTypeFilter(value as typeof typeFilter)}
-                className="rounded-lg overflow-hidden"
+                options={categoryOptions}
+                activeValue={categoryFilter}
+                onChange={(value) =>
+                  setCategoryFilter(value as typeof categoryFilter)
+                }
+                className="rounded-lg overflow-hidden shadow-sm"
               />
 
               <CardListToggle viewMode={viewMode} setViewMode={setViewMode} />
@@ -75,25 +104,19 @@ const Exhibits = () => {
           </div>
 
           <div className="space-y-6">
-            <div className="space-y-4">
-              <TagFilter onFilter={() => {}} compact={true} />
-              <SelectedTags />
-            </div>
+            {/* Tag Filtering */}
+            <TagFilter onFilter={() => {}} compact={true} />
+            <SelectedTags />
 
-            <div>
+            {/* Exhibits Grid */}
+            <div className="bg-[var(--bg-primary)] rounded-xl">
               <CardGrid
-                items={filteredItems}
+                items={filteredExhibits}
                 variant={viewMode}
                 showTags={true}
                 showDescription={viewMode === "list"}
-                emptyMessage={
-                  typeFilter === "exhibit"
-                    ? t("exhibits.noExhibits")
-                    : typeFilter === "stall"
-                    ? t("exhibits.noStalls")
-                    : t("common.noItems")
-                }
-                filterType={typeFilter === "all" ? undefined : typeFilter}
+                emptyMessage={getEmptyMessage()}
+                filterType="all"
               />
             </div>
           </div>

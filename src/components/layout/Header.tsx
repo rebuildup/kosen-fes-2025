@@ -39,8 +39,8 @@ const Header = () => {
 
   return (
     <header
-      className={`header fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        scrolled ? "backdrop-blur-md shadow-lg" : "shadow-sm"
+      className={`header fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-[var(--bg-primary)]/95 backdrop-blur-md border-b border-[var(--border-color)] ${
+        scrolled ? "shadow-lg" : "shadow-sm"
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -60,16 +60,45 @@ const Header = () => {
                   to={item.to}
                   end={item.end}
                   className={({ isActive }) =>
-                    `group flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                      isActive ? "nav-link-active shadow-sm" : "nav-link"
+                    `group flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 relative overflow-hidden ${
+                      isActive
+                        ? "text-[var(--primary-color)]"
+                        : "text-[var(--text-primary)] hover:text-[var(--primary-color)] hover:bg-[var(--bg-secondary)]"
                     }`
                   }
                 >
-                  <IconComponent
-                    size={18}
-                    className="transition-transform duration-200 group-hover:scale-110"
-                  />
-                  <span>{item.label}</span>
+                  {({ isActive }) => (
+                    <>
+                      <IconComponent
+                        size={18}
+                        className="transition-transform duration-200 group-hover:scale-110"
+                      />
+                      <span>{item.label}</span>
+
+                      {/* Animated underline */}
+                      <div
+                        className={`
+                          absolute bottom-0 left-2 right-2 h-0.5 rounded-full transition-all duration-300
+                          ${
+                            isActive
+                              ? "opacity-100 scale-x-100"
+                              : "opacity-0 scale-x-0 group-hover:opacity-100 group-hover:scale-x-100"
+                          }
+                        `}
+                        style={{
+                          background: "var(--instagram-gradient)",
+                        }}
+                      />
+
+                      {/* Subtle background gradient for active state */}
+                      {isActive && (
+                        <div
+                          className="absolute inset-0 -z-10 opacity-10 rounded-lg"
+                          style={{ background: "var(--instagram-gradient)" }}
+                        />
+                      )}
+                    </>
+                  )}
                 </NavLink>
               );
             })}
@@ -79,7 +108,7 @@ const Header = () => {
           <div className="md:hidden">
             <button
               type="button"
-              className="nav-link inline-flex items-center justify-center p-2 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-[var(--color-accent)]"
+              className="inline-flex items-center justify-center p-2 rounded-lg text-[var(--text-primary)] hover:text-[var(--primary-color)] hover:bg-[var(--bg-secondary)] transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-[var(--primary-color)]"
               aria-controls="mobile-menu"
               aria-expanded="false"
             >
@@ -103,10 +132,7 @@ const Header = () => {
 
         {/* Mobile Navigation Menu */}
         <div className="md:hidden" id="mobile-menu">
-          <div
-            className="header px-2 pt-2 pb-3 space-y-1 sm:px-3 border-t"
-            style={{ borderColor: "var(--color-border-primary)" }}
-          >
+          <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 border-t border-[var(--border-color)] bg-[var(--bg-primary)]">
             {navigationItems.map((item) => {
               const IconComponent = item.icon;
               return (
@@ -115,8 +141,10 @@ const Header = () => {
                   to={item.to}
                   end={item.end}
                   className={({ isActive }) =>
-                    `group flex items-center gap-3 px-3 py-2 rounded-lg text-base font-medium transition-all duration-200 ${
-                      isActive ? "nav-link-active shadow-sm" : "nav-link"
+                    `group flex items-center gap-3 px-3 py-2 rounded-lg text-base font-medium transition-all duration-200 relative ${
+                      isActive
+                        ? "text-[var(--primary-color)] bg-[var(--instagram-gradient-subtle)] shadow-sm"
+                        : "text-[var(--text-primary)] hover:text-[var(--primary-color)] hover:bg-[var(--bg-secondary)]"
                     }`
                   }
                 >

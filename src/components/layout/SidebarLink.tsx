@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { ReactNode } from "react";
 
 interface SidebarLinkProps {
@@ -18,27 +18,38 @@ const SidebarLink = ({
   onClick,
   compact = false,
 }: SidebarLinkProps) => {
+  const location = useLocation();
+  const isActive =
+    location.pathname === to ||
+    (to !== "/" && location.pathname.startsWith(to));
+
   return (
     <Link
       to={to}
-      className="flex items-center justify-between w-full p-3 text-sm rounded-lg transition-all duration-200 group hover:bg-opacity-80"
-      style={{
-        color: "var(--color-text-secondary)",
-      }}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.backgroundColor = "var(--color-bg-secondary)";
-        e.currentTarget.style.color = "var(--color-accent)";
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.backgroundColor = "transparent";
-        e.currentTarget.style.color = "var(--color-text-secondary)";
-      }}
+      className={`
+        flex items-center justify-between w-full p-3 text-sm rounded-lg 
+        transition-all duration-200 group relative
+        ${
+          isActive
+            ? "bg-[var(--instagram-gradient-subtle)] text-[var(--primary-color)] shadow-sm"
+            : "text-[var(--text-secondary)] hover:bg-[var(--bg-tertiary)] hover:text-[var(--primary-color)]"
+        }
+      `}
       onClick={onClick}
       title={compact ? label : undefined}
     >
       <div className="flex items-center gap-3">
         {icon && (
-          <span className="flex-shrink-0 group-hover:text-[var(--color-accent)] transition-colors">
+          <span
+            className={`
+              flex-shrink-0 transition-all duration-200
+              ${
+                isActive
+                  ? "text-[var(--primary-color)] scale-110"
+                  : "group-hover:text-[var(--primary-color)] group-hover:scale-110"
+              }
+            `}
+          >
             {icon}
           </span>
         )}
@@ -46,15 +57,30 @@ const SidebarLink = ({
           {label}
         </span>
       </div>
+
       {badge !== undefined && (
         <span
-          className={`inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white rounded-full ${
-            compact ? "lg:hidden xl:flex" : ""
-          }`}
-          style={{ backgroundColor: "var(--color-accent)" }}
+          className={`
+            inline-flex items-center justify-center px-2 py-1 text-xs font-bold 
+            leading-none text-white rounded-full shadow-sm
+            ${compact ? "lg:hidden xl:flex" : ""}
+          `}
+          style={{
+            background: isActive
+              ? "var(--instagram-gradient)"
+              : "var(--primary-color)",
+          }}
         >
           {badge}
         </span>
+      )}
+
+      {/* Active indicator line */}
+      {isActive && (
+        <div
+          className="absolute left-0 top-1/2 transform -translate-y-1/2 w-1 h-8 rounded-r-full"
+          style={{ background: "var(--instagram-gradient)" }}
+        />
       )}
     </Link>
   );

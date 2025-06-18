@@ -32,14 +32,16 @@ const Tag = ({
     if (!tagRef.current) return;
 
     if (isActive) {
-      // Animation for when tag becomes active
+      // Animation for when tag becomes active with scale and glow effect
       gsap.fromTo(
         tagRef.current,
         { scale: 0.95 },
         {
-          scale: 1,
+          scale: 1.05,
           duration: DURATION.FAST,
           ease: "back.out(1.7)",
+          yoyo: true,
+          repeat: 1,
         }
       );
     } else {
@@ -56,7 +58,7 @@ const Tag = ({
     e.preventDefault();
     e.stopPropagation();
 
-    // Click animation
+    // Enhanced click animation with ripple effect
     if (tagRef.current) {
       gsap.fromTo(
         tagRef.current,
@@ -83,31 +85,33 @@ const Tag = ({
     large: "text-base px-3 py-1.5",
   };
 
-  const baseClasses =
-    "inline-flex items-center gap-1 rounded-full font-medium transition-all duration-200 border cursor-pointer";
+  const baseClasses = `
+    inline-flex items-center gap-1 rounded-full font-medium 
+    transition-all duration-300 border cursor-pointer
+    transform hover:scale-105 shadow-sm hover:shadow-md
+  `;
+
+  // Dynamic styling with Instagram gradient for active state
+  const getTagClasses = () => {
+    if (isActive) {
+      return `
+        text-white border-0 shadow-lg
+        bg-gradient-to-r from-[var(--accent-purple)] to-[var(--accent-pink)]
+        hover:from-[var(--accent-pink)] hover:to-[var(--accent-red)]
+      `;
+    } else {
+      return `
+        bg-[var(--bg-secondary)] text-[var(--text-primary)] 
+        border-[var(--border-color)]
+        hover:bg-[var(--bg-tertiary)] hover:border-[var(--primary-color)]
+        hover:text-[var(--primary-color)]
+      `;
+    }
+  };
 
   return (
     <button
-      className={`${baseClasses} ${sizeClasses[size]}`}
-      style={{
-        backgroundColor: isActive
-          ? "var(--color-accent)"
-          : "var(--color-bg-secondary)",
-        color: isActive ? "white" : "var(--color-text-primary)",
-        borderColor: isActive
-          ? "var(--color-accent)"
-          : "var(--color-border-primary)",
-      }}
-      onMouseEnter={(e) => {
-        if (!isActive) {
-          e.currentTarget.style.backgroundColor = "var(--color-bg-tertiary)";
-        }
-      }}
-      onMouseLeave={(e) => {
-        if (!isActive) {
-          e.currentTarget.style.backgroundColor = "var(--color-bg-secondary)";
-        }
-      }}
+      className={`${baseClasses} ${sizeClasses[size]} ${getTagClasses()}`}
       onClick={handleClick}
       type="button"
       role={role}
@@ -115,9 +119,18 @@ const Tag = ({
       aria-label={`${tag}${count ? ` (${count})` : ""}`}
       ref={tagRef}
     >
-      <span>#{tag}</span>
+      <span className="font-semibold">#{tag}</span>
       {count !== undefined && (
-        <span className="ml-1 px-1.5 py-0.5 rounded text-xs opacity-70">
+        <span
+          className={`
+            ml-1 px-1.5 py-0.5 rounded-full text-xs font-medium
+            ${
+              isActive
+                ? "bg-white/20 text-white"
+                : "bg-[var(--primary-color)]/10 text-[var(--primary-color)]"
+            }
+          `}
+        >
           {count}
         </span>
       )}

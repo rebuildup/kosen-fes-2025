@@ -1,95 +1,75 @@
 // src/pages/Sponsors.tsx
 import { useState, useEffect } from "react";
 import { useLanguage } from "../context/LanguageContext";
-import { useTag } from "../context/TagContext";
 import { dataManager } from "../data/dataManager";
-import { Item, Sponsor } from "../types/common";
+import { Item } from "../types/common";
 import CardGrid from "../components/common/CardGrid";
 import CardListToggle from "../components/common/CardListToggle";
-import TagFilter from "../components/common/TagFilter";
-import SelectedTags from "../components/common/SelectedTags";
-import TabButtons from "../components/common/TabButtons";
 
 const Sponsors = () => {
   const { t } = useLanguage();
-  const { filterItemsByTags, selectedTags } = useTag();
 
   const [viewMode, setViewMode] = useState<
     "default" | "compact" | "grid" | "list"
   >("default");
-  const [filteredSponsors, setFilteredSponsors] = useState<Item[]>([]);
-  const [tierFilter, setTierFilter] = useState<
-    "all" | "platinum" | "gold" | "silver" | "bronze"
-  >("all");
+  const [sponsors, setSponsors] = useState<Item[]>([]);
 
-  // Filter sponsors by selected tier and tags
+  // Get all sponsors
   useEffect(() => {
-    let filtered = dataManager.getAllSponsors() as Item[];
-
-    // Filter by tier
-    if (tierFilter !== "all") {
-      filtered = filtered.filter(
-        (sponsor) => (sponsor as Sponsor).tier === tierFilter
-      );
-    }
-
-    // Apply tag filtering
-    if (selectedTags.length > 0) {
-      filtered = filterItemsByTags(filtered);
-    }
-
-    setFilteredSponsors(filtered);
-  }, [tierFilter, selectedTags, filterItemsByTags]);
-
-  // Tab options for tier filter
-  const tierOptions = [
-    { value: "all", label: t("sponsors.filters.all") },
-    { value: "platinum", label: t("sponsors.filters.platinum") },
-    { value: "gold", label: t("sponsors.filters.gold") },
-    { value: "silver", label: t("sponsors.filters.silver") },
-    { value: "bronze", label: t("sponsors.filters.bronze") },
-  ];
+    const allSponsors = dataManager.getAllSponsors() as Item[];
+    setSponsors(allSponsors);
+  }, []);
 
   return (
-    <div className="min-h-screen">
-      <section
-        className="section"
-        style={{ backgroundColor: "var(--color-bg-primary)" }}
-      >
+    <div className="min-h-screen bg-[var(--bg-primary)]">
+      {/* Hero Section */}
+      <section className="relative overflow-hidden py-16">
+        <div
+          className="absolute inset-0 opacity-10"
+          style={{ background: "var(--instagram-gradient)" }}
+        ></div>
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <h1 className="text-4xl md:text-5xl font-bold text-[var(--text-primary)] mb-4">
+              <span className="text-4xl mr-3">🏢</span>
+              {t("sponsors.title")}
+            </h1>
+            <p className="text-xl text-[var(--text-secondary)] max-w-2xl mx-auto">
+              {t("sponsors.description")}
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Main Content */}
+      <section className="section bg-[var(--bg-primary)]">
         <div className="max-w-7xl mx-auto">
           <div className="mb-8">
-            <h1 className="section-title">{t("sponsors.title")}</h1>
-
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
-              <TabButtons
-                options={tierOptions}
-                activeValue={tierFilter}
-                onChange={(value) => setTierFilter(value as typeof tierFilter)}
-                className="rounded-lg overflow-hidden"
-              />
+            {/* Simple header with view toggle */}
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 p-6 bg-[var(--bg-secondary)] rounded-xl border border-[var(--border-color)]">
+              <div className="flex items-center gap-4">
+                <h2 className="text-xl font-semibold text-[var(--text-primary)]">
+                  スポンサー一覧
+                </h2>
+                <span className="px-3 py-1 bg-[var(--primary-color)] text-white rounded-full text-sm font-medium">
+                  {sponsors.length} 社
+                </span>
+              </div>
 
               <CardListToggle viewMode={viewMode} setViewMode={setViewMode} />
             </div>
           </div>
 
-          <div className="space-y-6">
-            {/* Tag filter at the top - single column */}
-            <div className="space-y-4">
-              <TagFilter onFilter={() => {}} />
-              <SelectedTags />
-            </div>
-
-            {/* Sponsors grid below */}
-            <div>
-              <CardGrid
-                items={filteredSponsors}
-                variant={viewMode}
-                showTags={true}
-                showDescription={viewMode === "list"}
-                emptyMessage={t("sponsors.noSponsors")}
-                filterType="all"
-              />
-            </div>
+          {/* Sponsors grid */}
+          <div className="bg-[var(--bg-primary)] rounded-xl">
+            <CardGrid
+              items={sponsors}
+              variant={viewMode}
+              showTags={false}
+              showDescription={viewMode === "list"}
+              emptyMessage="スポンサー情報がありません"
+              filterType="all"
+            />
           </div>
         </div>
       </section>

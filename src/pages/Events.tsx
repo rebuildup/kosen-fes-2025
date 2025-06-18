@@ -44,27 +44,43 @@ const Events = () => {
 
   // Tab options for date filter
   const dateOptions = [
-    { value: "all", label: t("events.allDays") },
-    { value: "2025-06-15", label: t("events.day1") },
-    { value: "2025-06-16", label: t("events.day2") },
+    { value: "all", label: t("events.filters.all") },
+    { value: "2025-06-15", label: t("events.filters.day1") },
+    { value: "2025-06-16", label: t("events.filters.day2") },
   ];
 
   return (
-    <div className="min-h-screen">
-      <section
-        className="section"
-        style={{ backgroundColor: "var(--color-bg-primary)" }}
-      >
+    <div className="min-h-screen bg-[var(--bg-primary)]">
+      {/* Hero Section */}
+      <section className="relative overflow-hidden py-16">
+        <div
+          className="absolute inset-0 opacity-10"
+          style={{ background: "var(--instagram-gradient)" }}
+        ></div>
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <h1 className="text-4xl md:text-5xl font-bold text-[var(--text-primary)] mb-4">
+              <span className="text-4xl mr-3">🎭</span>
+              {t("events.title")}
+            </h1>
+            <p className="text-xl text-[var(--text-secondary)] max-w-2xl mx-auto">
+              {t("events.description")}
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Main Content */}
+      <section className="section bg-[var(--bg-primary)]">
         <div className="max-w-7xl mx-auto">
           <div className="mb-8">
-            <h1 className="section-title">{t("events.title")}</h1>
-
+            {/* Filter Controls */}
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
               <TabButtons
                 options={dateOptions}
                 activeValue={dateFilter}
                 onChange={(value) => setDateFilter(value as typeof dateFilter)}
-                className="rounded-lg overflow-hidden"
+                className="rounded-lg overflow-hidden shadow-sm"
               />
 
               <CardListToggle viewMode={viewMode} setViewMode={setViewMode} />
@@ -72,12 +88,12 @@ const Events = () => {
           </div>
 
           <div className="space-y-6">
-            <div className="space-y-4">
-              <TagFilter onFilter={() => {}} compact={true} />
-              <SelectedTags />
-            </div>
+            {/* Tag Filtering */}
+            <TagFilter onFilter={() => {}} compact={true} />
+            <SelectedTags />
 
-            <div>
+            {/* Events Grid */}
+            <div className="bg-[var(--bg-primary)] rounded-xl">
               <CardGrid
                 items={filteredEvents}
                 variant={viewMode}

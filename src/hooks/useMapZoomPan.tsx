@@ -1,5 +1,4 @@
 import { useCallback, useRef, useState, useEffect } from "react";
-import { gsap } from "gsap";
 
 interface ZoomPanState {
   scale: number;
@@ -30,7 +29,7 @@ export const useMapZoomPan = ({
 }: UseMapZoomPanOptions) => {
   const svgRef = useRef<SVGSVGElement>(null);
 
-  // 簡素化された状態管理
+  // 現在の変換状態を管理
   const [transform, setTransform] = useState<ZoomPanState>({
     scale: initialScale,
     translateX: 0,
@@ -44,36 +43,104 @@ export const useMapZoomPan = ({
     return { width: rect.width, height: rect.height };
   }, [containerRef]);
 
-  // 現在のスケールを取得（GSAP実際値を優先）
-  const getCurrentScale = useCallback(() => {
-    if (!svgRef.current) return transform.scale;
-    const currentScale = gsap.getProperty(svgRef.current, "scaleX") as number;
-    return currentScale || transform.scale;
-  }, [transform.scale]);
+  // 制約を適用した変換を計算
+  const applyConstraints = useCallback(
+    (newTransform: ZoomPanState) => {
+      const viewport = getViewportSize();
 
-  // 現在の平移値を取得（GSAP実際値を優先）
-  const getCurrentTranslate = useCallback(() => {
-    if (!svgRef.current)
-      return { x: transform.translateX, y: transform.translateY };
-    const currentX =
-      (gsap.getProperty(svgRef.current, "x") as number) || transform.translateX;
-    const currentY =
-      (gsap.getProperty(svgRef.current, "y") as number) || transform.translateY;
-    return { x: currentX, y: currentY };
-  }, [transform.translateX, transform.translateY]);
+      // スケールを制限
+      const constrainedScale = Math.max(
+        minScale,
+        Math.min(maxScale, newTransform.scale)
+      );
 
-  // マップを初期状態に配置する計算
+      const scaledMapWidth = mapWidth * constrainedScale;
+      const scaledMapHeight = mapHeight * constrainedScale;
+
+      let constrainedTranslateX = newTransform.translateX;
+      let constrainedTranslateY = newTransform.translateY;
+
+      // マップが画面より小さい場合は中央に配置
+      if (scaledMapWidth <= viewport.width) {
+        constrainedTranslateX = (viewport.width - scaledMapWidth) / 2;
+      } else {
+        // マップが画面より大きい場合は、適度なオーバースクロールを許容
+        const overscrollMargin = Math.min(100, scaledMapWidth * 0.1);
+        const maxTranslateX = overscrollMargin;
+        const minTranslateX =
+          viewport.width - scaledMapWidth - overscrollMargin;
+        constrainedTranslateX = Math.max(
+          minTranslateX,
+          Math.min(maxTranslateX, constrainedTranslateX)
+        );
+      }
+
+      if (scaledMapHeight <= viewport.height) {
+        constrainedTranslateY = (viewport.height - scaledMapHeight) / 2;
+      } else {
+        const overscrollMargin = Math.min(100, scaledMapHeight * 0.1);
+        const maxTranslateY = overscrollMargin;
+        const minTranslateY =
+          viewport.height - scaledMapHeight - overscrollMargin;
+        constrainedTranslateY = Math.max(
+          minTranslateY,
+          Math.min(maxTranslateY, constrainedTranslateY)
+        );
+      }
+
+      return {
+        scale: constrainedScale,
+        translateX: constrainedTranslateX,
+        translateY: constrainedTranslateY,
+      };
+    },
+    [getViewportSize, minScale, maxScale, mapWidth, mapHeight]
+  );
+
+  // CSS transformを直接適用
+  const applyTransformToElements = useCallback(
+    (newTransform: ZoomPanState, smooth = false) => {
+      const constrainedTransform = applyConstraints(newTransform);
+
+      const transformString = `translate(${constrainedTransform.translateX}px, ${constrainedTransform.translateY}px) scale(${constrainedTransform.scale})`;
+
+      if (svgRef.current) {
+        svgRef.current.style.transform = transformString;
+        svgRef.current.style.transformOrigin = "0 0";
+        if (smooth) {
+          svgRef.current.style.transition = "transform 0.15s ease-out";
+        } else {
+          svgRef.current.style.transition = "none";
+        }
+      }
+
+      if (overlayRef?.current) {
+        overlayRef.current.style.transform = transformString;
+        overlayRef.current.style.transformOrigin = "0 0";
+        if (smooth) {
+          overlayRef.current.style.transition = "transform 0.15s ease-out";
+        } else {
+          overlayRef.current.style.transition = "none";
+        }
+      }
+
+      setTransform(constrainedTransform);
+      onTransformUpdate?.(constrainedTransform.scale);
+
+      return constrainedTransform;
+    },
+    [applyConstraints, overlayRef, onTransformUpdate]
+  );
+
+  // 初期配置を計算
   const calculateInitialTransform = useCallback(() => {
     const viewport = getViewportSize();
-
-    // マップを画面中央に配置するためのオフセット計算
     const scaleX = viewport.width / mapWidth;
     const scaleY = viewport.height / mapHeight;
     const fitScale = Math.min(scaleX, scaleY) * initialScale;
 
     const scaledWidth = mapWidth * fitScale;
     const scaledHeight = mapHeight * fitScale;
-
     const centerX = (viewport.width - scaledWidth) / 2;
     const centerY = (viewport.height - scaledHeight) / 2;
 
@@ -87,136 +154,18 @@ export const useMapZoomPan = ({
   // 初期化
   useEffect(() => {
     const initialTransform = calculateInitialTransform();
-    setTransform(initialTransform);
+    applyTransformToElements(initialTransform, false);
+  }, [calculateInitialTransform, applyTransformToElements]);
 
-    if (svgRef.current) {
-      gsap.set(svgRef.current, {
-        scale: initialTransform.scale,
-        x: initialTransform.translateX,
-        y: initialTransform.translateY,
-        transformOrigin: "0px 0px",
-      });
-
-      if (overlayRef?.current) {
-        gsap.set(overlayRef.current, {
-          scale: initialTransform.scale,
-          x: initialTransform.translateX,
-          y: initialTransform.translateY,
-          transformOrigin: "0px 0px",
-        });
-      }
-    }
-  }, [calculateInitialTransform, overlayRef]);
-
-  // 変換を適用
-  const applyTransform = useCallback(
-    (newTransform: ZoomPanState, animate = true) => {
-      if (!svgRef.current) return;
-
-      // スケールを制限
-      let constrainedTransform = {
-        ...newTransform,
-        scale: Math.max(minScale, Math.min(maxScale, newTransform.scale)),
-      };
-
-      // 境界制約を適用（緩和版）
-      const viewport = getViewportSize();
-      const scaledMapWidth = mapWidth * constrainedTransform.scale;
-      const scaledMapHeight = mapHeight * constrainedTransform.scale;
-
-      // オーバースクロール許容量（マップサイズの20%）
-      const overscrollMarginX = scaledMapWidth * 0.2;
-      const overscrollMarginY = scaledMapHeight * 0.2;
-
-      // マップが画面より小さい場合は中央に配置
-      if (scaledMapWidth <= viewport.width) {
-        constrainedTransform.translateX = (viewport.width - scaledMapWidth) / 2;
-      } else {
-        // マップが画面より大きい場合は、オーバースクロールを許容
-        const maxTranslateX = overscrollMarginX;
-        const minTranslateX =
-          viewport.width - scaledMapWidth - overscrollMarginX;
-        constrainedTransform.translateX = Math.max(
-          minTranslateX,
-          Math.min(maxTranslateX, constrainedTransform.translateX)
-        );
-      }
-
-      if (scaledMapHeight <= viewport.height) {
-        constrainedTransform.translateY =
-          (viewport.height - scaledMapHeight) / 2;
-      } else {
-        const maxTranslateY = overscrollMarginY;
-        const minTranslateY =
-          viewport.height - scaledMapHeight - overscrollMarginY;
-        constrainedTransform.translateY = Math.max(
-          minTranslateY,
-          Math.min(maxTranslateY, constrainedTransform.translateY)
-        );
-      }
-
-      setTransform(constrainedTransform);
-
-      const transformConfig = {
-        scale: constrainedTransform.scale,
-        x: constrainedTransform.translateX,
-        y: constrainedTransform.translateY,
-        transformOrigin: "0px 0px",
-      };
-
-      if (animate) {
-        gsap.killTweensOf(svgRef.current);
-        if (overlayRef?.current) {
-          gsap.killTweensOf(overlayRef.current);
-        }
-
-        gsap.to(svgRef.current, {
-          ...transformConfig,
-          duration: 0.3,
-          ease: "power2.out",
-          onComplete: () => {
-            onTransformUpdate?.(constrainedTransform.scale);
-          },
-        });
-
-        if (overlayRef?.current) {
-          gsap.to(overlayRef.current, {
-            ...transformConfig,
-            duration: 0.3,
-            ease: "power2.out",
-          });
-        }
-      } else {
-        gsap.set(svgRef.current, transformConfig);
-        if (overlayRef?.current) {
-          gsap.set(overlayRef.current, transformConfig);
-        }
-
-        onTransformUpdate?.(constrainedTransform.scale);
-      }
-    },
-    [
-      minScale,
-      maxScale,
-      onTransformUpdate,
-      overlayRef,
-      getViewportSize,
-      mapWidth,
-      mapHeight,
-    ]
-  );
-
-  // 特定の世界座標を画面の特定位置に固定してズーム
+  // 特定の世界座標を画面の特定位置に配置
   const zoomToPointAtScreenPosition = useCallback(
     (
       worldPoint: { x: number; y: number },
       screenPoint: { x: number; y: number },
       newScale: number,
-      animate = true
+      smooth = true
     ) => {
       const constrainedScale = Math.max(minScale, Math.min(maxScale, newScale));
-
-      // 世界座標を画面の指定位置に配置するための平移を計算
       const newTranslateX = screenPoint.x - worldPoint.x * constrainedScale;
       const newTranslateY = screenPoint.y - worldPoint.y * constrainedScale;
 
@@ -226,9 +175,9 @@ export const useMapZoomPan = ({
         translateY: newTranslateY,
       };
 
-      applyTransform(newTransform, animate);
+      applyTransformToElements(newTransform, smooth);
     },
-    [minScale, maxScale, applyTransform]
+    [minScale, maxScale, applyTransformToElements]
   );
 
   // 画面座標から世界座標への変換
@@ -237,159 +186,121 @@ export const useMapZoomPan = ({
       if (!containerRef.current) return { x: 0, y: 0 };
 
       const container = containerRef.current.getBoundingClientRect();
-      const currentScale = getCurrentScale();
-      const currentTranslate = getCurrentTranslate();
-
-      // コンテナ内での相対座標
       const relativeX = screenX - container.left;
       const relativeY = screenY - container.top;
 
-      // 世界座標に変換
-      const worldX = (relativeX - currentTranslate.x) / currentScale;
-      const worldY = (relativeY - currentTranslate.y) / currentScale;
+      const worldX = (relativeX - transform.translateX) / transform.scale;
+      const worldY = (relativeY - transform.translateY) / transform.scale;
 
-      // 境界内に制限
       const constrainedX = Math.max(0, Math.min(mapWidth, worldX));
       const constrainedY = Math.max(0, Math.min(mapHeight, worldY));
 
       return { x: constrainedX, y: constrainedY };
     },
-    [containerRef, getCurrentScale, getCurrentTranslate, mapWidth, mapHeight]
+    [containerRef, transform, mapWidth, mapHeight]
   );
 
-  // 画面中央を基準にズームイン
+  // 画面中央基準ズームイン
   const zoomIn = useCallback(() => {
     if (!containerRef.current) return;
 
     const viewport = getViewportSize();
-    const screenCenter = {
-      x: viewport.width / 2,
-      y: viewport.height / 2,
-    };
-
-    // 現在の画面中央の世界座標を取得
+    const screenCenter = { x: viewport.width / 2, y: viewport.height / 2 };
     const worldCenter = screenToWorldCoordinate(
       containerRef.current.getBoundingClientRect().left + screenCenter.x,
       containerRef.current.getBoundingClientRect().top + screenCenter.y
     );
 
-    const currentScale = getCurrentScale();
-    const newScale = currentScale * 1.3;
-
-    // 世界座標の中央を画面中央に固定してズーム
+    const newScale = transform.scale * 1.3;
     zoomToPointAtScreenPosition(worldCenter, screenCenter, newScale);
   }, [
     containerRef,
     getViewportSize,
     screenToWorldCoordinate,
-    getCurrentScale,
+    transform.scale,
     zoomToPointAtScreenPosition,
   ]);
 
-  // 画面中央を基準にズームアウト
+  // 画面中央基準ズームアウト
   const zoomOut = useCallback(() => {
     if (!containerRef.current) return;
 
     const viewport = getViewportSize();
-    const screenCenter = {
-      x: viewport.width / 2,
-      y: viewport.height / 2,
-    };
-
-    // 現在の画面中央の世界座標を取得
+    const screenCenter = { x: viewport.width / 2, y: viewport.height / 2 };
     const worldCenter = screenToWorldCoordinate(
       containerRef.current.getBoundingClientRect().left + screenCenter.x,
       containerRef.current.getBoundingClientRect().top + screenCenter.y
     );
 
-    const currentScale = getCurrentScale();
-    const newScale = currentScale / 1.3;
-
-    // 世界座標の中央を画面中央に固定してズーム
+    const newScale = transform.scale / 1.3;
     zoomToPointAtScreenPosition(worldCenter, screenCenter, newScale);
   }, [
     containerRef,
     getViewportSize,
     screenToWorldCoordinate,
-    getCurrentScale,
+    transform.scale,
     zoomToPointAtScreenPosition,
   ]);
 
-  // 特定座標を基準にズームイン
+  // 特定座標基準ズームイン
   const zoomInToCoordinate = useCallback(
     (coord: { x: number; y: number }) => {
       const viewport = getViewportSize();
-      const screenCenter = {
-        x: viewport.width / 2,
-        y: viewport.height / 2,
-      };
-
-      const currentScale = getCurrentScale();
-      const newScale = currentScale * 1.3;
-
+      const screenCenter = { x: viewport.width / 2, y: viewport.height / 2 };
+      const newScale = transform.scale * 1.3;
       zoomToPointAtScreenPosition(coord, screenCenter, newScale);
     },
-    [getViewportSize, getCurrentScale, zoomToPointAtScreenPosition]
+    [getViewportSize, transform.scale, zoomToPointAtScreenPosition]
   );
 
-  // 特定座標を基準にズームアウト
+  // 特定座標基準ズームアウト
   const zoomOutFromCoordinate = useCallback(
     (coord: { x: number; y: number }) => {
       const viewport = getViewportSize();
-      const screenCenter = {
-        x: viewport.width / 2,
-        y: viewport.height / 2,
-      };
-
-      const currentScale = getCurrentScale();
-      const newScale = currentScale / 1.3;
-
+      const screenCenter = { x: viewport.width / 2, y: viewport.height / 2 };
+      const newScale = transform.scale / 1.3;
       zoomToPointAtScreenPosition(coord, screenCenter, newScale);
     },
-    [getViewportSize, getCurrentScale, zoomToPointAtScreenPosition]
+    [getViewportSize, transform.scale, zoomToPointAtScreenPosition]
   );
 
   // リセット
   const resetZoom = useCallback(() => {
     const initialTransform = calculateInitialTransform();
-    applyTransform(initialTransform);
-  }, [calculateInitialTransform, applyTransform]);
+    applyTransformToElements(initialTransform, true);
+  }, [calculateInitialTransform, applyTransformToElements]);
 
-  // パン（平移）操作 - ドラッグ用の高速パン
+  // スムーズなパン操作（ドラッグ用）
   const pan = useCallback(
     (deltaX: number, deltaY: number) => {
-      const currentTranslate = getCurrentTranslate();
-      const currentScale = getCurrentScale();
-
-      // ドラッグ感度を向上させるため、deltaを増幅
-      const sensitivity = 1.2; // ドラッグ感度を20%向上
-      const amplifiedDeltaX = deltaX * sensitivity;
-      const amplifiedDeltaY = deltaY * sensitivity;
-
+      // 即座に適用することでより応答性の高いドラッグを実現
       const newTransform = {
-        scale: currentScale,
-        translateX: currentTranslate.x + amplifiedDeltaX,
-        translateY: currentTranslate.y + amplifiedDeltaY,
+        scale: transform.scale,
+        translateX: transform.translateX + deltaX,
+        translateY: transform.translateY + deltaY,
       };
 
-      // ドラッグ中はアニメーションを無効にして即座に適用
-      applyTransform(newTransform, false);
+      applyTransformToElements(newTransform, false);
     },
-    [getCurrentScale, getCurrentTranslate, applyTransform]
+    [transform, applyTransformToElements]
   );
 
   // 特定位置にズーム
   const zoomToLocation = useCallback(
     (x: number, y: number, targetScale: number = 4, _duration: number = 1) => {
       const viewport = getViewportSize();
-      const screenCenter = {
-        x: viewport.width / 2,
-        y: viewport.height / 2,
-      };
-
+      const screenCenter = { x: viewport.width / 2, y: viewport.height / 2 };
       zoomToPointAtScreenPosition({ x, y }, screenCenter, targetScale, true);
     },
     [getViewportSize, zoomToPointAtScreenPosition]
+  );
+
+  // 従来のapplyTransform関数（互換性のため）
+  const applyTransform = useCallback(
+    (newTransform: ZoomPanState, animate = true) => {
+      applyTransformToElements(newTransform, animate);
+    },
+    [applyTransformToElements]
   );
 
   return {

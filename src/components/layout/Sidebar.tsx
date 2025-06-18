@@ -30,11 +30,14 @@ const Sidebar = () => {
   };
 
   return (
-    <aside className="sticky top-16 h-[calc(100vh-4rem)] w-64 xl:w-64 lg:w-16 flex-shrink-0 sidebar transition-all duration-300 z-40">
+    <aside className="sticky top-16 h-[calc(100vh-4rem)] w-64 xl:w-64 lg:w-16 flex-shrink-0 transition-all duration-300 z-40 bg-[var(--bg-secondary)] border-r border-[var(--border-color)] rounded-lg shadow-sm">
       <div className="h-full overflow-y-auto p-6 lg:p-3">
         {/* Quick Links */}
         <div className="mb-6">
-          <div className="space-y-2 mb-6">
+          <h3 className="text-sm font-semibold text-[var(--text-secondary)] uppercase tracking-wide mb-3">
+            {t("sidebar.quickAccess")}
+          </h3>
+          <div className="space-y-2">
             <SidebarLink
               to="/bookmarks"
               icon={<BookmarkIcon size={18} />}
@@ -53,7 +56,10 @@ const Sidebar = () => {
 
         {/* Navigation Links */}
         <div className="mb-6">
-          <div className="space-y-2 mb-6">
+          <h3 className="text-sm font-semibold text-[var(--text-secondary)] uppercase tracking-wide mb-3">
+            {t("sidebar.navigation")}
+          </h3>
+          <div className="space-y-2">
             <SidebarLink
               to="/"
               icon={<HomeIcon size={18} />}
@@ -95,49 +101,37 @@ const Sidebar = () => {
 
         {/* Settings Section */}
         <div className="mb-6">
-          {/* Settings toggle icon only - always visible */}
+          <h3 className="text-sm font-semibold text-[var(--text-secondary)] uppercase tracking-wide mb-3">
+            {t("sidebar.settings")}
+          </h3>
+
+          {/* Settings toggle button */}
           <button
             onClick={() => toggleSection("settings")}
-            className="w-full p-3 rounded-lg transition-colors flex items-center justify-center"
-            style={{
-              backgroundColor:
+            className={`
+              w-full p-3 rounded-lg transition-all duration-200 flex items-center justify-center
+              ${
                 expanded === "settings"
-                  ? "var(--color-bg-tertiary)"
-                  : "var(--color-bg-secondary)",
-              color: "var(--color-text-primary)",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor =
-                "var(--color-bg-tertiary)";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor =
-                expanded === "settings"
-                  ? "var(--color-bg-tertiary)"
-                  : "var(--color-bg-secondary)";
-            }}
+                  ? "bg-[var(--instagram-gradient-subtle)] text-[var(--primary-color)] shadow-sm"
+                  : "bg-[var(--bg-primary)] text-[var(--text-primary)] hover:bg-[var(--bg-tertiary)] hover:text-[var(--primary-color)]"
+              }
+            `}
             title={t("settings.title")}
           >
             <SettingsIcon size={18} />
           </button>
 
           {expanded === "settings" && (
-            <div className="mt-3 space-y-3">
+            <div className="mt-3 space-y-3 p-3 bg-[var(--bg-primary)] rounded-lg border border-[var(--border-color)]">
               <div className="flex items-center justify-between">
-                <span
-                  className="text-sm font-medium"
-                  style={{ color: "var(--color-text-secondary)" }}
-                >
+                <span className="text-sm font-medium text-[var(--text-secondary)]">
                   {t("settings.theme.title")}:
                 </span>
                 <ThemeToggleIcon />
               </div>
 
               <div className="flex items-center justify-between">
-                <span
-                  className="text-sm font-medium"
-                  style={{ color: "var(--color-text-secondary)" }}
-                >
+                <span className="text-sm font-medium text-[var(--text-secondary)]">
                   {t("settings.language.title")}:
                 </span>
                 <LanguageToggleIcon />
@@ -148,71 +142,88 @@ const Sidebar = () => {
 
         {/* Info Section */}
         <div className="mb-6">
-          {/* Info toggle icon only - always visible */}
+          <h3 className="text-sm font-semibold text-[var(--text-secondary)] uppercase tracking-wide mb-3">
+            {t("sidebar.information")}
+          </h3>
+
+          {/* Info toggle button */}
           <button
             onClick={() => toggleSection("info")}
-            className="w-full p-3 rounded-lg transition-colors flex items-center justify-center"
-            style={{
-              backgroundColor:
+            className={`
+              w-full p-3 rounded-lg transition-all duration-200 flex items-center justify-center
+              ${
                 expanded === "info"
-                  ? "var(--color-bg-tertiary)"
-                  : "var(--color-bg-secondary)",
-              color: "var(--color-text-primary)",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor =
-                "var(--color-bg-tertiary)";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor =
-                expanded === "info"
-                  ? "var(--color-bg-tertiary)"
-                  : "var(--color-bg-secondary)";
-            }}
+                  ? "bg-[var(--instagram-gradient-subtle)] text-[var(--primary-color)] shadow-sm"
+                  : "bg-[var(--bg-primary)] text-[var(--text-primary)] hover:bg-[var(--bg-tertiary)] hover:text-[var(--primary-color)]"
+              }
+            `}
             title={t("info.title")}
           >
             <InfoIcon size={18} />
           </button>
 
           {expanded === "info" && (
-            <div className="mt-3 space-y-3">
-              <div
-                className="p-3 rounded-md"
-                style={{ backgroundColor: "var(--color-bg-secondary)" }}
-              >
-                <p
-                  className="text-sm mb-1"
-                  style={{ color: "var(--color-text-secondary)" }}
-                >
-                  <strong style={{ color: "var(--color-text-primary)" }}>
+            <div className="mt-3 space-y-3 p-3 bg-[var(--bg-primary)] rounded-lg border border-[var(--border-color)]">
+              <div className="space-y-2">
+                <div className="text-sm">
+                  <span className="font-semibold text-[var(--text-primary)]">
                     {t("info.festivalDates")}:
-                  </strong>
+                  </span>
                   <br />
-                  2025/11/8 - 2025/11/9
-                </p>
-                <p
-                  className="text-sm mb-1"
-                  style={{ color: "var(--color-text-secondary)" }}
-                >
-                  <strong style={{ color: "var(--color-text-primary)" }}>
+                  <span className="text-[var(--text-secondary)]">
+                    2025/11/8 - 2025/11/9
+                  </span>
+                </div>
+
+                <div className="text-sm">
+                  <span className="font-semibold text-[var(--text-primary)]">
                     {t("info.location")}:
-                  </strong>
+                  </span>
                   <br />
-                  Ube Kosen, Yamaguchi
-                </p>
-                <p
-                  className="text-sm"
-                  style={{ color: "var(--color-text-secondary)" }}
-                >
-                  <strong style={{ color: "var(--color-text-primary)" }}>
-                    {t("info.organizer")}:
-                  </strong>
+                  <span className="text-[var(--text-secondary)]">
+                    {t("info.schoolName")}
+                  </span>
+                </div>
+
+                <div className="text-sm">
+                  <span className="font-semibold text-[var(--text-primary)]">
+                    {t("info.access")}:
+                  </span>
                   <br />
-                  Festival Committee
-                </p>
+                  <span className="text-[var(--text-secondary)]">
+                    {t("info.accessInfo")}
+                  </span>
+                </div>
               </div>
             </div>
           )}
+        </div>
+
+        {/* Festival Stats */}
+        <div className="bg-gradient-to-br from-[var(--accent-purple)]/10 to-[var(--accent-pink)]/10 rounded-lg p-4 border border-[var(--primary-color)]/20">
+          <h4 className="text-sm font-semibold text-[var(--text-primary)] mb-2">
+            {t("sidebar.festivalStats")}
+          </h4>
+          <div className="space-y-2 text-xs text-[var(--text-secondary)]">
+            <div className="flex justify-between">
+              <span>🎭 {t("navigation.events")}</span>
+              <span className="font-medium text-[var(--primary-color)]">
+                14+
+              </span>
+            </div>
+            <div className="flex justify-between">
+              <span>🎨 {t("navigation.exhibits")}</span>
+              <span className="font-medium text-[var(--primary-color)]">
+                16+
+              </span>
+            </div>
+            <div className="flex justify-between">
+              <span>🍜 {t("navigation.stalls")}</span>
+              <span className="font-medium text-[var(--primary-color)]">
+                23+
+              </span>
+            </div>
+          </div>
         </div>
       </div>
     </aside>

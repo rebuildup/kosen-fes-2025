@@ -1,57 +1,138 @@
 @import "tailwindcss";
 
-/* Tailwind CSS v4対応のテーマ実装 */
+/* Instagram風ライトモード & X風ダークモード テーマ実装 */
 @layer base {
+  /* Instagram風ライトモード（デフォルト） */
   :root {
-    /* アクセントカラー（両モード共通） */
-    --color-accent: #3136ef;
-    --color-second: #f1f000;
-    --color-third: #e42022;
-    --color-fourth: #38c539;
-    --color-fifth: #ef3be5;
-  }
+    /* Instagram Light Mode Colors */
+    --primary-color: #405de6;
+    --accent-purple: #833ab4;
+    --accent-pink: #c13584;
+    --accent-red: #e1306c;
+    --accent-orange: #f56040;
+    --accent-yellow: #fcaf45;
 
-  /* ライトモード（デフォルト） */
-  :root {
+    --bg-primary: #ffffff;
+    --bg-secondary: #fafafa;
+    --text-primary: #262626;
+    --text-secondary: #8e8e8e;
+    --border-color: #dbdbdb;
+
+    /* 統一変数（レガシー対応） */
     --color-bg: #fafafa;
-    --color-main: #252525;
+    --color-main: #262626;
+    --color-accent: #405de6;
     --color-bg-primary: #ffffff;
-    --color-bg-secondary: #f8fafc;
-    --color-bg-tertiary: #f1f5f9;
-    --color-text-primary: #0f172a;
-    --color-text-secondary: #475569;
-    --color-text-tertiary: #64748b;
-    --color-border-primary: #e2e8f0;
-    --color-border-secondary: #cbd5e1;
+    --color-bg-secondary: #fafafa;
+    --color-bg-tertiary: #f5f5f5;
+    --color-text-primary: #262626;
+    --color-text-secondary: #8e8e8e;
+    --color-text-tertiary: #8e8e8e;
+    --color-border-primary: #dbdbdb;
+    --color-border-secondary: #efefef;
+
+    /* 状態カラー */
+    --success-color: #00ba7c;
+    --error-color: #e1306c;
+    --warning-color: #fcaf45;
+
+    /* Instagram グラデーション */
+    --instagram-gradient: linear-gradient(
+      45deg,
+      #405de6,
+      #833ab4,
+      #c13584,
+      #e1306c,
+      #f56040,
+      #fcaf45
+    );
+    --instagram-gradient-subtle: linear-gradient(
+      45deg,
+      rgba(64, 93, 230, 0.1),
+      rgba(131, 58, 180, 0.1),
+      rgba(193, 53, 132, 0.1)
+    );
   }
 
-  /* ダークモード */
+  /* X風ダークモード */
   :root[data-theme="dark"] {
-    --color-bg: #1a202c;
-    --color-main: #f7fafc;
-    --color-bg-primary: #1a202c;
-    --color-bg-secondary: #2d3748;
-    --color-bg-tertiary: #4a5568;
-    --color-text-primary: #f7fafc;
-    --color-text-secondary: #e2e8f0;
-    --color-text-tertiary: #a0aec0;
-    --color-border-primary: #4a5568;
-    --color-border-secondary: #2d3748;
+    /* X Dark Mode Colors */
+    --primary-color: #1da1f2;
+
+    --bg-primary: #15202b;
+    --bg-secondary: #192734;
+    --bg-tertiary: #22303c;
+
+    --text-primary: #ffffff;
+    --text-secondary: #8899ac;
+    --border-color: #2f3336;
+
+    /* 統一変数（レガシー対応） */
+    --color-bg: #15202b;
+    --color-main: #ffffff;
+    --color-accent: #1da1f2;
+    --color-bg-primary: #15202b;
+    --color-bg-secondary: #192734;
+    --color-bg-tertiary: #22303c;
+    --color-text-primary: #ffffff;
+    --color-text-secondary: #8899ac;
+    --color-text-tertiary: #657786;
+    --color-border-primary: #2f3336;
+    --color-border-secondary: #38444d;
+
+    /* 状態カラー */
+    --success-color: #00ba7c;
+    --error-color: #f4212e;
+    --warning-color: #ffd400;
+
+    /* X グラデーション */
+    --instagram-gradient: linear-gradient(45deg, #1da1f2, #0084c7);
+    --instagram-gradient-subtle: linear-gradient(
+      45deg,
+      rgba(29, 161, 242, 0.1),
+      rgba(0, 132, 199, 0.1)
+    );
   }
 
   /* システム設定に基づくダークモード */
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme]) {
-      --color-bg: #1a202c;
-      --color-main: #f7fafc;
-      --color-bg-primary: #1a202c;
-      --color-bg-secondary: #2d3748;
-      --color-bg-tertiary: #4a5568;
-      --color-text-primary: #f7fafc;
-      --color-text-secondary: #e2e8f0;
-      --color-text-tertiary: #a0aec0;
-      --color-border-primary: #4a5568;
-      --color-border-secondary: #2d3748;
+      /* X Dark Mode Colors */
+      --primary-color: #1da1f2;
+
+      --bg-primary: #15202b;
+      --bg-secondary: #192734;
+      --bg-tertiary: #22303c;
+
+      --text-primary: #ffffff;
+      --text-secondary: #8899ac;
+      --border-color: #2f3336;
+
+      /* 統一変数（レガシー対応） */
+      --color-bg: #15202b;
+      --color-main: #ffffff;
+      --color-accent: #1da1f2;
+      --color-bg-primary: #15202b;
+      --color-bg-secondary: #192734;
+      --color-bg-tertiary: #22303c;
+      --color-text-primary: #ffffff;
+      --color-text-secondary: #8899ac;
+      --color-text-tertiary: #657786;
+      --color-border-primary: #2f3336;
+      --color-border-secondary: #38444d;
+
+      /* 状態カラー */
+      --success-color: #00ba7c;
+      --error-color: #f4212e;
+      --warning-color: #ffd400;
+
+      /* X グラデーション */
+      --instagram-gradient: linear-gradient(45deg, #1da1f2, #0084c7);
+      --instagram-gradient-subtle: linear-gradient(
+        45deg,
+        rgba(29, 161, 242, 0.1),
+        rgba(0, 132, 199, 0.1)
+      );
     }
   }
 
@@ -60,25 +141,100 @@
   }
 
   body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
-      "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans",
-      "Helvetica Neue", sans-serif;
+    font-family: "adobe-garamond-pro", "noto-sans-cjk-jp",
+      "Hiragino Kaku Gothic ProN", "Hiragino Sans", -apple-system,
+      BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell",
+      "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     line-height: 1.6;
-    background-color: var(--color-bg);
-    color: var(--color-main);
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
     transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  /* Adobeフォント追加設定 */
+  .font-serif {
+    font-family: "adobe-garamond-pro", "Hiragino Mincho ProN",
+      "Hiragino Mincho Pro", serif;
+  }
+
+  .font-sans {
+    font-family: "noto-sans-cjk-jp", "Hiragino Kaku Gothic ProN",
+      "Hiragino Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: "adobe-garamond-pro", "noto-sans-cjk-jp",
+      "Hiragino Kaku Gothic ProN", "Hiragino Sans", sans-serif;
+    font-weight: 500;
+    letter-spacing: -0.025em;
+  }
+
+  /* フォントローディング状態の管理 */
+  .wf-loading body {
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .wf-active body,
+  .wf-inactive body {
+    opacity: 1;
+  }
+
+  /* フォントが読み込まれるまでのフォールバック */
+  .wf-loading h1,
+  .wf-loading h2,
+  .wf-loading h3,
+  .wf-loading h4,
+  .wf-loading h5,
+  .wf-loading h6 {
+    font-family: "Hiragino Kaku Gothic ProN", "Hiragino Sans", -apple-system,
+      BlinkMacSystemFont, sans-serif;
+  }
+
+  /* フォーカス管理（アクセシビリティ対応） */
+  *:focus {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
+  }
+
+  *:focus:not(:focus-visible) {
+    outline: none;
+  }
+
+  *:focus-visible {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
   }
 }
 
-/* カスタムコンポーネントクラス - CSS変数を直接使用 */
+/* カスタムコンポーネントクラス */
 @layer components {
   .card {
     @apply border rounded-lg shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden relative;
-    background-color: var(--color-bg-primary);
-    color: var(--color-text-primary);
-    border-color: var(--color-border-primary);
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    border-color: var(--border-color);
+  }
+
+  .card:hover {
+    border-color: var(--primary-color);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+      0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  }
+
+  :root[data-theme="dark"] .card:hover,
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme]) .card:hover {
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3),
+        0 2px 4px -1px rgba(0, 0, 0, 0.2);
+    }
   }
 
   .card-image-container {
@@ -124,17 +280,17 @@
 
   .card-title {
     @apply text-lg font-semibold mb-2 line-clamp-2;
-    color: var(--color-text-primary);
+    color: var(--text-primary);
   }
 
   .card-description {
     @apply text-sm mb-3 line-clamp-3;
-    color: var(--color-text-secondary);
+    color: var(--text-secondary);
   }
 
   .card-meta {
     @apply flex items-center gap-2 text-sm mb-2;
-    color: var(--color-text-tertiary);
+    color: var(--text-secondary);
   }
 
   .card-meta-icon {
@@ -143,7 +299,7 @@
 
   .card-type-badge {
     @apply absolute top-3 left-3 px-2 py-1 rounded-full text-xs font-medium z-10 transition-all duration-200;
-    background-color: var(--color-accent);
+    background: var(--instagram-gradient);
     color: white;
   }
 
@@ -154,269 +310,277 @@
   }
 
   .card-bookmark-button:hover {
-    background-color: var(--color-accent);
+    background-color: var(--primary-color);
     transform: scale(1.1);
   }
 
   .card-bookmark-button.bookmarked {
-    background-color: var(--color-accent);
+    background-color: var(--primary-color);
     color: white;
   }
 
+  /* ボタンスタイル */
   .btn {
     @apply inline-flex items-center justify-center rounded-lg px-4 py-2 text-sm font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2;
   }
 
   .btn-primary {
-    background-color: var(--color-accent);
+    background: var(--instagram-gradient);
     color: white;
     @apply hover:opacity-90 focus:ring-2 shadow-sm hover:shadow-md;
+    border: none;
   }
 
   .btn-secondary {
     @apply border hover:opacity-90 focus:ring-2;
-    background-color: var(--color-bg-secondary);
-    color: var(--color-text-primary);
-    border-color: var(--color-border-primary);
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+    border-color: var(--border-color);
   }
 
+  .btn-secondary:hover {
+    border-color: var(--primary-color);
+    background-color: var(--bg-tertiary);
+  }
+
+  /* タグスタイル */
   .tag {
     @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium transition-colors;
   }
 
   .tag-default {
     @apply hover:opacity-80;
-    background-color: var(--color-bg-secondary);
-    color: var(--color-text-primary);
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
   }
 
   .tag-accent {
-    background-color: color-mix(in srgb, var(--color-accent) 10%, transparent);
-    color: var(--color-accent);
+    background: var(--instagram-gradient-subtle);
+    color: var(--primary-color);
+    border: 1px solid var(--primary-color);
     @apply hover:opacity-80;
   }
 
+  /* セクションスタイル */
   .section {
     @apply py-12 px-4 sm:px-6 lg:px-8;
+    background-color: var(--bg-primary);
   }
 
   .section-title {
-    @apply text-2xl md:text-3xl font-bold mb-6;
-    color: var(--color-text-primary);
+    @apply text-2xl font-bold mb-4;
+    color: var(--text-primary);
   }
 
   .section-subtitle {
-    @apply text-lg mb-8;
-    color: var(--color-text-secondary);
+    @apply text-lg mb-6;
+    color: var(--text-secondary);
   }
 
-  /* レイアウト用スタイル */
+  /* レイアウト */
   .main-content-container {
-    @apply max-w-5xl mx-auto px-4 sm:px-6 lg:px-8;
+    @apply max-w-7xl mx-auto;
   }
 
   .balanced-layout {
-    @apply flex gap-6 items-start;
+    @apply grid grid-cols-1 lg:grid-cols-4 gap-8;
   }
 
   .content-area {
-    @apply flex-1 min-w-0;
-    max-width: calc(100% - 16rem); /* サイドバー幅を考慮 */
+    @apply lg:col-span-3 space-y-8;
+    background-color: var(--bg-primary);
   }
 
-  /* メインコンテンツエリアのオーバーフロー制御 */
   .main-content {
-    @apply overflow-hidden;
+    @apply space-y-6;
+    background-color: var(--bg-primary);
   }
 
   .main-content > * {
-    @apply max-w-full;
+    @apply w-full;
   }
 
-  /* スケジュールカード専用スタイル */
+  /* スケジュールカード */
   .schedule-card {
-    @apply relative rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-200 border h-32;
-    background-color: var(--color-bg-primary);
-    border-color: var(--color-border-primary);
+    @apply relative overflow-hidden rounded-lg shadow-md transition-all duration-300 hover:shadow-lg;
+    background-color: var(--bg-primary);
+    border: 1px solid var(--border-color);
   }
 
   .schedule-card-image {
-    @apply w-full h-full object-cover;
+    @apply w-full h-48 object-cover;
   }
 
   .schedule-card-overlay {
-    @apply absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent text-white flex items-end p-3;
+    @apply absolute inset-0 bg-gradient-to-t from-black to-transparent opacity-60;
   }
 
   .schedule-card-content {
-    @apply flex-1;
+    @apply absolute bottom-0 left-0 right-0 p-4 text-white;
   }
 
   .schedule-card-time {
-    @apply text-xs font-medium opacity-90 mb-1;
+    @apply text-sm font-medium mb-1;
   }
 
   .schedule-card-title {
-    @apply text-sm font-semibold line-clamp-2;
+    @apply text-lg font-bold;
   }
 
-  /* サイドバー専用スタイル */
+  /* サイドバー */
   .sidebar {
-    @apply border-r;
-    background-color: var(--color-bg-primary);
-    border-color: var(--color-border-primary);
-    color: var(--color-text-primary);
+    @apply lg:col-span-1 space-y-6;
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 1.5rem;
   }
 
   .sidebar-heading {
-    color: var(--color-text-primary);
+    @apply text-lg font-semibold mb-3;
+    color: var(--text-primary);
   }
 
   .sidebar-text {
-    color: var(--color-text-secondary);
+    @apply text-sm;
+    color: var(--text-secondary);
   }
 
   .sidebar-link {
-    @apply transition-colors;
-    color: var(--color-text-secondary);
+    @apply block py-2 px-3 rounded-lg text-sm transition-colors;
+    color: var(--text-primary);
   }
 
   .sidebar-link:hover {
-    background-color: var(--color-bg-secondary);
-    color: var(--color-accent);
+    background-color: var(--bg-tertiary);
+    color: var(--primary-color);
   }
 
   .sidebar-button {
-    @apply transition-colors;
-    background-color: var(--color-bg-secondary);
-    color: var(--color-text-primary);
+    @apply w-full py-2 px-4 rounded-lg text-sm font-medium transition-all duration-200;
+    background: var(--instagram-gradient);
+    color: white;
   }
 
   .sidebar-button:hover {
-    background-color: var(--color-bg-tertiary);
+    @apply opacity-90 transform scale-105;
   }
 
-  /* ヘッダー専用スタイル */
+  /* ヘッダー */
   .header {
-    @apply backdrop-blur-md border-b;
-    background-color: color-mix(
-      in srgb,
-      var(--color-bg-primary) 80%,
-      transparent
-    );
-    border-color: var(--color-border-primary);
+    @apply sticky top-0 z-50 transition-all duration-200;
+    background-color: var(--bg-primary);
+    border-bottom: 1px solid var(--border-color);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
   }
 
   .nav-link {
-    @apply px-3 py-2 text-sm font-medium transition-all duration-200 relative;
-    color: var(--color-text-secondary);
+    @apply relative px-3 py-2 text-sm font-medium transition-all duration-200;
+    color: var(--text-primary);
   }
 
   .nav-link::after {
     content: "";
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    width: 0;
-    height: 2px;
-    background-color: var(--color-accent);
-    transition: all 0.2s ease;
-    transform: translateX(-50%);
+    @apply absolute bottom-0 left-0 w-0 h-0.5 transition-all duration-200;
+    background: var(--instagram-gradient);
   }
 
   .nav-link:hover {
-    color: var(--color-accent);
+    color: var(--primary-color);
   }
 
   .nav-link:hover::after {
-    width: 80%;
+    @apply w-full;
   }
 
   .nav-link-active {
-    color: var(--color-accent);
+    color: var(--primary-color);
   }
 
   .nav-link-active::after {
-    width: 80%;
+    @apply w-full;
   }
 
-  /* マップページ専用スタイル */
+  /* マップコンテナ */
   .map-container {
-    @apply relative rounded-lg overflow-hidden border shadow-lg;
-    background-color: var(--color-bg-primary);
-    border-color: var(--color-border-primary);
-    height: 500px;
-    max-width: 100%;
-    position: relative;
-    z-index: 1;
-    /* マウスホイールイベントの制御 */
-    overscroll-behavior: contain;
+    @apply w-full h-96 relative overflow-hidden rounded-lg border;
+    background-color: var(--bg-secondary);
+    border-color: var(--border-color);
+    cursor: grab;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
     touch-action: none;
+    -webkit-touch-callout: none;
+    -webkit-tap-highlight-color: transparent;
   }
 
-  /* マップ内のSVG要素でのスクロール制御 */
+  .map-container.dragging {
+    cursor: grabbing !important;
+  }
+
   .map-container svg {
-    touch-action: none;
-    overscroll-behavior: none;
+    @apply absolute inset-0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
   }
 
-  /* マップコンテナ内でのホイールイベント制御 */
   .map-container * {
-    overscroll-behavior: none;
+    user-select: none;
   }
 
   .map-container > * {
-    position: relative;
-    z-index: 2;
+    pointer-events: none;
   }
 
   .map-controls {
-    @apply absolute top-4 right-4 flex gap-2;
-    z-index: 10;
+    @apply absolute top-4 right-4 flex flex-col space-y-2 z-10;
   }
 
   .map-legend {
-    @apply absolute bottom-4 left-4 backdrop-blur-sm p-3 rounded-lg shadow-lg z-10;
-    background-color: color-mix(
-      in srgb,
-      var(--color-bg-primary) 90%,
-      transparent
-    );
-    border: 1px solid var(--color-border-primary);
+    @apply absolute bottom-4 left-4 p-3 rounded-lg shadow-lg z-10;
+    background-color: var(--bg-primary);
+    border: 1px solid var(--border-color);
   }
 
-  /* Mobile Footer Navigation */
+  /* モバイルフッター */
   .mobile-footer {
-    @apply fixed bottom-0 left-0 right-0 z-50 border-t backdrop-blur-md;
-    background-color: var(--color-bg-primary);
-    border-color: var(--color-border-primary);
-    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+    @apply fixed bottom-0 left-0 right-0 z-50 border-t;
+    background-color: var(--bg-primary);
+    border-color: var(--border-color);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
   }
 
   .mobile-footer-nav {
-    @apply flex items-center justify-around h-16 max-w-lg mx-auto px-2;
+    @apply flex items-center justify-around px-2 py-1;
   }
 
   .mobile-footer-item {
-    @apply flex flex-col items-center justify-center flex-1 py-2 px-1 transition-all duration-200 rounded-lg text-xs font-medium;
-    color: var(--color-text-secondary);
-    min-height: 3rem;
-    min-width: 0; /* Allow shrinking */
+    @apply flex flex-col items-center justify-center p-2 rounded-lg transition-all duration-200 min-w-0 flex-1;
+    color: var(--text-secondary);
   }
 
   .mobile-footer-item:hover {
-    @apply transform scale-105;
-    color: var(--color-accent);
-    background-color: color-mix(in srgb, var(--color-accent) 5%, transparent);
+    background-color: var(--bg-secondary);
+    color: var(--primary-color);
   }
 
   .mobile-footer-item-active {
-    color: var(--color-accent);
-    background-color: color-mix(in srgb, var(--color-accent) 10%, transparent);
+    color: var(--primary-color);
+    background: var(--instagram-gradient-subtle);
   }
 
   .mobile-footer-icon {
-    @apply mb-1 transition-transform duration-200;
+    @apply w-5 h-5 mb-1 transition-transform duration-200;
   }
 
   .mobile-footer-item:hover .mobile-footer-icon {
@@ -424,211 +588,437 @@
   }
 
   .mobile-footer-label {
-    @apply leading-tight text-center;
-    font-size: 0.625rem;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 100%;
+    @apply text-xs font-medium truncate;
+    max-width: 60px;
   }
 
-  /* Dark mode styles for mobile footer */
-  :root[data-theme="dark"] .mobile-footer {
-    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.3);
-  }
-
-  @media (prefers-color-scheme: dark) {
-    :root:not([data-theme]) .mobile-footer {
-      box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.3);
-    }
-  }
-
-  /* Mobile Menu Styles */
+  /* モバイルメニュー */
   .mobile-menu-overlay {
-    @apply fixed inset-0;
+    position: fixed;
+    inset: 0;
     z-index: 9999;
   }
 
   .mobile-menu-backdrop {
-    @apply absolute inset-0 transition-opacity duration-300;
-    background-color: rgba(0, 0, 0, 0.5);
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
   }
 
   .mobile-menu-panel {
-    @apply absolute top-0 right-0 h-full w-80 max-w-[85vw] flex flex-col shadow-xl;
-    background-color: var(--color-bg-primary);
-    border-left: 1px solid var(--color-border-primary);
-    overflow: hidden;
+    position: absolute;
+    top: 0;
+    right: 0;
+    height: 100%;
+    width: 320px;
+    max-width: 90vw;
+    background: var(--bg-primary);
+    border-left: 1px solid var(--border-color);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    overflow-y: auto;
   }
 
   .mobile-menu-header {
-    @apply flex items-center justify-between p-4 border-b;
-    border-color: var(--color-border-primary);
-    background-color: var(--color-bg-secondary);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.5rem;
+    background: var(--bg-primary);
+    border-bottom: 1px solid var(--border-color);
+    backdrop-filter: blur(8px);
   }
 
   .mobile-menu-title {
-    @apply text-lg font-semibold;
-    color: var(--color-text-primary);
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--text-primary);
   }
 
   .mobile-menu-close-button {
-    @apply p-2 rounded-lg transition-colors duration-200;
-    color: var(--color-text-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 0.5rem;
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: all 0.2s ease;
   }
 
   .mobile-menu-close-button:hover {
-    background-color: var(--color-bg-tertiary);
-    color: var(--color-accent);
-  }
-
-  .mobile-menu-close-icon {
-    @apply block;
+    background: var(--bg-tertiary);
+    color: var(--primary-color);
+    transform: scale(1.05);
   }
 
   .mobile-menu-content {
-    @apply flex-1 p-4 space-y-6;
-    overflow-y: auto;
-    overflow-x: hidden;
-  }
-
-  /* Custom scrollbar for mobile menu */
-  .mobile-menu-content::-webkit-scrollbar {
-    width: 6px;
-  }
-
-  .mobile-menu-content::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  .mobile-menu-content::-webkit-scrollbar-thumb {
-    background-color: var(--color-border-secondary);
-    border-radius: 3px;
-  }
-
-  .mobile-menu-content::-webkit-scrollbar-thumb:hover {
-    background-color: var(--color-accent);
-  }
-
-  /* Firefox scrollbar */
-  .mobile-menu-content {
-    scrollbar-width: thin;
-    scrollbar-color: var(--color-border-secondary) transparent;
+    padding: 1.5rem;
   }
 
   .mobile-menu-section {
-    @apply space-y-3;
+    margin-bottom: 2rem;
   }
 
   .mobile-menu-section-title {
-    @apply text-sm font-medium uppercase tracking-wide;
-    color: var(--color-text-tertiary);
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-secondary);
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
   }
 
   .mobile-menu-nav {
-    @apply space-y-1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
   }
 
   .mobile-menu-nav-item {
-    @apply flex items-center gap-3 px-3 py-3 rounded-lg transition-all duration-200 text-base font-medium;
-    color: var(--color-text-primary);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    color: var(--text-primary);
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
   }
 
   .mobile-menu-nav-item:hover {
-    background-color: var(--color-bg-secondary);
-    color: var(--color-accent);
-    transform: translateX(4px);
+    background: var(--bg-tertiary);
+    color: var(--primary-color);
   }
 
   .mobile-menu-nav-item-active {
-    background-color: color-mix(in srgb, var(--color-accent) 10%, transparent);
-    color: var(--color-accent);
+    background: var(--instagram-gradient-subtle);
+    color: var(--primary-color);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .mobile-menu-nav-item-active::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3px;
+    height: 60%;
+    background: var(--instagram-gradient);
+    border-radius: 0 2px 2px 0;
   }
 
   .mobile-menu-nav-icon {
-    @apply flex-shrink-0 transition-transform duration-200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.25rem;
+    height: 1.25rem;
+    flex-shrink: 0;
+    transition: transform 0.2s ease;
   }
 
   .mobile-menu-nav-item:hover .mobile-menu-nav-icon {
-    @apply transform scale-110;
+    transform: scale(1.1);
   }
 
   .mobile-menu-links {
-    @apply space-y-1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
   }
 
   .mobile-menu-link-item {
-    @apply flex items-center justify-between px-3 py-3 rounded-lg transition-all duration-200;
-    color: var(--color-text-primary);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    color: var(--text-primary);
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.2s ease;
   }
 
   .mobile-menu-link-item:hover {
-    background-color: var(--color-bg-secondary);
-    color: var(--color-accent);
-    transform: translateX(4px);
+    background: var(--bg-tertiary);
+    color: var(--primary-color);
   }
 
-  .mobile-menu-link-content {
-    @apply flex items-center gap-3;
+  .mobile-menu-link-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.25rem;
+    height: 1.25rem;
+    flex-shrink: 0;
+    transition: transform 0.2s ease;
+  }
+
+  .mobile-menu-link-item:hover .mobile-menu-link-icon {
+    transform: scale(1.1);
   }
 
   .mobile-menu-badge {
-    @apply px-2 py-1 text-xs font-medium rounded-full;
-    background-color: color-mix(in srgb, var(--color-accent) 10%, transparent);
-    color: var(--color-accent);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.25rem;
+    height: 1.25rem;
+    padding: 0 0.375rem;
+    background: var(--primary-color);
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border-radius: 0.625rem;
+    margin-left: auto;
+  }
+
+  .mobile-menu-nav-item-active .mobile-menu-badge {
+    background: var(--instagram-gradient);
   }
 
   .mobile-menu-settings {
-    @apply space-y-3;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
   }
 
   .mobile-menu-setting-item {
-    @apply flex items-center justify-between px-3 py-3 rounded-lg;
-    background-color: var(--color-bg-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1rem;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 0.5rem;
+    transition: all 0.2s ease;
+  }
+
+  .mobile-menu-setting-item:hover {
+    background: var(--bg-tertiary);
+    border-color: var(--primary-color);
   }
 
   .mobile-menu-setting-label {
-    @apply text-sm font-medium;
-    color: var(--color-text-primary);
+    font-weight: 500;
+    color: var(--text-primary);
   }
 
-  .mobile-menu-info {
-    @apply space-y-2;
+  /* Festival info card in mobile menu */
+  .mobile-menu-info-card {
+    background: linear-gradient(
+      135deg,
+      var(--accent-purple) / 10,
+      var(--accent-pink) / 10
+    );
+    border: 1px solid var(--primary-color) / 20;
+    border-radius: 0.75rem;
+    padding: 1rem;
+    margin-top: 1rem;
   }
 
-  .mobile-menu-info-item {
-    @apply text-sm px-3 py-2 rounded-lg;
-    background-color: var(--color-bg-secondary);
-    color: var(--color-text-secondary);
+  .mobile-menu-info-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
   }
 
-  /* Dark mode adjustments for mobile menu */
-  :root[data-theme="dark"] .mobile-menu-panel {
-    box-shadow: -4px 0 20px rgba(0, 0, 0, 0.3);
+  .mobile-menu-info-content {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    line-height: 1.4;
   }
 
-  @media (prefers-color-scheme: dark) {
-    :root:not([data-theme]) .mobile-menu-panel {
-      box-shadow: -4px 0 20px rgba(0, 0, 0, 0.3);
+  /* Mobile menu animations */
+  @keyframes menuSlideIn {
+    from {
+      transform: translateX(100%);
+    }
+    to {
+      transform: translateX(0);
     }
   }
-}
 
-.header-blur {
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-}
-
-/* Marquee animation for scrollable text */
-@keyframes marquee {
-  from {
-    transform: translateX(0);
+  @keyframes menuFadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
-  to {
-    transform: translateX(-100%);
-  }
-}
 
-.animate-marquee {
-  animation: marquee 8s linear infinite;
+  .mobile-menu-nav-item,
+  .mobile-menu-link-item,
+  .mobile-menu-setting-item {
+    animation: menuFadeIn 0.3s ease forwards;
+  }
+
+  /* Responsive mobile menu */
+  @media (max-width: 320px) {
+    .mobile-menu-panel {
+      width: 100vw;
+    }
+  }
+
+  /* ヘッダーブラー効果 */
+  .header-blur {
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    background-color: rgba(255, 255, 255, 0.8);
+  }
+
+  :root[data-theme="dark"] .header-blur,
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme]) .header-blur {
+      background-color: rgba(21, 32, 43, 0.8);
+    }
+  }
+
+  /* アニメーション */
+  @keyframes marquee {
+    0% {
+      transform: translateX(100%);
+    }
+    100% {
+      transform: translateX(-100%);
+    }
+  }
+
+  .animate-marquee {
+    animation: marquee 10s linear infinite;
+  }
+
+  /* カスタムスクロールバー */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background-color: var(--bg-secondary);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background-color: var(--border-color);
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: var(--text-secondary);
+  }
+
+  /* ===============================================
+     BOOKMARK BUTTON
+     =============================================== */
+
+  .bookmark-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 0.5rem;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .bookmark-button:hover {
+    background: var(--bg-secondary);
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .bookmark-button:active {
+    transform: translateY(0);
+  }
+
+  .bookmark-button.bookmarked {
+    background: var(--instagram-gradient-subtle);
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .bookmark-button.bookmarked::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: var(--instagram-gradient);
+    opacity: 0.1;
+    border-radius: inherit;
+  }
+
+  .bookmark-button.bookmarked:hover {
+    background: var(--primary-color);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+  }
+
+  .bookmark-button-small {
+    padding: 0.375rem;
+    font-size: 0.875rem;
+  }
+
+  .bookmark-button-medium {
+    padding: 0.5rem;
+    font-size: 1rem;
+  }
+
+  .bookmark-button-large {
+    padding: 0.75rem 1rem;
+    font-size: 1.125rem;
+  }
+
+  .bookmark-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s ease;
+  }
+
+  .bookmark-button:hover .bookmark-icon {
+    transform: scale(1.1);
+  }
+
+  .bookmark-button.bookmarked .bookmark-icon {
+    color: var(--primary-color);
+  }
+
+  .bookmark-button.bookmarked:hover .bookmark-icon {
+    color: white;
+    transform: scale(1.2);
+  }
+
+  .bookmark-text {
+    font-weight: 500;
+    white-space: nowrap;
+  }
 }
