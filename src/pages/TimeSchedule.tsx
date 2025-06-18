@@ -37,8 +37,8 @@ const TimeSchedule = () => {
     const baseItems: NonSponsorItem[] = [...events, ...exhibits, ...stalls];
 
     // Group items by date
-    const day1 = "2025-06-15";
-    const day2 = "2025-06-16";
+    const day1 = "2025-11-08";
+    const day2 = "2025-11-09";
 
     let day1Items = baseItems.filter((item) => item.date === day1);
     let day2Items = baseItems.filter((item) => item.date === day2);
@@ -191,7 +191,7 @@ const TimeSchedule = () => {
             <div>
               {selectedDay === "day1" && (
                 <TimelineDay
-                  date="2025-06-15"
+                  date="2025-11-08"
                   items={filteredItems.day1}
                   timeSlots={getOrderedTimeSlots(filteredItems.day1)}
                   groupedItems={groupItemsByTimeSlot(filteredItems.day1)}
@@ -201,7 +201,7 @@ const TimeSchedule = () => {
 
               {selectedDay === "day2" && (
                 <TimelineDay
-                  date="2025-06-16"
+                  date="2025-11-09"
                   items={filteredItems.day2}
                   timeSlots={getOrderedTimeSlots(filteredItems.day2)}
                   groupedItems={groupItemsByTimeSlot(filteredItems.day2)}

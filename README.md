@@ -142,7 +142,7 @@ kosen-fes-2025/
   title: "イベントタイトル",
   description: "詳細説明文",
   imageUrl: "/images/events/event-7.jpg",
-  date: "2025-06-15",      // YYYY-MM-DD
+  date: "2025-11-08",      // YYYY-MM-DD
   time: "14:00 - 15:30",    // HH:MM - HH:MM
   location: "Main Stage",
   tags: ["performance", "music"],
@@ -162,7 +162,7 @@ kosen-fes-2025/
   title: "展示タイトル",
   description: "詳細説明文",
   imageUrl: "/images/exhibits/exhibit-7.jpg",
-  date: "2025-06-15",
+  date: "2025-11-08",
   time: "10:00 - 18:00",
   location: "Art Building, Gallery Hall",
   tags: ["art", "digital"],
@@ -181,7 +181,7 @@ kosen-fes-2025/
   title: "屋台タイトル",
   description: "詳細説明文",
   imageUrl: "/images/stalls/stall-7.jpg",
-  date: "2025-06-15",
+  date: "2025-11-08",
   time: "11:00 - 20:00",
   location: "Food Court Area, Stall 6",
   tags: ["food", "japanese"],

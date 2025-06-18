@@ -88,7 +88,7 @@ const Exhibits = () => {
         <div className="max-w-7xl mx-auto">
           <div className="space-y-6">
             {/* Filter Controls - Category selection and View mode in one row */}
-            <div className="flex flex-row justify-between items-center gap-2">
+            <div className="flex flex-row items-center gap-2 overflow-x-auto pb-2">
               <TabButtons
                 options={categoryOptions}
                 activeValue={categoryFilter}

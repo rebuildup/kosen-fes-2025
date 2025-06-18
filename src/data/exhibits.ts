@@ -9,7 +9,7 @@ export const exhibits: Exhibit[] = [
     description:
       "ロボット研究部のメンバーが作成した様々なロボットの実演とミニゲームを体験できます!",
     imageUrl: "./images/exhibits/exhibit-1.jpg",
-    date: "2025-06-15",
+    date: "2025-11-08",
     time: "10:00 - 18:00",
     location: "工学部棟 101教室",
     coordinates: { x: 254.9, y: 752.5 }, // 機電棟エリア
@@ -23,7 +23,7 @@ export const exhibits: Exhibit[] = [
     description:
       "マスターピース技術研究チームによる創作プロジェクトの展示です。",
     imageUrl: "./images/exhibits/exhibit-2.jpg",
-    date: "2025-06-15",
+    date: "2025-11-08",
     time: "10:00 - 18:00",
     location: "理学部棟 203教室",
     coordinates: { x: 704.0, y: 929.4 }, // 一般棟エリア
@@ -37,7 +37,7 @@ export const exhibits: Exhibit[] = [
     description:
       "献血にご協力いただいた方には特別な記念品をプレゼント!フェスティバルを楽しみながら命を救う活動にご参加ください。",
     imageUrl: "./images/exhibits/exhibit-3.jpg",
-    date: "2025-06-15",
+    date: "2025-11-08",
     time: "9:30 - 16:00",
     location: "ペリカン食堂 学生会館1F",
     coordinates: { x: 588.6, y: 733.5 }, // 学生会館
@@ -51,7 +51,7 @@ export const exhibits: Exhibit[] = [
     description:
       "写真部のメンバーが撮影した美しい写真の展示とオリジナルポストカードの販売!",
     imageUrl: "./images/exhibits/exhibit-4.jpg",
-    date: "2025-06-15",
+    date: "2025-11-08",
     time: "10:00 - 18:00",
     location: "教養棟 展示ホール",
     coordinates: { x: 590.5, y: 497.7 }, // 図書館棟
@@ -65,7 +65,7 @@ export const exhibits: Exhibit[] = [
     description:
       "美術部のメンバーによるアート作品の展示とオリジナルポストカードの販売!",
     imageUrl: "./images/exhibits/exhibit-5.jpg",
-    date: "2025-06-15",
+    date: "2025-11-08",
     time: "10:00 - 18:00",
     location: "教養棟 美術室",
     coordinates: { x: 590.5, y: 497.7 }, // 図書館棟
@@ -78,7 +78,7 @@ export const exhibits: Exhibit[] = [
     title: "文芸部誌配布",
     description: "文芸部のメンバーが制作したオリジナル文芸誌をゲットしよう!",
     imageUrl: "./images/exhibits/exhibit-6.jpg",
-    date: "2025-06-15",
+    date: "2025-11-08",
     time: "10:00 - 18:00",
     location: "教養棟 102教室",
     coordinates: { x: 590.5, y: 497.7 }, // 図書館棟
@@ -92,7 +92,7 @@ export const exhibits: Exhibit[] = [
     description:
       "平成フォトスタジオによるファッションアイテムとアクセサリーの展示。",
     imageUrl: "./images/exhibits/exhibit-7.jpg",
-    date: "2025-06-15",
+    date: "2025-11-08",
     time: "10:00 - 18:00",
     location: "学生会館 2F",
     coordinates: { x: 588.6, y: 733.5 }, // 学生会館
@@ -105,7 +105,7 @@ export const exhibits: Exhibit[] = [
     title: "ETロボコン活動紹介",
     description: "ETロボコンチームの活動と成果について学ぼう!",
     imageUrl: "./images/exhibits/exhibit-8.jpg",
-    date: "2025-06-15",
+    date: "2025-11-08",
     time: "10:00 - 18:00",
     location: "工学部棟 201教室",
     coordinates: { x: 254.9, y: 752.5 }, // 機電棟エリア
@@ -118,7 +118,7 @@ export const exhibits: Exhibit[] = [
     title: "Eプロジェクト活動紹介",
     description: "電気工学科の自主活動グループの紹介です。",
     imageUrl: "./images/exhibits/exhibit-9.jpg",
-    date: "2025-06-15",
+    date: "2025-11-08",
     time: "10:00 - 18:00",
     location: "電気工学棟 第1実験室",
     coordinates: { x: 254.9, y: 752.5 }, // 機電棟エリア
@@ -132,7 +132,7 @@ export const exhibits: Exhibit[] = [
     description:
       "コンピュータ部のメンバーが制作したソフトウェアとハードウェアのプロジェクト展示。",
     imageUrl: "./images/exhibits/exhibit-10.jpg",
-    date: "2025-06-15",
+    date: "2025-11-08",
     time: "10:00 - 18:00",
     location: "情報科学棟 103教室",
     coordinates: { x: 886.4, y: 859.4 }, // 経営情報学科棟
@@ -145,7 +145,7 @@ export const exhibits: Exhibit[] = [
     title: "オリジナルキーホルダー作り",
     description: "篠田研究室のブースでオリジナルキーホルダーを作ろう!",
     imageUrl: "./images/exhibits/exhibit-11.jpg",
-    date: "2025-06-15",
+    date: "2025-11-08",
     time: "10:00 - 18:00",
     location: "工学部棟 105教室",
     coordinates: { x: 254.9, y: 752.5 }, // 機電棟エリア
@@ -159,7 +159,7 @@ export const exhibits: Exhibit[] = [
     description:
       "実践的な体験とデモンストレーションを通じて船の動きについて学ぼう!",
     imageUrl: "./images/exhibits/exhibit-12.jpg",
-    date: "2025-06-15",
+    date: "2025-11-08",
     time: "10:00 - 18:00",
     location: "機械工学棟 第2実験室",
     coordinates: { x: 254.9, y: 752.5 }, // 機電棟エリア
@@ -173,7 +173,7 @@ export const exhibits: Exhibit[] = [
     description:
       "ストライクアウトやVRゲームなど様々なアトラクションを楽しもう!学科展示も実施中。",
     imageUrl: "./images/exhibits/exhibit-13.jpg",
-    date: "2025-06-15",
+    date: "2025-11-08",
     time: "10:00 - 18:00",
     location: "電気工学棟 メインホール",
     coordinates: { x: 254.9, y: 752.5 }, // 機電棟エリア
@@ -187,7 +187,7 @@ export const exhibits: Exhibit[] = [
     description:
       "スイカをテーマにした楽しいゲームでセンサー入力技術を体験しよう!",
     imageUrl: "./images/exhibits/exhibit-14.jpg",
-    date: "2025-06-15",
+    date: "2025-11-08",
     time: "10:00 - 18:00",
     location: "制御工学棟 101教室",
     coordinates: { x: 368.7, y: 534.6 }, // 制御情報工学科棟
@@ -201,7 +201,7 @@ export const exhibits: Exhibit[] = [
     description:
       "材料工学に関連するデモンストレーション、体験、展示を行います。",
     imageUrl: "./images/exhibits/exhibit-15.jpg",
-    date: "2025-06-15",
+    date: "2025-11-08",
     time: "10:00 - 18:00",
     location: "材料工学棟 メイン実験室",
     coordinates: { x: 709.6, y: 1103.2 }, // 物質棟
@@ -215,7 +215,7 @@ export const exhibits: Exhibit[] = [
     description:
       "卒業生の皆様をお迎えする特別なイベント。懐かしい仲間との再会をお楽しみください。",
     imageUrl: "./images/exhibits/exhibit-16.jpg",
-    date: "2025-06-15",
+    date: "2025-11-08",
     time: "10:00 - 18:00",
     location: "管理棟 会議室",
     coordinates: { x: 227.3, y: 837.4 }, // 管理棟

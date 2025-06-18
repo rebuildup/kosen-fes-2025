@@ -137,7 +137,7 @@ const Home = () => {
           <div className="ticket-preview mb-8">
             <div className="max-w-5xl mx-auto">
               <img
-                src="/assets/ticket.png"
+                src="./assets/ticket.png"
                 alt="高専祭2025 チケット"
                 className="w-full h-auto"
               />

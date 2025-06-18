@@ -20,7 +20,7 @@ const Events = () => {
   >("default");
   const [filteredEvents, setFilteredEvents] = useState<Item[]>([]);
   const [dateFilter, setDateFilter] = useState<
-    "all" | "2025-06-15" | "2025-06-16"
+    "all" | "2025-11-08" | "2025-11-09"
   >("all");
 
   // Filter events by selected day and tags
@@ -30,7 +30,7 @@ const Events = () => {
 
     // Filter by day
     if (dateFilter !== "all") {
-      const day = dateFilter === "2025-06-15" ? "2025-06-15" : "2025-06-16";
+      const day = dateFilter === "2025-11-08" ? "2025-11-08" : "2025-11-09";
       filtered = filtered.filter((event) => event.date === day);
     }
 
@@ -45,8 +45,8 @@ const Events = () => {
   // Tab options for date filter
   const dateOptions = [
     { value: "all", label: t("events.filters.all") },
-    { value: "2025-06-15", label: t("events.filters.day1") },
-    { value: "2025-06-16", label: t("events.filters.day2") },
+    { value: "2025-11-08", label: t("events.filters.day1") },
+    { value: "2025-11-09", label: t("events.filters.day2") },
   ];
 
   return (
@@ -74,7 +74,7 @@ const Events = () => {
         <div className="max-w-7xl mx-auto">
           <div className="space-y-6">
             {/* Filter Controls - Day selection and View mode in one row */}
-            <div className="flex flex-row justify-between items-center gap-2">
+            <div className="flex flex-row items-center gap-2 overflow-x-auto pb-2">
               <TabButtons
                 options={dateOptions}
                 activeValue={dateFilter}

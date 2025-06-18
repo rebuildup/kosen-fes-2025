@@ -40,7 +40,7 @@ const ContentPreview = () => {
     description: "",
     imageFile: null,
     imagePreviewUrl: "",
-    date: "2025-06-15",
+    date: "2025-11-08",
     time: "10:00 - 11:00",
     location: "",
     coordinates: null,
@@ -408,8 +408,8 @@ const ContentPreview = () => {
                       color: "var(--color-text-primary)",
                     }}
                   >
-                    <option value="2025-06-15">2025年6月15日（土）</option>
-                    <option value="2025-06-16">2025年6月16日（日）</option>
+                    <option value="2025-11-08">2025年6月15日（土）</option>
+                    <option value="2025-11-09">2025年6月16日（日）</option>
                   </select>
                 </div>
 
@@ -1066,7 +1066,7 @@ const ContentPreview = () => {
                       [previewItem.time.split(" - ")[0]]: [previewItem as any],
                     }}
                     dayName={
-                      previewItem.date === "2025-06-15" ? "1日目" : "2日目"
+                      previewItem.date === "2025-11-08" ? "1日目" : "2日目"
                     }
                   />
                 </div>

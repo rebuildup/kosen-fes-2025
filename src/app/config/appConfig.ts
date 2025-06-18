@@ -17,7 +17,7 @@ export const APP_CONFIG = {
     year: 2025,
     dates: {
       start: "2025-06-14",
-      end: "2025-06-15",
+      end: "2025-11-08",
     },
     hours: {
       start: "09:00",
