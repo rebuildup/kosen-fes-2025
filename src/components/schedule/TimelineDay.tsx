@@ -47,8 +47,9 @@ const TimelineDay = ({
 
   return (
     <div className="space-y-6">
+      {/* Desktop: Show date header / Mobile: Hidden */}
       <div
-        className="rounded-lg p-6 shadow-sm border"
+        className="hidden md:block rounded-lg p-6 shadow-sm border"
         style={{
           backgroundColor: "var(--color-bg-primary)",
           borderColor: "var(--color-border-primary)",
@@ -68,43 +69,99 @@ const TimelineDay = ({
         </div>
       </div>
 
+      {/* Desktop: Timeline layout / Mobile: Vertical card layout */}
       <div className="space-y-8">
-        {timeSlots.map((timeSlot) => (
-          <div key={timeSlot} className="relative">
-            <div className="flex items-start gap-6">
-              <div className="flex items-center space-x-3 min-w-0 flex-shrink-0">
+        {timeSlots.map((timeSlot, timeSlotIndex) => (
+          <div key={timeSlot}>
+            {/* Mobile: Date header between time slots */}
+            {timeSlotIndex === 0 && (
+              <div className="md:hidden mb-6">
                 <div
-                  className="w-3 h-3 rounded-full"
-                  style={{ backgroundColor: "var(--color-accent)" }}
-                ></div>
-                <div
-                  className="text-lg font-semibold min-w-max"
-                  style={{ color: "var(--color-text-primary)" }}
+                  className="text-center py-4 px-6 rounded-lg border"
+                  style={{
+                    backgroundColor: "var(--color-bg-primary)",
+                    borderColor: "var(--color-border-primary)",
+                  }}
                 >
-                  {timeSlot}
+                  <h2
+                    className="text-lg font-semibold mb-1"
+                    style={{ color: "var(--color-text-primary)" }}
+                  >
+                    {formatDate(date)}
+                  </h2>
+                  <div
+                    className="text-sm font-medium"
+                    style={{ color: "var(--color-accent)" }}
+                  >
+                    {dayName}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            <div className="relative">
+              {/* Desktop Layout: Side timeline */}
+              <div className="hidden md:flex items-start gap-6">
+                <div className="flex items-center space-x-3 min-w-0 flex-shrink-0">
+                  <div
+                    className="w-3 h-3 rounded-full"
+                    style={{ backgroundColor: "var(--color-accent)" }}
+                  ></div>
+                  <div
+                    className="text-lg font-semibold min-w-max"
+                    style={{ color: "var(--color-text-primary)" }}
+                  >
+                    {timeSlot}
+                  </div>
+                </div>
+
+                <div className="flex-1 space-y-4">
+                  {groupedItems[timeSlot].map((item) => (
+                    <UnifiedCard
+                      key={item.id}
+                      item={item}
+                      variant="timeline"
+                      showDescription={true}
+                      showTags={true}
+                    />
+                  ))}
                 </div>
               </div>
 
-              <div className="flex-1 space-y-4">
-                {groupedItems[timeSlot].map((item) => (
-                  <UnifiedCard 
-                    key={item.id} 
-                    item={item} 
-                    variant="timeline"
-                    showDescription={true}
-                    showTags={true}
-                  />
-                ))}
-              </div>
-            </div>
+              {/* Mobile Layout: Full-width cards with time header */}
+              <div className="md:hidden space-y-6">
+                {/* Time header for mobile */}
+                <div className="flex items-center justify-center">
+                  <div
+                    className="px-4 py-2 rounded-full text-white font-semibold text-sm shadow-md"
+                    style={{ background: "var(--color-accent)" }}
+                  >
+                    {timeSlot}
+                  </div>
+                </div>
 
-            {/* Connection line to next time slot */}
-            {timeSlot !== timeSlots[timeSlots.length - 1] && (
-              <div
-                className="absolute left-1.5 top-8 bottom-0 w-0.5"
-                style={{ backgroundColor: "var(--color-border-secondary)" }}
-              ></div>
-            )}
+                {/* Full-width cards */}
+                <div className="space-y-4">
+                  {groupedItems[timeSlot].map((item) => (
+                    <UnifiedCard
+                      key={item.id}
+                      item={item}
+                      variant="timeline"
+                      showDescription={true}
+                      showTags={true}
+                    />
+                  ))}
+                </div>
+              </div>
+
+              {/* Desktop: Connection line to next time slot */}
+              {timeSlot !== timeSlots[timeSlots.length - 1] && (
+                <div
+                  className="hidden md:block absolute left-1.5 top-8 bottom-0 w-0.5"
+                  style={{ backgroundColor: "var(--color-border-secondary)" }}
+                ></div>
+              )}
+            </div>
           </div>
         ))}
       </div>

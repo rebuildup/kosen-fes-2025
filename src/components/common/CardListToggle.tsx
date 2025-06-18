@@ -25,7 +25,7 @@ const CardListToggle = ({ viewMode, setViewMode }: CardListToggleProps) => {
   ];
 
   return (
-    <div className="flex items-center gap-3">
+    <div className="flex items-center gap-2 flex-shrink-0">
       <span
         className="text-sm font-medium whitespace-nowrap"
         style={{ color: "var(--color-text-secondary)" }}

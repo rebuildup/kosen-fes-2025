@@ -96,6 +96,7 @@ export const enTranslations: Translations = {
   },
   events: {
     title: "Events",
+    description: "Discover exciting events happening throughout the festival",
     noEvents: "No events found",
     noEventsFound: "No events found",
     allDays: "All Days",
@@ -109,6 +110,7 @@ export const enTranslations: Translations = {
   },
   exhibits: {
     title: "Exhibits & Stalls",
+    description: "Explore fascinating exhibits and delicious food stalls",
     noExhibits: "No exhibits found",
     noStalls: "No stalls found",
     filters: {
@@ -320,6 +322,7 @@ export const jaTranslations: Translations = {
   },
   events: {
     title: "イベント",
+    description: "祭りで開催される魅力的なイベントを発見しよう",
     noEvents: "イベントが見つかりません",
     noEventsFound: "イベントが見つかりません",
     allDays: "すべての日",
@@ -333,6 +336,7 @@ export const jaTranslations: Translations = {
   },
   exhibits: {
     title: "展示・露店",
+    description: "魅力的な展示と美味しい屋台を探索しよう",
     noExhibits: "展示が見つかりません",
     noStalls: "露店が見つかりません",
     filters: {

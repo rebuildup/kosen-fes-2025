@@ -3,8 +3,8 @@ import { NavLink, Link } from "react-router-dom";
 import { createPortal } from "react-dom";
 import { useLanguage } from "../../context/LanguageContext";
 import { useBookmark } from "../../context/BookmarkContext";
-import ThemeToggle from "../common/ThemeToggle";
-import LanguageToggle from "../common/LanguageToggle";
+import ThemeToggleIcon from "../common/ThemeToggleIcon";
+import LanguageToggleIcon from "../common/LanguageToggleIcon";
 import { gsap } from "gsap";
 import { DURATION, EASE } from "../../utils/animations";
 import { HomeIcon } from "../icons/HomeIcon";
@@ -299,17 +299,21 @@ const Menu = ({ setMenuOpen, closeButtonRef }: MenuProps) => {
             <h3 className="mobile-menu-section-title">{t("settings.title")}</h3>
             <div className="mobile-menu-settings">
               <div className="mobile-menu-setting-item">
-                <span className="mobile-menu-setting-label">
-                  {t("settings.theme.title")}
-                </span>
-                <ThemeToggle />
+                <div className="flex items-center gap-3">
+                  <span className="mobile-menu-setting-label">
+                    {t("settings.theme.title")}
+                  </span>
+                </div>
+                <ThemeToggleIcon />
               </div>
 
               <div className="mobile-menu-setting-item">
-                <span className="mobile-menu-setting-label">
-                  {t("settings.language.title")}
-                </span>
-                <LanguageToggle />
+                <div className="flex items-center gap-3">
+                  <span className="mobile-menu-setting-label">
+                    {t("settings.language.title")}
+                  </span>
+                </div>
+                <LanguageToggleIcon />
               </div>
             </div>
           </div>

@@ -361,7 +361,7 @@ export const UnifiedCard = React.memo(
             />
 
             {/* Gradient Overlay */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
+            <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/10 to-transparent"></div>
           </div>
 
           {/* Content Overlay */}
@@ -375,7 +375,7 @@ export const UnifiedCard = React.memo(
 
               {/* Bookmark Button */}
               <button
-                className={`p-2 rounded-full transition-all duration-200 hover:scale-110 ${
+                className={`w-10 h-10 flex items-center justify-center rounded-full transition-all duration-200 hover:scale-110 ${
                   isBookmarked(item.id)
                     ? "bg-yellow-500 text-white"
                     : "bg-white/20 backdrop-blur-sm text-white hover:bg-white/30"
@@ -412,7 +412,7 @@ export const UnifiedCard = React.memo(
             </div>
 
             {/* Hover overlay with detailed information */}
-            <div className="absolute inset-0 p-6 flex flex-col justify-end bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+            <div className="absolute inset-0 p-6 flex flex-col justify-end bg-gradient-to-t from-black/50 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
               <div className="space-y-3">
                 {/* Title */}
                 <h2 className="text-xl font-bold leading-tight line-clamp-2">
@@ -627,7 +627,7 @@ export const UnifiedCard = React.memo(
           {/* Bookmark Button */}
           <button
             onClick={handleBookmarkClick}
-            className={`absolute top-2 right-2 p-1.5 rounded-full transition-all duration-200 ${
+            className={`absolute top-2 right-2 w-8 h-8 flex items-center justify-center rounded-full transition-all duration-200 ${
               isBookmarked(item.id)
                 ? "bg-yellow-500 text-white"
                 : "bg-white/20 backdrop-blur-sm text-white hover:bg-white/30"
@@ -796,7 +796,7 @@ export const UnifiedCard = React.memo(
           {/* Bookmark Button - Top Right */}
           <button
             onClick={handleBookmarkClick}
-            className={`absolute top-2 right-2 p-1.5 rounded-full transition-all duration-200 backdrop-blur-md border border-white/20 pointer-events-auto z-10 ${
+            className={`absolute top-2 right-2 w-8 h-8 flex items-center justify-center rounded-full transition-all duration-200 backdrop-blur-md border border-white/20 pointer-events-auto z-10 ${
               isBookmarked(item.id)
                 ? "bg-yellow-500/90 text-white"
                 : "bg-white/20 text-white hover:bg-white/30"

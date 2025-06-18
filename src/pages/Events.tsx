@@ -73,21 +73,21 @@ const Events = () => {
       {/* Main Content */}
       <section className="section bg-[var(--bg-primary)]">
         <div className="max-w-7xl mx-auto">
-          <div className="mb-8">
-            {/* Filter Controls */}
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+          <div className="space-y-6">
+            {/* Filter Controls - Day selection and View mode in one row */}
+            <div className="flex flex-row justify-between items-center gap-2">
               <TabButtons
                 options={dateOptions}
                 activeValue={dateFilter}
                 onChange={(value) => setDateFilter(value as typeof dateFilter)}
-                className="rounded-lg overflow-hidden shadow-sm"
+                className="rounded-lg overflow-hidden shadow-sm flex-shrink-0"
               />
 
-              <CardListToggle viewMode={viewMode} setViewMode={setViewMode} />
+              <div className="flex items-center justify-end flex-shrink-0">
+                <CardListToggle viewMode={viewMode} setViewMode={setViewMode} />
+              </div>
             </div>
-          </div>
 
-          <div className="space-y-6">
             {/* Tag Filtering */}
             <TagFilter onFilter={() => {}} compact={true} />
             <SelectedTags />

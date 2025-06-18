@@ -176,7 +176,6 @@ const Home = () => {
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center justify-between mb-8">
             <h2 className="section-title flex items-center gap-3 text-[var(--text-primary)]">
-              <span className="text-3xl">🎭</span>
               {t("home.events")}
             </h2>
             <PillButton to="/events" variant="secondary">
@@ -197,7 +196,6 @@ const Home = () => {
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center justify-between mb-8">
             <h2 className="section-title flex items-center gap-3 text-[var(--text-primary)]">
-              <span className="text-3xl">🎨</span>
               {t("home.exhibits")}
             </h2>
             <PillButton to="/exhibits" variant="secondary">
@@ -218,7 +216,6 @@ const Home = () => {
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center justify-between mb-8">
             <h2 className="section-title flex items-center gap-3 text-[var(--text-primary)]">
-              <span className="text-3xl">🍜</span>
               {t("home.stalls")}
             </h2>
             <PillButton to="/stalls" variant="secondary">
@@ -226,9 +223,15 @@ const Home = () => {
             </PillButton>
           </div>
 
-          <div className="grid grid-cols-1 max-w-2xl mx-auto">
+          <div className="space-y-4 max-w-5xl mx-auto">
             {featuredStalls.map((stall) => (
-              <UnifiedCard key={stall.id} item={stall} variant="featured" />
+              <UnifiedCard
+                key={stall.id}
+                item={stall}
+                variant="timeline"
+                showDescription={true}
+                showTags={true}
+              />
             ))}
           </div>
         </div>
