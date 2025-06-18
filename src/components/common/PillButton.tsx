@@ -39,27 +39,27 @@ const PillButton = ({
     group shadow-md hover:shadow-lg ${sizeClasses[size]} ${className}
   `;
 
-  // Variant styles with gradient effects
+  // Variant styles with glass effects
   const getVariantClasses = () => {
     switch (variant) {
       case "primary":
         return `
-          text-white border-0 shadow-lg
+          text-white border-0 shadow-lg glass-bold
           bg-gradient-to-r from-[var(--accent-purple)] via-[var(--accent-pink)] to-[var(--accent-orange)]
           hover:from-[var(--accent-pink)] hover:via-[var(--accent-red)] hover:to-[var(--accent-yellow)]
           focus:ring-[var(--primary-color)]
         `;
       case "secondary":
         return `
-          bg-[var(--bg-secondary)] text-[var(--text-primary)] 
+          glass-button glass-interactive text-[var(--text-primary)] 
           border border-[var(--border-color)]
-          hover:bg-[var(--primary-color)] hover:text-white hover:border-[var(--primary-color)]
+          hover:text-[var(--primary-color)] hover:border-[var(--primary-color)]
           focus:ring-[var(--primary-color)]
         `;
       case "accent":
         return `
-          bg-[var(--success-color)] text-white border-0
-          hover:bg-[var(--accent-yellow)] hover:text-[var(--text-primary)]
+          glass-effect text-[var(--success-color)] border border-[var(--success-color)]
+          hover:bg-[var(--success-color)] hover:text-white
           focus:ring-[var(--success-color)]
         `;
       default:

@@ -51,3 +51,4 @@ export { XIcon } from "./XIcon";
 export { SettingsIcon } from "./SettingsIcon";
 export { InfoIcon } from "./InfoIcon";
 export { JPIcon, ENIcon } from "./LanguageIcon";
+export { TrashIcon } from "./TrashIcon";

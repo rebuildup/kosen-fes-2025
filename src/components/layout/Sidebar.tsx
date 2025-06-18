@@ -30,7 +30,7 @@ const Sidebar = () => {
   };
 
   return (
-    <aside className="sticky top-16 h-[calc(100vh-4rem)] w-64 xl:w-64 lg:w-16 flex-shrink-0 transition-all duration-300 z-40 bg-[var(--bg-secondary)] border-r border-[var(--border-color)] shadow-sm">
+    <aside className="sticky top-16 h-[calc(100vh-4rem)] w-64 xl:w-64 lg:w-16 flex-shrink-0 transition-all duration-300 z-40 glass-subtle border-r border-[var(--border-color)]">
       <div className="h-full overflow-y-auto p-6 lg:p-3">
         {/* Quick Links */}
         <div className="mb-6">
@@ -113,8 +113,8 @@ const Sidebar = () => {
                   p-2 rounded-lg transition-all duration-200 flex items-center justify-center
                   ${
                     expanded === "settings"
-                      ? "bg-[var(--instagram-gradient-subtle)] text-[var(--primary-color)] shadow-sm"
-                      : "bg-[var(--bg-primary)] text-[var(--text-primary)] hover:bg-[var(--bg-tertiary)] hover:text-[var(--primary-color)]"
+                      ? "glass-bold text-[var(--primary-color)] shadow-sm"
+                      : "glass-button glass-interactive text-[var(--text-primary)] hover:text-[var(--primary-color)]"
                   }
                 `}
                 title={t("settings.title")}
@@ -124,7 +124,7 @@ const Sidebar = () => {
             </div>
 
             {expanded === "settings" && (
-              <div className="space-y-3 p-3 bg-[var(--bg-primary)] rounded-lg border border-[var(--border-color)]">
+              <div className="space-y-3 p-3 glass-card rounded-lg border border-[var(--border-color)]">
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-medium text-[var(--text-secondary)]">
                     {t("settings.theme.title")}:
@@ -146,22 +146,22 @@ const Sidebar = () => {
           <div className="hidden lg:block xl:hidden space-y-2">
             {/* Theme toggle button */}
             <div className="relative group">
-              <div className="p-3 rounded-lg transition-all duration-200 flex items-center justify-center bg-[var(--bg-primary)] hover:bg-[var(--bg-tertiary)]">
+              <div className="p-3 rounded-lg transition-all duration-200 flex items-center justify-center glass-button glass-interactive">
                 <ThemeToggleIcon />
               </div>
               {/* Tooltip */}
-              <div className="absolute left-full ml-2 top-1/2 transform -translate-y-1/2 bg-[var(--bg-primary)] text-[var(--text-primary)] px-2 py-1 rounded-md text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50 border border-[var(--border-color)] shadow-lg">
+              <div className="absolute left-full ml-2 top-1/2 transform -translate-y-1/2 glass-effect text-[var(--text-primary)] px-2 py-1 rounded-md text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50 shadow-lg">
                 {t("settings.theme.title")}
               </div>
             </div>
 
             {/* Language toggle button */}
             <div className="relative group">
-              <div className="p-3 rounded-lg transition-all duration-200 flex items-center justify-center bg-[var(--bg-primary)] hover:bg-[var(--bg-tertiary)]">
+              <div className="p-3 rounded-lg transition-all duration-200 flex items-center justify-center glass-button glass-interactive">
                 <LanguageToggleIcon />
               </div>
               {/* Tooltip */}
-              <div className="absolute left-full ml-2 top-1/2 transform -translate-y-1/2 bg-[var(--bg-primary)] text-[var(--text-primary)] px-2 py-1 rounded-md text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50 border border-[var(--border-color)] shadow-lg">
+              <div className="absolute left-full ml-2 top-1/2 transform -translate-y-1/2 glass-effect text-[var(--text-primary)] px-2 py-1 rounded-md text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50 shadow-lg">
                 {t("settings.language.title")}
               </div>
             </div>
@@ -170,13 +170,13 @@ const Sidebar = () => {
             <div className="relative group">
               <button
                 onClick={() => toggleSection("settings")}
-                className="w-full p-3 rounded-lg transition-all duration-200 flex items-center justify-center bg-[var(--bg-primary)] hover:bg-[var(--bg-tertiary)] hover:text-[var(--primary-color)]"
+                className="w-full p-3 rounded-lg transition-all duration-200 flex items-center justify-center glass-button glass-interactive hover:text-[var(--primary-color)]"
                 title={t("settings.title")}
               >
                 <SettingsIcon size={18} />
               </button>
               {/* Tooltip */}
-              <div className="absolute left-full ml-2 top-1/2 transform -translate-y-1/2 bg-[var(--bg-primary)] text-[var(--text-primary)] px-2 py-1 rounded-md text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50 border border-[var(--border-color)] shadow-lg">
+              <div className="absolute left-full ml-2 top-1/2 transform -translate-y-1/2 glass-effect text-[var(--text-primary)] px-2 py-1 rounded-md text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50 shadow-lg">
                 {t("settings.title")}
               </div>
             </div>
@@ -197,8 +197,8 @@ const Sidebar = () => {
                   p-2 rounded-lg transition-all duration-200 flex items-center justify-center
                   ${
                     expanded === "info"
-                      ? "bg-[var(--instagram-gradient-subtle)] text-[var(--primary-color)] shadow-sm"
-                      : "bg-[var(--bg-primary)] text-[var(--text-primary)] hover:bg-[var(--bg-tertiary)] hover:text-[var(--primary-color)]"
+                      ? "glass-bold text-[var(--primary-color)] shadow-sm"
+                      : "glass-button glass-interactive text-[var(--text-primary)] hover:text-[var(--primary-color)]"
                   }
                 `}
                 title={t("info.title")}
@@ -208,7 +208,7 @@ const Sidebar = () => {
             </div>
 
             {expanded === "info" && (
-              <div className="space-y-3 p-3 bg-[var(--bg-primary)] rounded-lg border border-[var(--border-color)]">
+              <div className="space-y-3 p-3 glass-card rounded-lg border border-[var(--border-color)]">
                 <div className="space-y-2">
                   <div className="text-sm">
                     <span className="font-semibold text-[var(--text-primary)]">
@@ -259,13 +259,13 @@ const Sidebar = () => {
             <div className="relative group">
               <button
                 onClick={() => toggleSection("info")}
-                className="w-full p-3 rounded-lg transition-all duration-200 flex items-center justify-center bg-[var(--bg-primary)] hover:bg-[var(--bg-tertiary)] hover:text-[var(--primary-color)]"
+                className="w-full p-3 rounded-lg transition-all duration-200 flex items-center justify-center glass-button glass-interactive hover:text-[var(--primary-color)]"
                 title={t("info.title")}
               >
                 <InfoIcon size={18} />
               </button>
               {/* Tooltip */}
-              <div className="absolute left-full ml-2 top-1/2 transform -translate-y-1/2 bg-[var(--bg-primary)] text-[var(--text-primary)] px-2 py-1 rounded-md text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50 border border-[var(--border-color)] shadow-lg">
+              <div className="absolute left-full ml-2 top-1/2 transform -translate-y-1/2 glass-effect text-[var(--text-primary)] px-2 py-1 rounded-md text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50 shadow-lg">
                 {t("info.title")}
               </div>
             </div>

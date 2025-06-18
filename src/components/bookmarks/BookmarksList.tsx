@@ -5,6 +5,7 @@ import { Item } from "../../types/common";
 import CardGrid from "../common/CardGrid";
 import CardListToggle from "../common/CardListToggle";
 import TabButtons from "../common/TabButtons";
+import { TrashIcon } from "../icons";
 
 const BookmarksList = () => {
   const { bookmarkedItems, clearAllBookmarks } = useBookmark();
@@ -106,10 +107,10 @@ const BookmarksList = () => {
 
           <button
             onClick={clearAllBookmarks}
-            className="px-4 py-2 bg-gradient-to-r from-red-500 to-pink-500 text-white rounded-lg font-medium transition-all duration-200 hover:from-red-600 hover:to-pink-600 hover:shadow-lg hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-red-500/20"
+            className="px-3 py-2 glass-button glass-interactive text-red-500 hover:text-red-600 rounded-lg font-medium transition-all duration-200 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-red-500/20"
+            title="すべて削除"
           >
-            <span className="mr-2">🗑️</span>
-            {t("actions.deleteAll")}
+            <TrashIcon size={20} />
           </button>
         </div>
       </div>
@@ -132,7 +133,7 @@ const BookmarksList = () => {
                 </h3>
                 <div className="flex-1 h-px bg-[var(--border-color)]"></div>
                 <span className="text-sm text-[var(--text-secondary)] bg-[var(--bg-secondary)] px-3 py-1 rounded-full">
-                  {groupedItems[date].length} {t("bookmarks.itemCount")}
+                  {groupedItems[date].length} 件
                 </span>
               </div>
 

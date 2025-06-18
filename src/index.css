@@ -1055,4 +1055,204 @@
     font-weight: 500;
     white-space: nowrap;
   }
+
+  /* ===============================================
+     GLASSMORPHISM EFFECTS
+     =============================================== */
+
+  /* 基本的なガラス効果 */
+  .glass-effect {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(16px) saturate(180%);
+    -webkit-backdrop-filter: blur(16px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.06),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  }
+
+  /* ダークモード用のガラス効果 */
+  :root[data-theme="dark"] .glass-effect {
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.18),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  }
+
+  /* システムダークモード対応 */
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme]) .glass-effect {
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.18),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    }
+  }
+
+  /* ガラス効果のバリエーション */
+  .glass-subtle {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(8px) saturate(150%);
+    -webkit-backdrop-filter: blur(8px) saturate(150%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.03),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  }
+
+  .glass-bold {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(24px) saturate(200%) brightness(110%);
+    -webkit-backdrop-filter: blur(24px) saturate(200%) brightness(110%);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 6px 20px 0 rgba(0, 0, 0, 0.08),
+      inset 0 2px 0 rgba(255, 255, 255, 0.3);
+  }
+
+  /* ダークモード用のバリエーション */
+  :root[data-theme="dark"] .glass-subtle {
+    background: rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.12),
+      inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  }
+
+  :root[data-theme="dark"] .glass-bold {
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 6px 20px 0 rgba(0, 0, 0, 0.25),
+      inset 0 2px 0 rgba(255, 255, 255, 0.15);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme]) .glass-subtle {
+      background: rgba(0, 0, 0, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.12),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    }
+
+    :root:not([data-theme]) .glass-bold {
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 6px 20px 0 rgba(0, 0, 0, 0.25),
+        inset 0 2px 0 rgba(255, 255, 255, 0.15);
+    }
+  }
+
+  /* ガラス効果にホバーアニメーション */
+  .glass-interactive {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+  }
+
+  .glass-interactive:hover {
+    backdrop-filter: blur(20px) saturate(200%) brightness(115%);
+    -webkit-backdrop-filter: blur(20px) saturate(200%) brightness(115%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px 0 rgba(0, 0, 0, 0.08),
+      inset 0 2px 0 rgba(255, 255, 255, 0.3);
+  }
+
+  /* ボタン専用のガラス効果 */
+  .glass-button {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(12px) saturate(160%);
+    -webkit-backdrop-filter: blur(12px) saturate(160%);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 0 3px 10px 0 rgba(0, 0, 0, 0.06),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .glass-button:hover {
+    backdrop-filter: blur(16px) saturate(180%) brightness(110%);
+    -webkit-backdrop-filter: blur(16px) saturate(180%) brightness(110%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 15px 0 rgba(0, 0, 0, 0.08),
+      inset 0 2px 0 rgba(255, 255, 255, 0.25);
+  }
+
+  /* ダークモード用のボタンガラス効果 */
+  :root[data-theme="dark"] .glass-button {
+    background: rgba(0, 0, 0, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 3px 10px 0 rgba(0, 0, 0, 0.15),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  }
+
+  :root[data-theme="dark"] .glass-button:hover {
+    box-shadow: 0 4px 15px 0 rgba(0, 0, 0, 0.2),
+      inset 0 2px 0 rgba(255, 255, 255, 0.15);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme]) .glass-button {
+      background: rgba(0, 0, 0, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 3px 10px 0 rgba(0, 0, 0, 0.15),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    }
+
+    :root:not([data-theme]) .glass-button:hover {
+      box-shadow: 0 4px 15px 0 rgba(0, 0, 0, 0.2),
+        inset 0 2px 0 rgba(255, 255, 255, 0.15);
+    }
+  }
+
+  /* カード専用のガラス効果 */
+  .glass-card {
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(20px) saturate(150%);
+    -webkit-backdrop-filter: blur(20px) saturate(150%);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 5px 18px 0 rgba(0, 0, 0, 0.05),
+      inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  }
+
+  /* タッチデバイス用の最適化 */
+  @media (hover: none) and (pointer: coarse) {
+    .glass-interactive:hover,
+    .glass-button:hover {
+      transform: none;
+    }
+  }
+
+  /* パフォーマンス最適化 */
+  .glass-effect,
+  .glass-subtle,
+  .glass-bold,
+  .glass-button,
+  .glass-card {
+    will-change: backdrop-filter;
+    contain: layout style paint;
+  }
+
+  /* レガシーブラウザ対応 */
+  @supports not (backdrop-filter: blur(1px)) {
+    .glass-effect,
+    .glass-subtle,
+    .glass-bold,
+    .glass-button,
+    .glass-card {
+      background: rgba(255, 255, 255, 0.9);
+      box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.06);
+    }
+
+    :root[data-theme="dark"] .glass-effect,
+    :root[data-theme="dark"] .glass-subtle,
+    :root[data-theme="dark"] .glass-bold,
+    :root[data-theme="dark"] .glass-button,
+    :root[data-theme="dark"] .glass-card {
+      background: rgba(0, 0, 0, 0.8);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme]) .glass-effect,
+      :root:not([data-theme]) .glass-subtle,
+      :root:not([data-theme]) .glass-bold,
+      :root:not([data-theme]) .glass-button,
+      :root:not([data-theme]) .glass-card {
+        background: rgba(0, 0, 0, 0.8);
+      }
+    }
+  }
 }

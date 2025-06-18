@@ -284,7 +284,7 @@ const Card = ({
   const cardContent = (
     <div
       ref={cardRef}
-      className="relative group cursor-pointer rounded-lg overflow-hidden aspect-[4/3] backdrop-blur-sm bg-white/5 border border-white/10"
+      className="relative group cursor-pointer rounded-lg overflow-hidden aspect-[4/3] glass-card glass-interactive"
     >
       {/* Background Image */}
       <img
@@ -300,17 +300,15 @@ const Card = ({
       {/* Glassmorphism overlay */}
       <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/10 to-transparent text-white">
         {/* Type Badge - Top Left */}
-        <div className="absolute top-2 left-2 bg-white/20 backdrop-blur-md rounded-full p-1.5 border border-white/20">
+        <div className="absolute top-2 left-2 glass-subtle rounded-full p-1.5">
           <ItemTypeIcon type={item.type} size="small" />
         </div>
 
         {/* Bookmark Button - Top Right */}
         <button
           onClick={handleBookmarkToggle}
-          className={`absolute top-2 right-2 p-1.5 rounded-full transition-all duration-200 backdrop-blur-md border border-white/20 pointer-events-auto z-10 ${
-            isBookmarked(item.id)
-              ? "bg-yellow-500/90 text-white"
-              : "bg-white/20 text-white hover:bg-white/30"
+          className={`absolute top-2 right-2 p-1.5 rounded-full transition-all duration-200 glass-button glass-interactive pointer-events-auto z-10 ${
+            isBookmarked(item.id) ? "bg-yellow-500/90 text-white" : "text-white"
           }`}
           aria-label={
             isBookmarked(item.id)
@@ -398,7 +396,7 @@ const Card = ({
                 />
               ))}
               {item.tags.length > 3 && (
-                <span className="px-2 py-1 bg-white/20 backdrop-blur-sm rounded-full text-xs border border-white/10">
+                <span className="px-2 py-1 glass-subtle rounded-full text-xs">
                   +{item.tags.length - 3}
                 </span>
               )}

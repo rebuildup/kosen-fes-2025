@@ -39,8 +39,8 @@ const Header = () => {
 
   return (
     <header
-      className={`header fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-[var(--bg-primary)]/95 backdrop-blur-md border-b border-[var(--border-color)] ${
-        scrolled ? "shadow-lg" : "shadow-sm"
+      className={`header fixed top-0 left-0 right-0 z-50 transition-all duration-700 ease-out glass-effect border-b border-[var(--border-color)] ${
+        scrolled ? "glass-bold" : "glass-subtle"
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -132,7 +132,7 @@ const Header = () => {
 
         {/* Mobile Navigation Menu */}
         <div className="md:hidden" id="mobile-menu">
-          <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 border-t border-[var(--border-color)] bg-[var(--bg-primary)]">
+          <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 border-t border-[var(--border-color)] glass-effect">
             {navigationItems.map((item) => {
               const IconComponent = item.icon;
               return (
