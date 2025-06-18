@@ -121,52 +121,39 @@ const Home = () => {
   return (
     <div className="min-h-screen bg-[var(--bg-primary)]">
       {/* Hero Section */}
-      <section className="relative overflow-hidden">
-        {/* Instagram風グラデーション背景 */}
-        <div
-          className="absolute inset-0"
-          style={{ background: "var(--instagram-gradient)" }}
-        ></div>
-        <div className="absolute inset-0 bg-black/20"></div>
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 lg:py-32">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <div className="text-white space-y-8">
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
-                {t("siteName")}
-              </h1>
-              <p className="text-xl md:text-2xl text-white/90 leading-relaxed">
-                {t("home.subtitle")}
-              </p>
-              <div className="flex items-center gap-3 text-lg bg-white/10 backdrop-blur-sm rounded-full px-6 py-3 w-fit border border-white/20">
-                <span className="text-2xl">📅</span>
-                <span className="font-medium">{t("home.dates")}</span>
-              </div>
-              <PillButton
-                to="/schedule"
-                variant="secondary"
-                size="lg"
-                className="bg-white hover:bg-gray-100 text-[var(--primary-color)] shadow-lg hover:shadow-xl transition-all duration-300"
-              >
-                {t("home.viewSchedule")}
-              </PillButton>
+      <section className="bg-[var(--bg-primary)] py-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* タイトルとサブタイトル */}
+          <div className="text-center mb-8">
+            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-[var(--text-primary)] mb-4">
+              {t("siteName")}
+            </h1>
+            <p className="text-lg md:text-xl text-[var(--text-secondary)] mb-6 max-w-3xl mx-auto">
+              {t("home.subtitle")}
+            </p>
+          </div>
+
+          {/* チケット画像 - 横幅いっぱい */}
+          <div className="ticket-preview mb-8">
+            <div className="max-w-5xl mx-auto">
+              <img
+                src="/assets/ticket.png"
+                alt="高専祭2025 チケット"
+                className="w-full h-auto"
+              />
             </div>
-            <div className="flex justify-center lg:justify-end">
-              <div className="relative">
-                <div className="w-64 h-64 md:w-80 md:h-80 bg-white/10 backdrop-blur-sm rounded-full flex items-center justify-center border border-white/20 shadow-2xl">
-                  <span className="text-8xl md:text-9xl font-bold text-white/90">
-                    祭
-                  </span>
-                </div>
-                <div
-                  className="absolute -top-4 -right-4 w-16 h-16 rounded-full animate-pulse shadow-lg"
-                  style={{ backgroundColor: "var(--accent-yellow)" }}
-                ></div>
-                <div
-                  className="absolute -bottom-8 -left-8 w-12 h-12 rounded-full animate-pulse delay-1000 shadow-lg"
-                  style={{ backgroundColor: "var(--accent-pink)" }}
-                ></div>
-              </div>
-            </div>
+          </div>
+
+          {/* アクションボタン */}
+          <div className="flex justify-center">
+            <PillButton
+              to="/schedule"
+              variant="secondary"
+              size="lg"
+              className="bg-[var(--bg-secondary)] hover:bg-[var(--bg-tertiary)] text-[var(--text-primary)] border border-[var(--border-color)] shadow-lg hover:shadow-xl transition-all duration-300"
+            >
+              {t("home.viewSchedule")}
+            </PillButton>
           </div>
         </div>
       </section>

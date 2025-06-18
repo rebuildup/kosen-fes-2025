@@ -423,51 +423,36 @@ const Detail = () => {
               </div>
             )}
 
-            {/* Location Map */}
-            {(item.location || item.coordinates) && (
-              <div
-                className="rounded-lg p-6 backdrop-blur-md bg-white/10 border border-white/20"
-                style={{ backgroundColor: "var(--color-bg-secondary)" }}
+            {/* Location Information */}
+            <div
+              className="p-6 rounded-lg"
+              style={{ backgroundColor: "var(--color-bg-secondary)" }}
+            >
+              <h3
+                className="text-xl font-semibold mb-4 flex items-center gap-2"
+                style={{ color: "var(--color-text-primary)" }}
               >
-                <h3
-                  className="text-lg font-semibold mb-4 flex items-center gap-2"
+                <span>📍</span>
+                {t("detail.location")}
+              </h3>
+              <div className="space-y-2">
+                <p
+                  className="text-lg"
                   style={{ color: "var(--color-text-primary)" }}
                 >
-                  <span>📍</span>
-                  場所: {item.location}
-                  {item.coordinates && (
-                    <span className="text-sm text-gray-500 ml-2">
-                      ({item.coordinates.x.toFixed(0)},{" "}
-                      {item.coordinates.y.toFixed(0)})
-                    </span>
-                  )}
-                </h3>
-                <div className="map-container h-64 rounded-lg overflow-hidden">
-                  <UnifiedMap
-                    mode="detail"
-                    highlightCoordinate={item.coordinates}
-                    highlightLocation={item.location}
-                    contentItems={
-                      item.coordinates
-                        ? [
-                            {
-                              id: item.id,
-                              title: item.title,
-                              type: item.type,
-                              coordinates: item.coordinates,
-                              isSelected: true,
-                              isHovered: false,
-                            },
-                          ]
-                        : []
-                    }
-                    height="100%"
-                    initialZoom={item.coordinates ? 2 : 1}
-                    showZoomControls={true}
-                  />
-                </div>
+                  {item.location}
+                </p>
+                {item.coordinates && (
+                  <p
+                    className="text-sm"
+                    style={{ color: "var(--color-text-secondary)" }}
+                  >
+                    座標: ({item.coordinates.x.toFixed(0)},{" "}
+                    {item.coordinates.y.toFixed(0)})
+                  </p>
+                )}
               </div>
-            )}
+            </div>
 
             <div
               className="p-6 rounded-lg"
@@ -499,20 +484,45 @@ const Detail = () => {
               </div>
             )}
 
-            <div
-              className="p-6 rounded-lg"
-              style={{ backgroundColor: "var(--color-bg-secondary)" }}
-            >
-              <h3
-                className="text-xl font-semibold mb-4"
-                style={{ color: "var(--color-text-primary)" }}
+            {/* Campus Map */}
+            {(item.location || item.coordinates) && (
+              <div
+                className="rounded-lg p-6 backdrop-blur-md bg-white/10 border border-white/20"
+                style={{ backgroundColor: "var(--color-bg-secondary)" }}
               >
-                {t("map.title")}
-              </h3>
-              <p style={{ color: "var(--color-text-secondary)" }}>
-                {item.location}
-              </p>
-            </div>
+                <h3
+                  className="text-xl font-semibold mb-4 flex items-center gap-2"
+                  style={{ color: "var(--color-text-primary)" }}
+                >
+                  <span>🗺️</span>
+                  {t("map.title")}
+                </h3>
+                <div className="map-container h-64 rounded-lg overflow-hidden">
+                  <UnifiedMap
+                    mode="detail"
+                    highlightCoordinate={item.coordinates}
+                    highlightLocation={item.location}
+                    contentItems={
+                      item.coordinates
+                        ? [
+                            {
+                              id: item.id,
+                              title: item.title,
+                              type: item.type,
+                              coordinates: item.coordinates,
+                              isSelected: true,
+                              isHovered: false,
+                            },
+                          ]
+                        : []
+                    }
+                    height="100%"
+                    initialZoom={item.coordinates ? 2 : 1}
+                    showZoomControls={true}
+                  />
+                </div>
+              </div>
+            )}
 
             {/* Related Items */}
             {relatedItems.length > 0 && (

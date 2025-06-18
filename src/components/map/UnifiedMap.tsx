@@ -1,10 +1,9 @@
-import { useRef, useEffect, useState, useCallback, useMemo } from "react";
+import { useRef, useEffect, useState, useCallback } from "react";
 import { useMapZoomPan } from "../../hooks/useMapZoomPan";
 import {
   CAMPUS_MAP_BOUNDS,
   getBuildingCoordinates,
 } from "../../data/buildings";
-import { getLocationCoordinates } from "../../data/locationCoordinates";
 import ZoomControls from "./ZoomControls";
 
 interface Coordinate {
@@ -23,7 +22,7 @@ interface LocationMarker {
 interface ContentItem {
   id: string;
   title: string;
-  type: "event" | "exhibit" | "stall" | "sponsor";
+  type: string;
   coordinates: Coordinate;
   isSelected?: boolean;
   isHovered?: boolean;
@@ -74,15 +73,15 @@ interface UnifiedMapProps {
 
 const UnifiedMap = ({
   mode = "display",
-  markers = [],
-  locations = [],
+  markers: _markers = [],
+  locations: _locations = [],
   hoveredLocation,
   selectedLocation,
-  onLocationHover,
-  onLocationSelect,
+  onLocationHover: _onLocationHover,
+  onLocationSelect: _onLocationSelect,
   contentItems = [],
-  onContentItemHover,
-  onContentItemSelect,
+  onContentItemHover: _onContentItemHover,
+  onContentItemSelect: _onContentItemSelect,
   onCoordinateSelect,
   highlightLocation: _highlightLocation,
   highlightCoordinate,
@@ -100,13 +99,21 @@ const UnifiedMap = ({
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const overlayRef = useRef<SVGSVGElement>(null);
   const [svgContent, setSvgContent] = useState<string>("");
-  const [isDragging, setIsDragging] = useState(false);
   const [currentScale, setCurrentScale] = useState(initialZoom);
+
+  // 入力状態の管理
+  const [isDragging, setIsDragging] = useState(false);
+  const [isTouch, setIsTouch] = useState(false);
+  const [lastTouchDistance, setLastTouchDistance] = useState<number | null>(
+    null
+  );
+  const [lastTouchCenter, setLastTouchCenter] = useState<Coordinate | null>(
+    null
+  );
 
   // Initialize zoom/pan functionality
   const {
     svgRef,
-    zoomPan: _,
     zoomIn,
     zoomOut,
     zoomInToCoordinate,
@@ -115,6 +122,7 @@ const UnifiedMap = ({
     zoomToLocation,
     screenToViewBox,
     pan,
+    zoomAtPoint,
   } = useMapZoomPan({
     minScale: minZoom,
     maxScale: maxZoom,
@@ -127,29 +135,6 @@ const UnifiedMap = ({
       setCurrentScale(scale);
     }, []),
   });
-
-  // 安定した関数参照を作成
-  const screenToViewBoxRef = useRef(screenToViewBox);
-  const zoomInToCoordinateRef = useRef(zoomInToCoordinate);
-  const zoomOutFromCoordinateRef = useRef(zoomOutFromCoordinate);
-  const panRef = useRef(pan);
-
-  // 関数参照を最新に保つ
-  useEffect(() => {
-    screenToViewBoxRef.current = screenToViewBox;
-    zoomInToCoordinateRef.current = zoomInToCoordinate;
-    zoomOutFromCoordinateRef.current = zoomOutFromCoordinate;
-    panRef.current = pan;
-  });
-
-  // Coordinate-based zoom functions that maintain center coordinate
-  const handleZoomIn = useCallback(() => {
-    zoomIn();
-  }, [zoomIn]);
-
-  const handleZoomOut = useCallback(() => {
-    zoomOut();
-  }, [zoomOut]);
 
   // Load SVG content dynamically
   useEffect(() => {
@@ -166,160 +151,243 @@ const UnifiedMap = ({
     loadSvgContent();
   }, []);
 
-  // Handle mouse interactions (wheel, drag) natively
-  useEffect(() => {
-    const container = mapContainerRef.current;
-
-    console.log(
-      "UseEffect triggered - allowInteraction:",
-      allowInteraction,
-      "container:",
-      container
+  // ユーティリティ関数
+  const getTouchDistance = useCallback((touches: TouchList) => {
+    if (touches.length < 2) return null;
+    const touch1 = touches[0];
+    const touch2 = touches[1];
+    return Math.sqrt(
+      Math.pow(touch2.clientX - touch1.clientX, 2) +
+        Math.pow(touch2.clientY - touch1.clientY, 2)
     );
+  }, []);
 
-    if (!container || !allowInteraction) {
-      console.log("Early return - no container or interaction disabled");
-      return;
-    }
+  const getTouchCenter = useCallback((touches: TouchList) => {
+    if (touches.length < 2) return null;
+    const touch1 = touches[0];
+    const touch2 = touches[1];
+    return {
+      x: (touch1.clientX + touch2.clientX) / 2,
+      y: (touch1.clientY + touch2.clientY) / 2,
+    };
+  }, []);
 
-    let isDragActive = false;
-    let lastMousePos = { x: 0, y: 0 };
-    let dragMoved = false;
+  // マウスイベントハンドラー
+  const handleWheel = useCallback(
+    (e: WheelEvent) => {
+      if (!allowInteraction || !mapContainerRef.current) return;
 
-    // Handle wheel events for zooming
-    const handleWheelEvent = (e: WheelEvent) => {
       e.preventDefault();
       e.stopPropagation();
 
-      console.log("Wheel event detected:", e.deltaY); // デバッグ用
-
-      const cursorWorldPos = screenToViewBoxRef.current(e.clientX, e.clientY);
+      const worldPos = screenToViewBox(e.clientX, e.clientY);
 
       if (e.deltaY < 0) {
-        console.log("Zoom in"); // デバッグ用
-        zoomInToCoordinateRef.current(cursorWorldPos);
+        zoomInToCoordinate(worldPos);
       } else {
-        console.log("Zoom out"); // デバッグ用
-        zoomOutFromCoordinateRef.current(cursorWorldPos);
+        zoomOutFromCoordinate(worldPos);
       }
-    };
+    },
+    [
+      allowInteraction,
+      screenToViewBox,
+      zoomInToCoordinate,
+      zoomOutFromCoordinate,
+    ]
+  );
 
-    // Handle mouse down for drag start
-    const handleMouseDown = (e: MouseEvent) => {
-      if (e.button !== 0) return;
+  const handleMouseDown = useCallback(
+    (e: MouseEvent) => {
+      if (!allowInteraction || e.button !== 0) return;
 
-      console.log("Mouse down - starting drag"); // デバッグ用
+      setIsDragging(true);
+      setIsTouch(false);
 
-      isDragActive = true;
-      dragMoved = false;
-      lastMousePos = { x: e.clientX, y: e.clientY };
-
-      // CSSクラスでカーソル制御
-      container.classList.add("dragging");
-      document.body.style.userSelect = "none";
+      if (mapContainerRef.current) {
+        mapContainerRef.current.style.cursor = "grabbing";
+      }
 
       e.preventDefault();
-      e.stopPropagation();
-    };
+    },
+    [allowInteraction]
+  );
 
-    // Handle mouse move for dragging
-    const handleMouseMove = (e: MouseEvent) => {
-      if (!isDragActive) return;
-
-      e.preventDefault();
-      e.stopPropagation();
-
-      const deltaX = e.clientX - lastMousePos.x;
-      const deltaY = e.clientY - lastMousePos.y;
-
-      console.log("Mouse move delta:", deltaX, deltaY); // デバッグ用
-
-      // 小さな移動でも確実に反応
-      if (Math.abs(deltaX) > 0 || Math.abs(deltaY) > 0) {
-        panRef.current(deltaX, deltaY);
-        lastMousePos = { x: e.clientX, y: e.clientY };
-        dragMoved = true;
-      }
-    };
-
-    // Handle mouse up to end drag
-    const handleMouseUp = (e: MouseEvent) => {
-      if (!isDragActive) return;
-
-      console.log("Mouse up - ending drag"); // デバッグ用
-
-      isDragActive = false;
-
-      // CSSクラスでカーソル復元
-      container.classList.remove("dragging");
-      document.body.style.userSelect = "";
-
-      const wasClick = !dragMoved;
-      setIsDragging(!wasClick);
-
-      setTimeout(() => {
-        setIsDragging(false);
-      }, 100);
+  const handleMouseMove = useCallback(
+    (e: MouseEvent) => {
+      if (!isDragging || isTouch) return;
 
       e.preventDefault();
-      e.stopPropagation();
-    };
+      pan(e.movementX, e.movementY);
+    },
+    [isDragging, isTouch, pan]
+  );
 
-    // Handle mouse leave to cancel drag
-    const handleMouseLeave = () => {
-      if (isDragActive) {
-        console.log("Mouse leave - canceling drag"); // デバッグ用
-        isDragActive = false;
-        container.classList.remove("dragging");
-        document.body.style.userSelect = "";
-        setIsDragging(false);
+  const handleMouseUp = useCallback(() => {
+    setIsDragging(false);
+
+    if (mapContainerRef.current) {
+      mapContainerRef.current.style.cursor = "grab";
+    }
+  }, []);
+
+  // タッチイベントハンドラー
+  const handleTouchStart = useCallback(
+    (e: TouchEvent) => {
+      if (!allowInteraction) return;
+
+      setIsTouch(true);
+      e.preventDefault();
+
+      if (e.touches.length === 2) {
+        // ピンチズーム開始
+        const distance = getTouchDistance(e.touches);
+        const center = getTouchCenter(e.touches);
+        setLastTouchDistance(distance);
+        setLastTouchCenter(center);
+      } else if (e.touches.length === 1) {
+        // ドラッグ開始
+        setIsDragging(true);
       }
-    };
+    },
+    [allowInteraction, getTouchDistance, getTouchCenter]
+  );
 
-    // Add event listeners - より確実なイベント捕捉
-    console.log("Adding event listeners to container:", container);
+  const handleTouchMove = useCallback(
+    (e: TouchEvent) => {
+      if (!allowInteraction || !isTouch) return;
 
-    container.addEventListener("wheel", handleWheelEvent, {
-      passive: false,
-      capture: true,
-    });
+      e.preventDefault();
+
+      if (e.touches.length === 2 && lastTouchDistance && lastTouchCenter) {
+        // ピンチズーム
+        const currentDistance = getTouchDistance(e.touches);
+        const currentCenter = getTouchCenter(e.touches);
+
+        if (currentDistance && currentCenter) {
+          const scale = currentDistance / lastTouchDistance;
+          const worldCenter = screenToViewBox(currentCenter.x, currentCenter.y);
+
+          // ズーム実行
+          zoomAtPoint(worldCenter, currentScale * scale, false);
+
+          // パン実行（中心点の移動）
+          const deltaX = currentCenter.x - lastTouchCenter.x;
+          const deltaY = currentCenter.y - lastTouchCenter.y;
+          pan(deltaX, deltaY);
+
+          setLastTouchDistance(currentDistance);
+          setLastTouchCenter(currentCenter);
+        }
+      } else if (e.touches.length === 1 && isDragging) {
+        // シングルタッチドラッグ
+        const touch = e.touches[0];
+        const movement = {
+          x: touch.clientX - (lastTouchCenter?.x || touch.clientX),
+          y: touch.clientY - (lastTouchCenter?.y || touch.clientY),
+        };
+
+        pan(movement.x, movement.y);
+        setLastTouchCenter({ x: touch.clientX, y: touch.clientY });
+      }
+    },
+    [
+      allowInteraction,
+      isTouch,
+      lastTouchDistance,
+      lastTouchCenter,
+      isDragging,
+      getTouchDistance,
+      getTouchCenter,
+      screenToViewBox,
+      zoomAtPoint,
+      currentScale,
+      pan,
+    ]
+  );
+
+  const handleTouchEnd = useCallback(() => {
+    setIsDragging(false);
+    setLastTouchDistance(null);
+    setLastTouchCenter(null);
+  }, []);
+
+  // イベントリスナーの設定
+  useEffect(() => {
+    const container = mapContainerRef.current;
+    if (!container || !allowInteraction) return;
+
+    // マウスイベント
+    container.addEventListener("wheel", handleWheel, { passive: false });
     container.addEventListener("mousedown", handleMouseDown, {
       passive: false,
-      capture: true,
     });
-    document.addEventListener("mousemove", handleMouseMove, {
-      passive: false,
-      capture: true,
-    });
-    document.addEventListener("mouseup", handleMouseUp, {
-      passive: false,
-      capture: true,
-    });
-    container.addEventListener("mouseleave", handleMouseLeave, {
-      passive: false,
-    });
+    document.addEventListener("mousemove", handleMouseMove, { passive: false });
+    document.addEventListener("mouseup", handleMouseUp, { passive: false });
 
-    console.log("Event listeners attached successfully"); // デバッグ用
+    // タッチイベント
+    container.addEventListener("touchstart", handleTouchStart, {
+      passive: false,
+    });
+    container.addEventListener("touchmove", handleTouchMove, {
+      passive: false,
+    });
+    container.addEventListener("touchend", handleTouchEnd, { passive: false });
 
     return () => {
-      console.log("Cleaning up event listeners"); // デバッグ用
-      container.removeEventListener("wheel", handleWheelEvent);
+      container.removeEventListener("wheel", handleWheel);
       container.removeEventListener("mousedown", handleMouseDown);
       document.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("mouseup", handleMouseUp);
-      container.removeEventListener("mouseleave", handleMouseLeave);
-
-      document.body.style.userSelect = "";
-      container.classList.remove("dragging");
+      container.removeEventListener("touchstart", handleTouchStart);
+      container.removeEventListener("touchmove", handleTouchMove);
+      container.removeEventListener("touchend", handleTouchEnd);
     };
-  }, [allowInteraction]); // 依存配列を最小限に
+  }, [
+    allowInteraction,
+    handleWheel,
+    handleMouseDown,
+    handleMouseMove,
+    handleMouseUp,
+    handleTouchStart,
+    handleTouchMove,
+    handleTouchEnd,
+  ]);
 
-  // Handle legacy location focus
+  // マップクリックハンドラー
+  const handleMapClick = useCallback(
+    (e: React.MouseEvent<SVGSVGElement>) => {
+      if (isDragging) return; // ドラッグ中はクリックを無視
+
+      if (allowCoordinateSelection && onCoordinateSelect) {
+        const worldPos = screenToViewBox(e.clientX, e.clientY);
+        onCoordinateSelect(worldPos);
+      }
+    },
+    [isDragging, allowCoordinateSelection, onCoordinateSelect, screenToViewBox]
+  );
+
+  // フォーカス関連のエフェクト
+  useEffect(() => {
+    if (highlightCoordinate) {
+      zoomToLocation(highlightCoordinate.x, highlightCoordinate.y, 4);
+    }
+  }, [highlightCoordinate, zoomToLocation]);
+
+  useEffect(() => {
+    if (selectedCoordinate) {
+      const timer = setTimeout(() => {
+        zoomToLocation(selectedCoordinate.x, selectedCoordinate.y, 3);
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [selectedCoordinate, zoomToLocation]);
+
+  // Legacy location support
   useEffect(() => {
     if (selectedLocation) {
       const coords = getBuildingCoordinates(selectedLocation);
       if (coords) {
-        zoomToLocation(coords.x, coords.y, 4, 1.5);
+        zoomToLocation(coords.x, coords.y, 4);
       }
     }
   }, [selectedLocation, zoomToLocation]);
@@ -328,111 +396,36 @@ const UnifiedMap = ({
     if (hoveredLocation && !selectedLocation) {
       const coords = getBuildingCoordinates(hoveredLocation);
       if (coords) {
-        zoomToLocation(coords.x, coords.y, 3, 1);
+        zoomToLocation(coords.x, coords.y, 3);
       }
     }
   }, [hoveredLocation, selectedLocation, zoomToLocation]);
 
-  // Handle highlight coordinate focus
-  useEffect(() => {
-    if (highlightCoordinate) {
-      zoomToLocation(highlightCoordinate.x, highlightCoordinate.y, 4, 1.5);
-    }
-  }, [highlightCoordinate, zoomToLocation]);
+  // マーカーサイズ計算
+  const getMarkerSize = useCallback(
+    (baseSize: number = 20) => {
+      const scaledSize = baseSize / currentScale;
+      return Math.max(8, Math.min(50, scaledSize));
+    },
+    [currentScale]
+  );
 
-  // Handle selected coordinate focus
-  useEffect(() => {
-    if (selectedCoordinate) {
-      const timer = setTimeout(() => {
-        zoomToLocation(selectedCoordinate.x, selectedCoordinate.y, 3, 1);
-      }, 100);
-      return () => clearTimeout(timer);
-    }
-  }, [selectedCoordinate, zoomToLocation]);
+  const getTextSize = useCallback(
+    (baseSize: number = 12) => {
+      const scaledSize = baseSize / currentScale;
+      return Math.max(6, Math.min(20, scaledSize));
+    },
+    [currentScale]
+  );
 
-  // Reset zoom when no location is selected or hovered (only in certain modes)
-  useEffect(() => {
-    // Only auto-reset in detail mode, not in display or interactive mode
-    if (mode !== "detail") return;
+  const getStrokeWidth = useCallback(
+    (baseWidth: number = 1) => {
+      return baseWidth / currentScale;
+    },
+    [currentScale]
+  );
 
-    if (
-      !hoveredLocation &&
-      !selectedLocation &&
-      !highlightCoordinate &&
-      !selectedCoordinate
-    ) {
-      resetZoom();
-    }
-  }, [
-    mode,
-    hoveredLocation,
-    selectedLocation,
-    highlightCoordinate,
-    selectedCoordinate,
-    resetZoom,
-  ]);
-
-  // Calculate marker size based on actual current scale
-  const getMarkerSize = (baseSize: number = 20) => {
-    const scaledSize = baseSize / currentScale;
-    return Math.max(8, Math.min(50, scaledSize));
-  };
-
-  // Calculate text size based on actual current scale
-  const getTextSize = (baseSize: number = 12) => {
-    const scaledSize = baseSize / currentScale;
-    return Math.max(6, Math.min(20, scaledSize));
-  };
-
-  // Calculate stroke width based on actual current scale
-  const getStrokeWidth = (baseWidth: number = 1) => {
-    return baseWidth / currentScale;
-  };
-
-  // Handle coordinate selection using new coordinate system
-  const handleMapClick = (event: React.MouseEvent<SVGSVGElement>) => {
-    if (!allowInteraction || isDragging) return;
-
-    // Only allow coordinate selection in interactive mode or when explicitly enabled
-    if (!allowCoordinateSelection && mode !== "interactive") return;
-
-    // Use the new screenToViewBox function for accurate coordinate conversion
-    const viewCoord = screenToViewBoxRef.current(event.clientX, event.clientY);
-    onCoordinateSelect?.(viewCoord);
-  };
-
-  // Get coordinates for legacy location support (now using centralized system)
-  const getLegacyLocationCoordinates = (
-    location: string
-  ): Coordinate | null => {
-    // Try new centralized system first
-    const newCoords = getLocationCoordinates(location);
-    if (newCoords) {
-      return newCoords;
-    }
-
-    // Fallback to building coordinates for backward compatibility
-    const buildingCoords = getBuildingCoordinates(location);
-    return buildingCoords || null;
-  };
-
-  // Combined markers from both legacy locations and new markers
-  const allMarkers = useMemo((): LocationMarker[] => {
-    const legacyMarkers: LocationMarker[] = locations.map((location) => ({
-      id: `legacy-${location}`,
-      location,
-      coordinates: getLegacyLocationCoordinates(location) || { x: 0, y: 0 },
-      isSelected: selectedLocation === location,
-      isHovered: hoveredLocation === location,
-    }));
-
-    return [...markers, ...legacyMarkers].filter(
-      (marker: LocationMarker) =>
-        marker.coordinates.x !== 0 || marker.coordinates.y !== 0
-    );
-  }, [markers, locations, selectedLocation, hoveredLocation]);
-
-  // Render the complete map with all overlays
+  // マップレンダリング
   const renderMapWithOverlays = () => {
     if (!svgContent) {
       return (
@@ -451,7 +444,9 @@ const UnifiedMap = ({
           className={`w-full h-full ${
             allowCoordinateSelection || mode === "interactive"
               ? "cursor-crosshair"
-              : ""
+              : isDragging
+              ? "cursor-grabbing"
+              : "cursor-grab"
           }`}
           onClick={handleMapClick}
           style={{ touchAction: "none" }}
@@ -463,175 +458,47 @@ const UnifiedMap = ({
           ref={overlayRef}
           viewBox={`0 0 ${CAMPUS_MAP_BOUNDS.width} ${CAMPUS_MAP_BOUNDS.height}`}
           className="absolute inset-0 w-full h-full pointer-events-none"
-          style={{ zIndex: 10 }}
+          style={{ touchAction: "none" }}
         >
-          <defs>
-            <style>
-              {`
-                .location-marker { cursor: pointer; pointer-events: all; }
-                .location-marker.hovered .location-dot { 
-                  r: ${getMarkerSize(25)}; 
-                  fill: var(--color-primary-light, #60a5fa);
-                }
-                .location-marker.selected .location-dot { 
-                  r: ${getMarkerSize(30)}; 
-                  fill: var(--color-primary, #3b82f6);
-                  filter: drop-shadow(0 0 10px var(--color-primary, #3b82f6));
-                }
-                .location-label {
-                  font-family: inherit;
-                  font-size: ${getTextSize(11)}px;
-                  font-weight: 600;
-                  pointer-events: none;
-                  text-shadow: 1px 1px 2px rgba(255,255,255,0.9);
-                  fill: #1f2937;
-                }
-                .content-marker { cursor: pointer; pointer-events: all; }
-                .content-marker.hovered .content-dot { 
-                  r: ${getMarkerSize(22)}; 
-                  opacity: 0.9;
-                }
-                .content-marker.selected .content-dot { 
-                  r: ${getMarkerSize(28)}; 
-                  filter: drop-shadow(0 0 8px currentColor);
-                }
-                .content-label {
-                  font-family: inherit;
-                  font-size: ${getTextSize(10)}px;
-                  font-weight: 500;
-                  pointer-events: none;
-                  text-shadow: 1px 1px 2px rgba(255,255,255,0.8);
-                  fill: #374151;
-                }
-                .coordinate-marker {
-                  fill: var(--color-accent, #f59e0b);
-                  filter: drop-shadow(0 0 12px var(--color-accent, #f59e0b));
-                }
-                .highlight-marker {
-                  fill: var(--color-secondary, #8b5cf6);
-                  filter: drop-shadow(0 0 15px var(--color-secondary, #8b5cf6));
-                }
-              `}
-            </style>
-          </defs>
-
-          {/* Location Markers */}
-          {allMarkers.map((marker) => (
-            <g
-              key={marker.id}
-              className={`location-marker ${
-                marker.isHovered ? "hovered" : ""
-              } ${marker.isSelected ? "selected" : ""}`}
-              onClick={() => onLocationSelect?.(marker.location)}
-              onMouseEnter={() => onLocationHover?.(marker.location)}
-              onMouseLeave={() => onLocationHover?.(null)}
-            >
+          {/* Content Items */}
+          {contentItems.map((item) => (
+            <g key={item.id} className="content-item">
               <circle
-                className="location-dot"
-                cx={marker.coordinates.x}
-                cy={marker.coordinates.y}
-                r={getMarkerSize(
-                  marker.isSelected ? 25 : marker.isHovered ? 22 : 18
-                )}
+                cx={item.coordinates.x}
+                cy={item.coordinates.y}
+                r={getMarkerSize(item.isSelected ? 26 : 20)}
                 fill={
-                  marker.isSelected
-                    ? "var(--color-primary, #3b82f6)"
-                    : marker.isHovered
-                    ? "var(--color-primary-light, #60a5fa)"
-                    : "var(--color-gray-600, #4b5563)"
+                  item.type === "event"
+                    ? "var(--color-accent, #405de6)"
+                    : item.type === "exhibit"
+                    ? "var(--color-secondary, #8b5cf6)"
+                    : item.type === "stall"
+                    ? "var(--color-warning, #fcaf45)"
+                    : "var(--color-text-secondary, #8e8e8e)"
                 }
                 stroke="white"
                 strokeWidth={getStrokeWidth(2)}
+                opacity={item.isHovered ? 1 : 0.8}
               />
               <text
-                className="location-label"
-                x={marker.coordinates.x}
-                y={marker.coordinates.y - getMarkerSize(25)}
+                x={item.coordinates.x}
+                y={item.coordinates.y - getMarkerSize(28)}
                 textAnchor="middle"
+                fontSize={getTextSize(10)}
+                fontWeight="bold"
+                fill="var(--color-text-primary, #262626)"
+                className="pointer-events-none"
               >
-                {marker.location}
+                {item.title.length > 10
+                  ? item.title.substring(0, 10) + "..."
+                  : item.title}
               </text>
             </g>
           ))}
 
-          {/* Content Item Markers */}
-          {contentItems.map((item) => {
-            const getItemColor = (type: string) => {
-              switch (type) {
-                case "event":
-                  return "#f97316"; // orange
-                case "exhibit":
-                  return "#06b6d4"; // cyan
-                case "stall":
-                  return "#3b82f6"; // blue
-                case "sponsor":
-                  return "#10b981"; // emerald
-                default:
-                  return "#6b7280"; // gray
-              }
-            };
-
-            const getItemIcon = (type: string) => {
-              switch (type) {
-                case "event":
-                  return "🎪";
-                case "exhibit":
-                  return "🔬";
-                case "stall":
-                  return "🍴";
-                case "sponsor":
-                  return "🏢";
-                default:
-                  return "📍";
-              }
-            };
-
-            return (
-              <g
-                key={item.id}
-                className={`content-marker ${item.isHovered ? "hovered" : ""} ${
-                  item.isSelected ? "selected" : ""
-                }`}
-                onClick={() => onContentItemSelect?.(item)}
-                onMouseEnter={() => onContentItemHover?.(item)}
-                onMouseLeave={() => onContentItemHover?.(null)}
-              >
-                <circle
-                  className="content-dot"
-                  cx={item.coordinates.x}
-                  cy={item.coordinates.y}
-                  r={getMarkerSize(
-                    item.isSelected ? 24 : item.isHovered ? 20 : 16
-                  )}
-                  fill={getItemColor(item.type)}
-                  stroke="white"
-                  strokeWidth={getStrokeWidth(2)}
-                />
-                <text
-                  x={item.coordinates.x}
-                  y={item.coordinates.y + getTextSize(4)}
-                  textAnchor="middle"
-                  fontSize={getTextSize(14)}
-                  fill="white"
-                  fontWeight="bold"
-                >
-                  {getItemIcon(item.type)}
-                </text>
-                <text
-                  className="content-label"
-                  x={item.coordinates.x}
-                  y={item.coordinates.y - getMarkerSize(22)}
-                  textAnchor="middle"
-                >
-                  {item.title}
-                </text>
-              </g>
-            );
-          })}
-
           {/* Highlight Coordinate Marker */}
           {highlightCoordinate && (
-            <g className="highlight-marker" pointerEvents="none">
+            <g className="highlight-marker">
               <circle
                 cx={highlightCoordinate.x}
                 cy={highlightCoordinate.y}
@@ -653,7 +520,7 @@ const UnifiedMap = ({
 
           {/* Selected Coordinate Marker */}
           {selectedCoordinate && (
-            <g className="coordinate-marker" pointerEvents="none">
+            <g className="coordinate-marker">
               <circle
                 cx={selectedCoordinate.x}
                 cy={selectedCoordinate.y}
@@ -683,64 +550,6 @@ const UnifiedMap = ({
               </text>
             </g>
           )}
-
-          {/* Development Guide: Center Coordinate Indicator */}
-          {process.env.NODE_ENV === "development" &&
-            (() => {
-              // Get the actual screen center coordinates using the current zoom/pan state
-              const actualCenterCoord = screenToViewBoxRef.current(
-                mapContainerRef.current?.offsetWidth
-                  ? mapContainerRef.current.offsetWidth / 2
-                  : 400,
-                mapContainerRef.current?.offsetHeight
-                  ? mapContainerRef.current.offsetHeight / 2
-                  : 300
-              );
-
-              return (
-                <g className="dev-center-guide" pointerEvents="none">
-                  {/* Center crosshair */}
-                  <line
-                    x1={actualCenterCoord.x - 20}
-                    y1={actualCenterCoord.y}
-                    x2={actualCenterCoord.x + 20}
-                    y2={actualCenterCoord.y}
-                    stroke="#ff0000"
-                    strokeWidth={getStrokeWidth(2)}
-                    opacity="0.7"
-                  />
-                  <line
-                    x1={actualCenterCoord.x}
-                    y1={actualCenterCoord.y - 20}
-                    x2={actualCenterCoord.x}
-                    y2={actualCenterCoord.y + 20}
-                    stroke="#ff0000"
-                    strokeWidth={getStrokeWidth(2)}
-                    opacity="0.7"
-                  />
-                  {/* Center coordinate display */}
-                  <rect
-                    x={actualCenterCoord.x + 25}
-                    y={actualCenterCoord.y - 15}
-                    width="120"
-                    height="30"
-                    fill="rgba(255, 0, 0, 0.8)"
-                    rx="5"
-                  />
-                  <text
-                    x={actualCenterCoord.x + 85}
-                    y={actualCenterCoord.y}
-                    textAnchor="middle"
-                    fontSize={getTextSize(10)}
-                    fontWeight="bold"
-                    fill="white"
-                  >
-                    CENTER: ({Math.round(actualCenterCoord.x)},{" "}
-                    {Math.round(actualCenterCoord.y)})
-                  </text>
-                </g>
-              );
-            })()}
         </svg>
       </div>
     );
@@ -753,14 +562,18 @@ const UnifiedMap = ({
       style={{
         height,
         touchAction: "none",
-        // cursor はJavaScriptで動的に制御するため設定しない
+        cursor: allowInteraction
+          ? isDragging
+            ? "grabbing"
+            : "grab"
+          : "default",
       }}
     >
       {/* Zoom Controls */}
       {showZoomControls && (
         <ZoomControls
-          onZoomIn={handleZoomIn}
-          onZoomOut={handleZoomOut}
+          onZoomIn={zoomIn}
+          onZoomOut={zoomOut}
           onReset={resetZoom}
           scale={currentScale}
           minScale={minZoom}

@@ -34,12 +34,15 @@ const Map = () => {
     Record<string, NonSponsorItem[]>
   >({});
 
-  // Get all unique locations
-  const allLocations = [
-    ...new Set(
-      [...events, ...exhibits, ...stalls].map((item) => item.location)
-    ),
-  ];
+  // Get all unique locations - memoize to prevent unnecessary re-renders
+  const allLocations = useMemo(
+    () => [
+      ...new Set(
+        [...events, ...exhibits, ...stalls].map((item) => item.location)
+      ),
+    ],
+    []
+  );
 
   // Group items by location
   useEffect(() => {

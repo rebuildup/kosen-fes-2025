@@ -17,7 +17,7 @@
     "navigation": "ナビゲーション",
     "settings": "設定",
     "information": "情報",
-    "festivalStats": "祭り統計"
+    "festivalStats": "イベント統計"
   },
   "settings": {
     "title": "設定",
@@ -58,7 +58,7 @@
   "home": {
     "title": "宇部高専祭 2025へようこそ",
     "subtitle": "注目のイベントや展示をチェック！",
-    "dates": "2025年6月15日（土）- 16日（日）",
+    "dates": "2025年11月8日(土)- 9日(日)",
     "featuredEvents": "注目イベント",
     "featuredExhibits": "注目展示",
     "popularTags": "人気のタグ",
@@ -113,7 +113,7 @@
   },
   "sponsors": {
     "title": "スポンサー",
-    "description": "宇部高専祭を支援してくださるスポンサーの皆様",
+    "description": "宇部高専祭を支援していただいたスポンサーの皆様",
     "noSponsors": "スポンサー情報がありません"
   },
   "detail": {
