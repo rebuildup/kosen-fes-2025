@@ -41,13 +41,13 @@ export const getItemOrganizationLabel = (
 export const getPlaceholderImage = (itemType: string): string => {
   switch (itemType) {
     case "event":
-      return "/images/placeholder-event.jpg";
+      return "./images/placeholder-event.jpg";
     case "exhibit":
-      return "/images/placeholder-exhibit.jpg";
+      return "./images/placeholder-exhibit.jpg";
     case "stall":
-      return "/images/placeholder-stall.jpg";
+      return "./images/placeholder-stall.jpg";
     default:
-      return "/images/placeholder.jpg";
+      return "./images/placeholder.jpg";
   }
 };
 

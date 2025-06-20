@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
 import { useLanguage } from "../../context/LanguageContext";
+import { useTheme } from "../../context/ThemeContext";
 import Logo from "../common/Logo";
 import { HomeIcon } from "../icons/HomeIcon";
 import { EventIcon } from "../icons/EventIcon";
@@ -10,6 +11,7 @@ import { MapIcon } from "../icons/MapIcon";
 
 const Header = () => {
   const { t } = useLanguage();
+  const { theme } = useTheme();
   const [scrolled, setScrolled] = useState(false);
 
   // Handle scroll behavior for header styling
@@ -39,9 +41,29 @@ const Header = () => {
 
   return (
     <header
-      className={`header fixed top-0 left-0 right-0 z-50 transition-all duration-700 ease-out glass-effect border-b border-[var(--border-color)] ${
+      className={`header fixed top-0 left-0 right-0 z-50 transition-all duration-700 ease-out border-b border-[var(--border-color)] ${
         scrolled ? "glass-bold" : "glass-subtle"
       }`}
+      style={{
+        // フォールバック背景色とインラインガラス効果
+        backgroundColor:
+          theme === "dark"
+            ? scrolled
+              ? "rgba(0, 0, 0, 0.25)"
+              : "rgba(0, 0, 0, 0.08)"
+            : scrolled
+            ? "rgba(255, 255, 255, 0.12)"
+            : "rgba(255, 255, 255, 0.04)",
+        backdropFilter: scrolled
+          ? "blur(18px) saturate(170%)"
+          : "blur(6px) saturate(130%)",
+        WebkitBackdropFilter: scrolled
+          ? "blur(18px) saturate(170%)"
+          : "blur(6px) saturate(130%)",
+        borderBottom: `1px solid ${
+          theme === "dark" ? "rgba(255, 255, 255, 0.1)" : "rgba(0, 0, 0, 0.1)"
+        }`,
+      }}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">

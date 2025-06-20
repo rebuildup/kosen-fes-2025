@@ -588,10 +588,20 @@
   /* モバイルフッター */
   .mobile-footer {
     @apply fixed bottom-0 left-0 right-0 z-50 border-t;
-    background-color: var(--bg-primary);
+    background: rgba(255, 255, 255, 0.08);
     border-color: var(--border-color);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(12px) saturate(150%);
+    -webkit-backdrop-filter: blur(12px) saturate(150%);
+  }
+
+  :root[data-theme="dark"] .mobile-footer {
+    background: rgba(0, 0, 0, 0.15);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme]) .mobile-footer {
+      background: rgba(0, 0, 0, 0.15);
+    }
   }
 
   .mobile-footer-nav {
@@ -1062,12 +1072,12 @@
 
   /* 基本的なガラス効果 */
   .glass-effect {
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(16px) saturate(180%);
-    -webkit-backdrop-filter: blur(16px) saturate(180%);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.06),
-      inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(12px) saturate(150%);
+    -webkit-backdrop-filter: blur(12px) saturate(150%);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.04),
+      inset 0 1px 0 rgba(255, 255, 255, 0.15);
   }
 
   /* ダークモード用のガラス効果 */
@@ -1090,21 +1100,21 @@
 
   /* ガラス効果のバリエーション */
   .glass-subtle {
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(8px) saturate(150%);
-    -webkit-backdrop-filter: blur(8px) saturate(150%);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.03),
-      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.04);
+    backdrop-filter: blur(6px) saturate(130%);
+    -webkit-backdrop-filter: blur(6px) saturate(130%);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.02),
+      inset 0 1px 0 rgba(255, 255, 255, 0.08);
   }
 
   .glass-bold {
-    background: rgba(255, 255, 255, 0.15);
-    backdrop-filter: blur(24px) saturate(200%) brightness(110%);
-    -webkit-backdrop-filter: blur(24px) saturate(200%) brightness(110%);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    box-shadow: 0 6px 20px 0 rgba(0, 0, 0, 0.08),
-      inset 0 2px 0 rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(18px) saturate(170%) brightness(105%);
+    -webkit-backdrop-filter: blur(18px) saturate(170%) brightness(105%);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 6px 20px 0 rgba(0, 0, 0, 0.06),
+      inset 0 2px 0 rgba(255, 255, 255, 0.2);
   }
 
   /* ダークモード用のバリエーション */
@@ -1233,9 +1243,30 @@
     .glass-bold,
     .glass-button,
     .glass-card {
-      background: rgba(255, 255, 255, 0.9);
-      box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.06);
+      background: rgba(255, 255, 255, 0.85);
+      box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.08);
     }
+    
+    :root[data-theme="dark"] .glass-effect,
+    :root[data-theme="dark"] .glass-subtle,
+    :root[data-theme="dark"] .glass-bold,
+    :root[data-theme="dark"] .glass-button,
+    :root[data-theme="dark"] .glass-card {
+      background: rgba(0, 0, 0, 0.85);
+      box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.25);
+    }
+    
+    /* モバイルSafari対応 */
+    .header {
+      background: rgba(255, 255, 255, 0.85) !important;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.1) !important;
+    }
+    
+    :root[data-theme="dark"] .header {
+      background: rgba(0, 0, 0, 0.85) !important;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+    }
+  }
 
     :root[data-theme="dark"] .glass-effect,
     :root[data-theme="dark"] .glass-subtle,

@@ -54,15 +54,15 @@ export const UnifiedCard = React.memo(
     const placeholderImage = useMemo(() => {
       switch (item.type) {
         case "event":
-          return "/images/placeholder-event.jpg";
+          return "./images/placeholder-event.jpg";
         case "exhibit":
-          return "/images/placeholder-exhibit.jpg";
+          return "./images/placeholder-exhibit.jpg";
         case "stall":
-          return "/images/placeholder-stall.jpg";
+          return "./images/placeholder-stall.jpg";
         case "sponsor":
-          return "/images/placeholder-sponsor.jpg";
+          return "./images/placeholder-sponsor.jpg";
         default:
-          return "/images/placeholder.jpg";
+          return "./images/placeholder.jpg";
       }
     }, [item.type]);
 

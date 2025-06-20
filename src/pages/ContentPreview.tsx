@@ -163,7 +163,7 @@ const ContentPreview = () => {
       id: `preview-${Date.now()}`,
       title: formData.title || "プレビュータイトル",
       description: formData.description || "プレビューの説明文です。",
-      imageUrl: formData.imagePreviewUrl || "/images/events/event-1.jpg",
+      imageUrl: formData.imagePreviewUrl || "./images/events/event-1.jpg",
       date: formData.date,
       time: formData.time,
       location: formData.location || "未設定",

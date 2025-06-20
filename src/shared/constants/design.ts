@@ -46,9 +46,9 @@ export const Z_INDEX = {
 export const CARD_CONFIG = {
   ASPECT_RATIOS: {
     DEFAULT: 56.25, // 16:9
-    FEATURED: 50,   // 2:1
-    COMPACT: 0,     // No fixed ratio
-    SQUARE: 100,    // 1:1
+    FEATURED: 50, // 2:1
+    COMPACT: 0, // No fixed ratio
+    SQUARE: 100, // 1:1
   },
   GRID_COLUMNS: {
     MOBILE: 1,
@@ -73,11 +73,11 @@ export const CARD_CONFIG = {
 // Image configuration
 export const IMAGE_CONFIG = {
   PLACEHOLDER_PATHS: {
-    DEFAULT: "/images/placeholder.jpg",
-    EVENT: "/images/placeholder-event.jpg",
-    EXHIBIT: "/images/placeholder-exhibit.jpg",
-    STALL: "/images/placeholder-stall.jpg",
-    SPONSOR: "/images/placeholder-sponsor.jpg",
+    DEFAULT: "./images/placeholder.jpg",
+    EVENT: "./images/placeholder-event.jpg",
+    EXHIBIT: "./images/placeholder-exhibit.jpg",
+    STALL: "./images/placeholder-stall.jpg",
+    SPONSOR: "./images/placeholder-sponsor.jpg",
   },
   SIZES: {
     SMALL: { width: 400, height: 225 },
@@ -94,14 +94,14 @@ export const IMAGE_CONFIG = {
 // Typography scales
 export const TYPOGRAPHY = {
   FONT_SIZES: {
-    XS: "0.75rem",   // 12px
-    SM: "0.875rem",  // 14px
-    BASE: "1rem",    // 16px
-    LG: "1.125rem",  // 18px
-    XL: "1.25rem",   // 20px
+    XS: "0.75rem", // 12px
+    SM: "0.875rem", // 14px
+    BASE: "1rem", // 16px
+    LG: "1.125rem", // 18px
+    XL: "1.25rem", // 20px
     "2XL": "1.5rem", // 24px
     "3XL": "1.875rem", // 30px
-    "4XL": "2.25rem",  // 36px
+    "4XL": "2.25rem", // 36px
   },
   LINE_HEIGHTS: {
     TIGHT: 1.25,
@@ -119,28 +119,28 @@ export const TYPOGRAPHY = {
 // Spacing scale (in rem)
 export const SPACING = {
   "0": "0",
-  "1": "0.25rem",   // 4px
-  "2": "0.5rem",    // 8px
-  "3": "0.75rem",   // 12px
-  "4": "1rem",      // 16px
-  "5": "1.25rem",   // 20px
-  "6": "1.5rem",    // 24px
-  "8": "2rem",      // 32px
-  "10": "2.5rem",   // 40px
-  "12": "3rem",     // 48px
-  "16": "4rem",     // 64px
-  "20": "5rem",     // 80px
-  "24": "6rem",     // 96px
+  "1": "0.25rem", // 4px
+  "2": "0.5rem", // 8px
+  "3": "0.75rem", // 12px
+  "4": "1rem", // 16px
+  "5": "1.25rem", // 20px
+  "6": "1.5rem", // 24px
+  "8": "2rem", // 32px
+  "10": "2.5rem", // 40px
+  "12": "3rem", // 48px
+  "16": "4rem", // 64px
+  "20": "5rem", // 80px
+  "24": "6rem", // 96px
 } as const;
 
 // Border radius values
 export const BORDER_RADIUS = {
   NONE: "0",
-  SM: "0.25rem",    // 4px
+  SM: "0.25rem", // 4px
   DEFAULT: "0.375rem", // 6px
-  MD: "0.5rem",     // 8px
-  LG: "0.75rem",    // 12px
-  XL: "1rem",       // 16px
+  MD: "0.5rem", // 8px
+  LG: "0.75rem", // 12px
+  XL: "1rem", // 16px
   FULL: "9999px",
 } as const;
 
