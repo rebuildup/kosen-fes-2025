@@ -4,6 +4,7 @@ import {
   useState,
   useEffect,
   ReactNode,
+  useCallback,
 } from "react";
 import { useNavigate } from "react-router-dom";
 import { dataManager } from "../data/dataManager";
@@ -59,40 +60,44 @@ export const SearchProvider = ({ children }: SearchProviderProps) => {
   }, [searchHistory]);
 
   // Function to perform search using dataManager
-  const performSearchQuery = (query: string): any[] => {
+  const performSearchQuery = useCallback((query: string): any[] => {
     return dataManager.searchItems(query);
-  };
+  }, []);
 
   // Function to perform search
-  const performSearch = (query: string) => {
-    if (!query.trim()) {
-      clearSearch();
-      return;
-    }
+  const performSearch = useCallback(
+    (query: string) => {
+      if (!query.trim()) {
+        setSearchResults([]);
+        setSearchQuery("");
+        return;
+      }
 
-    setIsSearching(true);
-    setSearchQuery(query);
+      setIsSearching(true);
+      setSearchQuery(query);
 
-    // Add to search history (at the beginning)
-    setSearchHistory((prev) => [query, ...prev.filter((q) => q !== query)]);
+      // Add to search history (at the beginning)
+      setSearchHistory((prev) => [query, ...prev.filter((q) => q !== query)]);
 
-    // Use dataManager to search
-    const results = performSearchQuery(query);
+      // Use dataManager to search
+      const results = performSearchQuery(query);
 
-    setSearchResults(results);
-    setIsSearching(false);
+      setSearchResults(results);
+      setIsSearching(false);
 
-    // Navigate to search results page if not already there
-    if (window.location.pathname !== "/search") {
-      navigate(`/search?q=${encodeURIComponent(query)}`);
-    }
-  };
+      // Navigate to search results page if not already there
+      if (window.location.pathname !== "/search") {
+        navigate(`/search?q=${encodeURIComponent(query)}`);
+      }
+    },
+    [navigate, performSearchQuery]
+  );
 
   // Function to clear search
-  const clearSearch = () => {
+  const clearSearch = useCallback(() => {
     setSearchQuery("");
     setSearchResults([]);
-  };
+  }, []);
 
   return (
     <SearchContext.Provider

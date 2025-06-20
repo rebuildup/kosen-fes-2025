@@ -1,7 +1,7 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
+import { useSearch } from "../../context/SearchContext";
 import { useTag } from "../../context/TagContext";
 import { useLanguage } from "../../context/LanguageContext";
-import Tag from "./Tag";
 
 interface TagFilterProps {
   onFilter?: () => void;
@@ -9,7 +9,8 @@ interface TagFilterProps {
 }
 
 const TagFilter = ({ onFilter, compact = false }: TagFilterProps) => {
-  const { tags, selectedTags, toggleTag, clearTags, tagCounts } = useTag();
+  const { tags, tagCounts } = useTag();
+  const { performSearch } = useSearch();
   const { t } = useLanguage();
   const [searchValue, setSearchValue] = useState("");
   const tagContainerRef = useRef<HTMLDivElement>(null);
@@ -19,51 +20,19 @@ const TagFilter = ({ onFilter, compact = false }: TagFilterProps) => {
     tag.toLowerCase().includes(searchValue.toLowerCase())
   );
 
-  const handleToggleTag = (tag: string) => {
-    toggleTag(tag);
+  // タグをクリックした時に検索を実行
+  const handleTagClick = (tag: string) => {
+    performSearch(tag);
     if (onFilter) onFilter();
   };
-
-  const handleClearTags = () => {
-    clearTags();
-    if (onFilter) onFilter();
-  };
-
-  // Scroll selected tags into view when tags are selected
-  useEffect(() => {
-    if (tagContainerRef.current && selectedTags.length > 0) {
-      // Find the first selected tag element
-      const selectedTag = tagContainerRef.current.querySelector(".tag-active");
-      if (selectedTag) {
-        selectedTag.scrollIntoView({
-          behavior: "smooth",
-          block: "nearest",
-          inline: "center",
-        });
-      }
-    }
-  }, [selectedTags]);
 
   return (
-    <div
-      className={`mb-6 border rounded-lg transition-all duration-200 bg-[var(--bg-secondary)] border-[var(--border-color)] shadow-sm ${
-        compact ? "p-3" : "p-4"
-      }`}
-    >
+    <div className={`${compact ? "p-3" : "p-0"}`}>
       <div className="flex justify-between items-center mb-3">
         <h3 className="text-sm font-semibold text-[var(--text-primary)] m-0 flex items-center gap-2">
           <span>🏷️</span>
-          {t("tags.filterByTag")}
+          {t("tags.searchByTag")}
         </h3>
-
-        {selectedTags.length > 0 && (
-          <button
-            className="text-xs font-medium px-3 py-1 rounded-full transition-all duration-200 hover:shadow-sm bg-[var(--instagram-gradient-subtle)] text-[var(--primary-color)] hover:bg-gradient-to-r hover:from-[var(--accent-purple)] hover:to-[var(--accent-pink)] hover:text-white"
-            onClick={handleClearTags}
-          >
-            {t("tags.clearFilters")}
-          </button>
-        )}
       </div>
 
       {!compact && (
@@ -100,35 +69,33 @@ const TagFilter = ({ onFilter, compact = false }: TagFilterProps) => {
           {filteredTags.length === 0 ? (
             <div className="text-sm py-4 italic text-[var(--text-secondary)] flex items-center gap-2">
               <span>🔍</span>
-              {searchValue ? t("tags.noTagsFound") : t("tags.filterByTag")}
+              {searchValue ? t("tags.noTagsFound") : t("tags.searchByTag")}
             </div>
           ) : (
             filteredTags.map((tag) => (
-              <Tag
+              <button
                 key={tag}
-                tag={tag}
-                count={tagCounts[tag]}
-                onClick={handleToggleTag}
-                size="small"
-              />
+                onClick={() => handleTagClick(tag)}
+                className="px-3 py-1 text-sm rounded-full border transition-all duration-200 hover:scale-105 bg-[var(--bg-primary)] border-[var(--border-color)] text-[var(--text-primary)] hover:bg-gradient-to-r hover:from-[var(--accent-purple)] hover:to-[var(--accent-pink)] hover:text-white hover:border-transparent hover:shadow-md"
+              >
+                {tag}
+                {tagCounts[tag] && (
+                  <span className="ml-1 text-xs opacity-70">
+                    {tagCounts[tag]}
+                  </span>
+                )}
+              </button>
             ))
           )}
         </div>
       </div>
 
-      {/* Show summary if tags are selected */}
-      {selectedTags.length > 0 && (
-        <div className="mt-3 pt-3 border-t border-[var(--border-color)]">
-          <div className="flex items-center gap-2 text-xs text-[var(--text-secondary)]">
-            <span className="flex items-center gap-1">
-              <span>✨</span>
-              {selectedTags.length} {t("tags.selected")}
-            </span>
-            <span className="text-[var(--text-tertiary)]">•</span>
-            <span>{t("tags.clearFilters")}</span>
-          </div>
+      <div className="mt-3 pt-3 border-t border-[var(--border-color)]">
+        <div className="text-xs text-[var(--text-secondary)] flex items-center gap-1">
+          <span>💡</span>
+          {t("search.tagSearchHint")}
         </div>
-      )}
+      </div>
     </div>
   );
 };

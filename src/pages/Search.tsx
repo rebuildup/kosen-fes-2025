@@ -6,12 +6,9 @@ import { useTag } from "../context/TagContext";
 import SearchBar from "../components/common/SearchBar";
 import SearchResults from "../components/search/SearchResults";
 import TagFilter from "../components/common/TagFilter";
-import SelectedTags from "../components/common/SelectedTags";
-import TagCloud from "../components/common/TagCloud";
 
 const Search = () => {
-  const { searchQuery, setSearchQuery, performSearch, recentSearches } =
-    useSearch();
+  const { searchQuery, setSearchQuery, performSearch } = useSearch();
   const { t } = useLanguage();
   const { selectTag } = useTag();
   const location = useLocation();
@@ -30,7 +27,7 @@ const Search = () => {
     if (tagParam) {
       selectTag(tagParam);
     }
-  }, [location.search, searchQuery, setSearchQuery, performSearch, selectTag]);
+  }, [location.search]);
 
   return (
     <div className="min-h-screen bg-[var(--bg-primary)]">
@@ -54,45 +51,15 @@ const Search = () => {
             <div className="max-w-3xl mx-auto">
               <SearchBar variant="large" autoFocus showSuggestions />
             </div>
-          </div>
-        </div>
-      </section>
 
-      {/* Main Content */}
-      <section className="section bg-[var(--bg-primary)]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="space-y-8">
-            {/* Quick Access Section */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Recent Searches */}
-              {recentSearches.length > 0 && (
-                <div className="bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-xl p-6">
-                  <h3 className="text-lg font-semibold mb-4 text-[var(--text-primary)] flex items-center gap-2">
-                    <span>🕒</span>
-                    最近の検索
-                  </h3>
-                  <div className="space-y-2">
-                    {recentSearches.slice(0, 5).map((query, index) => (
-                      <button
-                        key={index}
-                        onClick={() => performSearch(query)}
-                        className="flex items-center gap-3 p-3 rounded-lg w-full text-left transition-all duration-200 hover:bg-[var(--bg-tertiary)] hover:text-[var(--primary-color)] text-[var(--text-secondary)]"
-                      >
-                        <span>🔍</span>
-                        <span className="flex-1">{query}</span>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Quick Stats or Tips */}
-              <div className="bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-xl p-6">
-                <h3 className="text-lg font-semibold mb-4 text-[var(--text-primary)] flex items-center gap-2">
+            {/* Search Tips - Below search bar */}
+            <div className="max-w-2xl mx-auto mt-6">
+              <div className="bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-xl p-4">
+                <h3 className="text-sm font-semibold mb-3 text-[var(--text-primary)] flex items-center justify-center gap-2">
                   <span>💡</span>
-                  検索のヒント
+                  {t("search.searchTips")}
                 </h3>
-                <div className="space-y-3 text-sm text-[var(--text-secondary)]">
+                <div className="space-y-2 text-sm text-[var(--text-secondary)]">
                   <div className="flex items-start gap-2">
                     <span className="text-[var(--primary-color)]">•</span>
                     <span>{t("search.searchInstructions.keyword")}</span>
@@ -108,21 +75,16 @@ const Search = () => {
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      </section>
 
-            {/* Popular Tags Section - Full width */}
-            <div className="bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-xl p-6">
-              <TagCloud
-                title={t("search.popularTags")}
-                showCount
-                maxTags={20}
-              />
-            </div>
-
-            {/* Tag Filter Section */}
-            <div className="space-y-4">
-              <TagFilter onFilter={() => {}} compact={true} />
-              <SelectedTags />
-            </div>
+      {/* Main Content */}
+      <section className="section bg-[var(--bg-primary)]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="space-y-8">
+            {/* Tag Search Section - タグで検索機能に変更 */}
+            <TagFilter onFilter={() => {}} compact={false} />
 
             {/* Search Results */}
             <div className="bg-[var(--bg-primary)] rounded-xl">

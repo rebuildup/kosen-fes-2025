@@ -4,6 +4,7 @@ import {
   useState,
   ReactNode,
   useEffect,
+  useCallback,
 } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useData } from "./DataContext";
@@ -63,45 +64,48 @@ export const TagProvider = ({ children }: TagProviderProps) => {
     return a.localeCompare(b);
   });
 
-  // Extract tag from URL when location changes
+  // Extract tag from URL when location changes - 依存配列を最小化
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const tagParam = params.get("tag");
 
     if (
       tagParam &&
-      tags.includes(tagParam) &&
+      allTags.includes(tagParam) &&
       !selectedTags.includes(tagParam)
     ) {
       setSelectedTags([tagParam]);
     }
-  }, [location.search, tags]);
+  }, [location.search, allTags.join("")]); // allTagsの内容変化のみ監視
 
   // Toggle a tag (add if not selected, remove if selected)
-  const toggleTag = (tag: string) => {
+  const toggleTag = useCallback((tag: string) => {
     setSelectedTags((prev) =>
       prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
     );
-  };
+  }, []);
 
   // Select a single tag (replace current selection)
-  const selectTag = (tag: string) => {
-    setSelectedTags([tag]);
+  const selectTag = useCallback(
+    (tag: string) => {
+      setSelectedTags([tag]);
 
-    // Update URL with tag parameter
-    const params = new URLSearchParams(location.search);
-    params.set("tag", tag);
+      // Update URL with tag parameter
+      const params = new URLSearchParams(location.search);
+      params.set("tag", tag);
 
-    // Navigate to search page if not already there
-    if (location.pathname !== "/search") {
-      navigate(`/search?${params.toString()}`);
-    } else {
-      navigate(`${location.pathname}?${params.toString()}`);
-    }
-  };
+      // Navigate to search page if not already there
+      if (location.pathname !== "/search") {
+        navigate(`/search?${params.toString()}`);
+      } else {
+        navigate(`${location.pathname}?${params.toString()}`);
+      }
+    },
+    [navigate, location.pathname, location.search]
+  );
 
   // Clear all selected tags
-  const clearTags = () => {
+  const clearTags = useCallback(() => {
     setSelectedTags([]);
 
     // Remove tag parameter from URL
@@ -111,20 +115,26 @@ export const TagProvider = ({ children }: TagProviderProps) => {
     navigate(
       `${location.pathname}${params.toString() ? `?${params.toString()}` : ""}`
     );
-  };
+  }, [navigate, location.pathname, location.search]);
 
   // Check if a tag is currently selected
-  const isTagSelected = (tag: string) => {
-    return selectedTags.includes(tag);
-  };
+  const isTagSelected = useCallback(
+    (tag: string) => {
+      return selectedTags.includes(tag);
+    },
+    [selectedTags]
+  );
 
   // Filter items by selected tags
-  const filterItemsByTags = (items: any[]): any[] => {
-    if (selectedTags.length === 0) return items;
-    return items.filter((item) =>
-      selectedTags.every((tag) => item.tags?.includes(tag))
-    );
-  };
+  const filterItemsByTags = useCallback(
+    (items: any[]): any[] => {
+      if (selectedTags.length === 0) return items;
+      return items.filter((item) =>
+        selectedTags.every((tag) => item.tags?.includes(tag))
+      );
+    },
+    [selectedTags]
+  );
 
   return (
     <TagContext.Provider

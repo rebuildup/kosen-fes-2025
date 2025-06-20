@@ -334,17 +334,28 @@ const Detail = () => {
               ← {t("detail.back")}
             </PillButton>
 
-            <PillButton
+            <button
               onClick={handleBookmarkToggle}
-              variant={isBookmarked(item.id) ? "primary" : "secondary"}
+              className={`w-12 h-12 flex items-center justify-center rounded-full transition-all duration-200 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-offset-2 ${
+                isBookmarked(item.id)
+                  ? "bg-yellow-500 text-white hover:bg-yellow-600 focus:ring-yellow-500"
+                  : "bg-[var(--bg-secondary)] text-[var(--text-secondary)] hover:bg-[var(--bg-tertiary)] hover:text-[var(--text-primary)] border border-[var(--border-color)] focus:ring-[var(--primary-color)]"
+              }`}
+              aria-label={
+                isBookmarked(item.id)
+                  ? t("actions.removeBookmark")
+                  : t("actions.bookmark")
+              }
+              title={
+                isBookmarked(item.id)
+                  ? t("actions.removeBookmark")
+                  : t("actions.bookmark")
+              }
             >
-              <span className="text-lg">
+              <span className="text-xl">
                 {isBookmarked(item.id) ? "★" : "☆"}
               </span>
-              <span>
-                {isBookmarked(item.id) ? t("actions.remove") : t("actions.add")}
-              </span>
-            </PillButton>
+            </button>
           </div>
 
           <div className="space-y-8">

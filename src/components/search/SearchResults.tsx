@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useSearch } from "../../context/SearchContext";
 import { useLanguage } from "../../context/LanguageContext";
 import { useTag } from "../../context/TagContext";
@@ -16,7 +16,7 @@ interface FilteredResults {
 const SearchResults = () => {
   const { searchQuery, searchResults, isSearching } = useSearch();
   const { t } = useLanguage();
-  const { selectedTags, filterItemsByTags } = useTag();
+  const { selectedTags } = useTag();
 
   const [viewMode, setViewMode] = useState<
     "default" | "compact" | "grid" | "list"
@@ -27,13 +27,21 @@ const SearchResults = () => {
     stalls: [],
   });
 
+  // Memoize the filtering function to prevent unnecessary re-creation
+  const filterItemsBySelectedTags = useCallback(
+    (items: any[]) => {
+      if (selectedTags.length === 0) return items;
+      return items.filter((item) =>
+        selectedTags.every((tag) => item.tags?.includes(tag))
+      );
+    },
+    [selectedTags]
+  );
+
   // Apply both search and tag filtering
   useEffect(() => {
     // Apply tag filtering to search results
-    const tagFilteredResults =
-      selectedTags.length > 0
-        ? filterItemsByTags(searchResults)
-        : searchResults;
+    const tagFilteredResults = filterItemsBySelectedTags(searchResults);
 
     // Group results by type
     const groupedResults: FilteredResults = {
@@ -53,7 +61,7 @@ const SearchResults = () => {
     });
 
     setFilteredResults(groupedResults);
-  }, [searchResults, selectedTags, filterItemsByTags]);
+  }, [searchResults, filterItemsBySelectedTags]);
 
   // Highlight matching text
   const highlightSearchQuery = (text: string, query: string): ReactNode => {
@@ -92,7 +100,9 @@ const SearchResults = () => {
     return (
       <div className="text-center py-12">
         <div className="animate-spin w-8 h-8 border-4 border-[var(--primary-color)] border-t-transparent rounded-full mx-auto mb-4"></div>
-        <span className="text-[var(--text-secondary)]">検索中...</span>
+        <span className="text-[var(--text-secondary)]">
+          {t("search.searching")}
+        </span>
       </div>
     );
   }
@@ -128,11 +138,11 @@ const SearchResults = () => {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 p-6 bg-[var(--bg-secondary)] rounded-xl border border-[var(--border-color)]">
         <div className="flex items-center gap-4">
           <h2 className="text-xl font-semibold text-[var(--text-primary)]">
-            検索結果
+            {t("search.results")}
           </h2>
           {totalResults > 0 && (
             <span className="px-3 py-1 bg-[var(--primary-color)] text-white rounded-full text-sm font-medium">
-              {totalResults} 件
+              {totalResults} {t("search.items")}
             </span>
           )}
         </div>
@@ -152,7 +162,7 @@ const SearchResults = () => {
               </h3>
               <div className="flex-1 h-px bg-[var(--border-color)]"></div>
               <span className="text-sm text-[var(--text-secondary)] bg-[var(--bg-secondary)] px-3 py-1 rounded-full">
-                {filteredResults.events.length} 件
+                {filteredResults.events.length} {t("search.items")}
               </span>
             </div>
 
@@ -181,7 +191,7 @@ const SearchResults = () => {
               </h3>
               <div className="flex-1 h-px bg-[var(--border-color)]"></div>
               <span className="text-sm text-[var(--text-secondary)] bg-[var(--bg-secondary)] px-3 py-1 rounded-full">
-                {filteredResults.exhibits.length} 件
+                {filteredResults.exhibits.length} {t("search.items")}
               </span>
             </div>
 
@@ -210,7 +220,7 @@ const SearchResults = () => {
               </h3>
               <div className="flex-1 h-px bg-[var(--border-color)]"></div>
               <span className="text-sm text-[var(--text-secondary)] bg-[var(--bg-secondary)] px-3 py-1 rounded-full">
-                {filteredResults.stalls.length} 件
+                {filteredResults.stalls.length} {t("search.items")}
               </span>
             </div>
 

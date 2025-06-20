@@ -179,21 +179,35 @@ const SearchBar = ({
     }, 150);
   };
 
+  // Handle clear/reset input
+  const handleClear = () => {
+    setLocalQuery("");
+    setSearchQuery("");
+    setShowDropdown(false);
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  };
+
   const getInputClasses = () => {
     const baseClasses = `
-      w-full pl-12 pr-6 border transition-all duration-200 focus:outline-none focus:ring-2
+      w-full pl-12 border transition-all duration-200 focus:outline-none focus:ring-2
       bg-[var(--bg-primary)] border-[var(--border-color)] text-[var(--text-primary)]
       placeholder-[var(--text-secondary)] focus:border-[var(--primary-color)] 
       focus:ring-[var(--primary-color)]/20
     `;
 
+    // Adjust right padding based on whether we have content (for clear button) and search button
+    // Increased padding to prevent overlap: pr-32 when clear button is present, pr-20 otherwise
+    const rightPadding = localQuery.trim() ? "pr-32" : "pr-20";
+
     switch (variant) {
       case "large":
-        return `${baseClasses} py-4 text-lg rounded-full focus:ring-4`;
+        return `${baseClasses} ${rightPadding} py-4 text-lg rounded-full focus:ring-4`;
       case "inline":
-        return `${baseClasses} py-2 text-sm rounded-full`;
+        return `${baseClasses} ${rightPadding} py-2 text-sm rounded-full`;
       default:
-        return `${baseClasses} py-3 text-base rounded-full`;
+        return `${baseClasses} ${rightPadding} py-3 text-base rounded-full`;
     }
   };
 
@@ -244,13 +258,38 @@ const SearchBar = ({
             aria-haspopup="listbox"
           />
 
+          {/* Clear Button - Show only when there's content */}
+          {localQuery.trim() && (
+            <button
+              type="button"
+              onClick={handleClear}
+              className="absolute right-20 top-1/2 transform -translate-y-1/2 p-1 rounded-full transition-all duration-200 hover:bg-[var(--bg-secondary)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+              aria-label={t("actions.clear")}
+            >
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+          )}
+
           {/* Submit Button */}
           <button
             type="submit"
-            className="absolute right-2 top-1/2 transform -translate-y-1/2 px-4 py-2 bg-[var(--instagram-gradient)] text-white rounded-full font-medium transition-all duration-200 hover:shadow-lg hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)]/20"
+            className="absolute right-2 top-1/2 transform -translate-y-1/2 px-4 py-2 bg-[var(--primary-color)] text-white rounded-full font-medium transition-all duration-200 hover:shadow-lg hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)]/20 hover:bg-[var(--primary-color)]/90"
             aria-label={t("actions.search")}
           >
-            {variant === "large" ? t("actions.search") : "検索"}
+            {variant === "large" ? t("actions.search") : t("actions.search")}
           </button>
         </div>
       </form>
@@ -285,7 +324,7 @@ const SearchBar = ({
                 />
                 <span className="flex-1">{suggestion}</span>
                 <span className="text-xs text-[var(--text-secondary)]">
-                  最近の検索
+                  {t("search.recentSearches")}
                 </span>
               </button>
             ))}
