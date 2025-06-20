@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState, useCallback } from "react";
+import { useRef, useEffect, useState, useCallback, useMemo } from "react";
 import { useMapZoomPan } from "../../hooks/useMapZoomPan";
 import {
   CAMPUS_MAP_BOUNDS,
@@ -99,6 +99,7 @@ const UnifiedMap = ({
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const overlayRef = useRef<SVGSVGElement>(null);
   const [svgContent, setSvgContent] = useState<string>("");
+  const [svgLoadError, setSvgLoadError] = useState<string | null>(null);
   const [currentScale, setCurrentScale] = useState(initialZoom);
 
   // 入力状態の管理
@@ -136,20 +137,79 @@ const UnifiedMap = ({
     }, []),
   });
 
-  // Load SVG content dynamically
+  // Load SVG content dynamically with improved error handling
   useEffect(() => {
+    let isMounted = true;
+
     const loadSvgContent = async () => {
       try {
+        setSvgLoadError(null);
+
         const response = await fetch("/campus-map.svg");
+
+        if (!response.ok) {
+          throw new Error(
+            `SVGの読み込みに失敗しました: ${response.status} ${response.statusText}`
+          );
+        }
+
         const svgText = await response.text();
-        setSvgContent(svgText);
+
+        // SVGの基本的な検証
+        if (!svgText.includes("<svg") || !svgText.includes("</svg>")) {
+          throw new Error("無効なSVGファイルです");
+        }
+
+        if (isMounted) {
+          setSvgContent(svgText);
+        }
       } catch (error) {
         console.error("Failed to load campus map SVG:", error);
+        if (isMounted) {
+          setSvgLoadError(
+            error instanceof Error
+              ? error.message
+              : "マップの読み込み中にエラーが発生しました"
+          );
+        }
       }
     };
 
     loadSvgContent();
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
+
+  // マーカーのメモ化 - 不要な再計算を防ぐ
+  const processedMarkers = useMemo(() => {
+    const allMarkers: LocationMarker[] = [..._markers];
+
+    // Legacy location supportを追加
+    _locations.forEach((location) => {
+      const coords = getBuildingCoordinates(location);
+      if (coords) {
+        allMarkers.push({
+          id: location,
+          location,
+          coordinates: coords,
+          isSelected: selectedLocation === location,
+          isHovered: hoveredLocation === location,
+        });
+      }
+    });
+
+    return allMarkers;
+  }, [_markers, _locations, selectedLocation, hoveredLocation]);
+
+  // コンテンツアイテムのメモ化
+  const processedContentItems = useMemo(() => {
+    return contentItems.map((item) => ({
+      ...item,
+      isSelected: _highlightContentItem === item.id,
+    }));
+  }, [contentItems, _highlightContentItem]);
 
   // ユーティリティ関数
   const getTouchDistance = useCallback((touches: TouchList) => {
@@ -353,23 +413,36 @@ const UnifiedMap = ({
     handleTouchEnd,
   ]);
 
-  // マップクリックハンドラー
+  // マップクリックハンドラー - interactiveモードでも機能するよう修正
   const handleMapClick = useCallback(
     (e: React.MouseEvent<SVGSVGElement>) => {
       if (isDragging) return; // ドラッグ中はクリックを無視
 
-      if (allowCoordinateSelection && onCoordinateSelect) {
+      // interactiveモードまたはallowCoordinateSelectionが有効な場合
+      if (
+        (mode === "interactive" || allowCoordinateSelection) &&
+        onCoordinateSelect
+      ) {
         const worldPos = screenToViewBox(e.clientX, e.clientY);
         onCoordinateSelect(worldPos);
       }
     },
-    [isDragging, allowCoordinateSelection, onCoordinateSelect, screenToViewBox]
+    [
+      isDragging,
+      mode,
+      allowCoordinateSelection,
+      onCoordinateSelect,
+      screenToViewBox,
+    ]
   );
 
-  // フォーカス関連のエフェクト
+  // フォーカス関連のエフェクト - デバウンス処理を追加
   useEffect(() => {
     if (highlightCoordinate) {
-      zoomToLocation(highlightCoordinate.x, highlightCoordinate.y, 4);
+      const timer = setTimeout(() => {
+        zoomToLocation(highlightCoordinate.x, highlightCoordinate.y, 4);
+      }, 100);
+      return () => clearTimeout(timer);
     }
   }, [highlightCoordinate, zoomToLocation]);
 
@@ -387,7 +460,10 @@ const UnifiedMap = ({
     if (selectedLocation) {
       const coords = getBuildingCoordinates(selectedLocation);
       if (coords) {
-        zoomToLocation(coords.x, coords.y, 4);
+        const timer = setTimeout(() => {
+          zoomToLocation(coords.x, coords.y, 4);
+        }, 100);
+        return () => clearTimeout(timer);
       }
     }
   }, [selectedLocation, zoomToLocation]);
@@ -396,7 +472,10 @@ const UnifiedMap = ({
     if (hoveredLocation && !selectedLocation) {
       const coords = getBuildingCoordinates(hoveredLocation);
       if (coords) {
-        zoomToLocation(coords.x, coords.y, 3);
+        const timer = setTimeout(() => {
+          zoomToLocation(coords.x, coords.y, 3);
+        }, 150);
+        return () => clearTimeout(timer);
       }
     }
   }, [hoveredLocation, selectedLocation, zoomToLocation]);
@@ -427,6 +506,21 @@ const UnifiedMap = ({
 
   // マップレンダリング
   const renderMapWithOverlays = () => {
+    if (svgLoadError) {
+      return (
+        <div className="flex flex-col items-center justify-center h-full bg-red-50 rounded-lg border-2 border-red-200">
+          <div className="text-red-600 mb-2">⚠️ マップの読み込みエラー</div>
+          <div className="text-red-500 text-sm">{svgLoadError}</div>
+          <button
+            onClick={() => window.location.reload()}
+            className="mt-4 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+          >
+            再読み込み
+          </button>
+        </div>
+      );
+    }
+
     if (!svgContent) {
       return (
         <div className="flex items-center justify-center h-full bg-gray-100 rounded-lg">
@@ -461,7 +555,7 @@ const UnifiedMap = ({
           style={{ touchAction: "none" }}
         >
           {/* Content Items */}
-          {contentItems.map((item) => (
+          {processedContentItems.map((item) => (
             <g key={item.id} className="content-item">
               <circle
                 cx={item.coordinates.x}
@@ -492,6 +586,38 @@ const UnifiedMap = ({
                 {item.title.length > 10
                   ? item.title.substring(0, 10) + "..."
                   : item.title}
+              </text>
+            </g>
+          ))}
+
+          {/* Location Markers */}
+          {processedMarkers.map((marker) => (
+            <g key={marker.id} className="location-marker">
+              <circle
+                cx={marker.coordinates.x}
+                cy={marker.coordinates.y}
+                r={getMarkerSize(marker.isSelected ? 30 : 24)}
+                fill={
+                  marker.isSelected
+                    ? "var(--color-accent, #405de6)"
+                    : "var(--color-primary, #0066cc)"
+                }
+                stroke="white"
+                strokeWidth={getStrokeWidth(3)}
+                opacity={marker.isHovered ? 1 : 0.8}
+              />
+              <text
+                x={marker.coordinates.x}
+                y={marker.coordinates.y - getMarkerSize(32)}
+                textAnchor="middle"
+                fontSize={getTextSize(9)}
+                fontWeight="bold"
+                fill="var(--color-text-primary, #262626)"
+                className="pointer-events-none"
+              >
+                {marker.location.length > 8
+                  ? marker.location.substring(0, 8) + "..."
+                  : marker.location}
               </text>
             </g>
           ))}

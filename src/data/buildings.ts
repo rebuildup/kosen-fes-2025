@@ -257,33 +257,126 @@ export function getBuildingByName(locationName: string): Building | undefined {
 export function getBuildingCoordinates(
   locationName: string
 ): { x: number; y: number } | undefined {
-  const building = getBuildingByName(locationName);
-  if (building) {
-    return { x: building.centerX, y: building.centerY };
+  if (!locationName || typeof locationName !== "string") {
+    console.warn(
+      "Invalid location name provided to getBuildingCoordinates:",
+      locationName
+    );
+    return undefined;
   }
 
-  // Fallback for common location patterns
-  if (
-    locationName.includes("Main Stage") ||
-    locationName.includes("メインステージ")
-  ) {
-    return { x: 1000, y: 800 }; // Central area
-  }
-  if (
-    locationName.includes("Central Plaza") ||
-    locationName.includes("中央広場")
-  ) {
-    return { x: 700, y: 900 }; // Central plaza area
-  }
-  if (
-    locationName.includes("Food Court") ||
-    locationName.includes("フードコート")
-  ) {
-    return { x: 600, y: 750 }; // Food court area
-  }
-  if (locationName.includes("Main Entrance") || locationName.includes("正門")) {
-    return { x: 500, y: 400 }; // Main entrance area
-  }
+  try {
+    const building = getBuildingByName(locationName);
+    if (building) {
+      return { x: building.centerX, y: building.centerY };
+    }
 
-  return undefined;
+    // Enhanced fallback system with more precise coordinates
+    const fallbacks = [
+      {
+        patterns: ["Main Stage", "メインステージ", "main-stage"],
+        coords: { x: 1000, y: 800 },
+      },
+      {
+        patterns: ["第二体育館", "second-gym"],
+        coords: { x: 147.38, y: 188.82 },
+      },
+      {
+        patterns: ["F棟", "F-building"],
+        coords: { x: 1649.86, y: 805.44 },
+      },
+      {
+        patterns: ["経営情報学科棟", "management-building"],
+        coords: { x: 883.39, y: 817.44 },
+      },
+      {
+        patterns: ["武道場", "martial-arts-hall"],
+        coords: { x: 1160.24, y: 1087.2 },
+      },
+      {
+        patterns: ["課外活動棟", "activity-building"],
+        coords: { x: 1716.82, y: 882.39 },
+      },
+      {
+        patterns: ["学生会館", "student-hall"],
+        coords: { x: 588.55, y: 733.5 },
+      },
+      {
+        patterns: ["図書館棟", "library"],
+        coords: { x: 579.6, y: 497.66 },
+      },
+      {
+        patterns: ["第一体育館", "first-gym"],
+        coords: { x: 1007.76, y: 1088.25 },
+      },
+      {
+        patterns: ["管理棟", "admin-building"],
+        coords: { x: 248.83, y: 864.85 },
+      },
+      {
+        patterns: ["機電棟", "engineering-building"],
+        coords: { x: 254.83, y: 751.49 },
+      },
+      {
+        patterns: ["Central Plaza", "中央広場"],
+        coords: { x: 700, y: 900 },
+      },
+      {
+        patterns: ["Food Court", "フードコート", "フードコートエリア"],
+        coords: { x: 600, y: 750 },
+      },
+      {
+        patterns: ["Main Entrance", "正門"],
+        coords: { x: 500, y: 400 },
+      },
+    ];
+
+    // Try exact match first
+    for (const fallback of fallbacks) {
+      if (
+        fallback.patterns.some(
+          (pattern) =>
+            locationName.toLowerCase() === pattern.toLowerCase() ||
+            locationName.includes(pattern) ||
+            pattern.includes(locationName)
+        )
+      ) {
+        return fallback.coords;
+      }
+    }
+
+    // Fuzzy matching for partial names
+    for (const fallback of fallbacks) {
+      if (
+        fallback.patterns.some((pattern) => {
+          // Check if location contains pattern or pattern contains location (case insensitive)
+          const locationLower = locationName.toLowerCase();
+          const patternLower = pattern.toLowerCase();
+          return (
+            locationLower.includes(patternLower) ||
+            patternLower.includes(locationLower)
+          );
+        })
+      ) {
+        console.info(
+          `Using fallback coordinates for location: ${locationName}`
+        );
+        return fallback.coords;
+      }
+    }
+
+    // Final fallback - default central position
+    console.warn(
+      `No coordinates found for location: ${locationName}, using default position`
+    );
+    return { x: 1000, y: 700 }; // Central area of the map
+  } catch (error) {
+    console.error(
+      "Error in getBuildingCoordinates:",
+      error,
+      "Location:",
+      locationName
+    );
+    return { x: 1000, y: 700 }; // Fallback to center
+  }
 }

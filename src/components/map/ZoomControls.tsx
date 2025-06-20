@@ -1,4 +1,5 @@
 import { useLanguage } from "../../context/LanguageContext";
+import { useEffect } from "react";
 
 interface ZoomControlsProps {
   onZoomIn: () => void;
@@ -18,6 +19,34 @@ const ZoomControls = ({
   maxScale,
 }: ZoomControlsProps) => {
   const { t } = useLanguage();
+
+  // キーボードショートカットサポート
+  useEffect(() => {
+    const handleKeyboard = (e: KeyboardEvent) => {
+      // Ctrl/Cmd + Plus for zoom in
+      if ((e.ctrlKey || e.metaKey) && e.key === "+") {
+        e.preventDefault();
+        if (scale < maxScale) {
+          onZoomIn();
+        }
+      }
+      // Ctrl/Cmd + Minus for zoom out
+      if ((e.ctrlKey || e.metaKey) && e.key === "-") {
+        e.preventDefault();
+        if (scale > minScale) {
+          onZoomOut();
+        }
+      }
+      // Ctrl/Cmd + 0 for reset
+      if ((e.ctrlKey || e.metaKey) && e.key === "0") {
+        e.preventDefault();
+        onReset();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyboard);
+    return () => document.removeEventListener("keydown", handleKeyboard);
+  }, [onZoomIn, onZoomOut, onReset, scale, minScale, maxScale]);
 
   const buttonBaseClass = `
     flex items-center justify-center w-10 h-10 rounded-lg 
@@ -52,15 +81,15 @@ const ZoomControls = ({
   };
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="absolute top-4 right-4 z-10 flex flex-col gap-2 bg-white/90 backdrop-blur-sm rounded-lg p-2 shadow-lg">
       {/* Zoom In Button */}
       <button
         onClick={handleZoomIn}
         disabled={scale >= maxScale}
         className={buttonBaseClass}
         style={scale >= maxScale ? disabledButtonStyle : buttonStyle}
-        aria-label={t("map.zoomIn")}
-        title="画面中央を中心にズームイン"
+        aria-label={`${t("map.zoomIn")} (Ctrl/Cmd + +)`}
+        title="ズームイン (Ctrl/Cmd + +)"
         type="button"
       >
         <svg
@@ -87,8 +116,8 @@ const ZoomControls = ({
         disabled={scale <= minScale}
         className={buttonBaseClass}
         style={scale <= minScale ? disabledButtonStyle : buttonStyle}
-        aria-label={t("map.zoomOut")}
-        title="画面中央を中心にズームアウト"
+        aria-label={`${t("map.zoomOut")} (Ctrl/Cmd + -)`}
+        title="ズームアウト (Ctrl/Cmd + -)"
         type="button"
       >
         <svg
@@ -113,8 +142,8 @@ const ZoomControls = ({
         onClick={onReset}
         className={buttonBaseClass}
         style={buttonStyle}
-        aria-label={t("map.resetZoom")}
-        title="ズームをリセット（全体表示）"
+        aria-label={`${t("map.resetZoom")} (Ctrl/Cmd + 0)`}
+        title="ズームリセット (Ctrl/Cmd + 0)"
         type="button"
       >
         <svg
@@ -135,15 +164,17 @@ const ZoomControls = ({
         </svg>
       </button>
 
-      {/* Zoom Level Indicator */}
+      {/* Zoom Level Indicator - ボタンと同じ幅に統一 */}
       <div
-        className="flex items-center justify-center px-2 py-1 rounded-lg text-xs font-medium shadow-md"
+        className="flex items-center justify-center w-10 h-8 rounded-lg text-xs font-medium shadow-md"
         style={{
           backgroundColor: "var(--color-bg-secondary)",
           color: "var(--color-text-secondary)",
           border: "1px solid var(--color-border-primary)",
         }}
         aria-label={`現在のズーム倍率: ${Math.round(scale * 100)}%`}
+        role="status"
+        aria-live="polite"
       >
         {Math.round(scale * 100)}%
       </div>

@@ -760,8 +760,12 @@ const ContentPreview = () => {
                     mode="interactive"
                     onCoordinateSelect={handleCoordinateSelect}
                     selectedCoordinate={formData.coordinates}
+                    allowCoordinateSelection={true}
                     height="320px"
                     className="h-80"
+                    maxZoom={15}
+                    minZoom={0.2}
+                    initialZoom={1}
                   />
                 </div>
               </div>

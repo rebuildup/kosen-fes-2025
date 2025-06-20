@@ -528,7 +528,9 @@ const Detail = () => {
                         : []
                     }
                     height="100%"
-                    initialZoom={item.coordinates ? 2 : 1}
+                    initialZoom={item.coordinates ? 3 : 1}
+                    maxZoom={15}
+                    minZoom={0.5}
                     showZoomControls={true}
                   />
                 </div>
