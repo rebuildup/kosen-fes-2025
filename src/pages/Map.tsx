@@ -6,7 +6,7 @@ import { events } from "../data/events";
 import { exhibits } from "../data/exhibits";
 import { stalls } from "../data/stalls";
 import { Item, Event, Exhibit, Stall } from "../types/common";
-import UnifiedMap from "../components/map/UnifiedMap";
+import SimpleMap from "../components/map/UnifiedMap";
 import { getBuildingCoordinates } from "../data/buildings";
 import LocationList from "../components/map/LocationList";
 import TagFilter from "../components/common/TagFilter";
@@ -178,7 +178,7 @@ const Map = () => {
                     className="map-container relative w-full"
                     style={{ minHeight: "70vh" }}
                   >
-                    <UnifiedMap
+                    <SimpleMap
                       mode="display"
                       markers={mapMarkers}
                       contentItems={mapContentItems}
@@ -186,8 +186,8 @@ const Map = () => {
                       onLocationSelect={handleLocationSelect}
                       height="70vh"
                       className="rounded-lg"
-                      maxZoom={15}
-                      minZoom={0.2}
+                      maxZoom={8}
+                      minZoom={0.3}
                       initialZoom={0.8}
                     />
                   </div>

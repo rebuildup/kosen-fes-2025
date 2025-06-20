@@ -1,4 +1,3 @@
-import { useLanguage } from "../../context/LanguageContext";
 import { useEffect } from "react";
 
 interface ZoomControlsProps {
@@ -18,26 +17,17 @@ const ZoomControls = ({
   minScale,
   maxScale,
 }: ZoomControlsProps) => {
-  const { t } = useLanguage();
-
-  // キーボードショートカットサポート
+  // キーボードショートカット
   useEffect(() => {
     const handleKeyboard = (e: KeyboardEvent) => {
-      // Ctrl/Cmd + Plus for zoom in
       if ((e.ctrlKey || e.metaKey) && e.key === "+") {
         e.preventDefault();
-        if (scale < maxScale) {
-          onZoomIn();
-        }
+        onZoomIn();
       }
-      // Ctrl/Cmd + Minus for zoom out
       if ((e.ctrlKey || e.metaKey) && e.key === "-") {
         e.preventDefault();
-        if (scale > minScale) {
-          onZoomOut();
-        }
+        onZoomOut();
       }
-      // Ctrl/Cmd + 0 for reset
       if ((e.ctrlKey || e.metaKey) && e.key === "0") {
         e.preventDefault();
         onReset();
@@ -46,62 +36,24 @@ const ZoomControls = ({
 
     document.addEventListener("keydown", handleKeyboard);
     return () => document.removeEventListener("keydown", handleKeyboard);
-  }, [onZoomIn, onZoomOut, onReset, scale, minScale, maxScale]);
-
-  const buttonBaseClass = `
-    flex items-center justify-center w-10 h-10 rounded-lg 
-    transition-all duration-200 shadow-md hover:shadow-lg 
-    disabled:opacity-50 disabled:cursor-not-allowed
-    hover:scale-105 active:scale-95 touch-action-manipulation
-    focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500
-  `;
-
-  const buttonStyle = {
-    backgroundColor: "var(--color-bg-secondary)",
-    color: "var(--color-text-primary)",
-    border: "1px solid var(--color-border-primary)",
-  };
-
-  const disabledButtonStyle = {
-    backgroundColor: "var(--color-bg-tertiary)",
-    color: "var(--color-text-tertiary)",
-    border: "1px solid var(--color-border-secondary)",
-  };
-
-  const handleZoomIn = () => {
-    if (scale < maxScale) {
-      onZoomIn();
-    }
-  };
-
-  const handleZoomOut = () => {
-    if (scale > minScale) {
-      onZoomOut();
-    }
-  };
+  }, [onZoomIn, onZoomOut, onReset]);
 
   return (
-    <div className="absolute top-4 right-4 z-10 flex flex-col gap-2 bg-white/90 backdrop-blur-sm rounded-lg p-2 shadow-lg">
-      {/* Zoom In Button */}
+    <div className="absolute top-4 right-4 z-10 flex flex-col gap-1 bg-white/95 backdrop-blur-sm rounded-lg p-2 shadow-lg border">
+      {/* ズームイン */}
       <button
-        onClick={handleZoomIn}
+        onClick={onZoomIn}
         disabled={scale >= maxScale}
-        className={buttonBaseClass}
-        style={scale >= maxScale ? disabledButtonStyle : buttonStyle}
-        aria-label={`${t("map.zoomIn")} (Ctrl/Cmd + +)`}
+        className="flex items-center justify-center w-8 h-8 rounded text-gray-700 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         title="ズームイン (Ctrl/Cmd + +)"
-        type="button"
       >
         <svg
-          width="20"
-          height="20"
+          width="16"
+          height="16"
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
           strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          aria-hidden="true"
         >
           <circle cx="11" cy="11" r="8" />
           <path d="m21 21-4.35-4.35" />
@@ -110,26 +62,20 @@ const ZoomControls = ({
         </svg>
       </button>
 
-      {/* Zoom Out Button */}
+      {/* ズームアウト */}
       <button
-        onClick={handleZoomOut}
+        onClick={onZoomOut}
         disabled={scale <= minScale}
-        className={buttonBaseClass}
-        style={scale <= minScale ? disabledButtonStyle : buttonStyle}
-        aria-label={`${t("map.zoomOut")} (Ctrl/Cmd + -)`}
+        className="flex items-center justify-center w-8 h-8 rounded text-gray-700 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         title="ズームアウト (Ctrl/Cmd + -)"
-        type="button"
       >
         <svg
-          width="20"
-          height="20"
+          width="16"
+          height="16"
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
           strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          aria-hidden="true"
         >
           <circle cx="11" cy="11" r="8" />
           <path d="m21 21-4.35-4.35" />
@@ -137,25 +83,19 @@ const ZoomControls = ({
         </svg>
       </button>
 
-      {/* Reset Zoom Button */}
+      {/* リセット */}
       <button
         onClick={onReset}
-        className={buttonBaseClass}
-        style={buttonStyle}
-        aria-label={`${t("map.resetZoom")} (Ctrl/Cmd + 0)`}
-        title="ズームリセット (Ctrl/Cmd + 0)"
-        type="button"
+        className="flex items-center justify-center w-8 h-8 rounded text-gray-700 hover:bg-gray-100 transition-colors"
+        title="リセット (Ctrl/Cmd + 0)"
       >
         <svg
-          width="20"
-          height="20"
+          width="16"
+          height="16"
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
           strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          aria-hidden="true"
         >
           <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />
           <path d="M21 3v5h-5" />
@@ -164,18 +104,8 @@ const ZoomControls = ({
         </svg>
       </button>
 
-      {/* Zoom Level Indicator - ボタンと同じ幅に統一 */}
-      <div
-        className="flex items-center justify-center w-10 h-8 rounded-lg text-xs font-medium shadow-md"
-        style={{
-          backgroundColor: "var(--color-bg-secondary)",
-          color: "var(--color-text-secondary)",
-          border: "1px solid var(--color-border-primary)",
-        }}
-        aria-label={`現在のズーム倍率: ${Math.round(scale * 100)}%`}
-        role="status"
-        aria-live="polite"
-      >
+      {/* ズーム倍率表示 */}
+      <div className="flex items-center justify-center w-8 h-6 text-xs font-medium text-gray-600 bg-gray-50 rounded mt-1">
         {Math.round(scale * 100)}%
       </div>
     </div>

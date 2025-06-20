@@ -4,7 +4,7 @@ import { useData } from "../context/DataContext";
 import { useLanguage } from "../context/LanguageContext";
 import { Item, Event, Exhibit, Stall, Sponsor } from "../types/common";
 import UnifiedCard from "../shared/components/ui/UnifiedCard";
-import UnifiedMap from "../components/map/UnifiedMap";
+import SimpleMap from "../components/map/UnifiedMap";
 import TimelineDay from "../components/schedule/TimelineDay";
 import Tag from "../components/common/Tag";
 import ItemTypeIcon from "../components/common/ItemTypeIcon";
@@ -756,15 +756,15 @@ const ContentPreview = () => {
                   className="rounded-lg overflow-hidden border"
                   style={{ borderColor: "var(--color-border-primary)" }}
                 >
-                  <UnifiedMap
+                  <SimpleMap
                     mode="interactive"
                     onCoordinateSelect={handleCoordinateSelect}
                     selectedCoordinate={formData.coordinates}
                     allowCoordinateSelection={true}
                     height="320px"
                     className="h-80"
-                    maxZoom={15}
-                    minZoom={0.2}
+                    maxZoom={8}
+                    minZoom={0.3}
                     initialZoom={1}
                   />
                 </div>
@@ -985,12 +985,14 @@ const ContentPreview = () => {
                         className="map-container h-64 rounded-lg overflow-hidden border"
                         style={{ borderColor: "var(--color-border-primary)" }}
                       >
-                        <UnifiedMap
+                        <SimpleMap
                           mode="detail"
                           highlightCoordinate={formData.coordinates}
-                          allowInteraction={false}
                           height="256px"
                           className="h-full pointer-events-none"
+                          maxZoom={8}
+                          minZoom={0.3}
+                          initialZoom={2}
                         />
                       </div>
                       <p

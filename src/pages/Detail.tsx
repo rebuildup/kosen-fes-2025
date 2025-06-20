@@ -11,7 +11,7 @@ import Tag from "../components/common/Tag";
 import ItemTypeIcon from "../components/common/ItemTypeIcon";
 import PillButton from "../components/common/PillButton";
 import UnifiedCard from "../shared/components/ui/UnifiedCard";
-import UnifiedMap from "../components/map/UnifiedMap";
+import SimpleMap from "../components/map/UnifiedMap";
 
 const Detail = () => {
   const { type, id } = useParams<{ type: string; id: string }>();
@@ -509,10 +509,9 @@ const Detail = () => {
                   {t("map.title")}
                 </h3>
                 <div className="map-container h-64 rounded-lg overflow-hidden">
-                  <UnifiedMap
+                  <SimpleMap
                     mode="detail"
                     highlightCoordinate={item.coordinates}
-                    highlightLocation={item.location}
                     contentItems={
                       item.coordinates
                         ? [
@@ -528,9 +527,9 @@ const Detail = () => {
                         : []
                     }
                     height="100%"
-                    initialZoom={item.coordinates ? 3 : 1}
-                    maxZoom={15}
-                    minZoom={0.5}
+                    initialZoom={item.coordinates ? 2 : 1}
+                    maxZoom={8}
+                    minZoom={0.3}
                     showZoomControls={true}
                   />
                 </div>

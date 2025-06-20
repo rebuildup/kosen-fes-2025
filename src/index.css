@@ -533,9 +533,26 @@
   .map-container svg {
     /* ハードウェアアクセラレーション */
     will-change: transform;
-    /* 滑らかなレンダリング */
-    shape-rendering: geometricPrecision;
-    text-rendering: optimizeSpeed;
+
+    /* 最高品質レンダリング設定 */
+    shape-rendering: crispEdges;
+    text-rendering: optimizeLegibility;
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: crisp-edges;
+    image-rendering: pixelated;
+
+    /* フォント最適化 */
+    font-smooth: never;
+    -webkit-font-smoothing: subpixel-antialiased;
+    -moz-osx-font-smoothing: auto;
+    font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
+    font-variant-numeric: lining-nums;
+    font-optical-sizing: auto;
+
+    /* 高DPI対応 */
+    vector-effect: non-scaling-stroke;
+
     /* タッチイベント対応 */
     touch-action: none;
     /* 選択無効化 */
@@ -1419,6 +1436,59 @@
     :root[data-theme="dark"] .header {
       background: rgba(0, 0, 0, 0.85) !important;
       border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+    }
+  }
+}
+
+/* 🎯 マップ専用 Ultra High Quality レンダリング */
+@layer utilities {
+  /* マップテキスト専用最適化 */
+  .map-text-ultra-quality {
+    font-family: "SF Pro Display", "Segoe UI Variable Text", "Inter Variable",
+      system-ui, -apple-system, sans-serif;
+    font-weight: 700;
+    font-stretch: 100%;
+    font-style: normal;
+    letter-spacing: -0.01em;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: subpixel-antialiased;
+    -moz-osx-font-smoothing: auto;
+    font-feature-settings: "kern" 1, "liga" 1, "calt" 1, "ss01" 1;
+    font-variant-numeric: lining-nums;
+    font-optical-sizing: auto;
+    paint-order: stroke fill;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+  }
+
+  /* マップマーカー専用最適化 */
+  .map-marker-ultra-quality {
+    shape-rendering: crispEdges;
+    vector-effect: non-scaling-stroke;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+    paint-order: normal;
+  }
+
+  /* 高DPI環境での特別最適化 */
+  @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    .map-text-ultra-quality {
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      text-shadow: 0 0 1px rgba(255, 255, 255, 0.8);
+    }
+
+    .map-marker-ultra-quality {
+      shape-rendering: geometricPrecision;
+    }
+  }
+
+  /* 4K/8K環境での超高解像度最適化 */
+  @media (-webkit-min-device-pixel-ratio: 3), (min-resolution: 288dpi) {
+    .map-text-ultra-quality {
+      font-weight: 600;
+      letter-spacing: -0.005em;
+      text-shadow: 0 0 0.5px rgba(255, 255, 255, 0.9);
     }
   }
 }
