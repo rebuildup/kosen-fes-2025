@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useLanguage } from "../context/LanguageContext";
 import { useTag } from "../context/TagContext";
 import { events } from "../data/events";
@@ -30,6 +30,33 @@ const TimeSchedule = () => {
     day1: [],
     day2: [],
   });
+
+  // Animation state for smooth transitions
+  const [animationKey, setAnimationKey] = useState(0);
+  const [prevDayHash, setPrevDayHash] = useState<string>("");
+  const [prevTagsHash, setPrevTagsHash] = useState<string>("");
+
+  // Create hashes to detect changes
+  const currentDayHash = selectedDay;
+  const currentTagsHash = useMemo(() => {
+    return selectedTags.join(",");
+  }, [selectedTags]);
+
+  // Trigger animation when day changes
+  useEffect(() => {
+    if (prevDayHash !== "" && prevDayHash !== currentDayHash) {
+      setAnimationKey((prev) => prev + 1);
+    }
+    setPrevDayHash(currentDayHash);
+  }, [currentDayHash, prevDayHash]);
+
+  // Trigger animation when tags change
+  useEffect(() => {
+    if (prevTagsHash !== "" && prevTagsHash !== currentTagsHash) {
+      setAnimationKey((prev) => prev + 1);
+    }
+    setPrevTagsHash(currentTagsHash);
+  }, [currentTagsHash, prevTagsHash]);
 
   // Get all items sorted by time for each day
   useEffect(() => {
@@ -191,21 +218,25 @@ const TimeSchedule = () => {
             <div>
               {selectedDay === "day1" && (
                 <TimelineDay
+                  key={`day1-${animationKey}`}
                   date="2025-11-08"
                   items={filteredItems.day1}
                   timeSlots={getOrderedTimeSlots(filteredItems.day1)}
                   groupedItems={groupItemsByTimeSlot(filteredItems.day1)}
                   dayName={t("schedule.day1")}
+                  animationKey={animationKey}
                 />
               )}
 
               {selectedDay === "day2" && (
                 <TimelineDay
+                  key={`day2-${animationKey}`}
                   date="2025-11-09"
                   items={filteredItems.day2}
                   timeSlots={getOrderedTimeSlots(filteredItems.day2)}
                   groupedItems={groupItemsByTimeSlot(filteredItems.day2)}
                   dayName={t("schedule.day2")}
+                  animationKey={animationKey}
                 />
               )}
 

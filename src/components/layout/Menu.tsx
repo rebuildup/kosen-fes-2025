@@ -322,17 +322,17 @@ const Menu = ({ setMenuOpen, closeButtonRef }: MenuProps) => {
           <div className="mobile-menu-section">
             <h3 className="mobile-menu-section-title">{t("info.title")}</h3>
             <div className="mobile-menu-info">
-              <p className="mobile-menu-info-item">
+              <p className="mobile-menu-info-item text-xs pl-4">
                 <strong>{t("info.festivalDates")}:</strong>
                 <br />
-                2025/06/15 - 2025/06/16
+                2025/11/08 - 2025/11/09
               </p>
-              <p className="mobile-menu-info-item">
+              <p className="mobile-menu-info-item text-xs pl-4">
                 <strong>{t("info.location")}:</strong>
                 <br />
                 {t("info.schoolName")}
               </p>
-              <p className="mobile-menu-info-item">
+              <p className="mobile-menu-info-item text-xs pl-4">
                 <strong>{t("info.organizer")}:</strong>
                 <br />
                 宇部高専祭実行委員会

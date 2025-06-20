@@ -12,6 +12,7 @@ interface TimelineDayProps {
   timeSlots: string[];
   groupedItems: { [timeSlot: string]: NonSponsorItem[] };
   dayName: string;
+  animationKey: number;
 }
 
 const TimelineDay = ({
@@ -20,8 +21,33 @@ const TimelineDay = ({
   timeSlots,
   groupedItems,
   dayName,
+  animationKey,
 }: TimelineDayProps) => {
   const { t } = useLanguage();
+
+  // Calculate progressive delay for timeline items
+  const calculateDelay = (timeSlotIndex: number, itemIndex: number): number => {
+    const baseDelay = 0.08;
+    const minDelay = 0.02;
+    const totalItemsBefore = timeSlots
+      .slice(0, timeSlotIndex)
+      .reduce((acc, slot) => {
+        return acc + groupedItems[slot].length;
+      }, 0);
+    const absoluteIndex = totalItemsBefore + itemIndex;
+
+    // Use similar progressive algorithm as CardGrid
+    if (items.length <= 10) {
+      return absoluteIndex * baseDelay;
+    }
+
+    const progressFactor = absoluteIndex / (items.length - 1);
+    const curve = Math.pow(1 - progressFactor, 0.8);
+    const delay = minDelay + (baseDelay - minDelay) * curve;
+    const cumulativeBase = absoluteIndex * minDelay * 0.3;
+
+    return delay + cumulativeBase;
+  };
 
   // Format date for display
   const formatDate = (dateStr: string) => {
@@ -102,13 +128,13 @@ const TimelineDay = ({
             <div className="relative">
               {/* Desktop Layout: Side timeline */}
               <div className="hidden md:flex items-start gap-6">
-                <div className="flex items-center space-x-3 min-w-0 flex-shrink-0">
+                <div className="flex items-center space-x-3 w-24 flex-shrink-0">
                   <div
                     className="w-3 h-3 rounded-full"
                     style={{ backgroundColor: "var(--color-accent)" }}
                   ></div>
                   <div
-                    className="text-lg font-semibold min-w-max"
+                    className="text-lg font-semibold"
                     style={{ color: "var(--color-text-primary)" }}
                   >
                     {timeSlot}
@@ -116,14 +142,25 @@ const TimelineDay = ({
                 </div>
 
                 <div className="flex-1 space-y-4">
-                  {groupedItems[timeSlot].map((item) => (
-                    <UnifiedCard
-                      key={item.id}
-                      item={item}
-                      variant="timeline"
-                      showDescription={true}
-                      showTags={true}
-                    />
+                  {groupedItems[timeSlot].map((item, itemIndex) => (
+                    <div
+                      key={`${animationKey}-${item.id}`}
+                      className="animate-category-change"
+                      style={{
+                        animationDelay: `${calculateDelay(
+                          timeSlotIndex,
+                          itemIndex
+                        )}s`,
+                        animationFillMode: "both",
+                      }}
+                    >
+                      <UnifiedCard
+                        item={item}
+                        variant="timeline"
+                        showDescription={true}
+                        showTags={true}
+                      />
+                    </div>
                   ))}
                 </div>
               </div>
@@ -142,14 +179,25 @@ const TimelineDay = ({
 
                 {/* Full-width cards */}
                 <div className="space-y-4">
-                  {groupedItems[timeSlot].map((item) => (
-                    <UnifiedCard
-                      key={item.id}
-                      item={item}
-                      variant="timeline"
-                      showDescription={true}
-                      showTags={true}
-                    />
+                  {groupedItems[timeSlot].map((item, itemIndex) => (
+                    <div
+                      key={`${animationKey}-mobile-${item.id}`}
+                      className="animate-category-change"
+                      style={{
+                        animationDelay: `${calculateDelay(
+                          timeSlotIndex,
+                          itemIndex
+                        )}s`,
+                        animationFillMode: "both",
+                      }}
+                    >
+                      <UnifiedCard
+                        item={item}
+                        variant="timeline"
+                        showDescription={true}
+                        showTags={true}
+                      />
+                    </div>
                   ))}
                 </div>
               </div>

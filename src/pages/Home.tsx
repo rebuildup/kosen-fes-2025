@@ -70,6 +70,11 @@ const Home = () => {
   const [popularTags, setPopularTags] = useState<string[]>([]);
   const [allDates, setAllDates] = useState<string[]>([]);
 
+  // Calculate delay for home page cards
+  const calculateHomeDelay = (index: number): number => {
+    return index * 0.08;
+  };
+
   // Update dates when items change
   useEffect(() => {
     const dates = [
@@ -99,9 +104,9 @@ const Home = () => {
 
   // Get featured items
   useEffect(() => {
-    setFeaturedEvents(events.slice(0, 2).map(convertItemCoreToItem));
-    setFeaturedExhibits(exhibits.slice(0, 2).map(convertItemCoreToItem));
-    setFeaturedStalls(stalls.slice(0, 1).map(convertItemCoreToItem));
+    setFeaturedEvents(events.slice(0, 4).map(convertItemCoreToItem));
+    setFeaturedExhibits(exhibits.slice(0, 4).map(convertItemCoreToItem));
+    setFeaturedStalls(stalls.slice(0, 3).map(convertItemCoreToItem));
 
     // Get popular tags from DataContext
     setPopularTags(getPopularTags(8));
@@ -170,9 +175,23 @@ const Home = () => {
             </PillButton>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
-            {featuredEvents.map((event) => (
-              <UnifiedCard key={event.id} item={event} variant="featured" />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-6 max-w-7xl mx-auto">
+            {featuredEvents.map((event, index) => (
+              <div
+                key={`home-events-${event.id}`}
+                className="animate-card-enter"
+                style={{
+                  animationDelay: `${calculateHomeDelay(index)}s`,
+                  animationFillMode: "both",
+                }}
+              >
+                <UnifiedCard
+                  item={event}
+                  variant="default"
+                  showTags={true}
+                  showDescription={true}
+                />
+              </div>
             ))}
           </div>
         </div>
@@ -190,9 +209,23 @@ const Home = () => {
             </PillButton>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
-            {featuredExhibits.map((exhibit) => (
-              <UnifiedCard key={exhibit.id} item={exhibit} variant="featured" />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-6 max-w-7xl mx-auto">
+            {featuredExhibits.map((exhibit, index) => (
+              <div
+                key={`home-exhibits-${exhibit.id}`}
+                className="animate-card-enter"
+                style={{
+                  animationDelay: `${calculateHomeDelay(index)}s`,
+                  animationFillMode: "both",
+                }}
+              >
+                <UnifiedCard
+                  item={exhibit}
+                  variant="default"
+                  showTags={true}
+                  showDescription={true}
+                />
+              </div>
             ))}
           </div>
         </div>
@@ -210,15 +243,23 @@ const Home = () => {
             </PillButton>
           </div>
 
-          <div className="space-y-4 max-w-5xl mx-auto">
-            {featuredStalls.map((stall) => (
-              <UnifiedCard
-                key={stall.id}
-                item={stall}
-                variant="timeline"
-                showDescription={true}
-                showTags={true}
-              />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
+            {featuredStalls.map((stall, index) => (
+              <div
+                key={`home-stalls-${stall.id}`}
+                className="animate-card-enter"
+                style={{
+                  animationDelay: `${calculateHomeDelay(index)}s`,
+                  animationFillMode: "both",
+                }}
+              >
+                <UnifiedCard
+                  item={stall}
+                  variant="default"
+                  showDescription={true}
+                  showTags={true}
+                />
+              </div>
             ))}
           </div>
         </div>
@@ -259,18 +300,28 @@ const Home = () => {
                 </div>
 
                 {/* イベントカードグリッド */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {(timelineItems[date] || []).slice(0, 6).map((item) => (
-                    <UnifiedCard
-                      key={item.id}
-                      item={item}
-                      variant="timeline"
-                      showTags={true}
-                    />
-                  ))}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                  {(timelineItems[date] || [])
+                    .slice(0, 8)
+                    .map((item, index) => (
+                      <div
+                        key={`home-timeline-${date}-${item.id}`}
+                        className="animate-card-enter"
+                        style={{
+                          animationDelay: `${calculateHomeDelay(index)}s`,
+                          animationFillMode: "both",
+                        }}
+                      >
+                        <UnifiedCard
+                          item={item}
+                          variant="default"
+                          showTags={true}
+                        />
+                      </div>
+                    ))}
                 </div>
 
-                {(timelineItems[date] || []).length > 6 && (
+                {(timelineItems[date] || []).length > 8 && (
                   <div className="text-center mt-6">
                     <PillButton
                       to="/schedule"
@@ -278,7 +329,7 @@ const Home = () => {
                       className="text-[var(--primary-color)] hover:bg-[var(--bg-tertiary)]"
                     >
                       {t("home.viewAll")} (+
-                      {(timelineItems[date] || []).length - 6})
+                      {(timelineItems[date] || []).length - 8})
                     </PillButton>
                   </div>
                 )}
@@ -303,12 +354,12 @@ const Home = () => {
             <p className="text-xl text-white/90 max-w-2xl mx-auto">
               {t("home.ctaDescription")}
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center px-8">
               <PillButton
                 to="/map"
                 variant="secondary"
                 size="lg"
-                className="bg-white hover:bg-gray-100 text-[var(--primary-color)] shadow-lg hover:shadow-xl"
+                className="bg-white hover:bg-gray-50 text-gray-900 shadow-lg hover:shadow-xl font-semibold w-48 mx-auto sm:mx-0 truncate"
               >
                 {t("home.viewMap")}
               </PillButton>
@@ -316,7 +367,7 @@ const Home = () => {
                 to="/bookmarks"
                 variant="secondary"
                 size="lg"
-                className="bg-white/10 hover:bg-white/20 text-white border border-white/30 backdrop-blur-sm"
+                className="bg-white/10 hover:bg-white/20 text-white border border-white/30 backdrop-blur-sm w-48 mx-auto sm:mx-0 truncate"
               >
                 {t("home.viewBookmarks")}
               </PillButton>

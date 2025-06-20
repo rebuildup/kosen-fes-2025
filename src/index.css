@@ -588,19 +588,22 @@
   /* モバイルフッター */
   .mobile-footer {
     @apply fixed bottom-0 left-0 right-0 z-50 border-t;
-    background: rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.85);
     border-color: var(--border-color);
-    backdrop-filter: blur(12px) saturate(150%);
-    -webkit-backdrop-filter: blur(12px) saturate(150%);
+    backdrop-filter: blur(16px) saturate(180%) brightness(105%);
+    -webkit-backdrop-filter: blur(16px) saturate(180%) brightness(105%);
+    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.1);
   }
 
   :root[data-theme="dark"] .mobile-footer {
-    background: rgba(0, 0, 0, 0.15);
+    background: rgba(0, 0, 0, 0.85);
+    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.3);
   }
 
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme]) .mobile-footer {
-      background: rgba(0, 0, 0, 0.15);
+      background: rgba(0, 0, 0, 0.85);
+      box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.3);
     }
   }
 
@@ -610,30 +613,49 @@
 
   .mobile-footer-item {
     @apply flex flex-col items-center justify-center p-2 rounded-lg transition-all duration-200 min-w-0 flex-1;
-    color: var(--text-secondary);
+    color: var(--text-primary);
+    opacity: 0.7;
   }
 
   .mobile-footer-item:hover {
-    background-color: var(--bg-secondary);
+    background-color: rgba(0, 0, 0, 0.05);
     color: var(--primary-color);
+    opacity: 1;
+    transform: translateY(-1px);
   }
 
   .mobile-footer-item-active {
     color: var(--primary-color);
     background: var(--instagram-gradient-subtle);
+    opacity: 1;
+    font-weight: 600;
+  }
+
+  /* ダークモード用のホバー効果 */
+  :root[data-theme="dark"] .mobile-footer-item:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme]) .mobile-footer-item:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
   }
 
   .mobile-footer-icon {
-    @apply w-5 h-5 mb-1 transition-transform duration-200;
+    @apply w-6 h-6 mb-1 transition-all duration-200;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
   }
 
   .mobile-footer-item:hover .mobile-footer-icon {
     @apply transform scale-110;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.15));
   }
 
   .mobile-footer-label {
     @apply text-xs font-medium truncate;
     max-width: 60px;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
   }
 
   /* モバイルメニュー */
@@ -661,6 +683,12 @@
     border-left: 1px solid var(--border-color);
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
     overflow-y: auto;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+  }
+
+  .mobile-menu-panel::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
   }
 
   .mobile-menu-header {
@@ -705,6 +733,13 @@
 
   .mobile-menu-content {
     padding: 1.5rem;
+    overflow-y: auto;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+  }
+
+  .mobile-menu-content::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
   }
 
   .mobile-menu-section {
@@ -847,15 +882,12 @@
     align-items: center;
     justify-content: space-between;
     padding: 0.75rem 1rem;
-    background: var(--bg-secondary);
-    border: 1px solid var(--border-color);
-    border-radius: 0.5rem;
     transition: all 0.2s ease;
   }
 
   .mobile-menu-setting-item:hover {
     background: var(--bg-tertiary);
-    border-color: var(--primary-color);
+    border-radius: 0.5rem;
   }
 
   .mobile-menu-setting-label {
@@ -952,6 +984,60 @@
 
   .animate-marquee {
     animation: marquee 10s linear infinite;
+  }
+
+  /* Card enter animation for smooth layout transitions */
+  @keyframes cardEnter {
+    0% {
+      opacity: 0;
+      transform: translateY(20px) scale(0.95);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  .animate-card-enter {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+    animation: cardEnter 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  }
+
+  /* List view specific animation - wave effect */
+  @keyframes cardEnterList {
+    0% {
+      opacity: 0;
+      transform: translateX(-20px) scale(0.98);
+    }
+    100% {
+      opacity: 1;
+      transform: translateX(0) scale(1);
+    }
+  }
+
+  .animate-card-enter-list {
+    opacity: 0;
+    transform: translateX(-20px) scale(0.98);
+    animation: cardEnterList 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  }
+
+  /* Smooth category change animation */
+  @keyframes categoryChange {
+    0% {
+      opacity: 0;
+      transform: translateY(15px) scale(0.96);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  .animate-category-change {
+    opacity: 0;
+    transform: translateY(15px) scale(0.96);
+    animation: categoryChange 0.35s cubic-bezier(0.4, 0, 0.2, 1) forwards;
   }
 
   /* カスタムスクロールバー */
@@ -1164,47 +1250,47 @@
 
   /* ボタン専用のガラス効果 */
   .glass-button {
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(12px) saturate(160%);
-    -webkit-backdrop-filter: blur(12px) saturate(160%);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    box-shadow: 0 3px 10px 0 rgba(0, 0, 0, 0.06),
-      inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.04);
+    backdrop-filter: blur(8px) saturate(120%);
+    -webkit-backdrop-filter: blur(8px) saturate(120%);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.01),
+      inset 0 1px 0 rgba(255, 255, 255, 0.05);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .glass-button:hover {
-    backdrop-filter: blur(16px) saturate(180%) brightness(110%);
-    -webkit-backdrop-filter: blur(16px) saturate(180%) brightness(110%);
+    backdrop-filter: blur(12px) saturate(140%) brightness(105%);
+    -webkit-backdrop-filter: blur(12px) saturate(140%) brightness(105%);
     transform: translateY(-1px);
-    box-shadow: 0 4px 15px 0 rgba(0, 0, 0, 0.08),
-      inset 0 2px 0 rgba(255, 255, 255, 0.25);
+    box-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.02),
+      inset 0 1px 0 rgba(255, 255, 255, 0.08);
   }
 
   /* ダークモード用のボタンガラス効果 */
   :root[data-theme="dark"] .glass-button {
-    background: rgba(0, 0, 0, 0.15);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 3px 10px 0 rgba(0, 0, 0, 0.15),
-      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    background: rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.05),
+      inset 0 1px 0 rgba(255, 255, 255, 0.03);
   }
 
   :root[data-theme="dark"] .glass-button:hover {
-    box-shadow: 0 4px 15px 0 rgba(0, 0, 0, 0.2),
-      inset 0 2px 0 rgba(255, 255, 255, 0.15);
+    box-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.08),
+      inset 0 1px 0 rgba(255, 255, 255, 0.05);
   }
 
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme]) .glass-button {
-      background: rgba(0, 0, 0, 0.15);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      box-shadow: 0 3px 10px 0 rgba(0, 0, 0, 0.15),
-        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      background: rgba(0, 0, 0, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.05),
+        inset 0 1px 0 rgba(255, 255, 255, 0.03);
     }
 
     :root:not([data-theme]) .glass-button:hover {
-      box-shadow: 0 4px 15px 0 rgba(0, 0, 0, 0.2),
-        inset 0 2px 0 rgba(255, 255, 255, 0.15);
+      box-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05);
     }
   }
 
@@ -1236,6 +1322,74 @@
     contain: layout style paint;
   }
 
+  /* スクロールバーを完全に隠すユーティリティクラス */
+  .scrollbar-hide {
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
+  }
+
+  /* 薄いスクロールバーユーティリティクラス */
+  .scrollbar-thin {
+    scrollbar-width: thin; /* Firefox */
+    scrollbar-color: rgba(0, 0, 0, 0.2) transparent; /* Firefox */
+  }
+
+  .scrollbar-thin::-webkit-scrollbar {
+    height: 4px; /* 横スクロールバーの高さ */
+    width: 4px; /* 縦スクロールバーの幅 */
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 2px;
+    transition: background-color 0.2s ease;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(0, 0, 0, 0.4);
+  }
+
+  /* ダークモード対応 */
+  :root[data-theme="dark"] .scrollbar-thin {
+    scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+  }
+
+  :root[data-theme="dark"] .scrollbar-thin::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.3);
+  }
+
+  :root[data-theme="dark"] .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(255, 255, 255, 0.5);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme]) .scrollbar-thin {
+      scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+    }
+
+    :root:not([data-theme]) .scrollbar-thin::-webkit-scrollbar-thumb {
+      background-color: rgba(255, 255, 255, 0.3);
+    }
+
+    :root:not([data-theme]) .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+      background-color: rgba(255, 255, 255, 0.5);
+    }
+  }
+
+  /* モバイル向けスムーズスクロール */
+  .mobile-scroll {
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+  }
+
   /* レガシーブラウザ対応 */
   @supports not (backdrop-filter: blur(1px)) {
     .glass-effect,
@@ -1246,7 +1400,7 @@
       background: rgba(255, 255, 255, 0.85);
       box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.08);
     }
-    
+
     :root[data-theme="dark"] .glass-effect,
     :root[data-theme="dark"] .glass-subtle,
     :root[data-theme="dark"] .glass-bold,
@@ -1255,35 +1409,16 @@
       background: rgba(0, 0, 0, 0.85);
       box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.25);
     }
-    
+
     /* モバイルSafari対応 */
     .header {
       background: rgba(255, 255, 255, 0.85) !important;
       border-bottom: 1px solid rgba(0, 0, 0, 0.1) !important;
     }
-    
+
     :root[data-theme="dark"] .header {
       background: rgba(0, 0, 0, 0.85) !important;
       border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
-    }
-  }
-
-    :root[data-theme="dark"] .glass-effect,
-    :root[data-theme="dark"] .glass-subtle,
-    :root[data-theme="dark"] .glass-bold,
-    :root[data-theme="dark"] .glass-button,
-    :root[data-theme="dark"] .glass-card {
-      background: rgba(0, 0, 0, 0.8);
-    }
-
-    @media (prefers-color-scheme: dark) {
-      :root:not([data-theme]) .glass-effect,
-      :root:not([data-theme]) .glass-subtle,
-      :root:not([data-theme]) .glass-bold,
-      :root:not([data-theme]) .glass-button,
-      :root:not([data-theme]) .glass-card {
-        background: rgba(0, 0, 0, 0.8);
-      }
     }
   }
 }

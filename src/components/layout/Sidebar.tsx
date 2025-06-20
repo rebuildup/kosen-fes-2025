@@ -12,7 +12,6 @@ import { MapIcon } from "../icons/MapIcon";
 import { SponsorIcon } from "../icons/SponsorIcon";
 import { SearchIcon } from "../icons/SearchIcon";
 import { HomeIcon } from "../icons/HomeIcon";
-import { SettingsIcon } from "../icons/SettingsIcon";
 import { InfoIcon } from "../icons/InfoIcon";
 
 const Sidebar = () => {
@@ -20,7 +19,7 @@ const Sidebar = () => {
   const { bookmarks } = useBookmark();
   const [expanded, setExpanded] = useState<string | null>(null);
 
-  // Handle section expansion
+  // Handle section expansion (only for info section now)
   const toggleSection = (section: string) => {
     if (expanded === section) {
       setExpanded(null);
@@ -31,7 +30,7 @@ const Sidebar = () => {
 
   return (
     <aside className="sticky top-16 h-[calc(100vh-4rem)] w-64 xl:w-64 lg:w-16 flex-shrink-0 transition-all duration-300 z-40 glass-subtle border-r border-[var(--border-color)]">
-      <div className="h-full overflow-y-auto p-6 lg:p-3">
+      <div className="h-full overflow-y-auto scrollbar-hide p-6 lg:p-3">
         {/* Quick Links */}
         <div className="mb-6">
           <h3 className="text-sm font-semibold text-[var(--text-secondary)] uppercase tracking-wide mb-3 lg:hidden xl:block">
@@ -101,45 +100,27 @@ const Sidebar = () => {
 
         {/* Settings Section */}
         <div className="mb-6">
-          {/* Wide sidebar: Show expandable settings */}
+          {/* Wide sidebar: Show settings always visible */}
           <div className="lg:hidden xl:block">
-            <div className="flex items-center justify-between mb-3">
-              <h3 className="text-sm font-semibold text-[var(--text-secondary)] uppercase tracking-wide">
-                {t("sidebar.settings")}
-              </h3>
-              <button
-                onClick={() => toggleSection("settings")}
-                className={`
-                  p-2 rounded-lg transition-all duration-200 flex items-center justify-center
-                  ${
-                    expanded === "settings"
-                      ? "glass-bold text-[var(--primary-color)] shadow-sm"
-                      : "glass-button glass-interactive text-[var(--text-primary)] hover:text-[var(--primary-color)]"
-                  }
-                `}
-                title={t("settings.title")}
-              >
-                <SettingsIcon size={18} />
-              </button>
-            </div>
+            <h3 className="text-sm font-semibold text-[var(--text-secondary)] uppercase tracking-wide mb-3">
+              {t("sidebar.settings")}
+            </h3>
 
-            {expanded === "settings" && (
-              <div className="space-y-3 p-3 glass-card rounded-lg border border-[var(--border-color)]">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium text-[var(--text-secondary)]">
-                    {t("settings.theme.title")}:
-                  </span>
-                  <ThemeToggleIcon />
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium text-[var(--text-secondary)]">
-                    {t("settings.language.title")}:
-                  </span>
-                  <LanguageToggleIcon />
-                </div>
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium text-[var(--text-secondary)]">
+                  {t("settings.theme.title")}:
+                </span>
+                <ThemeToggleIcon />
               </div>
-            )}
+
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium text-[var(--text-secondary)]">
+                  {t("settings.language.title")}:
+                </span>
+                <LanguageToggleIcon />
+              </div>
+            </div>
           </div>
 
           {/* Compact sidebar: Show icon-only controls */}
@@ -163,21 +144,6 @@ const Sidebar = () => {
               {/* Tooltip */}
               <div className="absolute left-full ml-2 top-1/2 transform -translate-y-1/2 glass-effect text-[var(--text-primary)] px-2 py-1 rounded-md text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50 shadow-lg">
                 {t("settings.language.title")}
-              </div>
-            </div>
-
-            {/* Settings icon button */}
-            <div className="relative group">
-              <button
-                onClick={() => toggleSection("settings")}
-                className="w-full p-3 rounded-lg transition-all duration-200 flex items-center justify-center glass-button glass-interactive hover:text-[var(--primary-color)]"
-                title={t("settings.title")}
-              >
-                <SettingsIcon size={18} />
-              </button>
-              {/* Tooltip */}
-              <div className="absolute left-full ml-2 top-1/2 transform -translate-y-1/2 glass-effect text-[var(--text-primary)] px-2 py-1 rounded-md text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50 shadow-lg">
-                {t("settings.title")}
               </div>
             </div>
           </div>
@@ -208,19 +174,19 @@ const Sidebar = () => {
             </div>
 
             {expanded === "info" && (
-              <div className="space-y-3 p-3 glass-card rounded-lg border border-[var(--border-color)]">
-                <div className="space-y-2">
-                  <div className="text-sm">
+              <div className="space-y-2 p-3 glass-card rounded-lg border border-[var(--border-color)]">
+                <div className="space-y-1.5">
+                  <div className="text-xs">
                     <span className="font-semibold text-[var(--text-primary)]">
                       {t("info.festivalDates")}:
                     </span>
                     <br />
                     <span className="text-[var(--text-secondary)]">
-                      2025/06/15 - 2025/06/16
+                      2025/11/08 - 2025/11/09
                     </span>
                   </div>
 
-                  <div className="text-sm">
+                  <div className="text-xs">
                     <span className="font-semibold text-[var(--text-primary)]">
                       {t("info.location")}:
                     </span>
@@ -230,7 +196,7 @@ const Sidebar = () => {
                     </span>
                   </div>
 
-                  <div className="text-sm">
+                  <div className="text-xs">
                     <span className="font-semibold text-[var(--text-primary)]">
                       {t("info.access")}:
                     </span>
@@ -240,7 +206,7 @@ const Sidebar = () => {
                     </span>
                   </div>
 
-                  <div className="text-sm">
+                  <div className="text-xs">
                     <span className="font-semibold text-[var(--text-primary)]">
                       {t("info.organizer")}:
                     </span>

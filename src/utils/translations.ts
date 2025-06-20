@@ -105,7 +105,7 @@ export const enTranslations: Translations = {
     day1: "Day 1 (Nov 8)",
     day2: "Day 2 (Nov 9)",
     filters: {
-      all: "All Events",
+      all: "All",
       day1: "Day 1",
       day2: "Day 2",
     },
@@ -221,7 +221,8 @@ export const enTranslations: Translations = {
     showAll: "Show All",
   },
   sponsors: {
-    title: "Our Sponsors",
+    title: "Sponsors",
+    description: "Thank you to our sponsors who support Ube Kosen Festival",
     noSponsors: "No sponsors found",
     filters: {
       all: "All Sponsors",
@@ -302,7 +303,7 @@ export const jaTranslations: Translations = {
   home: {
     title: "宇部高専祭 2025へようこそ",
     subtitle:
-      "2025年11月8日～9日に宇部工業高等専門学校で開催される展示やイベントをご覧ください！",
+      "2025年11月8日~9日に宇部工業高等専門学校で開催される展示やイベントをご覧ください！",
     featuredEvents: "注目イベント",
     featuredExhibits: "注目展示",
     popularTags: "人気のタグ",
@@ -312,7 +313,7 @@ export const jaTranslations: Translations = {
     viewBookmarks: "ブックマークを表示",
     viewMap: "マップを表示",
     stalls: "人気の露店",
-    dates: "2025年11月8日～9日",
+    dates: "2025年11月8日~9日",
     viewSchedule: "スケジュールを見る",
     downloadTicket: "チケットをダウンロード",
     viewTicket: "チケットを見る",
@@ -326,21 +327,21 @@ export const jaTranslations: Translations = {
   },
   events: {
     title: "イベント",
-    description: "祭りで開催される魅力的なイベントを発見しよう",
+    description: "イベントを発見しよう",
     noEvents: "イベントが見つかりません",
     noEventsFound: "イベントが見つかりません",
     allDays: "すべての日",
-    day1: "1日目（11月8日）",
-    day2: "2日目（11月9日）",
+    day1: "1日目(11月8日)",
+    day2: "2日目(11月9日)",
     filters: {
-      all: "すべてのイベント",
+      all: "すべて",
       day1: "1日目",
       day2: "2日目",
     },
   },
   exhibits: {
     title: "展示・露店",
-    description: "魅力的な展示と美味しい屋台を探索しよう",
+    description: "興味のある展示や露店を探そう",
     noExhibits: "展示が見つかりません",
     noStalls: "露店が見つかりません",
     filters: {
@@ -449,7 +450,8 @@ export const jaTranslations: Translations = {
     showAll: "すべて表示",
   },
   sponsors: {
-    title: "私たちのスポンサー",
+    title: "スポンサー",
+    description: "宇部高専祭を支援していただいたスポンサーの皆様",
     noSponsors: "スポンサーが見つかりません",
     filters: {
       all: "すべてのスポンサー",

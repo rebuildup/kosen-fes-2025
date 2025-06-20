@@ -44,11 +44,17 @@ export const UnifiedCard = React.memo(
 
     const [hasImageError, setHasImageError] = useState(false);
     const [isHovered, setIsHovered] = useState(false);
+    const [isInitialized, setIsInitialized] = useState(false);
 
     const cardRef = useRef<HTMLDivElement>(null);
     const imageRef = useRef<HTMLImageElement>(null);
     const metaRef = useRef<HTMLDivElement>(null);
     const tagsRef = useRef<HTMLDivElement>(null);
+
+    // Initialize component after first render to prevent flash
+    useEffect(() => {
+      setIsInitialized(true);
+    }, []);
 
     // Memoized derived values
     const placeholderImage = useMemo(() => {
@@ -527,12 +533,22 @@ export const UnifiedCard = React.memo(
           />
 
           {/* Gradient overlay with content */}
-          <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/20 to-transparent text-white">
+          <div
+            className="absolute inset-0 text-white"
+            style={{
+              background:
+                "linear-gradient(to right, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.15) 50%, rgba(0,0,0,0.03) 80%, transparent 100%)",
+            }}
+          >
             {/* Always visible basic content */}
             <div
               className={`
-              absolute bottom-0 left-0 right-0 p-3 transition-all duration-300
-              ${isHovered ? "opacity-0 pointer-events-none" : "opacity-100"}
+              absolute bottom-0 left-0 right-0 p-3 transition-all duration-200 transform-gpu
+              ${
+                isHovered
+                  ? "opacity-0 translate-y-2 pointer-events-none"
+                  : "opacity-100 translate-y-0"
+              }
             `}
             >
               <div className="schedule-card-time">{item.time}</div>
@@ -545,23 +561,36 @@ export const UnifiedCard = React.memo(
               </div>
             </div>
 
-            {/* Expanded content on hover */}
+            {/* Background gradient overlay - left-to-right animation */}
             <div
               className={`
-              absolute inset-0 p-4 flex flex-col justify-center
-              transition-all duration-300 ease-out
+              absolute inset-0 pointer-events-none
+              transition-all duration-400 ease-out transform-gpu
               ${
                 isHovered
-                  ? "opacity-100 translate-y-0"
-                  : "opacity-0 translate-y-4 pointer-events-none"
+                  ? "opacity-100 translate-x-0"
+                  : "opacity-0 -translate-x-4"
               }
             `}
               style={{
                 background:
-                  "linear-gradient(to right, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.4) 50%, rgba(0,0,0,0.1) 100%)",
+                  "linear-gradient(to right, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.2) 40%, rgba(0,0,0,0.05) 70%, transparent 100%)",
               }}
+            />
+
+            {/* Content container - bottom-to-top animation */}
+            <div
+              className={`
+              absolute inset-0 p-4 pt-12 flex flex-col justify-center text-white
+              transition-all duration-300 ease-out transform-gpu delay-100
+              ${
+                isHovered
+                  ? "opacity-100 translate-y-0 pointer-events-auto"
+                  : "opacity-0 translate-y-4 pointer-events-none"
+              }
+            `}
             >
-              <div className="space-y-3 max-h-full overflow-hidden">
+              <div className="space-y-3 max-h-full overflow-y-auto scrollbar-thin pr-2">
                 <h3 className="text-lg font-semibold">
                   {formatText(item.title)}
                 </h3>
@@ -620,7 +649,7 @@ export const UnifiedCard = React.memo(
           </div>
 
           {/* Type Badge */}
-          <div className="absolute top-2 left-2 flex items-center gap-1 bg-white/20 backdrop-blur-sm rounded-full px-2 py-1 text-xs">
+          <div className="absolute top-2 left-2 flex items-center gap-1 bg-white/20 backdrop-blur-sm rounded-full px-2 py-1 text-xs text-white">
             <ItemTypeIcon type={item.type} size="small" />
           </div>
 
@@ -658,39 +687,221 @@ export const UnifiedCard = React.memo(
       );
     }
 
-    // Render List variant
+    // Render List variant (same as timeline with dual animation)
     if (variant === "list") {
       const cardContent = (
         <div
           ref={cardRef}
-          className={`${getCardClasses()} ${className}`}
+          className={`schedule-card group cursor-pointer relative overflow-hidden transition-all duration-300 ease-out border rounded-lg ${
+            isHovered ? "h-64" : "h-32"
+          } ${className}`}
+          style={{
+            backgroundColor: "var(--color-bg-primary)",
+            borderColor: "var(--color-border-primary)",
+          }}
+          onClick={handleCardClick}
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
+        >
+          {/* Full background image */}
+          <img
+            ref={imageRef}
+            src={imageSrc}
+            alt={item.title}
+            className="w-full h-full object-cover"
+            onLoad={handleImageLoad}
+            onError={handleImageError}
+            loading="lazy"
+          />
+
+          {/* Gradient overlay with content */}
+          <div
+            className="absolute inset-0 text-white"
+            style={{
+              background:
+                "linear-gradient(to right, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.15) 50%, rgba(0,0,0,0.03) 80%, transparent 100%)",
+            }}
+          >
+            {/* Always visible basic content */}
+            <div
+              className={`
+              absolute bottom-0 left-0 right-0 p-3 transition-all duration-200 transform-gpu
+              ${
+                !isInitialized
+                  ? "opacity-0"
+                  : isHovered
+                  ? "opacity-0 translate-y-2 pointer-events-none"
+                  : "opacity-100 translate-y-0"
+              }
+            `}
+            >
+              <div className="schedule-card-time">{item.time}</div>
+              <h3 className="schedule-card-title mb-1">
+                {formatText(item.title)}
+              </h3>
+              <div className="flex items-center gap-1 text-xs opacity-80">
+                <LocationIcon size={12} />
+                <span className="truncate">{formatText(item.location)}</span>
+              </div>
+            </div>
+
+            {/* Background gradient overlay - left-to-right animation */}
+            <div
+              className={`
+              absolute inset-0 pointer-events-none
+              transition-all duration-400 ease-out transform-gpu
+              ${
+                !isInitialized
+                  ? "opacity-0 -translate-x-4"
+                  : isHovered
+                  ? "opacity-100 translate-x-0"
+                  : "opacity-0 -translate-x-4"
+              }
+            `}
+              style={{
+                background:
+                  "linear-gradient(to right, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.2) 40%, rgba(0,0,0,0.05) 70%, transparent 100%)",
+              }}
+            />
+
+            {/* Content container - bottom-to-top animation */}
+            <div
+              className={`
+              absolute inset-0 p-4 pt-12 flex flex-col justify-center text-white
+              transition-all duration-300 ease-out transform-gpu delay-100
+              ${
+                !isInitialized
+                  ? "opacity-0 translate-y-4 pointer-events-none"
+                  : isHovered
+                  ? "opacity-100 translate-y-0 pointer-events-auto"
+                  : "opacity-0 translate-y-4 pointer-events-none"
+              }
+            `}
+            >
+              <div className="space-y-3 max-h-full overflow-y-auto scrollbar-thin pr-2">
+                <h3 className="text-lg font-semibold">
+                  {formatText(item.title)}
+                </h3>
+
+                {showDescription && item.description && (
+                  <p className="text-sm leading-relaxed opacity-90 line-clamp-3">
+                    {formatText(item.description)}
+                  </p>
+                )}
+
+                <div className="space-y-2 text-sm opacity-80">
+                  <div className="flex items-center gap-2">
+                    <TimeIcon size={16} />
+                    <span>{item.time}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <LocationIcon size={16} />
+                    <span>{formatText(item.location)}</span>
+                  </div>
+                  {organization && (
+                    <div className="flex items-center gap-2">
+                      <PeopleIcon size={16} />
+                      <span className="truncate">
+                        {organizationLabel}: {formatText(organization)}
+                      </span>
+                    </div>
+                  )}
+                </div>
+
+                {showTags && item.tags && item.tags.length > 0 && (
+                  <div className="flex gap-1 overflow-x-auto scrollbar-hide">
+                    {item.tags.map((tagName) => (
+                      <span key={tagName} className="flex-shrink-0">
+                        <Tag tag={tagName} size="small" interactive={false} />
+                      </span>
+                    ))}
+                  </div>
+                )}
+
+                <div className="pt-2">
+                  <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-3 py-1.5 text-sm font-medium">
+                    {t("actions.viewDetails")}
+                    <span>→</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Type Badge */}
+          <div className="absolute top-2 left-2 flex items-center gap-1 bg-white/20 backdrop-blur-sm rounded-full px-2 py-1 text-xs text-white">
+            <ItemTypeIcon type={item.type} size="small" />
+          </div>
+
+          {/* Bookmark Button */}
+          <button
+            onClick={handleBookmarkClick}
+            className={`absolute top-2 right-2 w-8 h-8 flex items-center justify-center rounded-full transition-all duration-200 ${
+              isBookmarked(item.id)
+                ? "bg-yellow-500 text-white"
+                : "bg-white/20 backdrop-blur-sm text-white hover:bg-white/30"
+            }`}
+            aria-label={
+              isBookmarked(item.id)
+                ? t("actions.removeBookmark")
+                : t("actions.bookmark")
+            }
+          >
+            <span className="text-sm">{isBookmarked(item.id) ? "★" : "☆"}</span>
+          </button>
+        </div>
+      );
+
+      if (onClick) {
+        return cardContent;
+      }
+
+      return (
+        <Link
+          to={`/detail/${item.type}/${item.id}`}
+          className="block"
+          aria-label={`${typeLabel}: ${item.title}`}
+        >
+          {cardContent}
+        </Link>
+      );
+    }
+
+    // Render Compact variant (simplified - title only with hover details button)
+    if (variant === "compact") {
+      const cardContent = (
+        <div
+          ref={cardRef}
+          className={`relative group cursor-pointer rounded-lg overflow-hidden backdrop-blur-sm bg-white/5 border border-white/10 aspect-[4/3] ${className}`}
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
           onClick={handleCardClick}
         >
-          {/* Image Section */}
-          <div className="card-image-container w-32 h-32 flex-shrink-0">
-            <img
-              ref={imageRef}
-              src={imageSrc}
-              alt={item.title}
-              className="card-image w-full h-full rounded-lg"
-              onLoad={handleImageLoad}
-              onError={handleImageError}
-              loading="lazy"
-            />
+          {/* Background Image */}
+          <img
+            ref={imageRef}
+            src={imageSrc}
+            alt={item.title}
+            className="w-full h-full object-cover transition-transform duration-300 ease-out group-hover:scale-105"
+            onLoad={handleImageLoad}
+            onError={handleImageError}
+            loading="lazy"
+          />
 
-            {/* Type Badge */}
-            <div className="card-type-badge">
+          {/* Glassmorphism overlay */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/35 via-black/8 to-transparent text-white">
+            {/* Type Badge - Top Left */}
+            <div className="absolute top-2 left-2 bg-white/20 backdrop-blur-md rounded-full p-1.5 border border-white/20 text-white">
               <ItemTypeIcon type={item.type} size="small" />
-              <span className="ml-1 text-xs">{typeLabel}</span>
             </div>
 
-            {/* Bookmark Button */}
+            {/* Bookmark Button - Top Right */}
             <button
               onClick={handleBookmarkClick}
-              className={`card-bookmark-button ${
-                isBookmarked(item.id) ? "bookmarked" : ""
+              className={`absolute top-2 right-2 w-8 h-8 flex items-center justify-center rounded-full transition-all duration-200 backdrop-blur-md border border-white/20 pointer-events-auto z-10 ${
+                isBookmarked(item.id)
+                  ? "bg-yellow-500/90 text-white"
+                  : "bg-white/20 text-white hover:bg-white/30"
               }`}
               aria-label={
                 isBookmarked(item.id)
@@ -698,53 +909,49 @@ export const UnifiedCard = React.memo(
                   : t("actions.bookmark")
               }
             >
-              {isBookmarked(item.id) ? "★" : "☆"}
-            </button>
-          </div>
-
-          {/* Content Section */}
-          <div className="card-content flex-1">
-            <h3 className="card-title">{formatText(item.title)}</h3>
-
-            {showDescription && item.description && (
-              <p className="card-description">{formatText(item.description)}</p>
-            )}
-
-            {/* Meta Information */}
-            <div className="card-meta">
-              <TimeIcon size={16} />
-              <span>
-                {item.date} | {item.time}
+              <span className="text-sm">
+                {isBookmarked(item.id) ? "★" : "☆"}
               </span>
+            </button>
+
+            {/* Title Only - Always Visible */}
+            <div
+              className={`absolute bottom-0 left-0 right-0 p-3 transition-opacity duration-300 ${
+                isHovered ? "opacity-0" : "opacity-100"
+              }`}
+            >
+              <h3 className="font-semibold text-lg truncate">
+                {formatText(item.title)}
+              </h3>
             </div>
 
-            <div className="card-meta">
-              <LocationIcon size={16} />
-              <span>{formatText(item.location)}</span>
+            {/* Hover overlay with view details button */}
+            <div
+              className={`absolute inset-0 bg-gradient-to-t from-black/50 via-black/20 to-transparent p-4 pb-6 flex flex-col justify-end items-center transition-all duration-300 transform-gpu ${
+                isHovered
+                  ? "opacity-100 translate-y-0"
+                  : "opacity-0 translate-y-4 pointer-events-none"
+              }`}
+            >
+              <div className="text-center space-y-3 w-full">
+                <div className="overflow-hidden">
+                  <h3
+                    className={`text-lg font-semibold whitespace-nowrap ${
+                      isHovered && String(formatText(item.title)).length > 20
+                        ? "animate-marquee"
+                        : "truncate"
+                    }`}
+                  >
+                    {formatText(item.title)}
+                  </h3>
+                </div>
+
+                <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-4 py-2 text-sm font-medium hover:bg-white/30 transition-all duration-200">
+                  {t("actions.viewDetails")}
+                  <span>→</span>
+                </div>
+              </div>
             </div>
-
-            {organization && (
-              <div className="card-meta">
-                <PeopleIcon size={16} />
-                <span>
-                  {organizationLabel}: {formatText(organization)}
-                </span>
-              </div>
-            )}
-
-            {/* Tags */}
-            {showTags && item.tags && item.tags.length > 0 && (
-              <div className="flex flex-wrap gap-1 mt-2">
-                {item.tags.slice(0, 3).map((tag) => (
-                  <Tag key={tag} tag={tag} size="small" />
-                ))}
-                {item.tags.length > 3 && (
-                  <span className="text-xs opacity-60">
-                    +{item.tags.length - 3}
-                  </span>
-                )}
-              </div>
-            )}
           </div>
         </div>
       );
@@ -764,13 +971,11 @@ export const UnifiedCard = React.memo(
       );
     }
 
-    // Render Default/Compact/Grid variant (glassmorphism style like original Card.tsx)
+    // Render Default/Grid variant (glassmorphism style like original Card.tsx)
     const cardContent = (
       <div
         ref={cardRef}
-        className={`relative group cursor-pointer rounded-lg overflow-hidden backdrop-blur-sm bg-white/5 border border-white/10 ${
-          variant === "compact" ? "aspect-[4/3]" : "aspect-[4/3]"
-        } ${className}`}
+        className={`relative group cursor-pointer rounded-lg overflow-hidden backdrop-blur-sm bg-white/5 border border-white/10 aspect-[4/3] ${className}`}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
         onClick={handleCardClick}
@@ -787,7 +992,7 @@ export const UnifiedCard = React.memo(
         />
 
         {/* Glassmorphism overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/10 to-transparent text-white">
+        <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-black/8 to-transparent text-white">
           {/* Type Badge - Top Left */}
           <div className="absolute top-2 left-2 bg-white/20 backdrop-blur-md rounded-full p-1.5 border border-white/20">
             <ItemTypeIcon type={item.type} size="small" />
@@ -812,8 +1017,10 @@ export const UnifiedCard = React.memo(
 
           {/* Basic Info - Visible when not hovered */}
           <div
-            className={`absolute bottom-0 left-0 right-0 p-3 space-y-1 transition-opacity duration-300 ${
-              isHovered ? "opacity-0" : "opacity-100"
+            className={`absolute bottom-0 left-0 right-0 p-3 space-y-1 transition-all duration-300 transform-gpu ${
+              isHovered
+                ? "opacity-0 translate-y-2"
+                : "opacity-100 translate-y-0"
             }`}
           >
             <SmartScrollableText className="font-semibold text-lg">
@@ -829,7 +1036,7 @@ export const UnifiedCard = React.memo(
           {/* Detailed overlay on hover */}
           <div
             ref={metaRef}
-            className={`absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent p-4 flex flex-col justify-center transition-all duration-300 pointer-events-none ${
+            className={`absolute inset-0 bg-gradient-to-t from-black/50 via-black/20 to-transparent p-4 flex flex-col justify-center transition-all duration-300 transform-gpu pointer-events-none ${
               isHovered
                 ? "opacity-100 translate-y-0"
                 : "opacity-0 translate-y-4"
@@ -872,27 +1079,22 @@ export const UnifiedCard = React.memo(
           {showTags && item.tags && item.tags.length > 0 && (
             <div
               ref={tagsRef}
-              className={`absolute bottom-3 left-3 right-3 transition-all duration-300 pointer-events-none ${
+              className={`absolute bottom-3 left-3 right-3 transition-all duration-300 transform-gpu pointer-events-none ${
                 isHovered
                   ? "opacity-100 translate-y-0"
                   : "opacity-0 translate-y-4"
               }`}
               style={{ visibility: isHovered ? "visible" : "hidden" }}
             >
-              <div className="flex flex-wrap gap-1">
-                {item.tags.slice(0, 3).map((tagName) => (
-                  <Tag
-                    key={tagName}
-                    tag={tagName}
-                    size="small"
-                    interactive={false}
-                  />
-                ))}
-                {item.tags.length > 3 && (
-                  <span className="px-2 py-1 bg-white/20 backdrop-blur-sm rounded-full text-xs border border-white/10">
-                    +{item.tags.length - 3}
+              <div
+                className="flex gap-1 overflow-x-auto scrollbar-hide"
+                style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+              >
+                {item.tags.map((tagName) => (
+                  <span key={tagName} className="flex-shrink-0">
+                    <Tag tag={tagName} size="small" interactive={false} />
                   </span>
-                )}
+                ))}
               </div>
             </div>
           )}

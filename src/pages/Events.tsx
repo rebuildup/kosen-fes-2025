@@ -73,15 +73,21 @@ const Events = () => {
       <section className="section bg-[var(--bg-primary)]">
         <div className="max-w-7xl mx-auto">
           <div className="space-y-6">
-            {/* Filter Controls - Day selection and View mode in one row */}
-            <div className="flex flex-row items-center gap-2 overflow-x-auto pb-2">
-              <TabButtons
-                options={dateOptions}
-                activeValue={dateFilter}
-                onChange={(value) => setDateFilter(value as typeof dateFilter)}
-                className="rounded-lg overflow-hidden shadow-sm flex-shrink-0"
-              />
+            {/* Filter Controls - Day selection and View mode */}
+            <div className="flex flex-row items-center sm:justify-between gap-3 overflow-x-auto pb-2 scrollbar-thin mobile-scroll">
+              {/* Date filter tabs - Left aligned on wide screens */}
+              <div className="flex-shrink-0">
+                <TabButtons
+                  options={dateOptions}
+                  activeValue={dateFilter}
+                  onChange={(value) =>
+                    setDateFilter(value as typeof dateFilter)
+                  }
+                  className="rounded-lg overflow-hidden shadow-sm"
+                />
+              </div>
 
+              {/* View mode toggle - Right aligned on wide screens */}
               <div className="flex items-center justify-end flex-shrink-0">
                 <CardListToggle viewMode={viewMode} setViewMode={setViewMode} />
               </div>

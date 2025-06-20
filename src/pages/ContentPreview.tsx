@@ -1060,14 +1060,17 @@ const ContentPreview = () => {
                 >
                   <TimelineDay
                     date={previewItem.date}
-                    items={[previewItem as any]}
+                    items={[previewItem as Event | Exhibit | Stall]}
                     timeSlots={[previewItem.time.split(" - ")[0]]}
                     groupedItems={{
-                      [previewItem.time.split(" - ")[0]]: [previewItem as any],
+                      [previewItem.time.split(" - ")[0]]: [
+                        previewItem as Event | Exhibit | Stall,
+                      ],
                     }}
                     dayName={
                       previewItem.date === "2025-11-08" ? "1日目" : "2日目"
                     }
+                    animationKey={0}
                   />
                 </div>
               </div>

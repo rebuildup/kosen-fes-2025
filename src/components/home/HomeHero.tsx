@@ -139,7 +139,7 @@ const HomeHero = ({}: HomeHeroProps) => {
         <p ref={subtitleRef}>{t("home.subtitle")}</p>
         <div ref={datesRef}>
           <span>📅</span>
-          <span>2025/06/15 - 2025/06/16</span>
+          <span>2025/11/08 - 2025/11/09</span>
         </div>
         <Link to="/schedule" ref={ctaRef}>
           {t("schedule.title")}
