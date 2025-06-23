@@ -12,7 +12,6 @@ import { events } from "./events";
 import { exhibits } from "./exhibits";
 import { stalls } from "./stalls";
 import { sponsors } from "./sponsors";
-import { campusMapData } from "./mapData";
 
 // Helper to create data state
 const createDataState = <T>(data: T): DataState<T> => ({
@@ -106,9 +105,6 @@ const splitSponsorData = (
   },
 });
 
-// Get map data from the new centralized map data
-const getMapData = (): MapData => campusMapData;
-
 class DataManager {
   private store: DataStore;
   private detailsCache = new Map<string, any>();
@@ -148,7 +144,7 @@ class DataManager {
       sponsorDetails: {},
 
       // Map data
-      mapData: createDataState(getMapData()),
+      mapData: createDataState(null as MapData | null),
 
       // User data (loaded from localStorage)
       bookmarks: this.loadBookmarks(),

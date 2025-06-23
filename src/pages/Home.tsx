@@ -38,6 +38,7 @@ const convertItemCoreToItem = (itemCore: ItemCore): Item => {
       return {
         ...baseItem,
         type: "stall",
+        organizer: (itemCore as any).organizer || "",
         products: [],
       };
     case "sponsor":

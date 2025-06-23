@@ -82,6 +82,7 @@ const ContentPreview = () => {
           title: "例: たこ焼き屋台",
           description:
             "例: 関西風の本格たこ焼きを提供します。外はカリッと中はトロトロの絶品たこ焼きをお楽しみください。ソース、マヨネーズ、青のりでお仕上げします。",
+          organizer: "例: 女子バレーボール部",
           products: ["たこ焼き(8個)", "たこ焼き(12個)", "飲み物"],
           time: "11:00 - 16:00",
           location: "例: 学生会館前",
@@ -188,6 +189,7 @@ const ContentPreview = () => {
         return {
           ...baseItem,
           type: "stall",
+          organizer: formData.organizer || "運営者未設定",
           products: formData.products || ["商品1", "商品2"],
         } as Stall;
       case "sponsor":
@@ -543,32 +545,58 @@ const ContentPreview = () => {
               )}
 
               {formData.type === "stall" && (
-                <div>
-                  <label
-                    className="block text-sm font-medium mb-2"
-                    style={{ color: "var(--color-text-primary)" }}
-                  >
-                    販売商品(1行に1つ)
-                  </label>
-                  <textarea
-                    value={formData.products?.join("\n") || ""}
-                    onChange={(e) =>
-                      handleInputChange(
-                        "products",
-                        e.target.value.split("\n").filter((p) => p.trim())
-                      )
-                    }
-                    placeholder={
-                      guide.products?.join("\n") || "商品1\n商品2\n商品3"
-                    }
-                    rows={3}
-                    className="w-full px-3 py-2 rounded-lg border"
-                    style={{
-                      backgroundColor: "var(--color-bg-primary)",
-                      borderColor: "var(--color-border-primary)",
-                      color: "var(--color-text-primary)",
-                    }}
-                  />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label
+                      className="block text-sm font-medium mb-2"
+                      style={{ color: "var(--color-text-primary)" }}
+                    >
+                      運営者
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.organizer || ""}
+                      onChange={(e) =>
+                        handleInputChange("organizer", e.target.value)
+                      }
+                      placeholder={guide.organizer || "運営者名"}
+                      className="w-full px-3 py-2 rounded-lg border"
+                      style={{
+                        backgroundColor: "var(--color-bg-primary)",
+                        borderColor: "var(--color-border-primary)",
+                        color: "var(--color-text-primary)",
+                      }}
+                    />
+                  </div>
+                  <div>
+                    <label
+                      className="block text-sm font-medium mb-2"
+                      style={{ color: "var(--color-text-primary)" }}
+                    >
+                      商品・メニュー（カンマ区切り）
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.products?.join(", ") || ""}
+                      onChange={(e) =>
+                        handleInputChange(
+                          "products",
+                          e.target.value
+                            .split(", ")
+                            .filter((item) => item.trim())
+                        )
+                      }
+                      placeholder={
+                        guide.products?.join(", ") || "商品1, 商品2, 商品3"
+                      }
+                      className="w-full px-3 py-2 rounded-lg border"
+                      style={{
+                        backgroundColor: "var(--color-bg-primary)",
+                        borderColor: "var(--color-border-primary)",
+                        color: "var(--color-text-primary)",
+                      }}
+                    />
+                  </div>
                 </div>
               )}
 

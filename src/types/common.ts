@@ -30,6 +30,7 @@ export interface Exhibit extends BaseItem {
 
 export interface Stall extends BaseItem {
   type: "stall";
+  organizer: string;
   products: string[];
 }
 

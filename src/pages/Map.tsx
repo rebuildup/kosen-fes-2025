@@ -7,7 +7,7 @@ import { exhibits } from "../data/exhibits";
 import { stalls } from "../data/stalls";
 import { Item, Event, Exhibit, Stall } from "../types/common";
 import SimpleMap from "../components/map/UnifiedMap";
-import { getBuildingCoordinates } from "../data/buildings";
+
 import LocationList from "../components/map/LocationList";
 import TagFilter from "../components/common/TagFilter";
 import SelectedTags from "../components/common/SelectedTags";
@@ -107,22 +107,6 @@ const Map = () => {
     [locationItems]
   );
 
-  // マーカーのメモ化
-  const mapMarkers = useMemo(
-    () =>
-      locationsWithItems.map((location) => ({
-        id: location,
-        location,
-        coordinates: getBuildingCoordinates(location) || {
-          x: 1000,
-          y: 700,
-        },
-        isSelected: selectedLocation === location,
-        isHovered: hoveredLocation === location,
-      })),
-    [locationsWithItems, selectedLocation, hoveredLocation]
-  );
-
   // コンテンツアイテムのメモ化
   const mapContentItems = useMemo(
     () => itemsToContentItems(filteredItems),
@@ -180,7 +164,7 @@ const Map = () => {
                   >
                     <SimpleMap
                       mode="display"
-                      markers={mapMarkers}
+                      markers={[]}
                       contentItems={mapContentItems}
                       onLocationHover={handleLocationHover}
                       onLocationSelect={handleLocationSelect}

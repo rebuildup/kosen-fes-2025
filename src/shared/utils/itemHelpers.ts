@@ -10,7 +10,7 @@ export const getItemOrganization = (item: Item): string => {
     case "exhibit":
       return item.creator || "";
     case "stall":
-      return item.products?.length > 0 ? item.products.join(", ") : "";
+      return item.organizer || "";
     default:
       return "";
   }
@@ -29,7 +29,7 @@ export const getItemOrganizationLabel = (
     case "exhibit":
       return t("detail.creator");
     case "stall":
-      return t("detail.products");
+      return t("detail.organizer");
     default:
       return "";
   }

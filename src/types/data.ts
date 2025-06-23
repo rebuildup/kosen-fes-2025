@@ -97,7 +97,7 @@ export interface DataStore {
   exhibitDetails: Record<string, DataState<ItemDetails>>;
   stallDetails: Record<string, DataState<ItemDetails>>;
   sponsorDetails: Record<string, DataState<ItemDetails>>;
-  mapData: DataState<MapData>;
+  mapData: DataState<MapData | null>;
   bookmarks: string[];
   searchHistory: string[];
   preferences: {
