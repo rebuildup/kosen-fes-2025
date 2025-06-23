@@ -97,7 +97,7 @@ const SimpleMap = ({
   useEffect(() => {
     const loadSVG = async () => {
       try {
-        const response = await fetch("/campus-map.svg");
+        const response = await fetch("./campus-map.svg");
         if (!response.ok) {
           throw new Error("SVGファイルの読み込みに失敗しました");
         }
