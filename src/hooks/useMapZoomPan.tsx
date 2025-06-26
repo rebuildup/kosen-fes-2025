@@ -40,6 +40,10 @@ export const useSimpleMapZoomPan = ({
   const [isDragging, setIsDragging] = useState(false);
   const [lastMousePos, setLastMousePos] = useState<Point>({ x: 0, y: 0 });
 
+  // タッチ操作用の状態
+  const [lastTouchDistance, setLastTouchDistance] = useState<number>(0);
+  const [lastTouchCenter, setLastTouchCenter] = useState<Point>({ x: 0, y: 0 });
+
   // Transform適用関数
   const applyTransform = useCallback(
     (newTransform: Transform) => {
@@ -139,6 +143,25 @@ export const useSimpleMapZoomPan = ({
     [transform, width, height]
   );
 
+  // タッチポイント間の距離を計算
+  const getTouchDistance = useCallback((touches: React.TouchList): number => {
+    if (touches.length < 2) return 0;
+    const dx = touches[0].clientX - touches[1].clientX;
+    const dy = touches[0].clientY - touches[1].clientY;
+    return Math.sqrt(dx * dx + dy * dy);
+  }, []);
+
+  // タッチポイントの中心点を計算
+  const getTouchCenter = useCallback((touches: React.TouchList): Point => {
+    if (touches.length === 1) {
+      return { x: touches[0].clientX, y: touches[0].clientY };
+    }
+
+    const x = (touches[0].clientX + touches[1].clientX) / 2;
+    const y = (touches[0].clientY + touches[1].clientY) / 2;
+    return { x, y };
+  }, []);
+
   // マウスイベントハンドラー
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
     if (e.button !== 0) return; // 左クリックのみ
@@ -168,6 +191,106 @@ export const useSimpleMapZoomPan = ({
 
   const handleMouseUp = useCallback(() => {
     setIsDragging(false);
+  }, []);
+
+  // タッチイベントハンドラー
+  const handleTouchStart = useCallback(
+    (e: React.TouchEvent) => {
+      e.preventDefault();
+
+      if (e.touches.length === 1) {
+        // シングルタッチ：ドラッグ開始
+        setIsDragging(true);
+        setLastMousePos({ x: e.touches[0].clientX, y: e.touches[0].clientY });
+      } else if (e.touches.length === 2) {
+        // マルチタッチ：ピンチ開始
+        setIsDragging(false);
+        const distance = getTouchDistance(e.touches);
+        const center = getTouchCenter(e.touches);
+        setLastTouchDistance(distance);
+        setLastTouchCenter(center);
+      }
+    },
+    [getTouchDistance, getTouchCenter]
+  );
+
+  const handleTouchMove = useCallback(
+    (e: TouchEvent) => {
+      e.preventDefault();
+
+      if (e.touches.length === 1 && isDragging) {
+        // シングルタッチ：ドラッグ
+        const deltaX = e.touches[0].clientX - lastMousePos.x;
+        const deltaY = e.touches[0].clientY - lastMousePos.y;
+
+        applyTransform({
+          ...transform,
+          translateX: transform.translateX + deltaX,
+          translateY: transform.translateY + deltaY,
+        });
+
+        setLastMousePos({ x: e.touches[0].clientX, y: e.touches[0].clientY });
+      } else if (e.touches.length === 2) {
+        // マルチタッチ：ピンチズーム
+        const distance = getTouchDistance(
+          e.touches as unknown as React.TouchList
+        );
+        const center = getTouchCenter(e.touches as unknown as React.TouchList);
+
+        if (lastTouchDistance > 0) {
+          const scaleFactor = distance / lastTouchDistance;
+          const newScale = Math.max(
+            minScale,
+            Math.min(maxScale, transform.scale * scaleFactor)
+          );
+
+          if (newScale !== transform.scale && containerRef.current) {
+            const containerRect = containerRef.current.getBoundingClientRect();
+            const centerX = center.x - containerRect.left;
+            const centerY = center.y - containerRect.top;
+
+            const scaleRatio = newScale / transform.scale;
+
+            applyTransform({
+              scale: newScale,
+              translateX:
+                centerX - (centerX - transform.translateX) * scaleRatio,
+              translateY:
+                centerY - (centerY - transform.translateY) * scaleRatio,
+            });
+          }
+        }
+
+        setLastTouchDistance(distance);
+        setLastTouchCenter(center);
+      }
+    },
+    [
+      isDragging,
+      lastMousePos,
+      transform,
+      applyTransform,
+      lastTouchDistance,
+      getTouchDistance,
+      getTouchCenter,
+      minScale,
+      maxScale,
+    ]
+  );
+
+  const handleTouchEnd = useCallback((e: TouchEvent) => {
+    e.preventDefault();
+
+    if (e.touches.length === 0) {
+      // 全てのタッチが終了
+      setIsDragging(false);
+      setLastTouchDistance(0);
+    } else if (e.touches.length === 1) {
+      // マルチタッチからシングルタッチに移行
+      setLastTouchDistance(0);
+      setIsDragging(true);
+      setLastMousePos({ x: e.touches[0].clientX, y: e.touches[0].clientY });
+    }
   }, []);
 
   // ホイールイベントハンドラー
@@ -209,15 +332,27 @@ export const useSimpleMapZoomPan = ({
     document.addEventListener("mousemove", handleMouseMove);
     document.addEventListener("mouseup", handleMouseUp);
 
+    // タッチイベント
+    document.addEventListener("touchmove", handleTouchMove, { passive: false });
+    document.addEventListener("touchend", handleTouchEnd, { passive: false });
+
     // ホイールイベント
     container.addEventListener("wheel", handleWheel, { passive: false });
 
     return () => {
       document.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("mouseup", handleMouseUp);
+      document.removeEventListener("touchmove", handleTouchMove);
+      document.removeEventListener("touchend", handleTouchEnd);
       container.removeEventListener("wheel", handleWheel);
     };
-  }, [handleMouseMove, handleMouseUp, handleWheel]);
+  }, [
+    handleMouseMove,
+    handleMouseUp,
+    handleTouchMove,
+    handleTouchEnd,
+    handleWheel,
+  ]);
 
   // 初期化
   useEffect(() => {
@@ -238,5 +373,6 @@ export const useSimpleMapZoomPan = ({
     zoomToPoint,
     screenToSVG,
     handleMouseDown,
+    handleTouchStart,
   };
 };

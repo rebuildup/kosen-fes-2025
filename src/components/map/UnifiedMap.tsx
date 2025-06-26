@@ -85,6 +85,7 @@ const SimpleMap = ({
     zoomToPoint,
     screenToSVG,
     handleMouseDown,
+    handleTouchStart,
   } = useSimpleMapZoomPan({
     width: CAMPUS_MAP_BOUNDS.width,
     height: CAMPUS_MAP_BOUNDS.height,
@@ -168,7 +169,7 @@ const SimpleMap = ({
   useEffect(() => {
     if (highlightCoordinate && mode === "detail") {
       const timer = setTimeout(() => {
-        zoomToPoint(highlightCoordinate, 3);
+        zoomToPoint(highlightCoordinate, 1);
       }, 500);
       return () => clearTimeout(timer);
     }
@@ -245,6 +246,7 @@ const SimpleMap = ({
           imageRendering: "crisp-edges",
         }}
         onMouseDown={handleMouseDown}
+        onTouchStart={handleTouchStart}
       >
         {/* ベースSVGマップ */}
         <svg

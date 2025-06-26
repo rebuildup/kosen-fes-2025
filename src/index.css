@@ -520,6 +520,13 @@
     cursor: grab;
     /* スムーズなトランジション */
     transition: border-color 0.2s ease;
+
+    /* スマホ対応の追加設定 */
+    -webkit-touch-callout: none; /* iOS長押しメニューを無効化 */
+    -webkit-tap-highlight-color: transparent; /* タップ時のハイライトを無効化 */
+    -webkit-user-drag: none; /* 画像ドラッグを無効化 */
+    -webkit-overflow-scrolling: touch; /* スムーズスクロール */
+    overscroll-behavior: none; /* スクロールチェーンを防ぐ */
   }
 
   .map-container:hover {
@@ -1489,6 +1496,99 @@
       font-weight: 600;
       letter-spacing: -0.005em;
       text-shadow: 0 0 0.5px rgba(255, 255, 255, 0.9);
+    }
+  }
+
+  /* スマホ・タブレット専用のマップ最適化 */
+  @media (hover: none) and (pointer: coarse) {
+    .map-container {
+      /* タッチデバイス向けのボーダーとパディング */
+      border-width: 2px;
+      border-radius: 12px;
+      /* タッチ感度向上 */
+      touch-action: pan-x pan-y pinch-zoom;
+    }
+
+    .map-container:hover {
+      /* タッチデバイスではホバー効果を無効化 */
+      border-color: var(--color-border-primary);
+    }
+
+    .map-container svg {
+      /* タッチデバイス向けのレンダリング最適化 */
+      image-rendering: -webkit-optimize-contrast;
+      image-rendering: optimize-contrast;
+    }
+
+    /* ズームコントロールのタッチ対応 */
+    .map-controls {
+      right: 12px;
+      top: 12px;
+      padding: 12px 8px;
+    }
+
+    .map-controls button {
+      min-height: 44px; /* タッチターゲットの推奨サイズ */
+      min-width: 44px;
+      font-size: 18px;
+      border-radius: 8px;
+      border: 2px solid var(--color-border-primary);
+      background: var(--color-bg-primary);
+      color: var(--color-text-primary);
+      touch-action: manipulation;
+    }
+
+    .map-controls button:active {
+      transform: scale(0.95);
+      background: var(--color-bg-secondary);
+    }
+  }
+
+  /* 小さな画面向けの調整 */
+  @media (max-width: 480px) {
+    .map-container {
+      border-radius: 8px;
+      border-width: 1px;
+    }
+
+    .map-controls {
+      right: 8px;
+      top: 8px;
+      padding: 8px 6px;
+      gap: 6px;
+    }
+
+    .map-controls button {
+      min-height: 40px;
+      min-width: 40px;
+      font-size: 16px;
+    }
+
+    /* マップテキストのモバイル最適化 */
+    .map-text-ultra-quality {
+      font-size: 10px;
+      font-weight: 800;
+    }
+
+    /* マーカーサイズのモバイル調整 */
+    .map-marker-ultra-quality {
+      stroke-width: 2;
+    }
+  }
+
+  /* 超小型画面 (iPhone SE等) 向けの調整 */
+  @media (max-width: 375px) {
+    .map-controls {
+      right: 6px;
+      top: 6px;
+      padding: 6px 4px;
+      gap: 4px;
+    }
+
+    .map-controls button {
+      min-height: 36px;
+      min-width: 36px;
+      font-size: 14px;
     }
   }
 }
