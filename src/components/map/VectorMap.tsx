@@ -52,7 +52,6 @@ interface VectorMapProps {
 
   // 設定
   showControls?: boolean;
-  initialZoom?: number;
   maxZoom?: number;
   minZoom?: number;
 }
@@ -74,7 +73,6 @@ const VectorMap: React.FC<VectorMapProps> = ({
   onPointHover,
   onMapClick,
   showControls = true,
-  initialZoom = 1,
   maxZoom = 10,
   minZoom = 0.1,
 }) => {
@@ -105,7 +103,7 @@ const VectorMap: React.FC<VectorMapProps> = ({
 
   // Touch state for mobile
   const [touchDistance, setTouchDistance] = useState<number>(0);
-  const [touchCenter, setTouchCenter] = useState<Coordinate>({ x: 0, y: 0 });
+  const [, setTouchCenter] = useState<Coordinate>({ x: 0, y: 0 });
 
   // Content card state
   const [selectedPoint, setSelectedPoint] = useState<InteractivePoint | null>(
@@ -544,9 +542,6 @@ const VectorMap: React.FC<VectorMapProps> = ({
       // ズーム操作時にカードを閉じる
       closeCard();
 
-      const rect = containerRef.current.getBoundingClientRect();
-      const mouseX = e.clientX - rect.left;
-      const mouseY = e.clientY - rect.top;
       const mouseSVG = screenToSVG(e.clientX, e.clientY);
 
       const zoomFactor = e.deltaY > 0 ? 1.1 : 0.9;
@@ -698,14 +693,8 @@ const VectorMap: React.FC<VectorMapProps> = ({
         const contentRelativeY = relativeY - contentRect.offsetY;
 
         // コンテンツ領域制限を緩和（クリック処理）
-        const clickContentMargin =
-          Math.max(contentRect.width, contentRect.height) * 10;
-        const isInClickContent = !(
-          contentRelativeX < -clickContentMargin ||
-          contentRelativeY < -clickContentMargin ||
-          contentRelativeX > contentRect.width + clickContentMargin ||
-          contentRelativeY > contentRect.height + clickContentMargin
-        );
+        // const clickContentMargin =
+        //   Math.max(contentRect.width, contentRect.height) * 10;
 
         // 座標変換: SVG全体で動作する柔軟な変換
         const relativeRatioX = contentRelativeX / contentRect.width;
@@ -844,7 +833,6 @@ const VectorMap: React.FC<VectorMapProps> = ({
     const adjustedThreshold = CLUSTER_DISTANCE_THRESHOLD / Math.sqrt(zoomLevel);
 
     // 最小クラスターサイズ（2つ以上のポイントでクラスターを作成）
-    const MIN_CLUSTER_SIZE = 2;
 
     for (const point of points) {
       if (usedPoints.has(point.id)) continue;
@@ -924,8 +912,6 @@ const VectorMap: React.FC<VectorMapProps> = ({
       }
 
       // ポイント位置に基づく動的優先順位の計算
-      const centerX = containerRect.width / 2;
-      const centerY = containerRect.height / 2;
       const leftThird = containerRect.width / 3;
       const rightThird = (containerRect.width * 2) / 3;
       const topThird = containerRect.height / 3;

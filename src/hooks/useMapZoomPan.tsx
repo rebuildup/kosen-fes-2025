@@ -42,7 +42,7 @@ export const useSimpleMapZoomPan = ({
 
   // タッチ操作用の状態
   const [lastTouchDistance, setLastTouchDistance] = useState<number>(0);
-  const [lastTouchCenter, setLastTouchCenter] = useState<Point>({ x: 0, y: 0 });
+  const [, setLastTouchCenter] = useState<Point>({ x: 0, y: 0 });
 
   // Transform適用関数
   const applyTransform = useCallback(
@@ -78,8 +78,6 @@ export const useSimpleMapZoomPan = ({
       const minTranslateY = containerHeight - scaledMapHeight - paddingY;
 
       // パン範囲を制限
-      const originalX = constrainedTransform.translateX;
-      const originalY = constrainedTransform.translateY;
 
       constrainedTransform.translateX = Math.max(
         minTranslateX,

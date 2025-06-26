@@ -1,6 +1,5 @@
 import React, { useMemo } from "react";
 import VectorMap from "./VectorMap";
-import { getBuildingCoordinates } from "../../data/buildings";
 import { events } from "../../data/events";
 import { stalls } from "../../data/stalls";
 import { exhibits } from "../../data/exhibits";
@@ -63,13 +62,12 @@ const VectorMapAdapter: React.FC<VectorMapAdapterProps> = ({
   markers = [],
   contentItems = [],
   highlightCoordinate,
-  selectedCoordinate,
   onCoordinateSelect,
   onLocationHover,
   onLocationSelect,
   showZoomControls = true,
   allowCoordinateSelection = false,
-  initialZoom = 1,
+  // initialZoom = 1,
   maxZoom = 10,
   minZoom = 0.1,
 }) => {
@@ -114,7 +112,7 @@ const VectorMapAdapter: React.FC<VectorMapAdapterProps> = ({
             onCoordinateSelect(item.coordinates);
           }
         },
-        onHover: (hovered: boolean) => {
+        onHover: () => {
           // ホバー処理（将来の拡張用）
         },
       });
@@ -137,7 +135,7 @@ const VectorMapAdapter: React.FC<VectorMapAdapterProps> = ({
               onCoordinateSelect(contentItem.coordinates);
             }
           },
-          onHover: (hovered: boolean) => {
+          onHover: () => {
             // ホバー処理（将来の拡張用）
           },
         });
@@ -177,11 +175,11 @@ const VectorMapAdapter: React.FC<VectorMapAdapterProps> = ({
     }
   };
 
-  const handlePointClick = (pointId: string) => {
+  const handlePointClick = () => {
     // ポイントクリック処理は個別のonClick関数で処理される
   };
 
-  const handlePointHover = (pointId: string | null) => {
+  const handlePointHover = () => {
     // ポイントホバー処理は個別のonHover関数で処理される
   };
 
@@ -196,7 +194,6 @@ const VectorMapAdapter: React.FC<VectorMapAdapterProps> = ({
       onPointHover={handlePointHover}
       onMapClick={handleMapClick}
       showControls={showZoomControls}
-      initialZoom={initialZoom}
       maxZoom={maxZoom}
       minZoom={minZoom}
     />

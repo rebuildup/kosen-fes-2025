@@ -11,7 +11,7 @@ import VectorMap from "../components/map/VectorMap";
 import LocationList from "../components/map/LocationList";
 import TagFilter from "../components/common/TagFilter";
 import SelectedTags from "../components/common/SelectedTags";
-import { itemsToContentItems } from "../utils/itemHelpers";
+// import { itemsToContentItems } from "../utils/itemHelpers";
 
 // Type for non-sponsor items
 type NonSponsorItem = Event | Exhibit | Stall;
@@ -108,10 +108,10 @@ const Map = () => {
   );
 
   // コンテンツアイテムのメモ化
-  const mapContentItems = useMemo(
-    () => itemsToContentItems(filteredItems),
-    [filteredItems]
-  );
+  // const mapContentItems = useMemo(
+  //   () => itemsToContentItems(filteredItems),
+  //   [filteredItems]
+  // );
 
   return (
     <div className="min-h-screen">
@@ -185,7 +185,6 @@ const Map = () => {
                       className="rounded-lg"
                       maxZoom={8}
                       minZoom={0.3}
-                      initialZoom={0.8}
                       showControls={true}
                     />
                   </div>

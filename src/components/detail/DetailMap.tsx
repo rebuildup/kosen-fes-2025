@@ -21,7 +21,6 @@ const DetailMap = ({ location }: DetailMapProps) => {
           highlightPoint={coords}
           height="400px"
           className="detail-map-svg rounded-lg"
-          initialZoom={2}
           maxZoom={8}
           minZoom={0.3}
           showControls={true}

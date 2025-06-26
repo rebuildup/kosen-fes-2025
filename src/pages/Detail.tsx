@@ -535,7 +535,6 @@ const Detail = () => {
                         : []
                     }
                     height="100%"
-                    initialZoom={item.coordinates ? 2 : 1}
                     maxZoom={8}
                     minZoom={0.3}
                     showControls={true}

@@ -814,7 +814,6 @@ const ContentPreview = () => {
                     className="h-80"
                     maxZoom={8}
                     minZoom={0.3}
-                    initialZoom={1}
                     showControls={true}
                   />
                 </div>
@@ -1043,7 +1042,6 @@ const ContentPreview = () => {
                           className="h-full pointer-events-none"
                           maxZoom={8}
                           minZoom={0.3}
-                          initialZoom={2}
                           showControls={false}
                         />
                       </div>
