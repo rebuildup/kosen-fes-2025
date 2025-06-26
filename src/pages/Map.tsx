@@ -6,7 +6,7 @@ import { events } from "../data/events";
 import { exhibits } from "../data/exhibits";
 import { stalls } from "../data/stalls";
 import { Item, Event, Exhibit, Stall } from "../types/common";
-import SimpleMap from "../components/map/UnifiedMap";
+import VectorMap from "../components/map/VectorMap";
 
 import LocationList from "../components/map/LocationList";
 import TagFilter from "../components/common/TagFilter";
@@ -162,17 +162,31 @@ const Map = () => {
                     className="map-container relative w-full"
                     style={{ minHeight: "70vh" }}
                   >
-                    <SimpleMap
+                    <VectorMap
                       mode="display"
-                      markers={[]}
-                      contentItems={mapContentItems}
-                      onLocationHover={handleLocationHover}
-                      onLocationSelect={handleLocationSelect}
+                      points={filteredItems
+                        .filter((item) => item.coordinates)
+                        .map((item) => ({
+                          id: item.id,
+                          coordinates: item.coordinates!,
+                          title: item.title,
+                          type: item.type as
+                            | "event"
+                            | "exhibit"
+                            | "stall"
+                            | "location",
+                          isSelected: false,
+                          isHovered: false,
+                          contentItem: item,
+                          onClick: () => {},
+                          onHover: () => {},
+                        }))}
                       height="70vh"
                       className="rounded-lg"
                       maxZoom={8}
                       minZoom={0.3}
                       initialZoom={0.8}
+                      showControls={true}
                     />
                   </div>
                 </div>

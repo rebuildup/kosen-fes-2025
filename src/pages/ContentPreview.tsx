@@ -4,7 +4,7 @@ import { useData } from "../context/DataContext";
 import { useLanguage } from "../context/LanguageContext";
 import { Item, Event, Exhibit, Stall, Sponsor } from "../types/common";
 import UnifiedCard from "../shared/components/ui/UnifiedCard";
-import SimpleMap from "../components/map/UnifiedMap";
+import VectorMap from "../components/map/VectorMap";
 import TimelineDay from "../components/schedule/TimelineDay";
 import Tag from "../components/common/Tag";
 import ItemTypeIcon from "../components/common/ItemTypeIcon";
@@ -133,9 +133,15 @@ const ContentPreview = () => {
 
   // Handle coordinate selection
   const handleCoordinateSelect = (coordinate: { x: number; y: number }) => {
+    // 座標を小数点第1位で四捨五入して精度を向上
+    const roundedCoordinate = {
+      x: Math.round(coordinate.x * 10) / 10,
+      y: Math.round(coordinate.y * 10) / 10,
+    };
+
     setFormData((prev) => ({
       ...prev,
-      coordinates: coordinate,
+      coordinates: roundedCoordinate,
     }));
   };
 
@@ -758,22 +764,37 @@ const ContentPreview = () => {
                     <div className="flex items-center justify-between">
                       <div>
                         <p
-                          className="text-sm font-medium"
+                          className="text-sm font-medium flex items-center gap-1"
                           style={{ color: "var(--color-text-primary)" }}
                         >
+                          <span>📍</span>
                           選択中の座標:
                         </p>
                         <p
-                          className="text-sm font-mono"
-                          style={{ color: "var(--color-text-secondary)" }}
+                          className="text-base font-mono mt-1 px-2 py-1 rounded bg-green-100 text-green-800 inline-block"
+                          style={{
+                            backgroundColor: "rgba(34, 197, 94, 0.1)",
+                            color: "rgb(22, 163, 74)",
+                          }}
                         >
                           X: {formData.coordinates.x.toFixed(1)}, Y:{" "}
                           {formData.coordinates.y.toFixed(1)}
                         </p>
                       </div>
+                      <button
+                        onClick={() => handleCoordinateSelect({ x: 0, y: 0 })}
+                        className="text-xs px-2 py-1 rounded bg-red-100 text-red-600 hover:bg-red-200 transition-colors"
+                        style={{
+                          backgroundColor: "rgba(239, 68, 68, 0.1)",
+                          color: "rgb(220, 38, 38)",
+                        }}
+                      >
+                        クリア
+                      </button>
                     </div>
                   ) : (
-                    <p className="text-sm text-orange-500">
+                    <p className="text-sm text-orange-500 flex items-center gap-1">
+                      <span>👆</span>
                       マップをクリックして位置を選択してください
                     </p>
                   )}
@@ -784,16 +805,17 @@ const ContentPreview = () => {
                   className="rounded-lg overflow-hidden border"
                   style={{ borderColor: "var(--color-border-primary)" }}
                 >
-                  <SimpleMap
+                  <VectorMap
+                    key="interactive-map"
                     mode="interactive"
-                    onCoordinateSelect={handleCoordinateSelect}
-                    selectedCoordinate={formData.coordinates}
-                    allowCoordinateSelection={true}
+                    onMapClick={handleCoordinateSelect}
+                    highlightPoint={formData.coordinates || undefined}
                     height="320px"
                     className="h-80"
                     maxZoom={8}
                     minZoom={0.3}
                     initialZoom={1}
+                    showControls={true}
                   />
                 </div>
               </div>
@@ -1013,14 +1035,16 @@ const ContentPreview = () => {
                         className="map-container h-64 rounded-lg overflow-hidden border"
                         style={{ borderColor: "var(--color-border-primary)" }}
                       >
-                        <SimpleMap
+                        <VectorMap
+                          key="preview-map"
                           mode="detail"
-                          highlightCoordinate={formData.coordinates}
+                          highlightPoint={formData.coordinates}
                           height="256px"
                           className="h-full pointer-events-none"
                           maxZoom={8}
                           minZoom={0.3}
                           initialZoom={2}
+                          showControls={false}
                         />
                       </div>
                       <p

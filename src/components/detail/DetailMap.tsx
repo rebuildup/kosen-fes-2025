@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { useLanguage } from "../../context/LanguageContext";
 import { getBuildingCoordinates } from "../../data/buildings";
-import SimpleMap from "../map/UnifiedMap";
+import VectorMap from "../map/VectorMap";
 
 interface DetailMapProps {
   location: string;
@@ -16,14 +16,15 @@ const DetailMap = ({ location }: DetailMapProps) => {
   return (
     <div className="detail-map">
       <div className="detail-map-container">
-        <SimpleMap
+        <VectorMap
           mode="detail"
-          highlightCoordinate={coords}
+          highlightPoint={coords}
           height="400px"
           className="detail-map-svg rounded-lg"
           initialZoom={2}
           maxZoom={8}
           minZoom={0.3}
+          showControls={true}
         />
       </div>
 

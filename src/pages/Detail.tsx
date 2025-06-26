@@ -11,7 +11,7 @@ import Tag from "../components/common/Tag";
 import ItemTypeIcon from "../components/common/ItemTypeIcon";
 import PillButton from "../components/common/PillButton";
 import UnifiedCard from "../shared/components/ui/UnifiedCard";
-import SimpleMap from "../components/map/UnifiedMap";
+import VectorMap from "../components/map/VectorMap";
 
 const Detail = () => {
   const { type, id } = useParams<{ type: string; id: string }>();
@@ -509,19 +509,27 @@ const Detail = () => {
                   {t("map.title")}
                 </h3>
                 <div className="map-container h-64 rounded-lg overflow-hidden">
-                  <SimpleMap
+                  <VectorMap
+                    key={`detail-map-${item.id}`}
                     mode="detail"
-                    highlightCoordinate={item.coordinates}
-                    contentItems={
+                    highlightPoint={item.coordinates}
+                    points={
                       item.coordinates
                         ? [
                             {
                               id: item.id,
-                              title: item.title,
-                              type: item.type,
                               coordinates: item.coordinates,
+                              title: item.title,
+                              type: item.type as
+                                | "event"
+                                | "exhibit"
+                                | "stall"
+                                | "location",
                               isSelected: true,
                               isHovered: false,
+                              contentItem: item,
+                              onClick: () => {},
+                              onHover: () => {},
                             },
                           ]
                         : []
@@ -530,7 +538,7 @@ const Detail = () => {
                     initialZoom={item.coordinates ? 2 : 1}
                     maxZoom={8}
                     minZoom={0.3}
-                    showZoomControls={true}
+                    showControls={true}
                   />
                 </div>
               </div>

@@ -47,12 +47,48 @@ export const useSimpleMapZoomPan = ({
   // Transform適用関数
   const applyTransform = useCallback(
     (newTransform: Transform) => {
-      if (!contentRef.current) return;
+      if (!contentRef.current || !containerRef.current) return;
 
       const constrainedTransform = {
         ...newTransform,
         scale: Math.max(minScale, Math.min(maxScale, newTransform.scale)),
       };
+
+      // パン範囲の制限を追加
+      // コンテナサイズを取得
+      const containerRect = containerRef.current.getBoundingClientRect();
+      const containerWidth = containerRect.width;
+      const containerHeight = containerRect.height;
+
+      // スケールされたマップサイズ
+      const scaledMapWidth = width * constrainedTransform.scale;
+      const scaledMapHeight = height * constrainedTransform.scale;
+
+      // 上下左右にマップ1枚分の余白を設ける
+      const paddingX = scaledMapWidth; // マップ1枚分の余白（横）
+      const paddingY = scaledMapHeight; // マップ1枚分の余白（縦）
+
+      // パン制限の計算
+      // マップの左上角が右下に移動できる最大値（右・下方向の制限）
+      const maxTranslateX = paddingX;
+      const maxTranslateY = paddingY;
+
+      // マップの右下角が左上に移動できる最小値（左・上方向の制限）
+      const minTranslateX = containerWidth - scaledMapWidth - paddingX;
+      const minTranslateY = containerHeight - scaledMapHeight - paddingY;
+
+      // パン範囲を制限
+      const originalX = constrainedTransform.translateX;
+      const originalY = constrainedTransform.translateY;
+
+      constrainedTransform.translateX = Math.max(
+        minTranslateX,
+        Math.min(maxTranslateX, constrainedTransform.translateX)
+      );
+      constrainedTransform.translateY = Math.max(
+        minTranslateY,
+        Math.min(maxTranslateY, constrainedTransform.translateY)
+      );
 
       const transformString = `translate(${constrainedTransform.translateX}px, ${constrainedTransform.translateY}px) scale(${constrainedTransform.scale})`;
       contentRef.current.style.transform = transformString;
@@ -66,7 +102,7 @@ export const useSimpleMapZoomPan = ({
       setTransform(constrainedTransform);
       onTransformChange?.(constrainedTransform);
     },
-    [minScale, maxScale, onTransformChange]
+    [minScale, maxScale, onTransformChange, width, height]
   );
 
   // ズームイン
