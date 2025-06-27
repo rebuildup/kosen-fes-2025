@@ -13,6 +13,7 @@ interface TimelineDayProps {
   groupedItems: { [timeSlot: string]: NonSponsorItem[] };
   dayName: string;
   animationKey: number;
+  onItemClick?: (item: NonSponsorItem) => void;
 }
 
 const TimelineDay = ({
@@ -22,6 +23,7 @@ const TimelineDay = ({
   groupedItems,
   dayName,
   animationKey,
+  onItemClick,
 }: TimelineDayProps) => {
   const { t } = useLanguage();
 
@@ -159,6 +161,9 @@ const TimelineDay = ({
                         variant="timeline"
                         showDescription={true}
                         showTags={true}
+                        onClick={
+                          onItemClick ? () => onItemClick(item) : undefined
+                        }
                       />
                     </div>
                   ))}
@@ -196,6 +201,9 @@ const TimelineDay = ({
                         variant="timeline"
                         showDescription={true}
                         showTags={true}
+                        onClick={
+                          onItemClick ? () => onItemClick(item) : undefined
+                        }
                       />
                     </div>
                   ))}

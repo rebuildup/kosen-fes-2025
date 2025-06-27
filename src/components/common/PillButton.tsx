@@ -46,8 +46,8 @@ const PillButton = ({
       case "primary":
         return `
           text-white border-0 shadow-lg glass-bold
-          bg-gradient-to-r from-[var(--accent-purple)]/80 via-[var(--accent-pink)]/80 to-[var(--accent-orange)]/80
-          hover:from-[var(--accent-pink)]/90 hover:via-[var(--accent-red)]/90 hover:to-[var(--accent-yellow)]/90
+          bg-gradient-to-r from-[var(--accent-purple)] via-[var(--accent-pink)] to-[var(--accent-orange)]
+          hover:from-[var(--accent-pink)] hover:via-[var(--accent-red)] hover:to-[var(--accent-yellow)]
           focus:ring-[var(--primary-color)] backdrop-blur-sm
         `;
       case "secondary":

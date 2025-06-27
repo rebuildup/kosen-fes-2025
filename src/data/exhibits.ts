@@ -13,7 +13,7 @@ export const exhibits: Exhibit[] = [
     time: "10:00 - 18:00",
     location: "一般棟 1F 13番教室",
     coordinates: { x: 790.2, y: 948.5 },
-    tags: ["ロボット", "技術", "ゲーム"],
+    tags: ["展示", "技術", "ゲーム"],
     creator: "ロボット研究部",
   },
   {
@@ -26,7 +26,7 @@ export const exhibits: Exhibit[] = [
     time: "10:00 - 18:00",
     location: "一般棟 1F 14番教室",
     coordinates: { x: 829.7, y: 938.9 },
-    tags: ["技術", "イノベーション", "工学"],
+    tags: ["展示", "技術", "創作"],
     creator: "傑作技研",
   },
   {
@@ -40,7 +40,7 @@ export const exhibits: Exhibit[] = [
     time: "10:00 - 18:00",
     location: "一般棟 2F 22番教室",
     coordinates: { x: 613.8, y: 940.6 },
-    tags: ["写真", "アート", "ポストカード"],
+    tags: ["展示", "アート", "創作"],
     creator: "写真部",
   },
   {
@@ -54,7 +54,7 @@ export const exhibits: Exhibit[] = [
     time: "10:00 - 18:00",
     location: "一般棟 2F 23番教室",
     coordinates: { x: 590.5, y: 497.7 },
-    tags: ["アート", "展示", "ポストカード"],
+    tags: ["展示", "アート", "創作"],
     creator: "美術部",
   },
   {
@@ -67,7 +67,7 @@ export const exhibits: Exhibit[] = [
     time: "10:00 - 18:00",
     location: "一般棟 2F 24番教室",
     coordinates: { x: 830.4, y: 942.4 },
-    tags: ["文学", "雑誌", "創作"],
+    tags: ["展示", "アート", "創作"],
     creator: "文芸部",
   },
   {
@@ -81,7 +81,7 @@ export const exhibits: Exhibit[] = [
     time: "10:00 - 18:00",
     location: "物質棟 1F 102番教室",
     coordinates: { x: 626.6, y: 1123.8 },
-    tags: ["ファッション", "アクセサリー", "デザイン"],
+    tags: ["展示", "アート", "創作"],
     creator: "平成フォトスタジオ",
   },
   {
@@ -94,7 +94,7 @@ export const exhibits: Exhibit[] = [
     time: "10:00 - 18:00",
     location: "物質棟 1F 101番教室",
     coordinates: { x: 565.0, y: 1122.3 },
-    tags: ["ロボット", "コンテスト", "技術"],
+    tags: ["展示", "技術", "コンテスト"],
     creator: "ETロボコン",
   },
   {
@@ -107,7 +107,7 @@ export const exhibits: Exhibit[] = [
     time: "10:00 - 18:00",
     location: "経営棟 2F B22番教室",
     coordinates: { x: 384.6, y: 422.0 },
-    tags: ["電気", "工学", "プロジェクト"],
+    tags: ["展示", "電気科", "技術"],
     creator: "Eプロジェクト",
   },
   {
@@ -121,7 +121,7 @@ export const exhibits: Exhibit[] = [
     time: "10:00 - 18:00",
     location: "食堂2階 ラーニングコモンズ",
     coordinates: { x: 562.1, y: 738.7 },
-    tags: ["コンピュータ", "ソフトウェア", "プログラミング"],
+    tags: ["展示", "技術", "プログラミング"],
     creator: "コンピュータ部",
   },
   {
@@ -134,7 +134,7 @@ export const exhibits: Exhibit[] = [
     time: "10:00 - 18:00",
     location: "機械電気棟",
     coordinates: { x: 369.4, y: 537.5 },
-    tags: ["クラフト", "キーホルダー", "手作り"],
+    tags: ["展示", "創作", "参加型"],
     creator: "篠田研究室",
   },
   {
@@ -148,7 +148,7 @@ export const exhibits: Exhibit[] = [
     time: "10:00 - 18:00",
     location: "経営棟 1F B11番教室",
     coordinates: { x: 331.9, y: 418.6 },
-    tags: ["船舶", "機械", "工学"],
+    tags: ["展示", "機械科", "技術"],
     creator: "機械工学科",
   },
   {
@@ -162,7 +162,7 @@ export const exhibits: Exhibit[] = [
     time: "10:00 - 18:00",
     location: "経営棟 2F B21番教室",
     coordinates: { x: 337.9, y: 420.4 },
-    tags: ["電気", "ゲーム", "VR"],
+    tags: ["展示", "電気科", "ゲーム"],
     creator: "電気工学科",
   },
   {
@@ -176,7 +176,7 @@ export const exhibits: Exhibit[] = [
     time: "10:00 - 18:00",
     location: "経営棟 1F B12番教室",
     coordinates: { x: 402.7, y: 422.8 },
-    tags: ["センサー", "ゲーム", "技術"],
+    tags: ["展示", "制御科", "ゲーム"],
     creator: "制御工学科",
   },
 ];

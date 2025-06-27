@@ -58,6 +58,11 @@
   :root[data-theme="dark"] {
     /* X Dark Mode Colors */
     --primary-color: #1da1f2;
+    --accent-purple: #1da1f2;
+    --accent-pink: #0084c7;
+    --accent-red: #1da1f2;
+    --accent-orange: #0084c7;
+    --accent-yellow: #1da1f2;
 
     --bg-primary: #000000;
     --bg-secondary: #0a0a0a;
@@ -99,6 +104,11 @@
     :root:not([data-theme]) {
       /* X Dark Mode Colors */
       --primary-color: #1da1f2;
+      --accent-purple: #1da1f2;
+      --accent-pink: #0084c7;
+      --accent-red: #1da1f2;
+      --accent-orange: #0084c7;
+      --accent-yellow: #1da1f2;
 
       --bg-primary: #000000;
       --bg-secondary: #0a0a0a;
