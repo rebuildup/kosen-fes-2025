@@ -53,7 +53,7 @@ export const exhibits: Exhibit[] = [
     date: "2025-11-08",
     time: "10:00 - 18:00",
     location: "一般棟 2F 23番教室",
-    coordinates: { x: 590.5, y: 497.7 },
+    coordinates: { x:  771.8, y: 946.3 },
     tags: ["展示", "アート", "創作"],
     creator: "美術部",
   },
