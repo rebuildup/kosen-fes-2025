@@ -404,6 +404,20 @@ const VectorMap: React.FC<VectorMapProps> = ({
 
   const handleTouchMove = useCallback(
     (e: TouchEvent) => {
+      // マップコンテナ内のタッチイベントかチェック
+      if (!containerRef.current) return;
+      
+      const containerRect = containerRef.current.getBoundingClientRect();
+      const touch = e.touches[0];
+      const isWithinContainer = touch && 
+        touch.clientX >= containerRect.left &&
+        touch.clientX <= containerRect.right &&
+        touch.clientY >= containerRect.top &&
+        touch.clientY <= containerRect.bottom;
+
+      // マップ範囲内のタッチのみ処理し、範囲外は通常のスクロールを許可
+      if (!isWithinContainer) return;
+
       e.preventDefault();
 
       if (e.touches.length === 1 && isDragging && containerRef.current) {
@@ -503,6 +517,23 @@ const VectorMap: React.FC<VectorMapProps> = ({
   );
 
   const handleTouchEnd = useCallback((e: TouchEvent) => {
+    // マップコンテナ内のタッチエンドイベントかチェック
+    if (!containerRef.current) return;
+    
+    // タッチエンドの場合は残っているタッチがマップ内にあるかチェック
+    if (e.touches.length > 0) {
+      const containerRect = containerRef.current.getBoundingClientRect();
+      const touch = e.touches[0];
+      const isWithinContainer = touch && 
+        touch.clientX >= containerRect.left &&
+        touch.clientX <= containerRect.right &&
+        touch.clientY >= containerRect.top &&
+        touch.clientY <= containerRect.bottom;
+
+      // マップ範囲外のタッチエンドは無視
+      if (!isWithinContainer) return;
+    }
+
     e.preventDefault();
     if (e.touches.length === 0) {
       setIsDragging(false);
@@ -514,6 +545,17 @@ const VectorMap: React.FC<VectorMapProps> = ({
   const handleWheel = useCallback(
     (e: WheelEvent) => {
       if (!containerRef.current) return;
+
+      // マップコンテナ内のホイールイベントかチェック
+      const containerRect = containerRef.current.getBoundingClientRect();
+      const isWithinContainer = 
+        e.clientX >= containerRect.left &&
+        e.clientX <= containerRect.right &&
+        e.clientY >= containerRect.top &&
+        e.clientY <= containerRect.bottom;
+
+      // マップ範囲外のホイールは通常のスクロールを許可
+      if (!isWithinContainer) return;
 
       // カードエリア上かチェック
       const cardElements = document.querySelectorAll(".map-card-overlay");
