@@ -103,7 +103,8 @@ const VectorMap: React.FC<VectorMapProps> = ({
   const [hoveredPoint, setHoveredPoint] = useState<string | null>(null);
 
   // Touch state for mobile
-  // タッチ関連のstateはuseMapZoomPanフックで処理するため削除
+  const [lastTapTime, setLastTapTime] = useState<number>(0);
+  const [isShiftPressed, setIsShiftPressed] = useState<boolean>(false);
 
   // Content card state
   const [selectedPoint, setSelectedPoint] = useState<InteractivePoint | null>(
@@ -281,12 +282,21 @@ const VectorMap: React.FC<VectorMapProps> = ({
       // マップ操作開始時にカードを閉じる
       closeCard();
 
-      setIsDragging(true);
-      setDragStart({ x: e.clientX, y: e.clientY });
-      setDragStartViewBox(viewBox);
+      // Shift+ドラッグでズーム選択モード
+      if (isShiftPressed) {
+        // ズーム選択の開始位置を記録
+        setDragStart({ x: e.clientX, y: e.clientY });
+        setDragStartViewBox(viewBox);
+        setIsDragging(true);
+      } else {
+        // 通常のドラッグモード
+        setIsDragging(true);
+        setDragStart({ x: e.clientX, y: e.clientY });
+        setDragStartViewBox(viewBox);
+      }
       e.preventDefault();
     },
-    [viewBox, closeCard]
+    [viewBox, closeCard, isShiftPressed]
   );
 
   const handleMouseMove = useCallback(
@@ -296,6 +306,24 @@ const VectorMap: React.FC<VectorMapProps> = ({
       const containerRect = containerRef.current.getBoundingClientRect();
       const deltaX = e.clientX - dragStart.x;
       const deltaY = e.clientY - dragStart.y;
+
+      // Shift+ドラッグの場合はズーム操作
+      if (isShiftPressed) {
+        const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+        const zoomFactor = distance > 0 ? Math.max(0.5, Math.min(2, 1 + deltaY / 100)) : 1;
+        
+        const centerSVG = screenToSVG(dragStart.x, dragStart.y);
+        const targetWidth = dragStartViewBox.width * zoomFactor;
+        const targetHeight = dragStartViewBox.height * zoomFactor;
+        
+        setViewBox({
+          x: centerSVG.x - targetWidth / 2,
+          y: centerSVG.y - targetHeight / 2,
+          width: targetWidth,
+          height: targetHeight,
+        });
+        return;
+      }
 
       const scaleX = viewBox.width / containerRect.width;
       const scaleY = viewBox.height / containerRect.height;
@@ -408,19 +436,20 @@ const VectorMap: React.FC<VectorMapProps> = ({
 
   const handleTouchMove = useCallback(
     (e: TouchEvent) => {
-      // マップコンテナ内のタッチイベントかチェック
+      // マップコンテナ内のタッチイベントかチェック（境界を緩和）
       if (!containerRef.current) return;
 
       const containerRect = containerRef.current.getBoundingClientRect();
       const touch = e.touches[0];
+      const margin = 20; // 境界チェックを緩和するマージン
       const isWithinContainer =
         touch &&
-        touch.clientX >= containerRect.left &&
-        touch.clientX <= containerRect.right &&
-        touch.clientY >= containerRect.top &&
-        touch.clientY <= containerRect.bottom;
+        touch.clientX >= containerRect.left - margin &&
+        touch.clientX <= containerRect.right + margin &&
+        touch.clientY >= containerRect.top - margin &&
+        touch.clientY <= containerRect.bottom + margin;
 
-      // マップ範囲内のタッチのみ処理し、範囲外は通常のスクロールを許可
+      // 緩和された範囲内のタッチのみ処理
       if (!isWithinContainer) return;
 
       // cancelableイベントのみでpreventDefaultを試行
@@ -532,21 +561,43 @@ const VectorMap: React.FC<VectorMapProps> = ({
   );
 
   const handleTouchEnd = useCallback((e: TouchEvent) => {
-    // マップコンテナ内のタッチエンドイベントかチェック
+    // マップコンテナ内のタッチエンドイベントかチェック（境界を緩和）
     if (!containerRef.current) return;
+
+    // ダブルタップズーム検出
+    const now = Date.now();
+    const timeDiff = now - lastTapTime;
+    
+    if (timeDiff < 300 && timeDiff > 0 && e.touches.length === 0) {
+      // ダブルタップを検出した場合、ズームイン
+      const containerRect = containerRef.current.getBoundingClientRect();
+      const lastTouch = e.changedTouches[0];
+      if (lastTouch) {
+        const centerX = lastTouch.clientX - containerRect.left;
+        const centerY = lastTouch.clientY - containerRect.top;
+        const svgCoord = screenToSVG(lastTouch.clientX, lastTouch.clientY);
+        
+        // ダブルタップ位置を中心にズームイン
+        zoomToPoint(svgCoord, 3);
+        e.preventDefault();
+        return;
+      }
+    }
+    setLastTapTime(now);
 
     // タッチエンドの場合は残っているタッチがマップ内にあるかチェック
     if (e.touches.length > 0) {
       const containerRect = containerRef.current.getBoundingClientRect();
       const touch = e.touches[0];
+      const margin = 20; // 境界チェックを緩和するマージン
       const isWithinContainer =
         touch &&
-        touch.clientX >= containerRect.left &&
-        touch.clientX <= containerRect.right &&
-        touch.clientY >= containerRect.top &&
-        touch.clientY <= containerRect.bottom;
+        touch.clientX >= containerRect.left - margin &&
+        touch.clientX <= containerRect.right + margin &&
+        touch.clientY >= containerRect.top - margin &&
+        touch.clientY <= containerRect.bottom + margin;
 
-      // マップ範囲外のタッチエンドは無視
+      // 緩和された範囲外のタッチエンドは無視
       if (!isWithinContainer) return;
     }
 
@@ -563,7 +614,7 @@ const VectorMap: React.FC<VectorMapProps> = ({
       setIsDragging(false);
       setTouchDistance(0);
     }
-  }, []);
+  }, [lastTapTime, screenToSVG, zoomToPoint]);
 
   // Wheel zoom handler
   const handleWheel = useCallback(
@@ -578,8 +629,15 @@ const VectorMap: React.FC<VectorMapProps> = ({
         e.clientY >= containerRect.top &&
         e.clientY <= containerRect.bottom;
 
-      // マップ範囲外のホイールは通常のスクロールを許可
-      if (!isWithinContainer) return;
+      // マップ範囲外のホイールは通常のスクロールを許可（境界を緩和）
+      const margin = 10;
+      const isWithinExpandedContainer =
+        e.clientX >= containerRect.left - margin &&
+        e.clientX <= containerRect.right + margin &&
+        e.clientY >= containerRect.top - margin &&
+        e.clientY <= containerRect.bottom + margin;
+      
+      if (!isWithinExpandedContainer) return;
 
       // カードエリア上かチェック
       const cardElements = document.querySelectorAll(".map-card-overlay");
@@ -804,16 +862,34 @@ const VectorMap: React.FC<VectorMapProps> = ({
     ]
   );
 
+  // Keyboard event handlers for Shift key
+  const handleKeyDown = useCallback((e: KeyboardEvent) => {
+    if (e.key === "Shift") {
+      setIsShiftPressed(true);
+    }
+  }, []);
+
+  const handleKeyUp = useCallback((e: KeyboardEvent) => {
+    if (e.key === "Shift") {
+      setIsShiftPressed(false);
+    }
+  }, []);
+
   // Event listeners
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
+    // Mouse and touch events
     document.addEventListener("mousemove", handleMouseMove);
     document.addEventListener("mouseup", handleMouseUp);
     document.addEventListener("touchmove", handleTouchMove, { passive: false });
     document.addEventListener("touchend", handleTouchEnd, { passive: false });
     container.addEventListener("wheel", handleWheel, { passive: false });
+    
+    // Keyboard events for Shift key detection
+    document.addEventListener("keydown", handleKeyDown);
+    document.addEventListener("keyup", handleKeyUp);
 
     return () => {
       document.removeEventListener("mousemove", handleMouseMove);
@@ -821,6 +897,8 @@ const VectorMap: React.FC<VectorMapProps> = ({
       document.removeEventListener("touchmove", handleTouchMove);
       document.removeEventListener("touchend", handleTouchEnd);
       container.removeEventListener("wheel", handleWheel);
+      document.removeEventListener("keydown", handleKeyDown);
+      document.removeEventListener("keyup", handleKeyUp);
     };
   }, [
     handleMouseMove,
@@ -828,6 +906,8 @@ const VectorMap: React.FC<VectorMapProps> = ({
     handleTouchMove,
     handleTouchEnd,
     handleWheel,
+    handleKeyDown,
+    handleKeyUp,
   ]);
 
   // Auto zoom to highlight point (only once)
@@ -1120,8 +1200,8 @@ const VectorMap: React.FC<VectorMapProps> = ({
       className={`relative overflow-hidden vector-map-container ${className}`}
       style={{
         height,
-        cursor: isDragging ? "grabbing" : "grab",
-        touchAction: "none",
+        cursor: isDragging ? "grabbing" : isShiftPressed ? "zoom-in" : "grab",
+        touchAction: "manipulation", // ズームとパンを許可しつつページスクロールも有効
         userSelect: "none",
         WebkitUserSelect: "none",
         WebkitTouchCallout: "none",
