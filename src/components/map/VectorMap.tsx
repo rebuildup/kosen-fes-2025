@@ -55,6 +55,7 @@ interface VectorMapProps {
   showControls?: boolean;
   maxZoom?: number;
   minZoom?: number;
+  initialZoom?: number; // 追加: 初期ズーム倍率
 }
 
 interface ViewBox {
@@ -76,6 +77,7 @@ const VectorMap: React.FC<VectorMapProps> = ({
   showControls = true,
   maxZoom = 10,
   minZoom = 0.1,
+  initialZoom = 1, // 追加: デフォルト値
 }) => {
   const svgRef = useRef<SVGSVGElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -92,8 +94,8 @@ const VectorMap: React.FC<VectorMapProps> = ({
   const [viewBox, setViewBox] = useState<ViewBox>({
     x: 0,
     y: 0,
-    width: CAMPUS_MAP_BOUNDS.width,
-    height: CAMPUS_MAP_BOUNDS.height,
+    width: CAMPUS_MAP_BOUNDS.width / initialZoom, // 初期ズーム倍率を反映
+    height: CAMPUS_MAP_BOUNDS.height / initialZoom, // 初期ズーム倍率を反映
   });
 
   // Interaction state
@@ -104,12 +106,15 @@ const VectorMap: React.FC<VectorMapProps> = ({
 
   // Touch state for mobile
   const [lastTapTime, setLastTapTime] = useState<number>(0);
-  const [currentZoomLevel, setCurrentZoomLevel] = useState<number>(1);
+  const [currentZoomLevel, setCurrentZoomLevel] = useState<number>(initialZoom); // 初期ズーム倍率を反映
   const [isShiftPressed, setIsShiftPressed] = useState<boolean>(false);
-  
+
   // Touch interaction state
   const [touchStartTime, setTouchStartTime] = useState<number>(0);
-  const [touchStartPos, setTouchStartPos] = useState<Coordinate>({ x: 0, y: 0 });
+  const [touchStartPos, setTouchStartPos] = useState<Coordinate>({
+    x: 0,
+    y: 0,
+  });
   const [isTouchGesture, setIsTouchGesture] = useState<boolean>(false);
 
   // Content card state
@@ -125,10 +130,14 @@ const VectorMap: React.FC<VectorMapProps> = ({
     transform?: string;
     placement?: string;
   }>({ x: 0, y: 0 });
-  
+
   // Mobile hover simulation state
-  const [mobileHoveredPoint, setMobileHoveredPoint] = useState<string | null>(null);
-  const [lastMobileTapPointId, setLastMobileTapPointId] = useState<string | null>(null);
+  const [mobileHoveredPoint, setMobileHoveredPoint] = useState<string | null>(
+    null
+  );
+  const [lastMobileTapPointId, setLastMobileTapPointId] = useState<
+    string | null
+  >(null);
   const [lastMobileTapTime, setLastMobileTapTime] = useState<number>(0);
 
   // マップ操作でカードを閉じる関数
@@ -483,7 +492,7 @@ const VectorMap: React.FC<VectorMapProps> = ({
       const deltaX = e.touches[0].clientX - touchStartPos.x;
       const deltaY = e.touches[0].clientY - touchStartPos.y;
       const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
-      
+
       // If movement is significant, mark as gesture and close card
       if (distance > 5 && !isTouchGesture) {
         setIsTouchGesture(true);
@@ -501,7 +510,12 @@ const VectorMap: React.FC<VectorMapProps> = ({
         }
       }
 
-      if (e.touches.length === 1 && isDragging && containerRef.current && (isTouchGesture || distance > 5)) {
+      if (
+        e.touches.length === 1 &&
+        isDragging &&
+        containerRef.current &&
+        (isTouchGesture || distance > 5)
+      ) {
         const deltaX = e.touches[0].clientX - dragStart.x;
         const deltaY = e.touches[0].clientY - dragStart.y;
 
@@ -611,7 +625,7 @@ const VectorMap: React.FC<VectorMapProps> = ({
       const now = Date.now();
       const touchDuration = now - touchStartTime;
       const lastTouch = e.changedTouches[0];
-      
+
       // Check if touch is over a card area
       const cardElements = document.querySelectorAll(".map-card-overlay");
       let isOverCard = false;
@@ -633,23 +647,27 @@ const VectorMap: React.FC<VectorMapProps> = ({
       if (isOverCard) {
         return;
       }
-      
+
       // Calculate final movement distance
       const deltaX = lastTouch.clientX - touchStartPos.x;
       const deltaY = lastTouch.clientY - touchStartPos.y;
       const totalDistance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
 
       // Check if this was a tap (short duration, minimal movement, single touch)
-      const isTap = touchDuration < 500 && totalDistance < 10 && !isTouchGesture && e.touches.length === 0;
+      const isTap =
+        touchDuration < 500 &&
+        totalDistance < 10 &&
+        !isTouchGesture &&
+        e.touches.length === 0;
 
       if (isTap) {
         // Handle tap - check for double tap first
         const timeDiff = now - lastTapTime;
-        
+
         if (timeDiff < 300 && timeDiff > 0) {
           // Double tap detected - perform zoom
           const svgCoord = screenToSVG(lastTouch.clientX, lastTouch.clientY);
-          
+
           // ズームレベルサイクル: 1x → 2x → 4x → 8x → 1x
           const zoomLevels = [1, 2, 4, 8];
           const currentIndex = zoomLevels.findIndex(
@@ -661,7 +679,7 @@ const VectorMap: React.FC<VectorMapProps> = ({
           // ダブルタップ位置を中心にズーム
           zoomToPoint(svgCoord, nextZoomLevel);
           setCurrentZoomLevel(nextZoomLevel);
-          
+
           if (e.cancelable) {
             e.preventDefault();
           }
@@ -670,20 +688,23 @@ const VectorMap: React.FC<VectorMapProps> = ({
           // Single tap - allow it to propagate to click handlers
           // Don't prevent default for single taps to allow click events
           setLastTapTime(now);
-          
+
           // Simulate a click event for touch devices
           if (svgRef.current && mode === "interactive" && onMapClick) {
             // Use the same coordinate calculation method as mouse clicks for consistency
             const svgRect = svgRef.current.getBoundingClientRect();
             const relativeX = lastTouch.clientX - svgRect.left;
             const relativeY = lastTouch.clientY - svgRect.top;
-            
+
             // Use same coordinate calculation as handleSVGClick for consistency
-            const svgX = viewBox.x + (relativeX / svgRect.width) * viewBox.width;
-            const svgY = viewBox.y + (relativeY / svgRect.height) * viewBox.height;
-            
+            const svgX =
+              viewBox.x + (relativeX / svgRect.width) * viewBox.width;
+            const svgY =
+              viewBox.y + (relativeY / svgRect.height) * viewBox.height;
+
             // Apply coordinate limits and precision (same as mouse handler)
-            const mapClickMargin = Math.max(CAMPUS_MAP_BOUNDS.width, CAMPUS_MAP_BOUNDS.height) * 2;
+            const mapClickMargin =
+              Math.max(CAMPUS_MAP_BOUNDS.width, CAMPUS_MAP_BOUNDS.height) * 2;
             const clampedX = Math.max(
               -mapClickMargin,
               Math.min(CAMPUS_MAP_BOUNDS.width + mapClickMargin, svgX)
@@ -692,16 +713,16 @@ const VectorMap: React.FC<VectorMapProps> = ({
               -mapClickMargin,
               Math.min(CAMPUS_MAP_BOUNDS.height + mapClickMargin, svgY)
             );
-            
+
             const preciseX = Math.round(clampedX * 100) / 100;
             const preciseY = Math.round(clampedY * 100) / 100;
-            
+
             // Add a small delay to ensure this doesn't conflict with point clicks
             setTimeout(() => {
               onMapClick({ x: preciseX, y: preciseY });
             }, 10);
           }
-          
+
           return; // Don't prevent default for single taps
         }
       }
@@ -724,16 +745,16 @@ const VectorMap: React.FC<VectorMapProps> = ({
       }
     },
     [
-      lastTapTime, 
-      currentZoomLevel, 
-      screenToSVG, 
-      zoomToPoint, 
-      touchStartTime, 
-      touchStartPos, 
+      lastTapTime,
+      currentZoomLevel,
+      screenToSVG,
+      zoomToPoint,
+      touchStartTime,
+      touchStartPos,
       isTouchGesture,
       mode,
       onMapClick,
-      viewBox
+      viewBox,
     ]
   );
 
@@ -992,14 +1013,18 @@ const VectorMap: React.FC<VectorMapProps> = ({
 
   // Point interaction handlers
   const handlePointClick = useCallback(
-    (point: InteractivePoint, screenEvent?: React.MouseEvent, isMobileTap?: boolean) => {
+    (
+      point: InteractivePoint,
+      screenEvent?: React.MouseEvent,
+      isMobileTap?: boolean
+    ) => {
       const now = Date.now();
-      
+
       // Mobile hover simulation logic
       if (isMobileTap && point.contentItem) {
         // Check if this is the second tap on the same point within 2 seconds
         if (
-          lastMobileTapPointId === point.id && 
+          lastMobileTapPointId === point.id &&
           now - lastMobileTapTime < 2000 &&
           mobileHoveredPoint === point.id
         ) {
@@ -1015,7 +1040,7 @@ const VectorMap: React.FC<VectorMapProps> = ({
           setMobileHoveredPoint(point.id);
           setLastMobileTapPointId(point.id);
           setLastMobileTapTime(now);
-          
+
           // Show content card like hover
           setSelectedPoint(point);
           setSelectedCluster(null); // クラスターを閉じる
@@ -1030,7 +1055,7 @@ const VectorMap: React.FC<VectorMapProps> = ({
           return;
         }
       }
-      
+
       // Desktop behavior or non-mobile tap
       if (point.contentItem) {
         setSelectedPoint(point);
@@ -1048,7 +1073,13 @@ const VectorMap: React.FC<VectorMapProps> = ({
       point.onClick?.();
       onPointClick?.(point.id);
     },
-    [onPointClick, lastMobileTapPointId, lastMobileTapTime, mobileHoveredPoint, calculateCardPosition]
+    [
+      onPointClick,
+      lastMobileTapPointId,
+      lastMobileTapTime,
+      mobileHoveredPoint,
+      calculateCardPosition,
+    ]
   );
 
   // Cluster interaction handlers
@@ -1221,7 +1252,7 @@ const VectorMap: React.FC<VectorMapProps> = ({
     const containerHeight = CAMPUS_MAP_BOUNDS.height;
     const scaleX = containerWidth / fitWidth;
     const scaleY = containerHeight / fitHeight;
-    const optimalScale = Math.min(scaleX, scaleY, 2); // Cap at 2x zoom
+    const optimalScale = initialZoom; // 必ずinitialZoomで拡大する
 
     // Set the view to fit all points
     const targetWidth = containerWidth / optimalScale;
@@ -1235,7 +1266,10 @@ const VectorMap: React.FC<VectorMapProps> = ({
     });
 
     setCurrentZoomLevel(optimalScale);
-  }, [points]);
+    if (initialZoom !== optimalScale) {
+      alert(`初期ズーム: ${initialZoom}, 調整後ズーム: ${optimalScale}`);
+    }
+  }, [points, initialZoom]);
 
   // Auto zoom to highlight point (for detail pages)
   const [hasAutoZoomed, setHasAutoZoomed] = useState(false);
@@ -1906,18 +1940,20 @@ const VectorMap: React.FC<VectorMapProps> = ({
         >
           {/* Mobile hover indicator */}
           {mobileHoveredPoint === selectedPoint.id && (
-            <div 
+            <div
               className="absolute -top-2 -right-2 bg-blue-500 text-white text-xs px-2 py-1 rounded-full shadow-lg z-10"
               style={{ fontSize: "10px" }}
             >
               タップで詳細へ
             </div>
           )}
-          
+
           {/* Content Card */}
           <div
             className={`rounded-lg shadow-xl overflow-hidden ${
-              mobileHoveredPoint === selectedPoint.id ? 'ring-2 ring-blue-500 ring-opacity-50' : ''
+              mobileHoveredPoint === selectedPoint.id
+                ? "ring-2 ring-blue-500 ring-opacity-50"
+                : ""
             }`}
             style={{ width: "100%", minHeight: "200px" }}
           >

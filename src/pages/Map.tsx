@@ -186,6 +186,7 @@ const Map = () => {
                       maxZoom={8}
                       minZoom={0.3}
                       showControls={true}
+                      initialZoom={2}
                     />
                   </div>
                 </div>
