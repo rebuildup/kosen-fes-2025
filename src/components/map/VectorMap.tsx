@@ -106,6 +106,11 @@ const VectorMap: React.FC<VectorMapProps> = ({
   const [lastTapTime, setLastTapTime] = useState<number>(0);
   const [currentZoomLevel, setCurrentZoomLevel] = useState<number>(1);
   const [isShiftPressed, setIsShiftPressed] = useState<boolean>(false);
+  
+  // Touch interaction state
+  const [touchStartTime, setTouchStartTime] = useState<number>(0);
+  const [touchStartPos, setTouchStartPos] = useState<Coordinate>({ x: 0, y: 0 });
+  const [isTouchGesture, setIsTouchGesture] = useState<boolean>(false);
 
   // Content card state
   const [selectedPoint, setSelectedPoint] = useState<InteractivePoint | null>(
@@ -419,16 +424,22 @@ const VectorMap: React.FC<VectorMapProps> = ({
       // ReactのtouchStartイベントはpassiveなのでpreventDefault()を呼び出さない
       // 代わりにtouchmove/touchendで{ passive: false }を使用
 
-      // タッチ操作開始時にカードを閉じる
-      closeCard();
+      const now = Date.now();
+      setTouchStartTime(now);
+      setTouchStartPos({ x: e.touches[0].clientX, y: e.touches[0].clientY });
+      setIsTouchGesture(false);
 
       if (e.touches.length === 1) {
+        // Single touch - prepare for drag but don't close card yet
         setIsDragging(true);
         setDragStart({ x: e.touches[0].clientX, y: e.touches[0].clientY });
         setDragStartViewBox(viewBox);
       } else if (e.touches.length === 2) {
+        // Multi-touch - definitely a gesture, close card
+        closeCard();
         setIsDragging(false);
         setTouchDistance(getTouchDistance(e.touches));
+        setIsTouchGesture(true);
       }
     },
     [viewBox, closeCard, getTouchDistance, getTouchCenter]
@@ -438,17 +449,29 @@ const VectorMap: React.FC<VectorMapProps> = ({
     (e: TouchEvent) => {
       if (!containerRef.current) return;
 
-      // イベントはコンテナから発生するので境界チェック不要
-      // cancelableイベントのみでpreventDefaultを試行
-      if (e.cancelable) {
-        try {
-          e.preventDefault();
-        } catch (error) {
-          console.debug("preventDefault failed on touchmove:", error);
+      // Calculate movement distance to detect if this is a gesture
+      const deltaX = e.touches[0].clientX - touchStartPos.x;
+      const deltaY = e.touches[0].clientY - touchStartPos.y;
+      const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+      
+      // If movement is significant, mark as gesture and close card
+      if (distance > 5 && !isTouchGesture) {
+        setIsTouchGesture(true);
+        closeCard();
+      }
+
+      // Only prevent default if this is clearly a gesture
+      if (isTouchGesture || distance > 5 || e.touches.length > 1) {
+        if (e.cancelable) {
+          try {
+            e.preventDefault();
+          } catch (error) {
+            console.debug("preventDefault failed on touchmove:", error);
+          }
         }
       }
 
-      if (e.touches.length === 1 && isDragging && containerRef.current) {
+      if (e.touches.length === 1 && isDragging && containerRef.current && (isTouchGesture || distance > 5)) {
         const deltaX = e.touches[0].clientX - dragStart.x;
         const deltaY = e.touches[0].clientY - dragStart.y;
 
@@ -545,6 +568,9 @@ const VectorMap: React.FC<VectorMapProps> = ({
       getTouchDistance,
       getTouchCenter,
       ADJUSTED_MAP_BOUNDS,
+      touchStartPos,
+      isTouchGesture,
+      closeCard,
     ]
   );
 
@@ -552,16 +578,26 @@ const VectorMap: React.FC<VectorMapProps> = ({
     (e: TouchEvent) => {
       if (!containerRef.current) return;
 
-      // マルチレベルダブルタップズーム検出
       const now = Date.now();
-      const timeDiff = now - lastTapTime;
+      const touchDuration = now - touchStartTime;
+      const lastTouch = e.changedTouches[0];
+      
+      // Calculate final movement distance
+      const deltaX = lastTouch.clientX - touchStartPos.x;
+      const deltaY = lastTouch.clientY - touchStartPos.y;
+      const totalDistance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
 
-      if (timeDiff < 300 && timeDiff > 0 && e.touches.length === 0) {
-        // ダブルタップを検出した場合、多段階ズーム
-        const lastTouch = e.changedTouches[0];
-        if (lastTouch) {
+      // Check if this was a tap (short duration, minimal movement, single touch)
+      const isTap = touchDuration < 500 && totalDistance < 10 && !isTouchGesture && e.touches.length === 0;
+
+      if (isTap) {
+        // Handle tap - check for double tap first
+        const timeDiff = now - lastTapTime;
+        
+        if (timeDiff < 300 && timeDiff > 0) {
+          // Double tap detected - perform zoom
           const svgCoord = screenToSVG(lastTouch.clientX, lastTouch.clientY);
-
+          
           // ズームレベルサイクル: 1x → 2x → 4x → 8x → 1x
           const zoomLevels = [1, 2, 4, 8];
           const currentIndex = zoomLevels.findIndex(
@@ -573,28 +609,71 @@ const VectorMap: React.FC<VectorMapProps> = ({
           // ダブルタップ位置を中心にズーム
           zoomToPoint(svgCoord, nextZoomLevel);
           setCurrentZoomLevel(nextZoomLevel);
-
-          e.preventDefault();
+          
+          if (e.cancelable) {
+            e.preventDefault();
+          }
           return;
+        } else {
+          // Single tap - allow it to propagate to click handlers
+          // Don't prevent default for single taps to allow click events
+          setLastTapTime(now);
+          
+          // Simulate a click event for touch devices
+          if (svgRef.current) {
+            const svgRect = svgRef.current.getBoundingClientRect();
+            const relativeX = lastTouch.clientX - svgRect.left;
+            const relativeY = lastTouch.clientY - svgRect.top;
+            
+            // Check if tap is on SVG background (for coordinate selection)
+            if (mode === "interactive" && onMapClick) {
+              const mockEvent = {
+                clientX: lastTouch.clientX,
+                clientY: lastTouch.clientY,
+                target: svgRef.current,
+                preventDefault: () => {},
+              } as React.MouseEvent;
+              
+              // Add a small delay to ensure this doesn't conflict with point clicks
+              setTimeout(() => {
+                handleSVGClick(mockEvent);
+              }, 10);
+            }
+          }
+          
+          return; // Don't prevent default for single taps
         }
       }
-      setLastTapTime(now);
 
-      // cancelableイベントのみでpreventDefaultを試行
-      if (e.cancelable) {
-        try {
-          e.preventDefault();
-        } catch (error) {
-          console.debug("preventDefault failed on touchend:", error);
+      // Only prevent default for gestures
+      if (isTouchGesture || totalDistance > 10) {
+        if (e.cancelable) {
+          try {
+            e.preventDefault();
+          } catch (error) {
+            console.debug("preventDefault failed on touchend:", error);
+          }
         }
       }
 
       if (e.touches.length === 0) {
         setIsDragging(false);
         setTouchDistance(0);
+        setIsTouchGesture(false);
       }
     },
-    [lastTapTime, currentZoomLevel, screenToSVG, zoomToPoint]
+    [
+      lastTapTime, 
+      currentZoomLevel, 
+      screenToSVG, 
+      zoomToPoint, 
+      touchStartTime, 
+      touchStartPos, 
+      isTouchGesture,
+      mode,
+      onMapClick,
+      handleSVGClick
+    ]
   );
 
   // Wheel zoom handler
@@ -1593,6 +1672,12 @@ const VectorMap: React.FC<VectorMapProps> = ({
                     onClick={(e) => handlePointClick(cluster.points[0], e)}
                     onMouseEnter={() => handlePointHover(cluster.points[0])}
                     onMouseLeave={() => handlePointHover(null)}
+                    onTouchEnd={(e) => {
+                      // Handle touch end on point elements
+                      e.stopPropagation();
+                      e.preventDefault();
+                      handlePointClick(cluster.points[0]);
+                    }}
                   />
                   {shouldShowText() && (
                     <text
@@ -1609,6 +1694,12 @@ const VectorMap: React.FC<VectorMapProps> = ({
                       onClick={(e) => handlePointClick(cluster.points[0], e)}
                       onMouseEnter={() => handlePointHover(cluster.points[0])}
                       onMouseLeave={() => handlePointHover(null)}
+                      onTouchEnd={(e) => {
+                        // Handle touch end on text elements
+                        e.stopPropagation();
+                        e.preventDefault();
+                        handlePointClick(cluster.points[0]);
+                      }}
                       style={{ cursor: "pointer" }}
                     >
                       {cluster.points[0].title.length > 8
@@ -1639,6 +1730,12 @@ const VectorMap: React.FC<VectorMapProps> = ({
                     onMouseLeave={(e) => {
                       e.currentTarget.style.opacity = "0.9";
                     }}
+                    onTouchEnd={(e) => {
+                      // Handle touch end on cluster elements
+                      e.stopPropagation();
+                      e.preventDefault();
+                      handleClusterClick(cluster);
+                    }}
                   />
                   {shouldShowText() && (
                     <text
@@ -1651,7 +1748,13 @@ const VectorMap: React.FC<VectorMapProps> = ({
                       dominantBaseline="central"
                       fontWeight="bold"
                       onClick={(e) => handleClusterClick(cluster, e)}
-                      style={{ cursor: "pointer", pointerEvents: "none" }}
+                      onTouchEnd={(e) => {
+                        // Handle touch end on cluster text elements
+                        e.stopPropagation();
+                        e.preventDefault();
+                        handleClusterClick(cluster);
+                      }}
+                      style={{ cursor: "pointer", pointerEvents: "auto" }}
                     >
                       {cluster.count}
                     </text>
