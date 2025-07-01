@@ -104,7 +104,6 @@ const VectorMap: React.FC<VectorMapProps> = ({
 
   // Touch state for mobile
   const [lastTapTime, setLastTapTime] = useState<number>(0);
-  const [tapCount, setTapCount] = useState<number>(0);
   const [currentZoomLevel, setCurrentZoomLevel] = useState<number>(1);
   const [isShiftPressed, setIsShiftPressed] = useState<boolean>(false);
 
@@ -312,12 +311,13 @@ const VectorMap: React.FC<VectorMapProps> = ({
       // Shift+ドラッグの場合はズーム操作
       if (isShiftPressed) {
         const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
-        const zoomFactor = distance > 0 ? Math.max(0.5, Math.min(2, 1 + deltaY / 100)) : 1;
-        
+        const zoomFactor =
+          distance > 0 ? Math.max(0.5, Math.min(2, 1 + deltaY / 100)) : 1;
+
         const centerSVG = screenToSVG(dragStart.x, dragStart.y);
         const targetWidth = dragStartViewBox.width * zoomFactor;
         const targetHeight = dragStartViewBox.height * zoomFactor;
-        
+
         setViewBox({
           x: centerSVG.x - targetWidth / 2,
           y: centerSVG.y - targetHeight / 2,
@@ -396,7 +396,6 @@ const VectorMap: React.FC<VectorMapProps> = ({
 
   // Touch event handlers for mobile (ViewBox based)
   const [touchDistance, setTouchDistance] = useState<number>(0);
-  const [touchCenter, setTouchCenter] = useState<Coordinate>({ x: 0, y: 0 });
 
   const getTouchDistance = useCallback((touches: React.TouchList): number => {
     if (touches.length < 2) return 0;
@@ -430,7 +429,6 @@ const VectorMap: React.FC<VectorMapProps> = ({
       } else if (e.touches.length === 2) {
         setIsDragging(false);
         setTouchDistance(getTouchDistance(e.touches));
-        setTouchCenter(getTouchCenter(e.touches));
       }
     },
     [viewBox, closeCard, getTouchDistance, getTouchCenter]
@@ -550,49 +548,54 @@ const VectorMap: React.FC<VectorMapProps> = ({
     ]
   );
 
-  const handleTouchEnd = useCallback((e: TouchEvent) => {
-    if (!containerRef.current) return;
+  const handleTouchEnd = useCallback(
+    (e: TouchEvent) => {
+      if (!containerRef.current) return;
 
-    // マルチレベルダブルタップズーム検出
-    const now = Date.now();
-    const timeDiff = now - lastTapTime;
-    
-    if (timeDiff < 300 && timeDiff > 0 && e.touches.length === 0) {
-      // ダブルタップを検出した場合、多段階ズーム
-      const lastTouch = e.changedTouches[0];
-      if (lastTouch) {
-        const svgCoord = screenToSVG(lastTouch.clientX, lastTouch.clientY);
-        
-        // ズームレベルサイクル: 1x → 2x → 4x → 8x → 1x
-        const zoomLevels = [1, 2, 4, 8];
-        const currentIndex = zoomLevels.findIndex(level => Math.abs(currentZoomLevel - level) < 0.5);
-        const nextIndex = (currentIndex + 1) % zoomLevels.length;
-        const nextZoomLevel = zoomLevels[nextIndex];
-        
-        // ダブルタップ位置を中心にズーム
-        zoomToPoint(svgCoord, nextZoomLevel);
-        setCurrentZoomLevel(nextZoomLevel);
-        
-        e.preventDefault();
-        return;
+      // マルチレベルダブルタップズーム検出
+      const now = Date.now();
+      const timeDiff = now - lastTapTime;
+
+      if (timeDiff < 300 && timeDiff > 0 && e.touches.length === 0) {
+        // ダブルタップを検出した場合、多段階ズーム
+        const lastTouch = e.changedTouches[0];
+        if (lastTouch) {
+          const svgCoord = screenToSVG(lastTouch.clientX, lastTouch.clientY);
+
+          // ズームレベルサイクル: 1x → 2x → 4x → 8x → 1x
+          const zoomLevels = [1, 2, 4, 8];
+          const currentIndex = zoomLevels.findIndex(
+            (level) => Math.abs(currentZoomLevel - level) < 0.5
+          );
+          const nextIndex = (currentIndex + 1) % zoomLevels.length;
+          const nextZoomLevel = zoomLevels[nextIndex];
+
+          // ダブルタップ位置を中心にズーム
+          zoomToPoint(svgCoord, nextZoomLevel);
+          setCurrentZoomLevel(nextZoomLevel);
+
+          e.preventDefault();
+          return;
+        }
       }
-    }
-    setLastTapTime(now);
+      setLastTapTime(now);
 
-    // cancelableイベントのみでpreventDefaultを試行
-    if (e.cancelable) {
-      try {
-        e.preventDefault();
-      } catch (error) {
-        console.debug("preventDefault failed on touchend:", error);
+      // cancelableイベントのみでpreventDefaultを試行
+      if (e.cancelable) {
+        try {
+          e.preventDefault();
+        } catch (error) {
+          console.debug("preventDefault failed on touchend:", error);
+        }
       }
-    }
 
-    if (e.touches.length === 0) {
-      setIsDragging(false);
-      setTouchDistance(0);
-    }
-  }, [lastTapTime, currentZoomLevel, screenToSVG, zoomToPoint]);
+      if (e.touches.length === 0) {
+        setIsDragging(false);
+        setTouchDistance(0);
+      }
+    },
+    [lastTapTime, currentZoomLevel, screenToSVG, zoomToPoint]
+  );
 
   // Wheel zoom handler
   const handleWheel = useCallback(
@@ -845,12 +848,14 @@ const VectorMap: React.FC<VectorMapProps> = ({
     // Mouse events (keep document level for drag continuation)
     document.addEventListener("mousemove", handleMouseMove);
     document.addEventListener("mouseup", handleMouseUp);
-    
+
     // Touch events (attach to container only to prevent interference)
-    container.addEventListener("touchmove", handleTouchMove, { passive: false });
+    container.addEventListener("touchmove", handleTouchMove, {
+      passive: false,
+    });
     container.addEventListener("touchend", handleTouchEnd, { passive: false });
     container.addEventListener("wheel", handleWheel, { passive: false });
-    
+
     // Keyboard events for Shift key detection
     document.addEventListener("keydown", handleKeyDown);
     document.addEventListener("keyup", handleKeyUp);
@@ -879,18 +884,18 @@ const VectorMap: React.FC<VectorMapProps> = ({
     if (points.length === 0) return;
 
     // Find the bounding box of all points
-    const pointCoords = points.map(p => p.coordinates);
-    const minX = Math.min(...pointCoords.map(p => p.x));
-    const maxX = Math.max(...pointCoords.map(p => p.x));
-    const minY = Math.min(...pointCoords.map(p => p.y));
-    const maxY = Math.max(...pointCoords.map(p => p.y));
+    const pointCoords = points.map((p) => p.coordinates);
+    const minX = Math.min(...pointCoords.map((p) => p.x));
+    const maxX = Math.max(...pointCoords.map((p) => p.x));
+    const minY = Math.min(...pointCoords.map((p) => p.y));
+    const maxY = Math.max(...pointCoords.map((p) => p.y));
 
     // Add padding around the points
     const paddingX = (maxX - minX) * 0.2; // 20% padding
     const paddingY = (maxY - minY) * 0.2; // 20% padding
-    
-    const fitWidth = (maxX - minX) + paddingX * 2;
-    const fitHeight = (maxY - minY) + paddingY * 2;
+
+    const fitWidth = maxX - minX + paddingX * 2;
+    const fitHeight = maxY - minY + paddingY * 2;
     const centerX = (minX + maxX) / 2;
     const centerY = (minY + maxY) / 2;
 
@@ -904,14 +909,14 @@ const VectorMap: React.FC<VectorMapProps> = ({
     // Set the view to fit all points
     const targetWidth = containerWidth / optimalScale;
     const targetHeight = containerHeight / optimalScale;
-    
+
     setViewBox({
       x: centerX - targetWidth / 2,
       y: centerY - targetHeight / 2,
       width: targetWidth,
       height: targetHeight,
     });
-    
+
     setCurrentZoomLevel(optimalScale);
   }, [points]);
 
