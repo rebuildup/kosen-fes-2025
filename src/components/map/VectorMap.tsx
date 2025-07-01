@@ -160,17 +160,28 @@ const VectorMap: React.FC<VectorMapProps> = ({
 
       const svgRect = svgRef.current.getBoundingClientRect();
 
-      // スクリーン座標をSVG要素内の相対座標に変換
-      const relativeX = screenX - svgRect.left;
-      const relativeY = screenY - svgRect.top;
+      // 実際のSVGコンテンツ表示領域を取得
+      const contentRect = getSVGContentRect(svgRect);
 
-      // SVG座標系に変換（viewBoxを考慮）
-      const svgX = viewBox.x + (relativeX / svgRect.width) * viewBox.width;
-      const svgY = viewBox.y + (relativeY / svgRect.height) * viewBox.height;
+      // SVG要素内での相対座標を計算
+      const elementRelativeX = screenX - svgRect.left;
+      const elementRelativeY = screenY - svgRect.top;
+
+      // コンテンツ領域内での正確な相対座標を計算
+      const contentRelativeX = elementRelativeX - contentRect.offsetX;
+      const contentRelativeY = elementRelativeY - contentRect.offsetY;
+
+      // 正規化された座標（0-1の範囲）を計算
+      const normalizedX = Math.max(0, Math.min(1, contentRelativeX / contentRect.width));
+      const normalizedY = Math.max(0, Math.min(1, contentRelativeY / contentRect.height));
+
+      // viewBoxを考慮してSVG座標系に変換
+      const svgX = viewBox.x + normalizedX * viewBox.width;
+      const svgY = viewBox.y + normalizedY * viewBox.height;
 
       return { x: svgX, y: svgY };
     },
-    [viewBox]
+    [viewBox, getSVGContentRect]
   );
 
   // Zoom functions with viewBox precision
