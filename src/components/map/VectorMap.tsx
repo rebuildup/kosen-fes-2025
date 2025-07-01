@@ -788,6 +788,165 @@ const VectorMap: React.FC<VectorMapProps> = ({
     [screenToSVG, minZoom, maxZoom, closeCard]
   );
 
+  // カードの最適な表示位置を計算する関数
+  const calculateCardPosition = useCallback(
+    (
+      pointCoordinates: Coordinate,
+      screenEvent?: React.MouseEvent,
+      isCluster: boolean = false
+    ) => {
+      if (!containerRef.current) return { x: 0, y: 0, placement: "bottom" };
+
+      const containerRect = containerRef.current.getBoundingClientRect();
+      const cardWidth = isCluster ? 400 : 300;
+      const cardHeight = isCluster ? 300 : 200;
+      const margin = 20;
+
+      let baseX: number, baseY: number;
+
+      if (screenEvent) {
+        baseX = screenEvent.clientX - containerRect.left;
+        baseY = screenEvent.clientY - containerRect.top;
+      } else {
+        // SVG座標からスクリーン座標に変換
+        const svgRect = svgRef.current?.getBoundingClientRect();
+        if (svgRect) {
+          baseX =
+            ((pointCoordinates.x - viewBox.x) / viewBox.width) * svgRect.width;
+          baseY =
+            ((pointCoordinates.y - viewBox.y) / viewBox.height) *
+            svgRect.height;
+        } else {
+          baseX = containerRect.width / 2;
+          baseY = containerRect.height / 2;
+        }
+      }
+
+      // ポイント位置に基づく動的優先順位の計算
+      const leftThird = containerRect.width / 3;
+      const rightThird = (containerRect.width * 2) / 3;
+      const topThird = containerRect.height / 3;
+      const bottomThird = (containerRect.height * 2) / 3;
+
+      // 位置に基づく優先順位を動的に調整
+      let priorities = { bottom: 1, top: 2, right: 3, left: 4 };
+
+      if (baseX < leftThird) {
+        // 左側 - 右方向を優先
+        priorities = { right: 1, bottom: 2, top: 3, left: 4 };
+      } else if (baseX > rightThird) {
+        // 右側 - 左方向を優先
+        priorities = { left: 1, bottom: 2, top: 3, right: 4 };
+      }
+
+      if (baseY < topThird) {
+        // 上部 - 下方向を優先
+        priorities = { bottom: 1, right: 2, left: 3, top: 4 };
+      } else if (baseY > bottomThird) {
+        // 下部 - 上方向を優先
+        priorities = { top: 1, right: 2, left: 3, bottom: 4 };
+      }
+
+      // 4つの方向での配置可能性をチェック（動的優先順位）
+      const placements = [
+        {
+          name: "bottom",
+          x: baseX,
+          y: baseY + 50,
+          transform: "translate(-50%, 0%)",
+          viable: baseY + 50 + cardHeight + margin < containerRect.height,
+          finalX: baseX,
+          finalY: baseY + 50,
+          priority: priorities.bottom,
+          spaceAvailable:
+            containerRect.height - (baseY + 50 + cardHeight + margin),
+        },
+        {
+          name: "top",
+          x: baseX,
+          y: baseY - 50,
+          transform: "translate(-50%, -100%)",
+          viable: baseY - 50 - cardHeight - margin > 0,
+          finalX: baseX,
+          finalY: baseY - 50,
+          priority: priorities.top,
+          spaceAvailable: baseY - 50 - cardHeight - margin,
+        },
+        {
+          name: "right",
+          x: baseX + 50,
+          y: baseY,
+          transform: "translate(0%, -50%)",
+          viable: baseX + 50 + cardWidth + margin < containerRect.width,
+          finalX: baseX + 50,
+          finalY: baseY,
+          priority: priorities.right,
+          spaceAvailable:
+            containerRect.width - (baseX + 50 + cardWidth + margin),
+        },
+        {
+          name: "left",
+          x: baseX - 50,
+          y: baseY,
+          transform: "translate(-100%, -50%)",
+          viable: baseX - 50 - cardWidth - margin > 0,
+          finalX: baseX - 50,
+          finalY: baseY,
+          priority: priorities.left,
+          spaceAvailable: baseX - 50 - cardWidth - margin,
+        },
+      ];
+
+      // 最適な配置を選択（スペースと位置を考慮）
+      const viablePlacements = placements.filter((p) => p.viable);
+
+      let selectedPlacement;
+      if (viablePlacements.length > 0) {
+        // 利用可能なスペースでソート（降順）し、同じスペースなら優先順位で決定
+        selectedPlacement = viablePlacements.sort((a, b) => {
+          // まず十分なスペースがあるかチェック
+          const aHasSpace = a.spaceAvailable > 50;
+          const bHasSpace = b.spaceAvailable > 50;
+
+          if (aHasSpace && !bHasSpace) return -1;
+          if (!aHasSpace && bHasSpace) return 1;
+
+          // 両方ともスペースがある、またはない場合は優先順位で決定
+          if (aHasSpace && bHasSpace) {
+            return a.priority - b.priority;
+          }
+
+          // スペースが不足している場合は、より多くのスペースがある方を選択
+          return b.spaceAvailable - a.spaceAvailable;
+        })[0];
+      } else {
+        // フォールバック: 最もスペースがある方向を選択
+        selectedPlacement = placements.sort(
+          (a, b) => b.spaceAvailable - a.spaceAvailable
+        )[0];
+      }
+
+      // transformを考慮した最終位置を設定
+      let finalX = selectedPlacement.finalX;
+      let finalY = selectedPlacement.finalY;
+
+      // 境界チェックとフォールバック調整
+      if (!selectedPlacement.viable) {
+        // 画面中央にフォールバック
+        finalX = containerRect.width / 2;
+        finalY = containerRect.height / 2;
+      }
+
+      return {
+        x: finalX,
+        y: finalY,
+        transform: selectedPlacement.transform,
+        placement: selectedPlacement.name,
+      };
+    },
+    [viewBox]
+  );
+
   // Point interaction handlers
   const handlePointClick = useCallback(
     (point: InteractivePoint, screenEvent?: React.MouseEvent, isMobileTap?: boolean) => {
@@ -863,7 +1022,7 @@ const VectorMap: React.FC<VectorMapProps> = ({
       );
       setCardPosition(position);
     },
-    [viewBox]
+    [calculateCardPosition]
   );
 
   const handlePointHover = useCallback(
@@ -1157,165 +1316,6 @@ const VectorMap: React.FC<VectorMapProps> = ({
 
     return clusters;
   }, [points, viewBox.width]);
-
-  // カードの最適な表示位置を計算する関数
-  const calculateCardPosition = useCallback(
-    (
-      pointCoordinates: Coordinate,
-      screenEvent?: React.MouseEvent,
-      isCluster: boolean = false
-    ) => {
-      if (!containerRef.current) return { x: 0, y: 0, placement: "bottom" };
-
-      const containerRect = containerRef.current.getBoundingClientRect();
-      const cardWidth = isCluster ? 400 : 300;
-      const cardHeight = isCluster ? 300 : 200;
-      const margin = 20;
-
-      let baseX: number, baseY: number;
-
-      if (screenEvent) {
-        baseX = screenEvent.clientX - containerRect.left;
-        baseY = screenEvent.clientY - containerRect.top;
-      } else {
-        // SVG座標からスクリーン座標に変換
-        const svgRect = svgRef.current?.getBoundingClientRect();
-        if (svgRect) {
-          baseX =
-            ((pointCoordinates.x - viewBox.x) / viewBox.width) * svgRect.width;
-          baseY =
-            ((pointCoordinates.y - viewBox.y) / viewBox.height) *
-            svgRect.height;
-        } else {
-          baseX = containerRect.width / 2;
-          baseY = containerRect.height / 2;
-        }
-      }
-
-      // ポイント位置に基づく動的優先順位の計算
-      const leftThird = containerRect.width / 3;
-      const rightThird = (containerRect.width * 2) / 3;
-      const topThird = containerRect.height / 3;
-      const bottomThird = (containerRect.height * 2) / 3;
-
-      // 位置に基づく優先順位を動的に調整
-      let priorities = { bottom: 1, top: 2, right: 3, left: 4 };
-
-      if (baseX < leftThird) {
-        // 左側 - 右方向を優先
-        priorities = { right: 1, bottom: 2, top: 3, left: 4 };
-      } else if (baseX > rightThird) {
-        // 右側 - 左方向を優先
-        priorities = { left: 1, bottom: 2, top: 3, right: 4 };
-      }
-
-      if (baseY < topThird) {
-        // 上部 - 下方向を優先
-        priorities = { bottom: 1, right: 2, left: 3, top: 4 };
-      } else if (baseY > bottomThird) {
-        // 下部 - 上方向を優先
-        priorities = { top: 1, right: 2, left: 3, bottom: 4 };
-      }
-
-      // 4つの方向での配置可能性をチェック（動的優先順位）
-      const placements = [
-        {
-          name: "bottom",
-          x: baseX,
-          y: baseY + 50,
-          transform: "translate(-50%, 0%)",
-          viable: baseY + 50 + cardHeight + margin < containerRect.height,
-          finalX: baseX,
-          finalY: baseY + 50,
-          priority: priorities.bottom,
-          spaceAvailable:
-            containerRect.height - (baseY + 50 + cardHeight + margin),
-        },
-        {
-          name: "top",
-          x: baseX,
-          y: baseY - 50,
-          transform: "translate(-50%, -100%)",
-          viable: baseY - 50 - cardHeight - margin > 0,
-          finalX: baseX,
-          finalY: baseY - 50,
-          priority: priorities.top,
-          spaceAvailable: baseY - 50 - cardHeight - margin,
-        },
-        {
-          name: "right",
-          x: baseX + 50,
-          y: baseY,
-          transform: "translate(0%, -50%)",
-          viable: baseX + 50 + cardWidth + margin < containerRect.width,
-          finalX: baseX + 50,
-          finalY: baseY,
-          priority: priorities.right,
-          spaceAvailable:
-            containerRect.width - (baseX + 50 + cardWidth + margin),
-        },
-        {
-          name: "left",
-          x: baseX - 50,
-          y: baseY,
-          transform: "translate(-100%, -50%)",
-          viable: baseX - 50 - cardWidth - margin > 0,
-          finalX: baseX - 50,
-          finalY: baseY,
-          priority: priorities.left,
-          spaceAvailable: baseX - 50 - cardWidth - margin,
-        },
-      ];
-
-      // 最適な配置を選択（スペースと位置を考慮）
-      const viablePlacements = placements.filter((p) => p.viable);
-
-      let selectedPlacement;
-      if (viablePlacements.length > 0) {
-        // 利用可能なスペースでソート（降順）し、同じスペースなら優先順位で決定
-        selectedPlacement = viablePlacements.sort((a, b) => {
-          // まず十分なスペースがあるかチェック
-          const aHasSpace = a.spaceAvailable > 50;
-          const bHasSpace = b.spaceAvailable > 50;
-
-          if (aHasSpace && !bHasSpace) return -1;
-          if (!aHasSpace && bHasSpace) return 1;
-
-          // 両方ともスペースがある、またはない場合は優先順位で決定
-          if (aHasSpace && bHasSpace) {
-            return a.priority - b.priority;
-          }
-
-          // スペースが不足している場合は、より多くのスペースがある方を選択
-          return b.spaceAvailable - a.spaceAvailable;
-        })[0];
-      } else {
-        // フォールバック: 最もスペースがある方向を選択
-        selectedPlacement = placements.sort(
-          (a, b) => b.spaceAvailable - a.spaceAvailable
-        )[0];
-      }
-
-      // transformを考慮した最終位置を設定
-      let finalX = selectedPlacement.finalX;
-      let finalY = selectedPlacement.finalY;
-
-      // 境界チェックとフォールバック調整
-      if (!selectedPlacement.viable) {
-        // 画面中央にフォールバック
-        finalX = containerRect.width / 2;
-        finalY = containerRect.height / 2;
-      }
-
-      return {
-        x: finalX,
-        y: finalY,
-        transform: selectedPlacement.transform,
-        placement: selectedPlacement.name,
-      };
-    },
-    [viewBox]
-  );
 
   const clusters = useMemo(() => createClusters(), [createClusters]);
 
