@@ -260,7 +260,28 @@ export const useSimpleMapZoomPan = ({
     (e: TouchEvent) => {
       if (!containerRef.current) return;
 
-      // イベントはコンテナから発生するので境界チェック不要
+      // Check if touch is over a card area
+      const cardElements = document.querySelectorAll(".map-card-overlay");
+      let isOverCard = false;
+
+      for (const cardElement of cardElements) {
+        const rect = cardElement.getBoundingClientRect();
+        if (
+          e.touches[0].clientX >= rect.left &&
+          e.touches[0].clientX <= rect.right &&
+          e.touches[0].clientY >= rect.top &&
+          e.touches[0].clientY <= rect.bottom
+        ) {
+          isOverCard = true;
+          break;
+        }
+      }
+
+      // If over card, don't interfere with card touch events
+      if (isOverCard) {
+        return;
+      }
+
       // cancelableイベントのみでpreventDefaultを試行
       if (e.cancelable) {
         try {
@@ -334,7 +355,29 @@ export const useSimpleMapZoomPan = ({
   const handleTouchEnd = useCallback((e: TouchEvent) => {
     if (!containerRef.current) return;
 
-    // イベントはコンテナから発生するので境界チェック不要
+    // Check if touch is over a card area
+    const cardElements = document.querySelectorAll(".map-card-overlay");
+    let isOverCard = false;
+
+    const lastTouch = e.changedTouches[0];
+    for (const cardElement of cardElements) {
+      const rect = cardElement.getBoundingClientRect();
+      if (
+        lastTouch.clientX >= rect.left &&
+        lastTouch.clientX <= rect.right &&
+        lastTouch.clientY >= rect.top &&
+        lastTouch.clientY <= rect.bottom
+      ) {
+        isOverCard = true;
+        break;
+      }
+    }
+
+    // If over card, don't interfere with card touch events
+    if (isOverCard) {
+      return;
+    }
+
     // cancelableイベントのみでpreventDefaultを試行
     if (e.cancelable) {
       try {
@@ -362,7 +405,27 @@ export const useSimpleMapZoomPan = ({
     (e: WheelEvent) => {
       if (!containerRef.current) return;
 
-      // イベントはコンテナから発生するので境界チェック不要
+      // Check if wheel event is over a card area
+      const cardElements = document.querySelectorAll(".map-card-overlay");
+      let isOverCard = false;
+
+      for (const cardElement of cardElements) {
+        const rect = cardElement.getBoundingClientRect();
+        if (
+          e.clientX >= rect.left &&
+          e.clientX <= rect.right &&
+          e.clientY >= rect.top &&
+          e.clientY <= rect.bottom
+        ) {
+          isOverCard = true;
+          break;
+        }
+      }
+
+      // If over card, allow card scrolling
+      if (isOverCard) {
+        return;
+      }
 
       e.preventDefault();
 

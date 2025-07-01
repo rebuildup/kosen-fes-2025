@@ -457,6 +457,28 @@ const VectorMap: React.FC<VectorMapProps> = ({
     (e: TouchEvent) => {
       if (!containerRef.current) return;
 
+      // Check if touch is over a card area
+      const cardElements = document.querySelectorAll(".map-card-overlay");
+      let isOverCard = false;
+
+      for (const cardElement of cardElements) {
+        const rect = cardElement.getBoundingClientRect();
+        if (
+          e.touches[0].clientX >= rect.left &&
+          e.touches[0].clientX <= rect.right &&
+          e.touches[0].clientY >= rect.top &&
+          e.touches[0].clientY <= rect.bottom
+        ) {
+          isOverCard = true;
+          break;
+        }
+      }
+
+      // If over card, don't interfere with card touch events
+      if (isOverCard) {
+        return;
+      }
+
       // Calculate movement distance to detect if this is a gesture
       const deltaX = e.touches[0].clientX - touchStartPos.x;
       const deltaY = e.touches[0].clientY - touchStartPos.y;
@@ -590,6 +612,28 @@ const VectorMap: React.FC<VectorMapProps> = ({
       const touchDuration = now - touchStartTime;
       const lastTouch = e.changedTouches[0];
       
+      // Check if touch is over a card area
+      const cardElements = document.querySelectorAll(".map-card-overlay");
+      let isOverCard = false;
+
+      for (const cardElement of cardElements) {
+        const rect = cardElement.getBoundingClientRect();
+        if (
+          lastTouch.clientX >= rect.left &&
+          lastTouch.clientX <= rect.right &&
+          lastTouch.clientY >= rect.top &&
+          lastTouch.clientY <= rect.bottom
+        ) {
+          isOverCard = true;
+          break;
+        }
+      }
+
+      // If over card, don't interfere with card touch events
+      if (isOverCard) {
+        return;
+      }
+      
       // Calculate final movement distance
       const deltaX = lastTouch.clientX - touchStartPos.x;
       const deltaY = lastTouch.clientY - touchStartPos.y;
@@ -629,15 +673,16 @@ const VectorMap: React.FC<VectorMapProps> = ({
           
           // Simulate a click event for touch devices
           if (svgRef.current && mode === "interactive" && onMapClick) {
+            // Use the same coordinate calculation method as mouse clicks for consistency
             const svgRect = svgRef.current.getBoundingClientRect();
             const relativeX = lastTouch.clientX - svgRect.left;
             const relativeY = lastTouch.clientY - svgRect.top;
             
-            // Direct coordinate calculation for touch (consistent with mouse clicks)
+            // Use same coordinate calculation as handleSVGClick for consistency
             const svgX = viewBox.x + (relativeX / svgRect.width) * viewBox.width;
             const svgY = viewBox.y + (relativeY / svgRect.height) * viewBox.height;
             
-            // Apply coordinate limits and precision
+            // Apply coordinate limits and precision (same as mouse handler)
             const mapClickMargin = Math.max(CAMPUS_MAP_BOUNDS.width, CAMPUS_MAP_BOUNDS.height) * 2;
             const clampedX = Math.max(
               -mapClickMargin,
@@ -696,8 +741,6 @@ const VectorMap: React.FC<VectorMapProps> = ({
   const handleWheel = useCallback(
     (e: WheelEvent) => {
       if (!containerRef.current) return;
-
-      // イベントはコンテナから発生するので境界チェック不要
 
       // カードエリア上かチェック
       const cardElements = document.querySelectorAll(".map-card-overlay");
