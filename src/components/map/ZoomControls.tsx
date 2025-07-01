@@ -43,9 +43,21 @@ const ZoomControls = ({
       {/* ズームイン */}
       <button
         onClick={onZoomIn}
+        onTouchStart={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+        }}
+        onTouchEnd={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          if (!e.currentTarget.disabled) {
+            onZoomIn();
+          }
+        }}
         disabled={scale >= maxScale}
-        className="flex items-center justify-center w-8 h-8 rounded text-gray-700 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        className="flex items-center justify-center w-8 h-8 rounded text-gray-700 hover:bg-gray-100 active:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors touch-manipulation"
         title="ズームイン (Ctrl/Cmd + +)"
+        style={{ touchAction: "manipulation" }}
       >
         <svg
           width="16"
@@ -65,9 +77,21 @@ const ZoomControls = ({
       {/* ズームアウト */}
       <button
         onClick={onZoomOut}
+        onTouchStart={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+        }}
+        onTouchEnd={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          if (!e.currentTarget.disabled) {
+            onZoomOut();
+          }
+        }}
         disabled={scale <= minScale}
-        className="flex items-center justify-center w-8 h-8 rounded text-gray-700 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        className="flex items-center justify-center w-8 h-8 rounded text-gray-700 hover:bg-gray-100 active:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors touch-manipulation"
         title="ズームアウト (Ctrl/Cmd + -)"
+        style={{ touchAction: "manipulation" }}
       >
         <svg
           width="16"
@@ -86,8 +110,18 @@ const ZoomControls = ({
       {/* リセット */}
       <button
         onClick={onReset}
-        className="flex items-center justify-center w-8 h-8 rounded text-gray-700 hover:bg-gray-100 transition-colors"
+        onTouchStart={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+        }}
+        onTouchEnd={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          onReset();
+        }}
+        className="flex items-center justify-center w-8 h-8 rounded text-gray-700 hover:bg-gray-100 active:bg-gray-200 transition-colors touch-manipulation"
         title="リセット (Ctrl/Cmd + 0)"
+        style={{ touchAction: "manipulation" }}
       >
         <svg
           width="16"

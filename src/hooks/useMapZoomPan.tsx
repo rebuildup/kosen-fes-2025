@@ -230,7 +230,15 @@ export const useSimpleMapZoomPan = ({
   // タッチイベントハンドラー
   const handleTouchStart = useCallback(
     (e: React.TouchEvent) => {
-      e.preventDefault();
+      // cancelableイベントのみでpreventDefaultを試行
+      if (e.cancelable) {
+        try {
+          e.preventDefault();
+        } catch (error) {
+          // passive listenerでpreventDefaultが失敗した場合は無視
+          console.debug("preventDefault failed on touchstart:", error);
+        }
+      }
 
       if (e.touches.length === 1) {
         // シングルタッチ：ドラッグ開始
@@ -252,10 +260,11 @@ export const useSimpleMapZoomPan = ({
     (e: TouchEvent) => {
       // マップコンテナ内のタッチイベントかチェック
       if (!containerRef.current) return;
-      
+
       const containerRect = containerRef.current.getBoundingClientRect();
       const touch = e.touches[0];
-      const isWithinContainer = touch && 
+      const isWithinContainer =
+        touch &&
         touch.clientX >= containerRect.left &&
         touch.clientX <= containerRect.right &&
         touch.clientY >= containerRect.top &&
@@ -264,7 +273,15 @@ export const useSimpleMapZoomPan = ({
       // マップ範囲内のタッチのみ処理し、範囲外は通常のスクロールを許可
       if (!isWithinContainer) return;
 
-      e.preventDefault();
+      // cancelableイベントのみでpreventDefaultを試行
+      if (e.cancelable) {
+        try {
+          e.preventDefault();
+        } catch (error) {
+          // passive listenerでpreventDefaultが失敗した場合は無視
+          console.debug("preventDefault failed on touchmove:", error);
+        }
+      }
 
       if (e.touches.length === 1 && isDragging) {
         // シングルタッチ：ドラッグ
@@ -329,12 +346,13 @@ export const useSimpleMapZoomPan = ({
   const handleTouchEnd = useCallback((e: TouchEvent) => {
     // マップコンテナ内のタッチエンドイベントかチェック
     if (!containerRef.current) return;
-    
+
     // タッチエンドの場合は残っているタッチがマップ内にあるかチェック
     if (e.touches.length > 0) {
       const containerRect = containerRef.current.getBoundingClientRect();
       const touch = e.touches[0];
-      const isWithinContainer = touch && 
+      const isWithinContainer =
+        touch &&
         touch.clientX >= containerRect.left &&
         touch.clientX <= containerRect.right &&
         touch.clientY >= containerRect.top &&
@@ -344,7 +362,15 @@ export const useSimpleMapZoomPan = ({
       if (!isWithinContainer) return;
     }
 
-    e.preventDefault();
+    // cancelableイベントのみでpreventDefaultを試行
+    if (e.cancelable) {
+      try {
+        e.preventDefault();
+      } catch (error) {
+        // passive listenerでpreventDefaultが失敗した場合は無視
+        console.debug("preventDefault failed on touchend:", error);
+      }
+    }
 
     if (e.touches.length === 0) {
       // 全てのタッチが終了
@@ -365,7 +391,7 @@ export const useSimpleMapZoomPan = ({
 
       // マップコンテナ内のホイールイベントかチェック
       const containerRect = containerRef.current.getBoundingClientRect();
-      const isWithinContainer = 
+      const isWithinContainer =
         e.clientX >= containerRect.left &&
         e.clientX <= containerRect.right &&
         e.clientY >= containerRect.top &&
