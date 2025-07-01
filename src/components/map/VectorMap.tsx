@@ -438,22 +438,9 @@ const VectorMap: React.FC<VectorMapProps> = ({
 
   const handleTouchMove = useCallback(
     (e: TouchEvent) => {
-      // マップコンテナ内のタッチイベントかチェック（厳密な境界チェック）
       if (!containerRef.current) return;
 
-      const containerRect = containerRef.current.getBoundingClientRect();
-      const touch = e.touches[0];
-      // マージンを削除し、厳密にコンテナ内のタッチのみを処理
-      const isWithinContainer =
-        touch &&
-        touch.clientX >= containerRect.left &&
-        touch.clientX <= containerRect.right &&
-        touch.clientY >= containerRect.top &&
-        touch.clientY <= containerRect.bottom;
-
-      // コンテナ内のタッチのみ処理し、外側は通常のページ操作を許可
-      if (!isWithinContainer) return;
-
+      // イベントはコンテナから発生するので境界チェック不要
       // cancelableイベントのみでpreventDefaultを試行
       if (e.cancelable) {
         try {
@@ -467,6 +454,7 @@ const VectorMap: React.FC<VectorMapProps> = ({
         const deltaX = e.touches[0].clientX - dragStart.x;
         const deltaY = e.touches[0].clientY - dragStart.y;
 
+        const containerRect = containerRef.current.getBoundingClientRect();
         const scaleX = viewBox.width / containerRect.width;
         const scaleY = viewBox.height / containerRect.height;
 
@@ -563,7 +551,6 @@ const VectorMap: React.FC<VectorMapProps> = ({
   );
 
   const handleTouchEnd = useCallback((e: TouchEvent) => {
-    // マップコンテナ内のタッチエンドイベントかチェック（厳密な境界チェック）
     if (!containerRef.current) return;
 
     // マルチレベルダブルタップズーム検出
@@ -572,51 +559,25 @@ const VectorMap: React.FC<VectorMapProps> = ({
     
     if (timeDiff < 300 && timeDiff > 0 && e.touches.length === 0) {
       // ダブルタップを検出した場合、多段階ズーム
-      const containerRect = containerRef.current.getBoundingClientRect();
       const lastTouch = e.changedTouches[0];
       if (lastTouch) {
-        // タッチ位置がマップコンテナ内かチェック
-        const isWithinContainer =
-          lastTouch.clientX >= containerRect.left &&
-          lastTouch.clientX <= containerRect.right &&
-          lastTouch.clientY >= containerRect.top &&
-          lastTouch.clientY <= containerRect.bottom;
+        const svgCoord = screenToSVG(lastTouch.clientX, lastTouch.clientY);
         
-        if (isWithinContainer) {
-          const svgCoord = screenToSVG(lastTouch.clientX, lastTouch.clientY);
-          
-          // ズームレベルサイクル: 1x → 2x → 4x → 8x → 1x
-          const zoomLevels = [1, 2, 4, 8];
-          const currentIndex = zoomLevels.findIndex(level => Math.abs(currentZoomLevel - level) < 0.5);
-          const nextIndex = (currentIndex + 1) % zoomLevels.length;
-          const nextZoomLevel = zoomLevels[nextIndex];
-          
-          // ダブルタップ位置を中心にズーム
-          zoomToPoint(svgCoord, nextZoomLevel);
-          setCurrentZoomLevel(nextZoomLevel);
-          
-          e.preventDefault();
-          return;
-        }
+        // ズームレベルサイクル: 1x → 2x → 4x → 8x → 1x
+        const zoomLevels = [1, 2, 4, 8];
+        const currentIndex = zoomLevels.findIndex(level => Math.abs(currentZoomLevel - level) < 0.5);
+        const nextIndex = (currentIndex + 1) % zoomLevels.length;
+        const nextZoomLevel = zoomLevels[nextIndex];
+        
+        // ダブルタップ位置を中心にズーム
+        zoomToPoint(svgCoord, nextZoomLevel);
+        setCurrentZoomLevel(nextZoomLevel);
+        
+        e.preventDefault();
+        return;
       }
     }
     setLastTapTime(now);
-
-    // タッチエンドの場合は残っているタッチがマップ内にあるかチェック
-    if (e.touches.length > 0) {
-      const containerRect = containerRef.current.getBoundingClientRect();
-      const touch = e.touches[0];
-      // 厳密な境界チェック
-      const isWithinContainer =
-        touch &&
-        touch.clientX >= containerRect.left &&
-        touch.clientX <= containerRect.right &&
-        touch.clientY >= containerRect.top &&
-        touch.clientY <= containerRect.bottom;
-
-      // コンテナ外のタッチエンドは無視
-      if (!isWithinContainer) return;
-    }
 
     // cancelableイベントのみでpreventDefaultを試行
     if (e.cancelable) {
@@ -638,16 +599,7 @@ const VectorMap: React.FC<VectorMapProps> = ({
     (e: WheelEvent) => {
       if (!containerRef.current) return;
 
-      // マップコンテナ内のホイールイベントかチェック（厳密な境界チェック）
-      const containerRect = containerRef.current.getBoundingClientRect();
-      const isWithinContainer =
-        e.clientX >= containerRect.left &&
-        e.clientX <= containerRect.right &&
-        e.clientY >= containerRect.top &&
-        e.clientY <= containerRect.bottom;
-
-      // マップ範囲外のホイールは通常のスクロールを許可
-      if (!isWithinContainer) return;
+      // イベントはコンテナから発生するので境界チェック不要
 
       // カードエリア上かチェック
       const cardElements = document.querySelectorAll(".map-card-overlay");
@@ -890,11 +842,13 @@ const VectorMap: React.FC<VectorMapProps> = ({
     const container = containerRef.current;
     if (!container) return;
 
-    // Mouse and touch events
+    // Mouse events (keep document level for drag continuation)
     document.addEventListener("mousemove", handleMouseMove);
     document.addEventListener("mouseup", handleMouseUp);
-    document.addEventListener("touchmove", handleTouchMove, { passive: false });
-    document.addEventListener("touchend", handleTouchEnd, { passive: false });
+    
+    // Touch events (attach to container only to prevent interference)
+    container.addEventListener("touchmove", handleTouchMove, { passive: false });
+    container.addEventListener("touchend", handleTouchEnd, { passive: false });
     container.addEventListener("wheel", handleWheel, { passive: false });
     
     // Keyboard events for Shift key detection
@@ -904,8 +858,8 @@ const VectorMap: React.FC<VectorMapProps> = ({
     return () => {
       document.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("mouseup", handleMouseUp);
-      document.removeEventListener("touchmove", handleTouchMove);
-      document.removeEventListener("touchend", handleTouchEnd);
+      container.removeEventListener("touchmove", handleTouchMove);
+      container.removeEventListener("touchend", handleTouchEnd);
       container.removeEventListener("wheel", handleWheel);
       document.removeEventListener("keydown", handleKeyDown);
       document.removeEventListener("keyup", handleKeyUp);

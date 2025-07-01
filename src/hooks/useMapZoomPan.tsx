@@ -258,22 +258,9 @@ export const useSimpleMapZoomPan = ({
 
   const handleTouchMove = useCallback(
     (e: TouchEvent) => {
-      // マップコンテナ内のタッチイベントかチェック（厳密な境界チェック）
       if (!containerRef.current) return;
 
-      const containerRect = containerRef.current.getBoundingClientRect();
-      const touch = e.touches[0];
-      // マージンを削除し、厳密にコンテナ内のタッチのみを処理
-      const isWithinContainer =
-        touch &&
-        touch.clientX >= containerRect.left &&
-        touch.clientX <= containerRect.right &&
-        touch.clientY >= containerRect.top &&
-        touch.clientY <= containerRect.bottom;
-
-      // コンテナ内のタッチのみ処理し、外側は通常のページ操作を許可
-      if (!isWithinContainer) return;
-
+      // イベントはコンテナから発生するので境界チェック不要
       // cancelableイベントのみでpreventDefaultを試行
       if (e.cancelable) {
         try {
@@ -345,25 +332,9 @@ export const useSimpleMapZoomPan = ({
   );
 
   const handleTouchEnd = useCallback((e: TouchEvent) => {
-    // マップコンテナ内のタッチエンドイベントかチェック（厳密な境界チェック）
     if (!containerRef.current) return;
 
-    // タッチエンドの場合は残っているタッチがマップ内にあるかチェック
-    if (e.touches.length > 0) {
-      const containerRect = containerRef.current.getBoundingClientRect();
-      const touch = e.touches[0];
-      // 厳密な境界チェック
-      const isWithinContainer =
-        touch &&
-        touch.clientX >= containerRect.left &&
-        touch.clientX <= containerRect.right &&
-        touch.clientY >= containerRect.top &&
-        touch.clientY <= containerRect.bottom;
-
-      // コンテナ外のタッチエンドは無視
-      if (!isWithinContainer) return;
-    }
-
+    // イベントはコンテナから発生するので境界チェック不要
     // cancelableイベントのみでpreventDefaultを試行
     if (e.cancelable) {
       try {
@@ -391,19 +362,11 @@ export const useSimpleMapZoomPan = ({
     (e: WheelEvent) => {
       if (!containerRef.current) return;
 
-      // マップコンテナ内のホイールイベントかチェック（厳密な境界チェック）
-      const containerRect = containerRef.current.getBoundingClientRect();
-      const isWithinContainer =
-        e.clientX >= containerRect.left &&
-        e.clientX <= containerRect.right &&
-        e.clientY >= containerRect.top &&
-        e.clientY <= containerRect.bottom;
-
-      // コンテナ内のホイールのみ処理し、外側は通常のスクロールを許可
-      if (!isWithinContainer) return;
+      // イベントはコンテナから発生するので境界チェック不要
 
       e.preventDefault();
 
+      const containerRect = containerRef.current.getBoundingClientRect();
       const mouseX = e.clientX - containerRect.left;
       const mouseY = e.clientY - containerRect.top;
 
@@ -431,13 +394,13 @@ export const useSimpleMapZoomPan = ({
     const container = containerRef.current;
     if (!container) return;
 
-    // マウスイベント
+    // マウスイベント (keep document level for drag continuation)
     document.addEventListener("mousemove", handleMouseMove);
     document.addEventListener("mouseup", handleMouseUp);
 
-    // タッチイベント
-    document.addEventListener("touchmove", handleTouchMove, { passive: false });
-    document.addEventListener("touchend", handleTouchEnd, { passive: false });
+    // タッチイベント (attach to container only to prevent interference)
+    container.addEventListener("touchmove", handleTouchMove, { passive: false });
+    container.addEventListener("touchend", handleTouchEnd, { passive: false });
 
     // ホイールイベント
     container.addEventListener("wheel", handleWheel, { passive: false });
@@ -445,8 +408,8 @@ export const useSimpleMapZoomPan = ({
     return () => {
       document.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("mouseup", handleMouseUp);
-      document.removeEventListener("touchmove", handleTouchMove);
-      document.removeEventListener("touchend", handleTouchEnd);
+      container.removeEventListener("touchmove", handleTouchMove);
+      container.removeEventListener("touchend", handleTouchEnd);
       container.removeEventListener("wheel", handleWheel);
     };
   }, [
