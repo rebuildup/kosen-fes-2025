@@ -693,14 +693,46 @@ const VectorMap: React.FC<VectorMapProps> = ({
           if (svgRef.current && mode === "interactive" && onMapClick) {
             // Use the same coordinate calculation method as mouse clicks for consistency
             const svgRect = svgRef.current.getBoundingClientRect();
-            const relativeX = lastTouch.clientX - svgRect.left;
-            const relativeY = lastTouch.clientY - svgRect.top;
 
-            // Use same coordinate calculation as handleSVGClick for consistency
-            const svgX =
-              viewBox.x + (relativeX / svgRect.width) * viewBox.width;
-            const svgY =
-              viewBox.y + (relativeY / svgRect.height) * viewBox.height;
+            // デバッグ情報をコンソールに出力
+            console.group("👆 タッチ座標変換デバッグ");
+            console.log("タッチ位置:", { clientX: lastTouch.clientX, clientY: lastTouch.clientY });
+            console.log("SVG要素境界:", svgRect);
+
+            // 実際のSVGコンテンツ表示領域を取得
+            const contentRect = getSVGContentRect(svgRect);
+            console.log("実際のコンテンツ領域:", contentRect);
+
+            // SVG要素内での相対座標を計算
+            const elementRelativeX = lastTouch.clientX - svgRect.left;
+            const elementRelativeY = lastTouch.clientY - svgRect.top;
+            console.log("SVG要素内相対座標:", { x: elementRelativeX, y: elementRelativeY });
+
+            // コンテンツ領域内での正確な相対座標を計算
+            const contentRelativeX = elementRelativeX - contentRect.offsetX;
+            const contentRelativeY = elementRelativeY - contentRect.offsetY;
+            console.log("コンテンツ領域内相対座標:", { x: contentRelativeX, y: contentRelativeY });
+
+            // コンテンツ領域外のタッチをチェック
+            if (
+              contentRelativeX < 0 ||
+              contentRelativeX > contentRect.width ||
+              contentRelativeY < 0 ||
+              contentRelativeY > contentRect.height
+            ) {
+              console.log("⚠️ コンテンツ領域外のタッチ - 座標を境界内に調整");
+            }
+
+            // 正規化された座標（0-1の範囲）を計算
+            const normalizedX = Math.max(0, Math.min(1, contentRelativeX / contentRect.width));
+            const normalizedY = Math.max(0, Math.min(1, contentRelativeY / contentRect.height));
+            console.log("正規化座標:", { x: normalizedX, y: normalizedY });
+
+            // viewBoxを考慮してSVG座標系に変換
+            const svgX = viewBox.x + normalizedX * viewBox.width;
+            const svgY = viewBox.y + normalizedY * viewBox.height;
+            console.log("SVG座標系変換後:", { x: svgX, y: svgY });
+            console.log("現在のviewBox:", viewBox);
 
             // Apply coordinate limits and precision (same as mouse handler)
             const mapClickMargin =
@@ -713,9 +745,12 @@ const VectorMap: React.FC<VectorMapProps> = ({
               -mapClickMargin,
               Math.min(CAMPUS_MAP_BOUNDS.height + mapClickMargin, svgY)
             );
+            console.log("制限適用後座標:", { x: clampedX, y: clampedY });
 
             const preciseX = Math.round(clampedX * 100) / 100;
             const preciseY = Math.round(clampedY * 100) / 100;
+            console.log("✅ 最終座標:", { x: preciseX, y: preciseY });
+            console.groupEnd();
 
             // Add a small delay to ensure this doesn't conflict with point clicks
             setTimeout(() => {
@@ -755,6 +790,7 @@ const VectorMap: React.FC<VectorMapProps> = ({
       mode,
       onMapClick,
       viewBox,
+      getSVGContentRect,
     ]
   );
 
@@ -1125,6 +1161,11 @@ const VectorMap: React.FC<VectorMapProps> = ({
         if (!svgRef.current) return;
         const svgRect = svgRef.current.getBoundingClientRect();
 
+        // デバッグ情報をコンソールに出力
+        console.group("🖱️ マウスクリック座標変換デバッグ");
+        console.log("クリック位置:", { clientX: e.clientX, clientY: e.clientY });
+        console.log("SVG要素境界:", svgRect);
+
         // SVG境界チェックを緩和（マップ全体で操作可能）
         const clickSVGMargin = Math.max(svgRect.width, svgRect.height) * 10;
         if (
@@ -1133,17 +1174,45 @@ const VectorMap: React.FC<VectorMapProps> = ({
           e.clientY < svgRect.top - clickSVGMargin ||
           e.clientY > svgRect.bottom + clickSVGMargin
         ) {
+          console.log("❌ SVG境界外のクリックのため無視");
+          console.groupEnd();
           return; // SVG境界外のクリックは無視
         }
 
-        // SVG要素内での正確な相対座標を計算（直接変換方式）
-        const relativeX = e.clientX - svgRect.left;
-        const relativeY = e.clientY - svgRect.top;
+        // 実際のSVGコンテンツ表示領域を取得
+        const contentRect = getSVGContentRect(svgRect);
+        console.log("実際のコンテンツ領域:", contentRect);
 
-        // SVG座標系に直接変換（viewBoxを考慮）
-        // この方法でoffsetの問題を回避
-        const svgX = viewBox.x + (relativeX / svgRect.width) * viewBox.width;
-        const svgY = viewBox.y + (relativeY / svgRect.height) * viewBox.height;
+        // SVG要素内での相対座標を計算
+        const elementRelativeX = e.clientX - svgRect.left;
+        const elementRelativeY = e.clientY - svgRect.top;
+        console.log("SVG要素内相対座標:", { x: elementRelativeX, y: elementRelativeY });
+
+        // コンテンツ領域内での正確な相対座標を計算
+        const contentRelativeX = elementRelativeX - contentRect.offsetX;
+        const contentRelativeY = elementRelativeY - contentRect.offsetY;
+        console.log("コンテンツ領域内相対座標:", { x: contentRelativeX, y: contentRelativeY });
+
+        // コンテンツ領域外のクリックをチェック
+        if (
+          contentRelativeX < 0 ||
+          contentRelativeX > contentRect.width ||
+          contentRelativeY < 0 ||
+          contentRelativeY > contentRect.height
+        ) {
+          console.log("⚠️ コンテンツ領域外のクリック - 座標を境界内に調整");
+        }
+
+        // 正規化された座標（0-1の範囲）を計算
+        const normalizedX = Math.max(0, Math.min(1, contentRelativeX / contentRect.width));
+        const normalizedY = Math.max(0, Math.min(1, contentRelativeY / contentRect.height));
+        console.log("正規化座標:", { x: normalizedX, y: normalizedY });
+
+        // viewBoxを考慮してSVG座標系に変換
+        const svgX = viewBox.x + normalizedX * viewBox.width;
+        const svgY = viewBox.y + normalizedY * viewBox.height;
+        console.log("SVG座標系変換後:", { x: svgX, y: svgY });
+        console.log("現在のviewBox:", viewBox);
 
         // マップ座標制限を緩和（マップ外でもポイント選択可能）
         const mapClickMargin =
@@ -1156,10 +1225,13 @@ const VectorMap: React.FC<VectorMapProps> = ({
           -mapClickMargin,
           Math.min(CAMPUS_MAP_BOUNDS.height + mapClickMargin, svgY)
         );
+        console.log("制限適用後座標:", { x: clampedX, y: clampedY });
 
         // 座標精度を小数点第2位まで向上
         const preciseX = Math.round(clampedX * 100) / 100;
         const preciseY = Math.round(clampedY * 100) / 100;
+        console.log("✅ 最終座標:", { x: preciseX, y: preciseY });
+        console.groupEnd();
 
         onMapClick({ x: preciseX, y: preciseY });
       }
