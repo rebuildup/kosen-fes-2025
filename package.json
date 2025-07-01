@@ -7,6 +7,8 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
+    "textlint": "textlint **/*.md",
+    "textlint:fix": "textlint --fix **/*.md",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -20,6 +22,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.17.0",
+    "@textlint-ja/textlint-rule-preset-ai-writing": "^1.4.0",
     "@types/node": "^24.0.1",
     "@types/react": "^18.2.55",
     "@types/react-dom": "^18.2.19",
@@ -30,6 +33,7 @@
     "eslint-plugin-react-hooks": "^5.1.0",
     "eslint-plugin-react-refresh": "^0.4.19",
     "globals": "^15.14.0",
+    "textlint": "^15.1.0",
     "typescript": "~5.3.3",
     "typescript-eslint": "^8.17.0",
     "vite": "^6.3.5"

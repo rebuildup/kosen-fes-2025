@@ -4,28 +4,28 @@
 
 ## 主な機能
 
-- **バイリンガル対応**：日本語／英語の切り替え機能
-- **テーマ切替**：ライトモード／ダークモードに対応
-- **モバイルファースト設計**：スマホからデスクトップまで快適に閲覧可能
-- **インタラクティブ会場マップ**：SVG を使った会場図とスポットハイライト
-- **動的イベントスケジュール**：日付ごとに絞り込めるタイムテーブル
-- **展示＆屋台ギャラリー**：全出展の一覧表示と詳細閲覧
-- **ブックマーク機能**：お気に入りのイベントや展示を保存
-- **検索機能**：キーワードでイベントや展示を検索
-- **タグフィルタ**：タグやカテゴリで絞り込み可能
-- **GSAP アニメーション**：サイト全体のスムーズな演出
+- バイリンガル対応（日本語／英語の切り替え機能）
+- テーマ切替（ライトモード／ダークモードに対応）
+- モバイルファースト設計（スマホからデスクトップまで快適に閲覧可能）
+- インタラクティブ会場マップ（SVG を使った会場図とスポットハイライト）
+- 動的イベントスケジュール（日付ごとに絞り込めるタイムテーブル）
+- 展示＆屋台ギャラリー（全出展の一覧表示と詳細閲覧）
+- ブックマーク機能（お気に入りのイベントや展示を保存）
+- 検索機能（キーワードでイベントや展示を検索）
+- タグフィルタ（タグやカテゴリで絞り込み可能）
+- GSAP アニメーション（サイト全体のスムーズな演出）
 
 ## 技術スタック
 
-- **React v19**：最新機能と高いパフォーマンス
-- **TypeScript**：型安全な開発をサポート
-- **Vite**：高速なビルド／開発サーバー
-- **React Router**：クライアントサイドルーティング
-- **Context API**：グローバルな状態管理
-- **GSAP**：高度なアニメーションライブラリ
-- **TailwindCSS 3.4.4**：ユーティリティファーストCSSフレームワーク
-- **PostCSS**：CSS変換ツール（TailwindCSS処理用）
-- **CSS Variables**：テーマ変数によるカスタマイズ
+- React v19（最新機能と高いパフォーマンス）
+- TypeScript（型安全な開発をサポート）
+- Vite（高速なビルド／開発サーバー）
+- React Router（クライアントサイドルーティング）
+- Context API（グローバルな状態管理）
+- GSAP（高度なアニメーションライブラリ）
+- TailwindCSS 3.4.4（ユーティリティファースト CSS フレームワーク）
+- PostCSS（CSS 変換ツール（TailwindCSS 処理用））
+- CSS Variables（テーマ変数によるカスタマイズ）
 
 ## ディレクトリ構成
 
@@ -63,31 +63,33 @@ kosen-fes-2025/
 
 ### 主なコンポーネント・ファイル
 
-- **AppProviders.tsx**：テーマ／言語／ブックマーク／検索／タグの各 Context をまとめて設定
-- **context/**：
-  - `ThemeContext.tsx`：テーマ切替を管理
-  - `LanguageContext.tsx`：言語切替を管理
-  - `BookmarkContext.tsx`：ブックマーク機能を管理
-  - `SearchContext.tsx`：検索機能を管理
-  - `TagContext.tsx`：タグフィルタを管理
-- **data/**：
-  - `events.ts`：イベント情報
-  - `exhibits.ts`：展示情報
-  - `stalls.ts`：屋台情報
-- **pages/**：
-  - `Home.tsx`：トップページ
-  - `Events.tsx`：イベント一覧ページ
-  - `Exhibits.tsx`：展示・屋台一覧ページ
-  - `TimeSchedule.tsx`：タイムテーブルページ
-  - `Map.tsx`：インタラクティブマップページ
-  - `Detail.tsx`：詳細表示ページ
-  - `Search.tsx`：検索結果ページ
-  - `Bookmarks.tsx`：ブックマーク一覧ページ
-- **components/common/**：Card、Tag、SearchBar などの汎用コンポーネント
-- **utils/**：
-  - `animations.ts`：GSAP 用アニメーション関数
-  - `formatters.tsx`：日付・テキスト整形関数
-  - `translations.ts`：翻訳文字列とヘルパー関数
+以下は、主要なコンポーネントとファイルの構成です。
+
+- **AppProviders.tsx** - テーマ／言語／ブックマーク／検索／タグの各 Context をまとめて設定
+- **context/フォルダ** - 以下の Context 管理ファイルを格納
+  - `ThemeContext.tsx` - テーマ切替を管理
+  - `LanguageContext.tsx` - 言語切替を管理
+  - `BookmarkContext.tsx` - ブックマーク機能を管理
+  - `SearchContext.tsx` - 検索機能を管理
+  - `TagContext.tsx` - タグフィルタを管理
+- **data/フォルダ** - データファイルの格納場所
+  - `events.ts` - イベント情報
+  - `exhibits.ts` - 展示情報
+  - `stalls.ts` - 屋台情報
+- **pages/フォルダ** - ページコンポーネント
+  - `Home.tsx` - トップページ
+  - `Events.tsx` - イベント一覧ページ
+  - `Exhibits.tsx` - 展示・屋台一覧ページ
+  - `TimeSchedule.tsx` - タイムテーブルページ
+  - `Map.tsx` - インタラクティブマップページ
+  - `Detail.tsx` - 詳細表示ページ
+  - `Search.tsx` - 検索結果ページ
+  - `Bookmarks.tsx` - ブックマーク一覧ページ
+- **components/common/フォルダ** - Card、Tag、SearchBar などの汎用コンポーネント
+- **utils/フォルダ** - ユーティリティファイル
+  - `animations.ts` - GSAP 用アニメーション関数
+  - `formatters.tsx` - 日付・テキスト整形関数
+  - `translations.ts` - 翻訳文字列とヘルパー関数
 
 ## セットアップ
 
@@ -191,15 +193,17 @@ kosen-fes-2025/
 
 ### 画像追加
 
-1. 各ディレクトリにアップロード：
+画像ファイルの追加手順は以下の通りです。
+
+1. 各ディレクトリへアップロード
    - `/public/images/events/`
    - `/public/images/exhibits/`
    - `/public/images/stalls/`
-2. ファイル名例：
+2. ファイル名の例
    - `event-{番号}.jpg`
    - `exhibit-{番号}.jpg`
    - `stall-{番号}.jpg`
-3. 推奨設定：
+3. 推奨設定
    - サイズ：800×450px（16:9）
    - 形式：JPG／WebP
    - ファイル容量：200KB 以下
@@ -221,37 +225,43 @@ const locationCoordinates: Record<string, { x: number; y: number }> = {
 
 ## カスタマイズ
 
-### スタイル調整（TailwindCSS完全移行済み）
+### スタイル調整（TailwindCSS 完全移行済み）
 
-**📌 重要**: このプロジェクトは2025年6月にTailwindCSSへ完全移行済みです。レガシーCSS ファイルは削除され、すべてのスタイリングがTailwindCSSで行われています。
+**📌 重要**: このプロジェクトは 2025 年 6 月に TailwindCSS へ完全移行済みです。レガシー CSS ファイルは削除され、すべてのスタイリングが TailwindCSS で行われています。
 
 - **TailwindCSS 3.4.4**：すべてのスタイリングを担当
   - 設定：`tailwind.config.js`（カスタムカラー、アニメーション、ユーティリティを定義）
-  - メインCSS：`src/index.css`（TailwindCSS ディレクティブとカスタムコンポーネント）
-- **CSS Variables**：テーマ変数は `src/styles/theme.css` で定義（TailwindCSSと並行使用）
+  - メイン CSS：`src/index.css`（TailwindCSS ディレクティブとカスタムコンポーネント）
+- **CSS Variables**：テーマ変数は `src/styles/theme.css` で定義（TailwindCSS と並行使用）
 - **グローバルスタイル**：`src/styles/global.css`（スクロールバー、フォーカス、選択のみ）
-- **コンポーネント**：個別のCSS filesは廃止、全コンポーネントでTailwindCSSクラスを使用
+- **コンポーネント**：個別の CSS files は廃止、全コンポーネントで TailwindCSS クラスを使用
 
-### TailwindCSS使用方法
+### TailwindCSS 使用方法
 
 1. **基本的なユーティリティクラス**：
+
    ```tsx
    <div className="flex items-center justify-between p-4 bg-white dark:bg-gray-900 rounded-lg shadow-md border border-gray-200 dark:border-gray-700">
-     <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">Title</h2>
+     <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+       Title
+     </h2>
    </div>
    ```
 
 2. **レスポンシブ対応**：
+
    ```tsx
    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 px-4 md:px-6 lg:px-8">
    ```
 
 3. **ダークモード対応**：
+
    ```tsx
    <div className="bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 border border-gray-200 dark:border-gray-700">
    ```
 
 4. **カスタムコンポーネントクラス**：`src/index.css` の `@layer components` で定義済み
+
    ```css
    @layer components {
      .btn {
@@ -267,28 +277,29 @@ const locationCoordinates: Record<string, { x: number; y: number }> = {
    ```
 
 5. **固定レイアウト例**（ヘッダー・サイドバー・メインコンテンツ）：
+
    ```tsx
    {/* ヘッダー */}
    <header className="fixed top-0 left-0 w-full h-16 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 z-[1000]">
-   
+
    {/* サイドバー */}
    <aside className="w-64 fixed top-16 left-0 h-[calc(100vh-64px)] bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700">
-   
+
    {/* メインコンテンツ */}
    <main className="ml-64 pt-16 min-h-screen p-4">
    ```
 
 ### TailwindCSS カスタム設定
 
-`tailwind.config.js` で定義されているカスタム設定：
+`tailwind.config.js` で定義されているカスタム設定は以下の通りです。
 
-- **カスタムカラー**: primary, secondary, accent（各50-950シェード）
-- **カスタムフォント**: Inter（sans）、JetBrains Mono（mono）
-- **カスタムスペーシング**: 18, 88, 112, 128
-- **カスタムアニメーション**: fade-in, slide-in, bounce-soft, pulse-soft
-- **プラグイン**: @tailwindcss/typography, @tailwindcss/forms, @tailwindcss/aspect-ratio
+- カスタムカラー（primary, secondary, accent で各 50-950 シェード）
+- カスタムフォント（Inter（sans）、JetBrains Mono（mono））
+- カスタムスペーシング（18, 88, 112, 128）
+- カスタムアニメーション（fade-in, slide-in, bounce-soft, pulse-soft）
+- プラグイン（@tailwindcss/typography, @tailwindcss/forms, @tailwindcss/aspect-ratio）
 
-- **ナビゲーション編集**：ルート定義は `src/routes.tsx` を更新
+ナビゲーション編集については、ルート定義は `src/routes.tsx` を更新してください。
 
 ## サーバー設定
 
