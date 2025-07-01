@@ -125,6 +125,11 @@ const VectorMap: React.FC<VectorMapProps> = ({
     transform?: string;
     placement?: string;
   }>({ x: 0, y: 0 });
+  
+  // Mobile hover simulation state
+  const [mobileHoveredPoint, setMobileHoveredPoint] = useState<string | null>(null);
+  const [lastMobileTapPointId, setLastMobileTapPointId] = useState<string | null>(null);
+  const [lastMobileTapTime, setLastMobileTapTime] = useState<number>(0);
 
   // マップ操作でカードを閉じる関数
   const closeCard = useCallback(() => {
@@ -134,6 +139,9 @@ const VectorMap: React.FC<VectorMapProps> = ({
     if (selectedCluster) {
       setSelectedCluster(null);
     }
+    // Clear mobile hover state
+    setMobileHoveredPoint(null);
+    setLastMobileTapPointId(null);
   }, [selectedPoint, selectedCluster]);
 
   // Convert screen coordinates to SVG coordinates
@@ -620,25 +628,33 @@ const VectorMap: React.FC<VectorMapProps> = ({
           setLastTapTime(now);
           
           // Simulate a click event for touch devices
-          if (svgRef.current) {
+          if (svgRef.current && mode === "interactive" && onMapClick) {
             const svgRect = svgRef.current.getBoundingClientRect();
             const relativeX = lastTouch.clientX - svgRect.left;
             const relativeY = lastTouch.clientY - svgRect.top;
             
-            // Check if tap is on SVG background (for coordinate selection)
-            if (mode === "interactive" && onMapClick) {
-              const mockEvent = {
-                clientX: lastTouch.clientX,
-                clientY: lastTouch.clientY,
-                target: svgRef.current,
-                preventDefault: () => {},
-              } as React.MouseEvent;
-              
-              // Add a small delay to ensure this doesn't conflict with point clicks
-              setTimeout(() => {
-                handleSVGClick(mockEvent);
-              }, 10);
-            }
+            // Direct coordinate calculation for touch (consistent with mouse clicks)
+            const svgX = viewBox.x + (relativeX / svgRect.width) * viewBox.width;
+            const svgY = viewBox.y + (relativeY / svgRect.height) * viewBox.height;
+            
+            // Apply coordinate limits and precision
+            const mapClickMargin = Math.max(CAMPUS_MAP_BOUNDS.width, CAMPUS_MAP_BOUNDS.height) * 2;
+            const clampedX = Math.max(
+              -mapClickMargin,
+              Math.min(CAMPUS_MAP_BOUNDS.width + mapClickMargin, svgX)
+            );
+            const clampedY = Math.max(
+              -mapClickMargin,
+              Math.min(CAMPUS_MAP_BOUNDS.height + mapClickMargin, svgY)
+            );
+            
+            const preciseX = Math.round(clampedX * 100) / 100;
+            const preciseY = Math.round(clampedY * 100) / 100;
+            
+            // Add a small delay to ensure this doesn't conflict with point clicks
+            setTimeout(() => {
+              onMapClick({ x: preciseX, y: preciseY });
+            }, 10);
           }
           
           return; // Don't prevent default for single taps
@@ -672,7 +688,7 @@ const VectorMap: React.FC<VectorMapProps> = ({
       isTouchGesture,
       mode,
       onMapClick,
-      handleSVGClick
+      viewBox
     ]
   );
 
@@ -774,8 +790,46 @@ const VectorMap: React.FC<VectorMapProps> = ({
 
   // Point interaction handlers
   const handlePointClick = useCallback(
-    (point: InteractivePoint, screenEvent?: React.MouseEvent) => {
-      // コンテンツカードを表示
+    (point: InteractivePoint, screenEvent?: React.MouseEvent, isMobileTap?: boolean) => {
+      const now = Date.now();
+      
+      // Mobile hover simulation logic
+      if (isMobileTap && point.contentItem) {
+        // Check if this is the second tap on the same point within 2 seconds
+        if (
+          lastMobileTapPointId === point.id && 
+          now - lastMobileTapTime < 2000 &&
+          mobileHoveredPoint === point.id
+        ) {
+          // Second tap - navigate to detail page or trigger onClick
+          point.onClick?.();
+          onPointClick?.(point.id);
+          // Clear mobile hover state
+          setMobileHoveredPoint(null);
+          setLastMobileTapPointId(null);
+          return;
+        } else {
+          // First tap - show hover (mobile card display)
+          setMobileHoveredPoint(point.id);
+          setLastMobileTapPointId(point.id);
+          setLastMobileTapTime(now);
+          
+          // Show content card like hover
+          setSelectedPoint(point);
+          setSelectedCluster(null); // クラスターを閉じる
+
+          // カードの最適な表示位置を計算
+          const position = calculateCardPosition(
+            point.coordinates,
+            screenEvent,
+            false
+          );
+          setCardPosition(position);
+          return;
+        }
+      }
+      
+      // Desktop behavior or non-mobile tap
       if (point.contentItem) {
         setSelectedPoint(point);
         setSelectedCluster(null); // クラスターを閉じる
@@ -792,7 +846,7 @@ const VectorMap: React.FC<VectorMapProps> = ({
       point.onClick?.();
       onPointClick?.(point.id);
     },
-    [onPointClick, viewBox]
+    [onPointClick, lastMobileTapPointId, lastMobileTapTime, mobileHoveredPoint, calculateCardPosition]
   );
 
   // Cluster interaction handlers
@@ -849,32 +903,14 @@ const VectorMap: React.FC<VectorMapProps> = ({
           return; // SVG境界外のクリックは無視
         }
 
-        // SVG要素内での正確な相対座標を計算
+        // SVG要素内での正確な相対座標を計算（直接変換方式）
         const relativeX = e.clientX - svgRect.left;
         const relativeY = e.clientY - svgRect.top;
 
-        // SVGの実際の描画領域を取得
-        const contentRect = getSVGContentRect(svgRect);
-
-        // コンテンツ領域内の相対座標に変換
-        const contentRelativeX = relativeX - contentRect.offsetX;
-        const contentRelativeY = relativeY - contentRect.offsetY;
-
-        // コンテンツ領域制限を緩和（クリック処理）
-        // const clickContentMargin =
-        //   Math.max(contentRect.width, contentRect.height) * 10;
-
-        // 座標変換: SVG全体で動作する柔軟な変換
-        const relativeRatioX = contentRelativeX / contentRect.width;
-        const relativeRatioY = contentRelativeY / contentRect.height;
-
-        // viewBox座標系での座標を計算
-        const viewBoxX = viewBox.x + relativeRatioX * viewBox.width;
-        const viewBoxY = viewBox.y + relativeRatioY * viewBox.height;
-
-        // viewBox座標がそのままマップ座標（1:1の関係）
-        const svgX = viewBoxX;
-        const svgY = viewBoxY;
+        // SVG座標系に直接変換（viewBoxを考慮）
+        // この方法でoffsetの問題を回避
+        const svgX = viewBox.x + (relativeX / svgRect.width) * viewBox.width;
+        const svgY = viewBox.y + (relativeY / svgRect.height) * viewBox.height;
 
         // マップ座標制限を緩和（マップ外でもポイント選択可能）
         const mapClickMargin =
@@ -1661,7 +1697,8 @@ const VectorMap: React.FC<VectorMapProps> = ({
                     strokeWidth={2}
                     opacity={
                       cluster.points[0].isHovered ||
-                      hoveredPoint === cluster.points[0].id
+                      hoveredPoint === cluster.points[0].id ||
+                      mobileHoveredPoint === cluster.points[0].id
                         ? 1
                         : 0.9
                     }
@@ -1676,7 +1713,7 @@ const VectorMap: React.FC<VectorMapProps> = ({
                       // Handle touch end on point elements
                       e.stopPropagation();
                       e.preventDefault();
-                      handlePointClick(cluster.points[0]);
+                      handlePointClick(cluster.points[0], undefined, true);
                     }}
                   />
                   {shouldShowText() && (
@@ -1698,7 +1735,7 @@ const VectorMap: React.FC<VectorMapProps> = ({
                         // Handle touch end on text elements
                         e.stopPropagation();
                         e.preventDefault();
-                        handlePointClick(cluster.points[0]);
+                        handlePointClick(cluster.points[0], undefined, true);
                       }}
                       style={{ cursor: "pointer" }}
                     >
@@ -1824,9 +1861,21 @@ const VectorMap: React.FC<VectorMapProps> = ({
             transform: cardPosition.transform || "translate(-50%, -50%)",
           }}
         >
+          {/* Mobile hover indicator */}
+          {mobileHoveredPoint === selectedPoint.id && (
+            <div 
+              className="absolute -top-2 -right-2 bg-blue-500 text-white text-xs px-2 py-1 rounded-full shadow-lg z-10"
+              style={{ fontSize: "10px" }}
+            >
+              タップで詳細へ
+            </div>
+          )}
+          
           {/* Content Card */}
           <div
-            className="rounded-lg shadow-xl overflow-hidden"
+            className={`rounded-lg shadow-xl overflow-hidden ${
+              mobileHoveredPoint === selectedPoint.id ? 'ring-2 ring-blue-500 ring-opacity-50' : ''
+            }`}
             style={{ width: "100%", minHeight: "200px" }}
           >
             <UnifiedCard
