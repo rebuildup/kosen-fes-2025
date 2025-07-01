@@ -8,6 +8,7 @@ import React, {
 import { CAMPUS_MAP_BOUNDS } from "../../data/buildings";
 import { UnifiedCard } from "../../shared/components/ui/UnifiedCard";
 import { Item } from "../../types/common";
+import ZoomControls from "./ZoomControls";
 
 interface Coordinate {
   x: number;
@@ -363,7 +364,206 @@ const VectorMap: React.FC<VectorMapProps> = ({
     [viewBox]
   );
 
-  // タッチイベントはuseMapZoomPanフックで処理するため削除
+  // Touch event handlers for mobile (ViewBox based)
+  const [touchDistance, setTouchDistance] = useState<number>(0);
+  const [touchCenter, setTouchCenter] = useState<Coordinate>({ x: 0, y: 0 });
+
+  const getTouchDistance = useCallback((touches: React.TouchList): number => {
+    if (touches.length < 2) return 0;
+    const dx = touches[0].clientX - touches[1].clientX;
+    const dy = touches[0].clientY - touches[1].clientY;
+    return Math.sqrt(dx * dx + dy * dy);
+  }, []);
+
+  const getTouchCenter = useCallback((touches: React.TouchList): Coordinate => {
+    if (touches.length === 1) {
+      return { x: touches[0].clientX, y: touches[0].clientY };
+    }
+    return {
+      x: (touches[0].clientX + touches[1].clientX) / 2,
+      y: (touches[0].clientY + touches[1].clientY) / 2,
+    };
+  }, []);
+
+  const handleTouchStart = useCallback(
+    (e: React.TouchEvent) => {
+      // ReactのtouchStartイベントはpassiveなのでpreventDefault()を呼び出さない
+      // 代わりにtouchmove/touchendで{ passive: false }を使用
+
+      // タッチ操作開始時にカードを閉じる
+      closeCard();
+
+      if (e.touches.length === 1) {
+        setIsDragging(true);
+        setDragStart({ x: e.touches[0].clientX, y: e.touches[0].clientY });
+        setDragStartViewBox(viewBox);
+      } else if (e.touches.length === 2) {
+        setIsDragging(false);
+        setTouchDistance(getTouchDistance(e.touches));
+        setTouchCenter(getTouchCenter(e.touches));
+      }
+    },
+    [viewBox, closeCard, getTouchDistance, getTouchCenter]
+  );
+
+  const handleTouchMove = useCallback(
+    (e: TouchEvent) => {
+      // マップコンテナ内のタッチイベントかチェック
+      if (!containerRef.current) return;
+
+      const containerRect = containerRef.current.getBoundingClientRect();
+      const touch = e.touches[0];
+      const isWithinContainer =
+        touch &&
+        touch.clientX >= containerRect.left &&
+        touch.clientX <= containerRect.right &&
+        touch.clientY >= containerRect.top &&
+        touch.clientY <= containerRect.bottom;
+
+      // マップ範囲内のタッチのみ処理し、範囲外は通常のスクロールを許可
+      if (!isWithinContainer) return;
+
+      // cancelableイベントのみでpreventDefaultを試行
+      if (e.cancelable) {
+        try {
+          e.preventDefault();
+        } catch (error) {
+          console.debug("preventDefault failed on touchmove:", error);
+        }
+      }
+
+      if (e.touches.length === 1 && isDragging && containerRef.current) {
+        const deltaX = e.touches[0].clientX - dragStart.x;
+        const deltaY = e.touches[0].clientY - dragStart.y;
+
+        const scaleX = viewBox.width / containerRect.width;
+        const scaleY = viewBox.height / containerRect.height;
+
+        const newX = dragStartViewBox.x - deltaX * scaleX;
+        const newY = dragStartViewBox.y - deltaY * scaleY;
+
+        // パン範囲制限：マップの表示可能範囲を定義
+        const mapWidth = CAMPUS_MAP_BOUNDS.width;
+        const mapHeight = CAMPUS_MAP_BOUNDS.height;
+
+        // 方向別の余白設定（左・上をより広く）
+        const paddingLeft = mapWidth * 0.3; // 左方向：30%
+        const paddingRight = mapWidth * 0.1; // 右方向：10%
+        const paddingTop = mapHeight * 0.3; // 上方向：30%
+        const paddingBottom = mapHeight * 0.1; // 下方向：10%
+
+        const maxX = mapWidth + paddingRight - viewBox.width; // 右方向の制限
+        const minX = -paddingLeft; // 左方向の制限
+        const maxY = mapHeight + paddingBottom - viewBox.height; // 下方向の制限
+        const minY = -paddingTop; // 上方向の制限
+
+        setViewBox({
+          x: Math.max(minX, Math.min(maxX, newX)),
+          y: Math.max(minY, Math.min(maxY, newY)),
+          width: dragStartViewBox.width,
+          height: dragStartViewBox.height,
+        });
+      } else if (e.touches.length === 2 && touchDistance > 0) {
+        const newDistance = getTouchDistance(e.touches as any);
+        const newCenter = getTouchCenter(e.touches as any);
+        const scale = touchDistance / newDistance;
+
+        const centerSVG = screenToSVG(newCenter.x, newCenter.y);
+
+        setViewBox((prev) => {
+          const newWidth = Math.max(
+            Math.min(
+              prev.width * scale,
+              (ADJUSTED_MAP_BOUNDS.width + ADJUSTED_MAP_BOUNDS.marginX * 2) /
+                minZoom
+            ),
+            (ADJUSTED_MAP_BOUNDS.width + ADJUSTED_MAP_BOUNDS.marginX * 2) /
+              maxZoom
+          );
+          const newHeight = Math.max(
+            Math.min(
+              prev.height * scale,
+              (ADJUSTED_MAP_BOUNDS.height + ADJUSTED_MAP_BOUNDS.marginY * 2) /
+                minZoom
+            ),
+            (ADJUSTED_MAP_BOUNDS.height + ADJUSTED_MAP_BOUNDS.marginY * 2) /
+              maxZoom
+          );
+
+          // パン範囲制限をズーム操作にも適用
+          const mapWidth = CAMPUS_MAP_BOUNDS.width;
+          const mapHeight = CAMPUS_MAP_BOUNDS.height;
+
+          const paddingLeft = mapWidth * 0.3;
+          const paddingRight = mapWidth * 0.1;
+          const paddingTop = mapHeight * 0.3;
+          const paddingBottom = mapHeight * 0.1;
+
+          const maxX = mapWidth + paddingRight - newWidth;
+          const minX = -paddingLeft;
+          const maxY = mapHeight + paddingBottom - newHeight;
+          const minY = -paddingTop;
+
+          return {
+            x: Math.max(minX, Math.min(maxX, centerSVG.x - newWidth / 2)),
+            y: Math.max(minY, Math.min(maxY, centerSVG.y - newHeight / 2)),
+            width: newWidth,
+            height: newHeight,
+          };
+        });
+
+        setTouchDistance(newDistance);
+      }
+    },
+    [
+      isDragging,
+      dragStart,
+      dragStartViewBox,
+      touchDistance,
+      screenToSVG,
+      minZoom,
+      maxZoom,
+      viewBox.width,
+      viewBox.height,
+      getTouchDistance,
+      getTouchCenter,
+      ADJUSTED_MAP_BOUNDS,
+    ]
+  );
+
+  const handleTouchEnd = useCallback((e: TouchEvent) => {
+    // マップコンテナ内のタッチエンドイベントかチェック
+    if (!containerRef.current) return;
+
+    // タッチエンドの場合は残っているタッチがマップ内にあるかチェック
+    if (e.touches.length > 0) {
+      const containerRect = containerRef.current.getBoundingClientRect();
+      const touch = e.touches[0];
+      const isWithinContainer =
+        touch &&
+        touch.clientX >= containerRect.left &&
+        touch.clientX <= containerRect.right &&
+        touch.clientY >= containerRect.top &&
+        touch.clientY <= containerRect.bottom;
+
+      // マップ範囲外のタッチエンドは無視
+      if (!isWithinContainer) return;
+    }
+
+    // cancelableイベントのみでpreventDefaultを試行
+    if (e.cancelable) {
+      try {
+        e.preventDefault();
+      } catch (error) {
+        console.debug("preventDefault failed on touchend:", error);
+      }
+    }
+
+    if (e.touches.length === 0) {
+      setIsDragging(false);
+      setTouchDistance(0);
+    }
+  }, []);
 
   // Wheel zoom handler
   const handleWheel = useCallback(
@@ -611,14 +811,24 @@ const VectorMap: React.FC<VectorMapProps> = ({
 
     document.addEventListener("mousemove", handleMouseMove);
     document.addEventListener("mouseup", handleMouseUp);
+    document.addEventListener("touchmove", handleTouchMove, { passive: false });
+    document.addEventListener("touchend", handleTouchEnd, { passive: false });
     container.addEventListener("wheel", handleWheel, { passive: false });
 
     return () => {
       document.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("mouseup", handleMouseUp);
+      document.removeEventListener("touchmove", handleTouchMove);
+      document.removeEventListener("touchend", handleTouchEnd);
       container.removeEventListener("wheel", handleWheel);
     };
-  }, [handleMouseMove, handleMouseUp, handleWheel]);
+  }, [
+    handleMouseMove,
+    handleMouseUp,
+    handleTouchMove,
+    handleTouchEnd,
+    handleWheel,
+  ]);
 
   // Auto zoom to highlight point (only once)
   const [hasAutoZoomed, setHasAutoZoomed] = useState(false);
@@ -913,35 +1123,22 @@ const VectorMap: React.FC<VectorMapProps> = ({
         cursor: isDragging ? "grabbing" : "grab",
         touchAction: "none",
         userSelect: "none",
+        WebkitUserSelect: "none",
+        WebkitTouchCallout: "none",
         imageRendering: "optimizeQuality" as any,
         shapeRendering: "geometricPrecision" as any,
       }}
     >
       {/* Controls */}
       {showControls && (
-        <div className="absolute top-4 right-4 z-20 flex flex-col gap-2 p-2 bg-white/90 backdrop-blur-sm rounded-lg shadow-lg">
-          <button
-            onClick={zoomIn}
-            className="p-2 bg-white text-gray-700 rounded hover:bg-gray-100 transition-colors"
-            style={{ minWidth: "40px", minHeight: "40px" }}
-          >
-            ＋
-          </button>
-          <button
-            onClick={zoomOut}
-            className="p-2 bg-white text-gray-700 rounded hover:bg-gray-100 transition-colors"
-            style={{ minWidth: "40px", minHeight: "40px" }}
-          >
-            －
-          </button>
-          <button
-            onClick={resetView}
-            className="p-2 bg-white text-gray-700 rounded hover:bg-gray-100 transition-colors text-xs"
-            style={{ minWidth: "40px", minHeight: "40px" }}
-          >
-            ⌂
-          </button>
-        </div>
+        <ZoomControls
+          onZoomIn={zoomIn}
+          onZoomOut={zoomOut}
+          onReset={resetView}
+          scale={CAMPUS_MAP_BOUNDS.width / viewBox.width}
+          minScale={minZoom}
+          maxScale={maxZoom}
+        />
       )}
 
       {/* Vector SVG Map */}
@@ -951,6 +1148,7 @@ const VectorMap: React.FC<VectorMapProps> = ({
         viewBox={`${viewBox.x} ${viewBox.y} ${viewBox.width} ${viewBox.height}`}
         preserveAspectRatio="xMidYMid meet"
         onMouseDown={handleMouseDown}
+        onTouchStart={handleTouchStart}
         onClick={handleSVGClick}
         style={{
           vectorEffect: "non-scaling-stroke",

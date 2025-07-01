@@ -44,11 +44,10 @@ const ZoomControls = ({
       <button
         onClick={onZoomIn}
         onTouchStart={(e) => {
-          e.preventDefault();
+          // ReactのtouchStartはpassiveなのでpreventDefault()を削除
           e.stopPropagation();
         }}
         onTouchEnd={(e) => {
-          e.preventDefault();
           e.stopPropagation();
           if (!e.currentTarget.disabled) {
             onZoomIn();
@@ -78,11 +77,10 @@ const ZoomControls = ({
       <button
         onClick={onZoomOut}
         onTouchStart={(e) => {
-          e.preventDefault();
+          // ReactのtouchStartはpassiveなのでpreventDefault()を削除
           e.stopPropagation();
         }}
         onTouchEnd={(e) => {
-          e.preventDefault();
           e.stopPropagation();
           if (!e.currentTarget.disabled) {
             onZoomOut();
@@ -111,11 +109,10 @@ const ZoomControls = ({
       <button
         onClick={onReset}
         onTouchStart={(e) => {
-          e.preventDefault();
+          // ReactのtouchStartはpassiveなのでpreventDefault()を削除
           e.stopPropagation();
         }}
         onTouchEnd={(e) => {
-          e.preventDefault();
           e.stopPropagation();
           onReset();
         }}
