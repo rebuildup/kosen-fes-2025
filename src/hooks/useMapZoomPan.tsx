@@ -258,20 +258,20 @@ export const useSimpleMapZoomPan = ({
 
   const handleTouchMove = useCallback(
     (e: TouchEvent) => {
-      // マップコンテナ内のタッチイベントかチェック（境界を緩和）
+      // マップコンテナ内のタッチイベントかチェック（厳密な境界チェック）
       if (!containerRef.current) return;
 
       const containerRect = containerRef.current.getBoundingClientRect();
       const touch = e.touches[0];
-      const margin = 20; // 境界チェックを緩和するマージン
+      // マージンを削除し、厳密にコンテナ内のタッチのみを処理
       const isWithinContainer =
         touch &&
-        touch.clientX >= containerRect.left - margin &&
-        touch.clientX <= containerRect.right + margin &&
-        touch.clientY >= containerRect.top - margin &&
-        touch.clientY <= containerRect.bottom + margin;
+        touch.clientX >= containerRect.left &&
+        touch.clientX <= containerRect.right &&
+        touch.clientY >= containerRect.top &&
+        touch.clientY <= containerRect.bottom;
 
-      // 緩和された範囲内のタッチのみ処理し、範囲外は通常のスクロールを許可
+      // コンテナ内のタッチのみ処理し、外側は通常のページ操作を許可
       if (!isWithinContainer) return;
 
       // cancelableイベントのみでpreventDefaultを試行
@@ -345,22 +345,22 @@ export const useSimpleMapZoomPan = ({
   );
 
   const handleTouchEnd = useCallback((e: TouchEvent) => {
-    // マップコンテナ内のタッチエンドイベントかチェック（境界を緩和）
+    // マップコンテナ内のタッチエンドイベントかチェック（厳密な境界チェック）
     if (!containerRef.current) return;
 
     // タッチエンドの場合は残っているタッチがマップ内にあるかチェック
     if (e.touches.length > 0) {
       const containerRect = containerRef.current.getBoundingClientRect();
       const touch = e.touches[0];
-      const margin = 20; // 境界チェックを緩和するマージン
+      // 厳密な境界チェック
       const isWithinContainer =
         touch &&
-        touch.clientX >= containerRect.left - margin &&
-        touch.clientX <= containerRect.right + margin &&
-        touch.clientY >= containerRect.top - margin &&
-        touch.clientY <= containerRect.bottom + margin;
+        touch.clientX >= containerRect.left &&
+        touch.clientX <= containerRect.right &&
+        touch.clientY >= containerRect.top &&
+        touch.clientY <= containerRect.bottom;
 
-      // 緩和された範囲外のタッチエンドは無視
+      // コンテナ外のタッチエンドは無視
       if (!isWithinContainer) return;
     }
 
@@ -391,16 +391,15 @@ export const useSimpleMapZoomPan = ({
     (e: WheelEvent) => {
       if (!containerRef.current) return;
 
-      // マップコンテナ内のホイールイベントかチェック（境界を緩和）
+      // マップコンテナ内のホイールイベントかチェック（厳密な境界チェック）
       const containerRect = containerRef.current.getBoundingClientRect();
-      const margin = 10; // ホイールイベント用の小さなマージン
       const isWithinContainer =
-        e.clientX >= containerRect.left - margin &&
-        e.clientX <= containerRect.right + margin &&
-        e.clientY >= containerRect.top - margin &&
-        e.clientY <= containerRect.bottom + margin;
+        e.clientX >= containerRect.left &&
+        e.clientX <= containerRect.right &&
+        e.clientY >= containerRect.top &&
+        e.clientY <= containerRect.bottom;
 
-      // 緩和された範囲内のホイールのみ処理し、範囲外は通常のスクロールを許可
+      // コンテナ内のホイールのみ処理し、外側は通常のスクロールを許可
       if (!isWithinContainer) return;
 
       e.preventDefault();

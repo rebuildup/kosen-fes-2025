@@ -104,6 +104,8 @@ const VectorMap: React.FC<VectorMapProps> = ({
 
   // Touch state for mobile
   const [lastTapTime, setLastTapTime] = useState<number>(0);
+  const [tapCount, setTapCount] = useState<number>(0);
+  const [currentZoomLevel, setCurrentZoomLevel] = useState<number>(1);
   const [isShiftPressed, setIsShiftPressed] = useState<boolean>(false);
 
   // Content card state
@@ -436,20 +438,20 @@ const VectorMap: React.FC<VectorMapProps> = ({
 
   const handleTouchMove = useCallback(
     (e: TouchEvent) => {
-      // マップコンテナ内のタッチイベントかチェック（境界を緩和）
+      // マップコンテナ内のタッチイベントかチェック（厳密な境界チェック）
       if (!containerRef.current) return;
 
       const containerRect = containerRef.current.getBoundingClientRect();
       const touch = e.touches[0];
-      const margin = 20; // 境界チェックを緩和するマージン
+      // マージンを削除し、厳密にコンテナ内のタッチのみを処理
       const isWithinContainer =
         touch &&
-        touch.clientX >= containerRect.left - margin &&
-        touch.clientX <= containerRect.right + margin &&
-        touch.clientY >= containerRect.top - margin &&
-        touch.clientY <= containerRect.bottom + margin;
+        touch.clientX >= containerRect.left &&
+        touch.clientX <= containerRect.right &&
+        touch.clientY >= containerRect.top &&
+        touch.clientY <= containerRect.bottom;
 
-      // 緩和された範囲内のタッチのみ処理
+      // コンテナ内のタッチのみ処理し、外側は通常のページ操作を許可
       if (!isWithinContainer) return;
 
       // cancelableイベントのみでpreventDefaultを試行
@@ -561,26 +563,41 @@ const VectorMap: React.FC<VectorMapProps> = ({
   );
 
   const handleTouchEnd = useCallback((e: TouchEvent) => {
-    // マップコンテナ内のタッチエンドイベントかチェック（境界を緩和）
+    // マップコンテナ内のタッチエンドイベントかチェック（厳密な境界チェック）
     if (!containerRef.current) return;
 
-    // ダブルタップズーム検出
+    // マルチレベルダブルタップズーム検出
     const now = Date.now();
     const timeDiff = now - lastTapTime;
     
     if (timeDiff < 300 && timeDiff > 0 && e.touches.length === 0) {
-      // ダブルタップを検出した場合、ズームイン
+      // ダブルタップを検出した場合、多段階ズーム
       const containerRect = containerRef.current.getBoundingClientRect();
       const lastTouch = e.changedTouches[0];
       if (lastTouch) {
-        const centerX = lastTouch.clientX - containerRect.left;
-        const centerY = lastTouch.clientY - containerRect.top;
-        const svgCoord = screenToSVG(lastTouch.clientX, lastTouch.clientY);
+        // タッチ位置がマップコンテナ内かチェック
+        const isWithinContainer =
+          lastTouch.clientX >= containerRect.left &&
+          lastTouch.clientX <= containerRect.right &&
+          lastTouch.clientY >= containerRect.top &&
+          lastTouch.clientY <= containerRect.bottom;
         
-        // ダブルタップ位置を中心にズームイン
-        zoomToPoint(svgCoord, 3);
-        e.preventDefault();
-        return;
+        if (isWithinContainer) {
+          const svgCoord = screenToSVG(lastTouch.clientX, lastTouch.clientY);
+          
+          // ズームレベルサイクル: 1x → 2x → 4x → 8x → 1x
+          const zoomLevels = [1, 2, 4, 8];
+          const currentIndex = zoomLevels.findIndex(level => Math.abs(currentZoomLevel - level) < 0.5);
+          const nextIndex = (currentIndex + 1) % zoomLevels.length;
+          const nextZoomLevel = zoomLevels[nextIndex];
+          
+          // ダブルタップ位置を中心にズーム
+          zoomToPoint(svgCoord, nextZoomLevel);
+          setCurrentZoomLevel(nextZoomLevel);
+          
+          e.preventDefault();
+          return;
+        }
       }
     }
     setLastTapTime(now);
@@ -589,15 +606,15 @@ const VectorMap: React.FC<VectorMapProps> = ({
     if (e.touches.length > 0) {
       const containerRect = containerRef.current.getBoundingClientRect();
       const touch = e.touches[0];
-      const margin = 20; // 境界チェックを緩和するマージン
+      // 厳密な境界チェック
       const isWithinContainer =
         touch &&
-        touch.clientX >= containerRect.left - margin &&
-        touch.clientX <= containerRect.right + margin &&
-        touch.clientY >= containerRect.top - margin &&
-        touch.clientY <= containerRect.bottom + margin;
+        touch.clientX >= containerRect.left &&
+        touch.clientX <= containerRect.right &&
+        touch.clientY >= containerRect.top &&
+        touch.clientY <= containerRect.bottom;
 
-      // 緩和された範囲外のタッチエンドは無視
+      // コンテナ外のタッチエンドは無視
       if (!isWithinContainer) return;
     }
 
@@ -614,14 +631,14 @@ const VectorMap: React.FC<VectorMapProps> = ({
       setIsDragging(false);
       setTouchDistance(0);
     }
-  }, [lastTapTime, screenToSVG, zoomToPoint]);
+  }, [lastTapTime, currentZoomLevel, screenToSVG, zoomToPoint]);
 
   // Wheel zoom handler
   const handleWheel = useCallback(
     (e: WheelEvent) => {
       if (!containerRef.current) return;
 
-      // マップコンテナ内のホイールイベントかチェック
+      // マップコンテナ内のホイールイベントかチェック（厳密な境界チェック）
       const containerRect = containerRef.current.getBoundingClientRect();
       const isWithinContainer =
         e.clientX >= containerRect.left &&
@@ -629,15 +646,8 @@ const VectorMap: React.FC<VectorMapProps> = ({
         e.clientY >= containerRect.top &&
         e.clientY <= containerRect.bottom;
 
-      // マップ範囲外のホイールは通常のスクロールを許可（境界を緩和）
-      const margin = 10;
-      const isWithinExpandedContainer =
-        e.clientX >= containerRect.left - margin &&
-        e.clientX <= containerRect.right + margin &&
-        e.clientY >= containerRect.top - margin &&
-        e.clientY <= containerRect.bottom + margin;
-      
-      if (!isWithinExpandedContainer) return;
+      // マップ範囲外のホイールは通常のスクロールを許可
+      if (!isWithinContainer) return;
 
       // カードエリア上かチェック
       const cardElements = document.querySelectorAll(".map-card-overlay");
@@ -910,7 +920,48 @@ const VectorMap: React.FC<VectorMapProps> = ({
     handleKeyUp,
   ]);
 
-  // Auto zoom to highlight point (only once)
+  // Auto fit view based on points (for map page)
+  const autoFitToPoints = useCallback(() => {
+    if (points.length === 0) return;
+
+    // Find the bounding box of all points
+    const pointCoords = points.map(p => p.coordinates);
+    const minX = Math.min(...pointCoords.map(p => p.x));
+    const maxX = Math.max(...pointCoords.map(p => p.x));
+    const minY = Math.min(...pointCoords.map(p => p.y));
+    const maxY = Math.max(...pointCoords.map(p => p.y));
+
+    // Add padding around the points
+    const paddingX = (maxX - minX) * 0.2; // 20% padding
+    const paddingY = (maxY - minY) * 0.2; // 20% padding
+    
+    const fitWidth = (maxX - minX) + paddingX * 2;
+    const fitHeight = (maxY - minY) + paddingY * 2;
+    const centerX = (minX + maxX) / 2;
+    const centerY = (minY + maxY) / 2;
+
+    // Calculate appropriate scale to fit all points
+    const containerWidth = CAMPUS_MAP_BOUNDS.width;
+    const containerHeight = CAMPUS_MAP_BOUNDS.height;
+    const scaleX = containerWidth / fitWidth;
+    const scaleY = containerHeight / fitHeight;
+    const optimalScale = Math.min(scaleX, scaleY, 2); // Cap at 2x zoom
+
+    // Set the view to fit all points
+    const targetWidth = containerWidth / optimalScale;
+    const targetHeight = containerHeight / optimalScale;
+    
+    setViewBox({
+      x: centerX - targetWidth / 2,
+      y: centerY - targetHeight / 2,
+      width: targetWidth,
+      height: targetHeight,
+    });
+    
+    setCurrentZoomLevel(optimalScale);
+  }, [points]);
+
+  // Auto zoom to highlight point (for detail pages)
   const [hasAutoZoomed, setHasAutoZoomed] = useState(false);
 
   useEffect(() => {
@@ -922,6 +973,16 @@ const VectorMap: React.FC<VectorMapProps> = ({
       return () => clearTimeout(timer);
     }
   }, [highlightPoint, mode, zoomToPoint, hasAutoZoomed]);
+
+  // Auto fit to all points (for map page)
+  useEffect(() => {
+    if (mode === "display" && points.length > 0) {
+      const timer = setTimeout(() => {
+        autoFitToPoints();
+      }, 300);
+      return () => clearTimeout(timer);
+    }
+  }, [mode, autoFitToPoints]);
 
   // Reset auto zoom flag when highlightPoint changes
   useEffect(() => {
