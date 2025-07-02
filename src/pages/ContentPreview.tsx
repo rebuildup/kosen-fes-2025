@@ -1625,31 +1625,7 @@ const ContentPreview = () => {
                 📋 申請フォームを開く
               </PillButton>
 
-              {/* Forms iframe */}
-              <div className="mt-12">
-                <h4
-                  className="text-lg sm:text-xl font-semibold mb-4 sm:mb-6"
-                  style={{ color: "var(--text-primary)" }}
-                >
-                  または、下記のフォームから直接入力
-                </h4>
-                <div className="rounded-xl overflow-hidden glass-effect border-2 border-[var(--border-color)]">
-                  <iframe
-                    width="100%"
-                    height="480px"
-                    src="https://forms.office.com/r/qaztknQ9fY?embed=true"
-                    frameBorder="0"
-                    marginWidth={0}
-                    marginHeight={0}
-                    style={{
-                      border: "none",
-                      maxWidth: "100%",
-                      maxHeight: "100vh",
-                    }}
-                    allowFullScreen
-                  />
-                </div>
-              </div>
+              
             </div>
           </div>
         </div>
