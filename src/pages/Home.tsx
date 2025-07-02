@@ -105,8 +105,8 @@ const Home = () => {
 
   // Get featured items
   useEffect(() => {
-    setFeaturedEvents(events.slice(0, 4).map(convertItemCoreToItem));
-    setFeaturedExhibits(exhibits.slice(0, 4).map(convertItemCoreToItem));
+    setFeaturedEvents(events.slice(0, 3).map(convertItemCoreToItem));
+    setFeaturedExhibits(exhibits.slice(0, 3).map(convertItemCoreToItem));
     setFeaturedStalls(stalls.slice(0, 3).map(convertItemCoreToItem));
 
     // Get popular tags from DataContext
@@ -176,7 +176,7 @@ const Home = () => {
             </PillButton>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-6 max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
             {featuredEvents.map((event, index) => (
               <div
                 key={`home-events-${event.id}`}
@@ -210,7 +210,7 @@ const Home = () => {
             </PillButton>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-6 max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
             {featuredExhibits.map((exhibit, index) => (
               <div
                 key={`home-exhibits-${exhibit.id}`}

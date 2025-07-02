@@ -332,7 +332,7 @@ export const jaTranslations: Translations = {
     ctaDescription: "宇部高専祭の魅力を発見してください",
     viewBookmarks: "ブックマークを表示",
     viewMap: "マップを表示",
-    stalls: "人気の露店",
+    stalls: "露店",
     dates: "2025年11月8日~9日",
     viewSchedule: "スケジュールを見る",
     downloadTicket: "チケットをダウンロード",
