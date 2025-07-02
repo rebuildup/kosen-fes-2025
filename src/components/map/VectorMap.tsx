@@ -619,8 +619,20 @@ const VectorMap: React.FC<VectorMapProps> = ({
           const minY = -paddingTop;
 
           return {
-            x: Math.max(minX, Math.min(maxX, centerSVG.x - newWidth / 2)),
-            y: Math.max(minY, Math.min(maxY, centerSVG.y - newHeight / 2)),
+            x: Math.max(
+              minX,
+              Math.min(
+                maxX,
+                centerSVG.x - (centerSVG.x - prev.x) * (newWidth / prev.width)
+              )
+            ),
+            y: Math.max(
+              minY,
+              Math.min(
+                maxY,
+                centerSVG.y - (centerSVG.y - prev.y) * (newHeight / prev.height)
+              )
+            ),
             width: newWidth,
             height: newHeight,
           };
