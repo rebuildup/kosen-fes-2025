@@ -32,7 +32,7 @@ const PillButton = ({
 
   // Base button classes with hover effects
   const baseClasses = `
-    inline-flex items-center gap-2 rounded-full font-semibold 
+    inline-flex items-center gap-3 rounded-full font-semibold 
     transition-all duration-300 focus:outline-none focus:ring-2 
     focus:ring-offset-2 disabled:opacity-50 
     disabled:cursor-not-allowed transform hover:scale-105
@@ -69,7 +69,7 @@ const PillButton = ({
 
   // Enhanced arrow icon with animation
   const ArrowIcon = () => (
-    <span className="transition-transform duration-200 group-hover:translate-x-1">
+    <span className="transition-transform duration-200 group-hover:translate-x-1 ml-1 flex-shrink-0">
       →
     </span>
   );
