@@ -1458,48 +1458,6 @@ const VectorMap: React.FC<VectorMapProps> = ({
         shapeRendering: "geometricPrecision" as any,
       }}
     >
-      {/* Debug Panel for Mouse Tracking */}
-      {mode === "interactive" && mousePosition.visible && (
-        <div
-          className="absolute top-2 left-2 z-50 bg-black bg-opacity-80 text-white p-3 rounded-lg text-xs font-mono"
-          style={{ pointerEvents: "none" }}
-        >
-          <div className="space-y-1">
-            <div className="text-red-400 font-bold">🖱️ Mouse Debug Info</div>
-            <div>
-              Screen: ({mousePosition.screen.x.toFixed(0)},{" "}
-              {mousePosition.screen.y.toFixed(0)})
-            </div>
-            <div>
-              SVG Element: ({mousePosition.relative.x.toFixed(1)},{" "}
-              {mousePosition.relative.y.toFixed(1)})
-            </div>
-            <div className="text-yellow-400">
-              SVG Coords: ({mousePosition.svg.x.toFixed(1)},{" "}
-              {mousePosition.svg.y.toFixed(1)})
-            </div>
-            <div>
-              ViewBox: ({viewBox.x.toFixed(1)}, {viewBox.y.toFixed(1)},{" "}
-              {viewBox.width.toFixed(1)}, {viewBox.height.toFixed(1)})
-            </div>
-            <div className="text-green-400">
-              In Bounds: X=
-              {mousePosition.svg.x >= 0 &&
-              mousePosition.svg.x <= CAMPUS_MAP_BOUNDS.width
-                ? "✓"
-                : "✗"}
-              Y=
-              {mousePosition.svg.y >= 0 &&
-              mousePosition.svg.y <= CAMPUS_MAP_BOUNDS.height
-                ? "✓"
-                : "✗"}
-            </div>
-            <div className="text-blue-400 mt-2 pt-2 border-t border-gray-600">
-              📌 Red crosshair should be at cursor position
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Controls */}
       {showControls && (
