@@ -140,6 +140,19 @@ const VectorMap: React.FC<VectorMapProps> = ({
   >(null);
   const [lastMobileTapTime, setLastMobileTapTime] = useState<number>(0);
 
+  // Mouse tracking state for debugging
+  const [mousePosition, setMousePosition] = useState<{
+    screen: { x: number; y: number };
+    svg: { x: number; y: number };
+    relative: { x: number; y: number };
+    visible: boolean;
+  }>({
+    screen: { x: 0, y: 0 },
+    svg: { x: 0, y: 0 },
+    relative: { x: 0, y: 0 },
+    visible: false,
+  });
+
   // マップ操作でカードを閉じる関数
   const closeCard = useCallback(() => {
     if (selectedPoint) {
@@ -153,7 +166,7 @@ const VectorMap: React.FC<VectorMapProps> = ({
     setLastMobileTapPointId(null);
   }, [selectedPoint, selectedCluster]);
 
-  // Convert screen coordinates to SVG coordinates
+  // Convert screen coordinates to SVG coordinates with accurate aspect ratio handling
   const screenToSVG = useCallback(
     (screenX: number, screenY: number): Coordinate => {
       if (!svgRef.current) return { x: 0, y: 0 };
@@ -164,9 +177,19 @@ const VectorMap: React.FC<VectorMapProps> = ({
       const relativeX = screenX - svgRect.left;
       const relativeY = screenY - svgRect.top;
 
-      // SVG座標系に変換（viewBoxを考慮）
-      const svgX = viewBox.x + (relativeX / svgRect.width) * viewBox.width;
-      const svgY = viewBox.y + (relativeY / svgRect.height) * viewBox.height;
+      // Calculate the actual content area within SVG element (considering preserveAspectRatio)
+      const contentRect = getSVGContentRect(svgRect);
+
+      // Adjust relative coordinates to account for letterboxing/pillarboxing
+      const adjustedRelativeX = relativeX - contentRect.offsetX;
+      const adjustedRelativeY = relativeY - contentRect.offsetY;
+
+      // ALWAYS use content area aware transformation for consistent accuracy
+      // Content Areaを考慮した座標変換を常に使用
+      const svgX =
+        viewBox.x + (adjustedRelativeX / contentRect.width) * viewBox.width;
+      const svgY =
+        viewBox.y + (adjustedRelativeY / contentRect.height) * viewBox.height;
 
       return { x: svgX, y: svgY };
     },
@@ -297,6 +320,112 @@ const VectorMap: React.FC<VectorMapProps> = ({
     []
   );
 
+  // Mouse tracking handler for debugging
+  const handleMouseTracking = useCallback(
+    (e: React.MouseEvent) => {
+      if (!svgRef.current || !containerRef.current) return;
+
+      const svgRect = svgRef.current.getBoundingClientRect();
+
+      // Screen coordinates relative to viewport
+      const screenX = e.clientX;
+      const screenY = e.clientY;
+
+      // Relative coordinates within SVG element
+      const relativeX = screenX - svgRect.left;
+      const relativeY = screenY - svgRect.top;
+
+      // Calculate the actual content area within SVG element (considering preserveAspectRatio)
+      const contentRect = getSVGContentRect(svgRect);
+
+      // CORRECT APPROACH: Use content area aware transformation
+      // preserveAspectRatio="xMidYMid meet" creates letterboxing/pillarboxing
+      // We must account for this to get accurate coordinates
+
+      // Adjust relative coordinates to account for letterboxing/pillarboxing
+      const adjustedRelativeX = relativeX - contentRect.offsetX;
+      const adjustedRelativeY = relativeY - contentRect.offsetY;
+
+      // ALWAYS use content area aware transformation for consistent accuracy
+      // Content Areaを考慮した座標変換を常に使用
+      const actualSvgX =
+        viewBox.x + (adjustedRelativeX / contentRect.width) * viewBox.width;
+      const actualSvgY =
+        viewBox.y + (adjustedRelativeY / contentRect.height) * viewBox.height;
+
+      // Check if mouse is within the actual content area (for debugging purposes)
+      const isInContentArea =
+        adjustedRelativeX >= 0 &&
+        adjustedRelativeX <= contentRect.width &&
+        adjustedRelativeY >= 0 &&
+        adjustedRelativeY <= contentRect.height;
+
+      // Update mouse position state with accurate coordinates
+      setMousePosition({
+        screen: { x: screenX, y: screenY },
+        svg: { x: actualSvgX, y: actualSvgY },
+        relative: { x: relativeX, y: relativeY },
+        visible: true,
+      });
+
+      // Content Area Aware coordinate transformation debug
+      console.group("🖱️ Content Area Aware Transformation Debug");
+      console.log("Screen:", { x: screenX.toFixed(2), y: screenY.toFixed(2) });
+      console.log("SVG Element Relative:", {
+        x: relativeX.toFixed(2),
+        y: relativeY.toFixed(2),
+      });
+      console.log("SVG Element Size:", {
+        width: svgRect.width.toFixed(2),
+        height: svgRect.height.toFixed(2),
+      });
+      console.log(
+        "Original ViewBox Ratio:",
+        (CAMPUS_MAP_BOUNDS.width / CAMPUS_MAP_BOUNDS.height).toFixed(4)
+      );
+      console.log(
+        "SVG Element Ratio:",
+        (svgRect.width / svgRect.height).toFixed(4)
+      );
+      console.log("Content Area:", {
+        width: contentRect.width.toFixed(2),
+        height: contentRect.height.toFixed(2),
+        offsetX: contentRect.offsetX.toFixed(2),
+        offsetY: contentRect.offsetY.toFixed(2),
+      });
+      console.log("Adjusted Relative:", {
+        x: adjustedRelativeX.toFixed(2),
+        y: adjustedRelativeY.toFixed(2),
+      });
+      console.log("In Content Area:", isInContentArea);
+      console.log("🎯 ACCURATE SVG Coordinates:", {
+        x: actualSvgX.toFixed(2),
+        y: actualSvgY.toFixed(2),
+      });
+      console.log("ViewBox:", {
+        x: viewBox.x.toFixed(2),
+        y: viewBox.y.toFixed(2),
+        width: viewBox.width.toFixed(2),
+        height: viewBox.height.toFixed(2),
+      });
+
+      // Check if coordinates are within map bounds
+      const withinBounds = {
+        x: actualSvgX >= 0 && actualSvgX <= CAMPUS_MAP_BOUNDS.width,
+        y: actualSvgY >= 0 && actualSvgY <= CAMPUS_MAP_BOUNDS.height,
+      };
+      console.log("Within map bounds:", withinBounds);
+      console.groupEnd();
+    },
+    [viewBox]
+  );
+
+  // Hide mouse cursor when leaving the map
+  const handleMouseLeave = useCallback(() => {
+    setMousePosition((prev) => ({ ...prev, visible: false }));
+    console.log("🖱️ Mouse left map area");
+  }, []);
+
   // Mouse event handlers
   const handleMouseDown = useCallback(
     (e: React.MouseEvent) => {
@@ -377,7 +506,15 @@ const VectorMap: React.FC<VectorMapProps> = ({
         height: dragStartViewBox.height,
       });
     },
-    [isDragging, dragStart, dragStartViewBox, viewBox.width, viewBox.height]
+    [
+      isDragging,
+      dragStart,
+      dragStartViewBox,
+      viewBox.width,
+      viewBox.height,
+      isShiftPressed,
+      screenToSVG,
+    ]
   );
 
   const handleMouseUp = useCallback(() => {
@@ -385,10 +522,13 @@ const VectorMap: React.FC<VectorMapProps> = ({
   }, []);
 
   // SVGの実際の描画領域を計算する関数
+  // 注意：Content Areaは元のviewBoxサイズ（2000x1343）に基づいて計算する必要がある
+  // 現在のzoom/pan状態には依存しない
   const getSVGContentRect = useCallback(
     (svgRect: DOMRect) => {
-      // viewBoxのアスペクト比
-      const viewBoxRatio = viewBox.width / viewBox.height;
+      // 元のviewBoxのアスペクト比（ズーム/パン前）
+      const originalViewBoxRatio =
+        CAMPUS_MAP_BOUNDS.width / CAMPUS_MAP_BOUNDS.height;
       // SVG要素のアスペクト比
       const svgRatio = svgRect.width / svgRect.height;
 
@@ -397,15 +537,15 @@ const VectorMap: React.FC<VectorMapProps> = ({
         offsetX: number,
         offsetY: number;
 
-      if (viewBoxRatio > svgRatio) {
-        // viewBoxの方が横長 → 横幅がSVGの幅に合わせられ、上下に余白
+      if (originalViewBoxRatio > svgRatio) {
+        // 元のviewBoxの方が横長 → 横幅がSVGの幅に合わせられ、上下に余白（letterboxing）
         contentWidth = svgRect.width;
-        contentHeight = svgRect.width / viewBoxRatio;
+        contentHeight = svgRect.width / originalViewBoxRatio;
         offsetX = 0;
         offsetY = (svgRect.height - contentHeight) / 2;
       } else {
-        // viewBoxの方が縦長 → 縦幅がSVGの高さに合わせられ、左右に余白
-        contentWidth = svgRect.height * viewBoxRatio;
+        // 元のviewBoxの方が縦長 → 縦幅がSVGの高さに合わせられ、左右に余白（pillarboxing）
+        contentWidth = svgRect.height * originalViewBoxRatio;
         contentHeight = svgRect.height;
         offsetX = (svgRect.width - contentWidth) / 2;
         offsetY = 0;
@@ -413,7 +553,7 @@ const VectorMap: React.FC<VectorMapProps> = ({
 
       return { width: contentWidth, height: contentHeight, offsetX, offsetY };
     },
-    [viewBox]
+    [] // 依存配列から viewBox を削除。元のマップサイズは固定値なので依存しない
   );
 
   // Touch event handlers for mobile (ViewBox based)
@@ -1238,25 +1378,15 @@ const VectorMap: React.FC<VectorMapProps> = ({
     const minY = Math.min(...pointCoords.map((p) => p.y));
     const maxY = Math.max(...pointCoords.map((p) => p.y));
 
-    // Add padding around the points
-    const paddingX = (maxX - minX) * 0.2; // 20% padding
-    const paddingY = (maxY - minY) * 0.2; // 20% padding
-
-    const fitWidth = maxX - minX + paddingX * 2;
-    const fitHeight = maxY - minY + paddingY * 2;
     const centerX = (minX + maxX) / 2;
     const centerY = (minY + maxY) / 2;
 
-    // Calculate appropriate scale to fit all points
-    const containerWidth = CAMPUS_MAP_BOUNDS.width;
-    const containerHeight = CAMPUS_MAP_BOUNDS.height;
-    const scaleX = containerWidth / fitWidth;
-    const scaleY = containerHeight / fitHeight;
-    const optimalScale = initialZoom; // 必ずinitialZoomで拡大する
+    // Use initial zoom for consistent scaling
+    const optimalScale = initialZoom;
 
     // Set the view to fit all points
-    const targetWidth = containerWidth / optimalScale;
-    const targetHeight = containerHeight / optimalScale;
+    const targetWidth = CAMPUS_MAP_BOUNDS.width / optimalScale;
+    const targetHeight = CAMPUS_MAP_BOUNDS.height / optimalScale;
 
     setViewBox({
       x: centerX - targetWidth / 2,
@@ -1421,6 +1551,49 @@ const VectorMap: React.FC<VectorMapProps> = ({
         shapeRendering: "geometricPrecision" as any,
       }}
     >
+      {/* Debug Panel for Mouse Tracking */}
+      {mode === "interactive" && mousePosition.visible && (
+        <div
+          className="absolute top-2 left-2 z-50 bg-black bg-opacity-80 text-white p-3 rounded-lg text-xs font-mono"
+          style={{ pointerEvents: "none" }}
+        >
+          <div className="space-y-1">
+            <div className="text-red-400 font-bold">🖱️ Mouse Debug Info</div>
+            <div>
+              Screen: ({mousePosition.screen.x.toFixed(0)},{" "}
+              {mousePosition.screen.y.toFixed(0)})
+            </div>
+            <div>
+              SVG Element: ({mousePosition.relative.x.toFixed(1)},{" "}
+              {mousePosition.relative.y.toFixed(1)})
+            </div>
+            <div className="text-yellow-400">
+              SVG Coords: ({mousePosition.svg.x.toFixed(1)},{" "}
+              {mousePosition.svg.y.toFixed(1)})
+            </div>
+            <div>
+              ViewBox: ({viewBox.x.toFixed(1)}, {viewBox.y.toFixed(1)},{" "}
+              {viewBox.width.toFixed(1)}, {viewBox.height.toFixed(1)})
+            </div>
+            <div className="text-green-400">
+              In Bounds: X=
+              {mousePosition.svg.x >= 0 &&
+              mousePosition.svg.x <= CAMPUS_MAP_BOUNDS.width
+                ? "✓"
+                : "✗"}
+              Y=
+              {mousePosition.svg.y >= 0 &&
+              mousePosition.svg.y <= CAMPUS_MAP_BOUNDS.height
+                ? "✓"
+                : "✗"}
+            </div>
+            <div className="text-blue-400 mt-2 pt-2 border-t border-gray-600">
+              📌 Red crosshair should be at cursor position
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Controls */}
       {showControls && (
         <ZoomControls
@@ -1442,6 +1615,8 @@ const VectorMap: React.FC<VectorMapProps> = ({
         onMouseDown={handleMouseDown}
         onTouchStart={handleTouchStart}
         onClick={handleSVGClick}
+        onMouseMove={handleMouseTracking}
+        onMouseLeave={handleMouseLeave}
         style={{
           vectorEffect: "non-scaling-stroke",
           shapeRendering: "geometricPrecision",
@@ -1922,6 +2097,53 @@ const VectorMap: React.FC<VectorMapProps> = ({
                 fill="white"
                 opacity="0.9"
               />
+            </g>
+          )}
+
+          {/* Mouse Tracking Debug Point */}
+          {mode === "interactive" && mousePosition.visible && (
+            <g>
+              {/* Debug coordinate display */}
+              <g
+                transform={`translate(${mousePosition.svg.x}, ${mousePosition.svg.y})`}
+              >
+                {/* Crosshair */}
+                <g stroke="#ff0000" strokeWidth="2" fill="none">
+                  <line x1="-20" y1="0" x2="20" y2="0" />
+                  <line x1="0" y1="-20" x2="0" y2="20" />
+                </g>
+                {/* Center dot */}
+                <circle
+                  cx="0"
+                  cy="0"
+                  r="4"
+                  fill="#ff0000"
+                  stroke="white"
+                  strokeWidth="2"
+                />
+                {/* Coordinate text background */}
+                <rect
+                  x="25"
+                  y="-12"
+                  width="120"
+                  height="24"
+                  fill="rgba(0,0,0,0.8)"
+                  rx="4"
+                />
+                {/* Coordinate text */}
+                <text
+                  x="30"
+                  y="3"
+                  fill="white"
+                  fontSize="12"
+                  fontFamily="monospace"
+                  fontWeight="bold"
+                >
+                  {`X:${mousePosition.svg.x.toFixed(
+                    1
+                  )} Y:${mousePosition.svg.y.toFixed(1)}`}
+                </text>
+              </g>
             </g>
           )}
         </g>
