@@ -836,11 +836,19 @@ const VectorMap: React.FC<VectorMapProps> = ({
             const relativeX = lastTouch.clientX - svgRect.left;
             const relativeY = lastTouch.clientY - svgRect.top;
 
-            // Use same coordinate calculation as handleSVGClick for consistency
+            // Calculate the actual content area within SVG element (considering preserveAspectRatio)
+            const contentRect = getSVGContentRect(svgRect);
+
+            // Adjust relative coordinates to account for letterboxing/pillarboxing
+            const adjustedRelativeX = relativeX - contentRect.offsetX;
+            const adjustedRelativeY = relativeY - contentRect.offsetY;
+
+            // ALWAYS use content area aware transformation for consistent accuracy
+            // Content Areaを考慮した座標変換を常に使用 (same as handleSVGClick for consistency)
             const svgX =
-              viewBox.x + (relativeX / svgRect.width) * viewBox.width;
+              viewBox.x + (adjustedRelativeX / contentRect.width) * viewBox.width;
             const svgY =
-              viewBox.y + (relativeY / svgRect.height) * viewBox.height;
+              viewBox.y + (adjustedRelativeY / contentRect.height) * viewBox.height;
 
             // Apply coordinate limits and precision (same as mouse handler)
             const mapClickMargin =
@@ -1276,14 +1284,23 @@ const VectorMap: React.FC<VectorMapProps> = ({
           return; // SVG境界外のクリックは無視
         }
 
-        // SVG要素内での正確な相対座標を計算（直接変換方式）
+        // SVG要素内での正確な相対座標を計算（Content Area Aware変換方式）
         const relativeX = e.clientX - svgRect.left;
         const relativeY = e.clientY - svgRect.top;
 
-        // SVG座標系に直接変換（viewBoxを考慮）
-        // この方法でoffsetの問題を回避
-        const svgX = viewBox.x + (relativeX / svgRect.width) * viewBox.width;
-        const svgY = viewBox.y + (relativeY / svgRect.height) * viewBox.height;
+        // Calculate the actual content area within SVG element (considering preserveAspectRatio)
+        const contentRect = getSVGContentRect(svgRect);
+
+        // Adjust relative coordinates to account for letterboxing/pillarboxing
+        const adjustedRelativeX = relativeX - contentRect.offsetX;
+        const adjustedRelativeY = relativeY - contentRect.offsetY;
+
+        // ALWAYS use content area aware transformation for consistent accuracy
+        // Content Areaを考慮した座標変換を常に使用
+        const svgX =
+          viewBox.x + (adjustedRelativeX / contentRect.width) * viewBox.width;
+        const svgY =
+          viewBox.y + (adjustedRelativeY / contentRect.height) * viewBox.height;
 
         // マップ座標制限を緩和（マップ外でもポイント選択可能）
         const mapClickMargin =
