@@ -151,7 +151,6 @@ const Map = () => {
                     className="text-xl font-semibold flex items-center gap-2"
                     style={{ color: "var(--color-text-primary)" }}
                   >
-                    <span>🗺️</span>
                     会場マップ
                   </h2>
                 </div>

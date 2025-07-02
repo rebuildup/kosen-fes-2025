@@ -31,7 +31,6 @@ const TagCloud = ({
   if (limitedTags.length === 0) {
     return (
       <div className="text-center py-8">
-        <div className="text-4xl mb-2">🏷️</div>
         <p className="text-[var(--text-secondary)]">タグがありません</p>
       </div>
     );
@@ -41,7 +40,6 @@ const TagCloud = ({
     <div className="mb-5">
       {title && (
         <h3 className="text-lg font-semibold mb-4 text-[var(--text-primary)] flex items-center gap-2">
-          <span>🏷️</span>
           {title}
         </h3>
       )}

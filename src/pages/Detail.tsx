@@ -384,7 +384,6 @@ const Detail = () => {
               style={{ backgroundColor: "var(--color-bg-secondary)" }}
             >
               <div className="flex items-center gap-2">
-                <span>🕒</span>
                 <span
                   className="font-medium"
                   style={{ color: "var(--color-text-primary)" }}
@@ -397,7 +396,6 @@ const Detail = () => {
               </div>
 
               <div className="flex items-center gap-2">
-                <span>⏱️</span>
                 <span
                   className="font-medium"
                   style={{ color: "var(--color-text-primary)" }}
@@ -410,7 +408,6 @@ const Detail = () => {
               </div>
 
               <div className="flex items-center gap-2">
-                <span>📍</span>
                 <span
                   className="font-medium"
                   style={{ color: "var(--color-text-primary)" }}
@@ -443,7 +440,6 @@ const Detail = () => {
                 className="text-xl font-semibold mb-4 flex items-center gap-2"
                 style={{ color: "var(--color-text-primary)" }}
               >
-                <span>📍</span>
                 {t("detail.location")}
               </h3>
               <div className="space-y-2">
@@ -505,7 +501,6 @@ const Detail = () => {
                   className="text-xl font-semibold mb-4 flex items-center gap-2"
                   style={{ color: "var(--color-text-primary)" }}
                 >
-                  <span>🗺️</span>
                   {t("map.title")}
                 </h3>
                 <div className="map-container h-64 rounded-lg overflow-hidden">

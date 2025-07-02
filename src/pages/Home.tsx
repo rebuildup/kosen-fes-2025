@@ -270,7 +270,6 @@ const Home = () => {
       <section className="section bg-[var(--bg-secondary)]">
         <div className="max-w-7xl mx-auto">
           <h2 className="section-title text-center mb-8 text-[var(--text-primary)]">
-            <span className="text-3xl mr-3">🏷️</span>
             {t("home.popularTags")}
           </h2>
           <div className="w-full overflow-hidden">
@@ -283,7 +282,6 @@ const Home = () => {
       <section className="section bg-[var(--bg-primary)]">
         <div className="max-w-7xl mx-auto">
           <h2 className="section-title text-center mb-12 text-[var(--text-primary)]">
-            <span className="text-3xl mr-3">📅</span>
             {t("home.timeline")}
           </h2>
 

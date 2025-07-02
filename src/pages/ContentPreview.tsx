@@ -1238,7 +1238,6 @@ const ContentPreview = () => {
                     style={{ backgroundColor: "var(--bg-primary)" }}
                   >
                     <div className="flex items-center gap-2">
-                      <span>🕒</span>
                       <span
                         className="font-medium"
                         style={{ color: "var(--text-primary)" }}
@@ -1251,7 +1250,6 @@ const ContentPreview = () => {
                     </div>
 
                     <div className="flex items-center gap-2">
-                      <span>⏱️</span>
                       <span
                         className="font-medium"
                         style={{ color: "var(--text-primary)" }}
@@ -1264,7 +1262,6 @@ const ContentPreview = () => {
                     </div>
 
                     <div className="flex items-center gap-2">
-                      <span>📍</span>
                       <span
                         className="font-medium"
                         style={{ color: "var(--text-primary)" }}
@@ -1300,7 +1297,6 @@ const ContentPreview = () => {
                         className="text-lg font-semibold mb-3 flex items-center gap-2"
                         style={{ color: "var(--text-primary)" }}
                       >
-                        <span>📍</span>
                         場所: {previewItem.location}
                       </h3>
                       <div

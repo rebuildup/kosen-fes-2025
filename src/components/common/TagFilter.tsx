@@ -30,7 +30,6 @@ const TagFilter = ({ onFilter, compact = false }: TagFilterProps) => {
     <div className={`${compact ? "p-3" : "p-0"}`}>
       <div className="flex justify-between items-center mb-3">
         <h3 className="text-sm font-semibold text-[var(--text-primary)] m-0 flex items-center gap-2">
-          <span>🏷️</span>
           {t("tags.searchByTag")}
         </h3>
       </div>

@@ -37,7 +37,6 @@ const LocationList = ({
         className="text-xl font-semibold mb-6 flex items-center gap-2"
         style={{ color: "var(--color-text-primary)" }}
       >
-        <span>📍</span>
         {t("map.viewLocations")} ({sortedLocations.length})
       </h2>
 

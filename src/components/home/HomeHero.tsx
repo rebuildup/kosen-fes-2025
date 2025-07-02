@@ -138,7 +138,6 @@ const HomeHero = ({}: HomeHeroProps) => {
         <h1 ref={titleRef}>{t("siteName")}</h1>
         <p ref={subtitleRef}>{t("home.subtitle")}</p>
         <div ref={datesRef}>
-          <span>📅</span>
           <span>2025/11/08 - 2025/11/09</span>
         </div>
         <Link to="/schedule" ref={ctaRef}>

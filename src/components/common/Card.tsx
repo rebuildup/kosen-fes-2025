@@ -330,8 +330,8 @@ const Card = ({
           </SmartScrollableText>
 
           <div className="space-y-0.5 text-sm opacity-90">
-            <SmartScrollableText>🕒 {item.time}</SmartScrollableText>
-            <SmartScrollableText>📍 {item.location}</SmartScrollableText>
+            <SmartScrollableText> {item.time}</SmartScrollableText>
+            <SmartScrollableText> {item.location}</SmartScrollableText>
           </div>
         </div>
 
