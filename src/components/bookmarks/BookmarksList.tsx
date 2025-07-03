@@ -89,10 +89,10 @@ const BookmarksList = () => {
 
   return (
     <div className="space-y-6">
-      {/* Filter Controls */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 p-6 bg-[var(--bg-secondary)] rounded-xl border border-[var(--border-color)]">
-        {/* Filter Tabs */}
-        <div className="flex-grow">
+      {/* Filter Controls レスポンシブ横スクロール＋PC右寄せ */}
+      <div className="flex w-full items-center gap-2 overflow-x-auto scrollbar-thin py-2 px-1 sm:overflow-x-auto md:overflow-x-visible md:justify-between md:px-0 md:py-0">
+        {/* 左: フィルタタブ */}
+        <div className="flex-shrink-0">
           <TabButtons
             options={filterOptions}
             activeValue={filter}
@@ -100,11 +100,9 @@ const BookmarksList = () => {
             className="rounded-lg overflow-hidden shadow-sm"
           />
         </div>
-
-        {/* Controls */}
-        <div className="flex items-center gap-4">
+        {/* 右: 表示切替＋削除（PCは右寄せ） */}
+        <div className="flex items-center gap-2 flex-shrink-0 ml-auto">
           <CardListToggle viewMode={viewMode} setViewMode={setViewMode} />
-
           <button
             onClick={clearAllBookmarks}
             className="px-3 py-2 glass-button glass-interactive text-red-500 hover:text-red-600 rounded-lg font-medium transition-all duration-200 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-red-500/20"
