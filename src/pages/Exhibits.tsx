@@ -20,9 +20,6 @@ const Exhibits = () => {
   >("default");
   const [filteredItems, setFilteredItems] = useState<Item[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [typeFilter, setTypeFilter] = useState<"all" | "exhibit" | "stall">(
-    "all"
-  );
   const [categoryFilter, setCategoryFilter] = useState<
     "all" | "exhibits" | "stalls"
   >("all");

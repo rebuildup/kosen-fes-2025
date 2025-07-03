@@ -44,50 +44,36 @@ const Menu = ({ setMenuOpen, closeButtonRef }: MenuProps) => {
 
   // Handle menu opening animation
   useEffect(() => {
-    if (menuRef.current && backdropRef.current) {
-      const tl = gsap.timeline();
+    // Use requestAnimationFrame to ensure DOM is ready
+    const initAnimation = () => {
+      if (menuRef.current && backdropRef.current) {
+        const tl = gsap.timeline();
 
-      // Initial state - ensure menu starts off screen
-      gsap.set(menuRef.current, { x: "100%" });
-      gsap.set(backdropRef.current, { autoAlpha: 0 });
+        // Initial state - ensure menu starts off screen
+        gsap.set(menuRef.current, { x: "100%" });
+        gsap.set(backdropRef.current, { autoAlpha: 0 });
 
-      // Animation
-      tl.to(backdropRef.current, {
-        autoAlpha: 1,
-        duration: DURATION.FAST,
-        ease: EASE.SMOOTH,
-      });
-
-      tl.to(
-        menuRef.current,
-        {
-          x: "0%",
-          duration: DURATION.NORMAL,
+        // Animation
+        tl.to(backdropRef.current, {
+          autoAlpha: 1,
+          duration: DURATION.FAST,
           ease: EASE.SMOOTH,
-        },
-        "-=0.1"
-      );
+        });
 
-      // Animate menu items if content ref exists
-      if (menuContentRef.current) {
-        const menuItems = menuContentRef.current.querySelectorAll(
-          ".menu-nav-item, .menu-link-item, .menu-section-title, .menu-setting-item"
-        );
-
-        tl.fromTo(
-          menuItems,
-          { y: 20, autoAlpha: 0 },
+        tl.to(
+          menuRef.current,
           {
-            y: 0,
-            autoAlpha: 1,
-            stagger: 0.05,
-            duration: DURATION.FAST,
+            x: "0%",
+            duration: DURATION.NORMAL,
             ease: EASE.SMOOTH,
           },
-          "-=0.2"
+          "-=0.1"
         );
       }
-    }
+    };
+
+    // Delay animation to ensure DOM is ready
+    requestAnimationFrame(initAnimation);
   }, []);
 
   // Handle click outside the menu to close it
