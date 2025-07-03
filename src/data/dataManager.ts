@@ -96,7 +96,6 @@ const splitSponsorData = (
     location: sponsor.location,
     tags: sponsor.tags,
     imageUrl: sponsor.imageUrl,
-    tier: sponsor.tier,
   },
   details: {
     description: sponsor.description,

@@ -38,7 +38,6 @@ export interface Sponsor extends BaseItem {
   type: "sponsor";
   website: string;
   contactEmail?: string;
-  tier: string;
 }
 
 export type Item = Event | Exhibit | Stall | Sponsor;

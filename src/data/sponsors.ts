@@ -15,7 +15,6 @@ export const sponsors: Sponsor[] = [
     tags: ["スポンサー", "技術", "産業"],
     website: "https://www.yamaguchi-tech.co.jp/",
     contactEmail: "sponsor@yamaguchi-tech.co.jp",
-    tier: "gold",
   },
   {
     id: "sponsor-2",
@@ -29,7 +28,6 @@ export const sponsors: Sponsor[] = [
     location: "メインホール",
     tags: ["スポンサー", "電機", "技術"],
     website: "https://www.ube-electronics.co.jp/",
-    tier: "silver",
   },
   {
     id: "sponsor-3",
@@ -43,7 +41,6 @@ export const sponsors: Sponsor[] = [
     location: "メインホール",
     tags: ["スポンサー", "技術", "コンサルティング"],
     website: "https://www.chugoku-eng.co.jp/",
-    tier: "bronze",
   },
   {
     id: "sponsor-4",
@@ -57,7 +54,6 @@ export const sponsors: Sponsor[] = [
     location: "メインホール",
     tags: ["スポンサー", "技術", "プログラミング"],
     website: "https://www.sanyo-software.co.jp/",
-    tier: "silver",
   },
   {
     id: "sponsor-5",
@@ -70,7 +66,6 @@ export const sponsors: Sponsor[] = [
     location: "メインホール",
     tags: ["スポンサー", "金融", "地域"],
     website: "https://www.ubecity-bank.co.jp/",
-    tier: "gold",
   },
   {
     id: "sponsor-6",
@@ -83,7 +78,6 @@ export const sponsors: Sponsor[] = [
     location: "メインホール",
     tags: ["スポンサー", "教育", "地域"],
     website: "https://www.yamaguchi-edu.org/",
-    tier: "bronze",
   },
   {
     id: "sponsor-7",
@@ -96,7 +90,6 @@ export const sponsors: Sponsor[] = [
     location: "メインホール",
     tags: ["スポンサー", "技術", "半導体"],
     website: "https://www.westjapan-semi.co.jp/",
-    tier: "gold",
   },
   {
     id: "sponsor-8",
@@ -109,7 +102,6 @@ export const sponsors: Sponsor[] = [
     location: "メインホール",
     tags: ["スポンサー", "産業", "資材"],
     website: "https://www.ube-materials.co.jp/",
-    tier: "bronze",
   },
   {
     id: "sponsor-9",
@@ -122,7 +114,6 @@ export const sponsors: Sponsor[] = [
     location: "メインホール",
     tags: ["スポンサー", "教育", "書籍"],
     website: "https://www.sanyo-books.co.jp/",
-    tier: "silver",
   },
   {
     id: "sponsor-10",
@@ -136,6 +127,5 @@ export const sponsors: Sponsor[] = [
     location: "メインホール",
     tags: ["スポンサー", "技術", "スタートアップ"],
     website: "https://www.yamaguchi-innovation.org/",
-    tier: "bronze",
   },
 ];

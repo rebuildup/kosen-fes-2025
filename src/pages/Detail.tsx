@@ -287,17 +287,6 @@ const Detail = () => {
                   {sponsorItem.website}
                 </a>
               </div>
-              <div className="flex items-center gap-2">
-                <span
-                  className="font-medium"
-                  style={{ color: "var(--color-text-primary)" }}
-                >
-                  {t("detail.tier")}:
-                </span>
-                <span style={{ color: "var(--color-text-secondary)" }}>
-                  {sponsorItem.tier}
-                </span>
-              </div>
             </div>
           </div>
         );
@@ -492,7 +481,7 @@ const Detail = () => {
             )}
 
             {/* Campus Map */}
-            {(item.location || item.coordinates) && (
+            {(item.location || item.coordinates) && item.type !== "sponsor" && (
               <div
                 className="rounded-lg p-6 backdrop-blur-md bg-white/10 border border-white/20"
                 style={{ backgroundColor: "var(--color-bg-secondary)" }}
