@@ -39,7 +39,6 @@ export interface StallCore extends ItemCore {
 
 export interface SponsorCore extends ItemCore {
   type: "sponsor";
-  tier: string;
 }
 
 // 詳細データの型
