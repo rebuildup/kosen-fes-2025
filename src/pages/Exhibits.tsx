@@ -18,34 +18,46 @@ const Exhibits = () => {
   const [viewMode, setViewMode] = useState<
     "default" | "compact" | "grid" | "list"
   >("default");
-  const [filteredExhibits, setFilteredExhibits] = useState<Item[]>([]);
+  const [filteredItems, setFilteredItems] = useState<Item[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [typeFilter, setTypeFilter] = useState<"all" | "exhibit" | "stall">(
+    "all"
+  );
   const [categoryFilter, setCategoryFilter] = useState<
     "all" | "exhibits" | "stalls"
   >("all");
 
   // Filter exhibits by category and tags
   useEffect(() => {
-    let filtered: Item[] = [];
+    setIsLoading(true);
 
-    // Get items based on category filter
-    if (categoryFilter === "exhibits") {
-      filtered = dataManager.getAllExhibits() as Item[];
-    } else if (categoryFilter === "stalls") {
-      filtered = dataManager.getAllStalls() as Item[];
-    } else {
-      // "all" - combine both exhibits and stalls
-      filtered = [
-        ...dataManager.getAllExhibits(),
-        ...dataManager.getAllStalls(),
-      ] as Item[];
-    }
+    // Simulate loading delay for demonstration
+    const timer = setTimeout(() => {
+      let filtered: Item[] = [];
 
-    // Apply tag filtering
-    if (selectedTags.length > 0) {
-      filtered = filterItemsByTags(filtered);
-    }
+      // Get items based on category filter
+      if (categoryFilter === "exhibits") {
+        filtered = dataManager.getAllExhibits() as Item[];
+      } else if (categoryFilter === "stalls") {
+        filtered = dataManager.getAllStalls() as Item[];
+      } else {
+        // "all" - combine both exhibits and stalls
+        filtered = [
+          ...dataManager.getAllExhibits(),
+          ...dataManager.getAllStalls(),
+        ] as Item[];
+      }
 
-    setFilteredExhibits(filtered);
+      // Apply tag filtering
+      if (selectedTags.length > 0) {
+        filtered = filterItemsByTags(filtered);
+      }
+
+      setFilteredItems(filtered);
+      setIsLoading(false);
+    }, 500); // 0.5秒のローディング時間
+
+    return () => clearTimeout(timer);
   }, [categoryFilter, selectedTags, filterItemsByTags]);
 
   // Tab options for category filter
@@ -131,12 +143,13 @@ const Exhibits = () => {
             {/* Exhibits Grid */}
             <div className="bg-[var(--bg-primary)] rounded-xl">
               <CardGrid
-                items={filteredExhibits}
+                items={filteredItems}
                 variant={viewMode}
                 showTags={true}
                 showDescription={viewMode === "list"}
                 emptyMessage={getEmptyMessage()}
                 filterType="all"
+                isLoading={isLoading}
               />
             </div>
           </div>

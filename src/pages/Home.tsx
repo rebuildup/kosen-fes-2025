@@ -7,8 +7,6 @@ import UnifiedCard from "../shared/components/ui/UnifiedCard";
 import TagCloud from "../components/common/TagCloud";
 import PillButton from "../components/common/PillButton";
 import { events } from "../data/events";
-import { exhibits } from "../data/exhibits";
-import { stalls } from "../data/stalls";
 
 // ItemCoreをItem型に変換するヘルパー関数
 const convertItemCoreToItem = (itemCore: ItemCore): Item => {
@@ -139,10 +137,6 @@ const Home = () => {
       day: "numeric",
     });
   };
-
-  useEffect(() => {
-    console.log("[CTA背景画像デバッグ] randomCtaImage:", randomCtaImage);
-  }, [randomCtaImage]);
 
   return (
     <div className="min-h-screen bg-[var(--bg-primary)]">

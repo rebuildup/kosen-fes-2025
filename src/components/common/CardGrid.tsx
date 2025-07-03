@@ -2,6 +2,7 @@ import { useMemo, useState, useEffect } from "react";
 import { Item } from "../../types/common";
 import UnifiedCard from "../../shared/components/ui/UnifiedCard";
 import { useLanguage } from "../../context/LanguageContext";
+import LoadingIndicator from "../../shared/components/feedback/LoadingIndicator";
 
 // Update the filterType prop type
 interface CardGridProps {
@@ -15,6 +16,7 @@ interface CardGridProps {
   className?: string;
   columns?: number;
   filterType?: "event" | "exhibit" | "stall" | "sponsor" | "all"; // Add "sponsor" here
+  isLoading?: boolean;
 }
 
 const CardGrid = ({
@@ -28,6 +30,7 @@ const CardGrid = ({
   className = "",
   columns,
   filterType = "all",
+  isLoading = false,
 }: CardGridProps) => {
   const { t } = useLanguage();
 
@@ -104,6 +107,15 @@ const CardGrid = ({
         return "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6";
     }
   };
+
+  // Show loading state
+  if (isLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center py-16">
+        <LoadingIndicator size="large" />
+      </div>
+    );
+  }
 
   // If no items and we have an empty message
   if (filteredItems.length === 0) {

@@ -12,12 +12,21 @@ const Sponsors = () => {
   const [viewMode, setViewMode] = useState<
     "default" | "compact" | "grid" | "list"
   >("default");
-  const [sponsors, setSponsors] = useState<Item[]>([]);
+  const [filteredSponsors, setFilteredSponsors] = useState<Item[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   // Get all sponsors
   useEffect(() => {
-    const allSponsors = dataManager.getAllSponsors() as Item[];
-    setSponsors(allSponsors);
+    setIsLoading(true);
+
+    // Simulate loading delay for demonstration
+    const timer = setTimeout(() => {
+      const allSponsors = dataManager.getAllSponsors() as Item[];
+      setFilteredSponsors(allSponsors);
+      setIsLoading(false);
+    }, 500); // 0.5秒のローディング時間
+
+    return () => clearTimeout(timer);
   }, []);
 
   return (
@@ -51,7 +60,7 @@ const Sponsors = () => {
                   スポンサー一覧
                 </h2>
                 <span className="px-3 py-1 bg-[var(--primary-color)] text-white rounded-full text-sm font-medium">
-                  {sponsors.length} 社
+                  {filteredSponsors.length} 社
                 </span>
               </div>
 
@@ -62,12 +71,13 @@ const Sponsors = () => {
           {/* Sponsors grid */}
           <div className="bg-[var(--bg-primary)] rounded-xl">
             <CardGrid
-              items={sponsors}
+              items={filteredSponsors}
               variant={viewMode}
               showTags={false}
               showDescription={viewMode === "list"}
               emptyMessage={t("sponsors.noSponsors")}
               filterType="all"
+              isLoading={isLoading}
             />
           </div>
         </div>

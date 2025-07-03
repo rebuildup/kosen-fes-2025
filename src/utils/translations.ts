@@ -240,6 +240,7 @@ export const enTranslations: Translations = {
     noItems: "No items found",
     loadMore: "Load More",
     showAll: "Show All",
+    loadingCards: "Loading cards...",
   },
   sponsors: {
     title: "Sponsors",
@@ -487,6 +488,7 @@ export const jaTranslations: Translations = {
     noItems: "アイテムが見つかりません",
     loadMore: "もっと見る",
     showAll: "すべて表示",
+    loadingCards: "カードを読み込み中...",
   },
   sponsors: {
     title: "スポンサー",

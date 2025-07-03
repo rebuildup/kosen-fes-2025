@@ -25,27 +25,36 @@ const Events = () => {
     "default" | "compact" | "grid" | "list"
   >("default");
   const [filteredEvents, setFilteredEvents] = useState<Item[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [dateFilter, setDateFilter] = useState<
     "all" | "2025-11-08" | "2025-11-09"
   >("all");
 
   // Filter events by selected day and tags
   useEffect(() => {
-    // Get all events from dataManager
-    let filtered = dataManager.getAllEvents() as Item[];
+    setIsLoading(true);
 
-    // Filter by day
-    if (dateFilter !== "all") {
-      const day = dateFilter === "2025-11-08" ? "2025-11-08" : "2025-11-09";
-      filtered = filtered.filter((event) => event.date === day);
-    }
+    // Simulate loading delay for demonstration
+    const timer = setTimeout(() => {
+      // Get all events from dataManager
+      let filtered = dataManager.getAllEvents() as Item[];
 
-    // Apply tag filtering
-    if (selectedTags.length > 0) {
-      filtered = filterItemsByTags(filtered);
-    }
+      // Filter by day
+      if (dateFilter !== "all") {
+        const day = dateFilter === "2025-11-08" ? "2025-11-08" : "2025-11-09";
+        filtered = filtered.filter((event) => event.date === day);
+      }
 
-    setFilteredEvents(filtered);
+      // Apply tag filtering
+      if (selectedTags.length > 0) {
+        filtered = filterItemsByTags(filtered);
+      }
+
+      setFilteredEvents(filtered);
+      setIsLoading(false);
+    }, 500); // 0.5秒のローディング時間
+
+    return () => clearTimeout(timer);
   }, [dateFilter, selectedTags, filterItemsByTags]);
 
   // Tab options for date filter
@@ -119,6 +128,7 @@ const Events = () => {
                 showDescription={viewMode === "list"}
                 emptyMessage={t("events.noEventsFound")}
                 filterType="all"
+                isLoading={isLoading}
               />
             </div>
           </div>
