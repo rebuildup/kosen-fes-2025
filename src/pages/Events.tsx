@@ -8,8 +8,14 @@ import CardListToggle from "../components/common/CardListToggle";
 import TagFilter from "../components/common/TagFilter";
 import SelectedTags from "../components/common/SelectedTags";
 import TabButtons from "../components/common/TabButtons";
+import { events } from "../data/events";
 
 // CSS removed - using TailwindCSS classes instead
+
+const getRandomEventImage = () => {
+  const images = events.map((e) => e.imageUrl).filter(Boolean);
+  return images[Math.floor(Math.random() * images.length)] || "";
+};
 
 const Events = () => {
   const { t } = useLanguage();
@@ -53,6 +59,13 @@ const Events = () => {
     <div className="min-h-screen bg-[var(--bg-primary)]">
       {/* Hero Section */}
       <section className="relative overflow-hidden py-16">
+        {/* 透かし画像 */}
+        <img
+          src={getRandomEventImage()}
+          className="absolute inset-0 w-full h-full object-cover opacity-20 z-0 pointer-events-none"
+          alt=""
+          aria-hidden="true"
+        />
         <div
           className="absolute inset-0 opacity-10"
           style={{ background: "var(--instagram-gradient)" }}

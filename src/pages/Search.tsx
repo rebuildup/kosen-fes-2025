@@ -40,7 +40,6 @@ const Search = () => {
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h1 className="text-4xl md:text-5xl font-bold text-[var(--text-primary)] mb-4">
-              <span className="text-4xl mr-3">🔍</span>
               {t("search.title")}
             </h1>
             <p className="text-xl text-[var(--text-secondary)] max-w-2xl mx-auto mb-8">

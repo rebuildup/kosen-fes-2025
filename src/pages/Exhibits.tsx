@@ -8,6 +8,8 @@ import CardListToggle from "../components/common/CardListToggle";
 import TagFilter from "../components/common/TagFilter";
 import SelectedTags from "../components/common/SelectedTags";
 import TabButtons from "../components/common/TabButtons";
+import { exhibits } from "../data/exhibits";
+import { stalls } from "../data/stalls";
 
 const Exhibits = () => {
   const { t } = useLanguage();
@@ -63,10 +65,25 @@ const Exhibits = () => {
     return t("exhibits.noExhibits");
   };
 
+  const getRandomExhibitOrStallImage = () => {
+    const images = [
+      ...exhibits.map((e) => e.imageUrl),
+      ...stalls.map((s) => s.imageUrl),
+    ].filter(Boolean);
+    return images[Math.floor(Math.random() * images.length)] || "";
+  };
+
   return (
     <div className="min-h-screen bg-[var(--bg-primary)]">
       {/* Hero Section */}
       <section className="relative overflow-hidden py-16">
+        {/* 透かし画像 */}
+        <img
+          src={getRandomExhibitOrStallImage()}
+          className="absolute inset-0 w-full h-full object-cover opacity-20 z-0 pointer-events-none"
+          alt=""
+          aria-hidden="true"
+        />
         <div
           className="absolute inset-0 opacity-10"
           style={{ background: "var(--instagram-gradient)" }}

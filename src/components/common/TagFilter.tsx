@@ -67,7 +67,6 @@ const TagFilter = ({ onFilter, compact = false }: TagFilterProps) => {
         <div className="flex gap-2 pb-2 min-w-max">
           {filteredTags.length === 0 ? (
             <div className="text-sm py-4 italic text-[var(--text-secondary)] flex items-center gap-2">
-              <span>🔍</span>
               {searchValue ? t("tags.noTagsFound") : t("tags.searchByTag")}
             </div>
           ) : (

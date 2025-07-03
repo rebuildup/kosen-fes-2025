@@ -111,7 +111,6 @@ const SearchResults = () => {
   if (!searchQuery && selectedTags.length === 0) {
     return (
       <div className="text-center py-12 text-[var(--text-secondary)]">
-        <div className="text-6xl mb-4">🔍</div>
         <p>{t("search.searchPrompt")}</p>
       </div>
     );
@@ -121,7 +120,6 @@ const SearchResults = () => {
   if (totalResults === 0) {
     return (
       <div className="text-center py-12">
-        <div className="text-6xl mb-4">🔍</div>
         <h2 className="text-xl font-semibold text-[var(--text-primary)] mb-2">
           {t("search.noResults")}
         </h2>

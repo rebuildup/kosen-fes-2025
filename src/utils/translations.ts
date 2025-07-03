@@ -53,7 +53,8 @@ export const enTranslations: Translations = {
     location: "Location",
     schoolName: "Ube National College of Technology",
     access: "Access",
-    accessInfo: "15 minute walk from Ube-Shinkawa Station on the JR Ube Line (no parking available)",
+    accessInfo:
+      "15 minute walk from Ube-Shinkawa Station on the JR Ube Line (no parking available)",
     organizer: "Organizer",
   },
 
@@ -322,8 +323,7 @@ export const jaTranslations: Translations = {
   },
   home: {
     title: "宇部高専祭 2025へようこそ",
-    subtitle:
-      "第62回 宇部高専祭2025 テーマはPOP!",
+    subtitle: "第62回 宇部高専祭2025 テーマはPOP!",
     featuredEvents: "注目イベント",
     featuredExhibits: "注目展示",
     popularTags: "人気のタグ",
@@ -347,7 +347,7 @@ export const jaTranslations: Translations = {
   },
   events: {
     title: "イベント",
-    description: "イベントを発見しよう",
+    description: "興味のあるイベントやステージを探そう",
     noEvents: "イベントが見つかりません",
     noEventsFound: "イベントが見つかりません",
     allDays: "すべての日",
@@ -413,8 +413,8 @@ export const jaTranslations: Translations = {
   },
   search: {
     title: "検索",
-    subtitle: "イベント、展示、露店を検索して見つけよう",
-    placeholder: "イベント、展示などを検索",
+    subtitle: "イベント/展示/露店を検索して見つけよう",
+    placeholder: "イベント/展示/露店などを検索",
     noResults: "検索結果が見つかりません",
     searching: "検索中",
     recentSearches: "最近の検索",

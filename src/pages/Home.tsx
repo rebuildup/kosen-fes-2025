@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useLanguage } from "../context/LanguageContext";
 import { useData } from "../context/DataContext";
 import { ItemCore } from "../types/data";
@@ -6,6 +6,9 @@ import { Item } from "../types/common";
 import UnifiedCard from "../shared/components/ui/UnifiedCard";
 import TagCloud from "../components/common/TagCloud";
 import PillButton from "../components/common/PillButton";
+import { events } from "../data/events";
+import { exhibits } from "../data/exhibits";
+import { stalls } from "../data/stalls";
 
 // ItemCoreをItem型に変換するヘルパー関数
 const convertItemCoreToItem = (itemCore: ItemCore): Item => {
@@ -59,6 +62,18 @@ const convertItemCoreToItem = (itemCore: ItemCore): Item => {
   }
 };
 
+// 画像パスをpublicルート基準に変換
+const toPublicImagePath = (url: string) =>
+  url.replace(/^\.?\/?images\//, "/images/");
+
+const getRandomAnyImage = () => {
+  const images = events
+    .map((e) => e.imageUrl)
+    .filter(Boolean)
+    .map(toPublicImagePath);
+  return images[Math.floor(Math.random() * images.length)] || "";
+};
+
 const Home = () => {
   const { t } = useLanguage();
   const { events, exhibits, stalls, getPopularTags } = useData();
@@ -70,6 +85,7 @@ const Home = () => {
   }>({});
   const [popularTags, setPopularTags] = useState<string[]>([]);
   const [allDates, setAllDates] = useState<string[]>([]);
+  const randomCtaImage = useMemo(() => getRandomAnyImage(), []);
 
   // Calculate delay for home page cards
   const calculateHomeDelay = (index: number): number => {
@@ -123,6 +139,10 @@ const Home = () => {
       day: "numeric",
     });
   };
+
+  useEffect(() => {
+    console.log("[CTA背景画像デバッグ] randomCtaImage:", randomCtaImage);
+  }, [randomCtaImage]);
 
   return (
     <div className="min-h-screen bg-[var(--bg-primary)]">
@@ -298,26 +318,25 @@ const Home = () => {
                   </div>
                 </div>
 
-                {/* イベントカードグリッド */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                  {(timelineItems[date] || [])
-                    .slice(0, 8)
-                    .map((item, index) => (
-                      <div
-                        key={`home-timeline-${date}-${item.id}`}
-                        className="animate-card-enter"
-                        style={{
-                          animationDelay: `${calculateHomeDelay(index)}s`,
-                          animationFillMode: "both",
-                        }}
-                      >
-                        <UnifiedCard
-                          item={item}
-                          variant="default"
-                          showTags={true}
-                        />
-                      </div>
-                    ))}
+                {/* イベントカードグリッド → 横スクロールリスト */}
+                <div className="flex gap-6 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-thin">
+                  {(timelineItems[date] || []).map((item, index) => (
+                    <div
+                      key={`home-timeline-${date}-${item.id}`}
+                      className="animate-card-enter snap-start flex-shrink-0 w-72"
+                      style={{
+                        animationDelay: `${calculateHomeDelay(index)}s`,
+                        animationFillMode: "both",
+                      }}
+                    >
+                      <UnifiedCard
+                        item={item}
+                        variant="default"
+                        showTags={true}
+                        showDescription={true}
+                      />
+                    </div>
+                  ))}
                 </div>
 
                 {(timelineItems[date] || []).length > 8 && (
@@ -340,12 +359,22 @@ const Home = () => {
 
       {/* CTA Section */}
       <section className="relative overflow-hidden">
+        {/* 透かし画像 */}
+        <img
+          src={randomCtaImage}
+          className="absolute inset-0 w-full h-full object-cover opacity-25 z-0 pointer-events-none"
+          alt=""
+          aria-hidden="true"
+        />
+        {/* グラデーション（さらに薄め） */}
         <div
-          className="absolute inset-0"
+          className="absolute inset-0 z-10 opacity-50"
           style={{ background: "var(--instagram-gradient)" }}
         ></div>
-        <div className="absolute inset-0 bg-black/20"></div>
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        {/* 黒半透明（さらに薄め） */}
+        <div className="absolute inset-0 bg-black/5 z-20"></div>
+        {/* テキスト・ボタン */}
+        <div className="relative z-30 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="text-center text-white space-y-6">
             <h2 className="text-3xl md:text-4xl font-bold">
               {t("home.ctaTitle")}
@@ -358,7 +387,7 @@ const Home = () => {
                 to="/map"
                 variant="secondary"
                 size="lg"
-                className="bg-white hover:bg-gray-50 text-gray-900 shadow-lg hover:shadow-xl font-semibold w-48 mx-auto sm:mx-0 truncate"
+                className="bg-white hover:bg-gray-50 text-gray-900 shadow-lg hover:shadow-xl font-semibold w-60 mx-auto sm:mx-0 truncate"
               >
                 {t("home.viewMap")}
               </PillButton>
@@ -366,7 +395,7 @@ const Home = () => {
                 to="/bookmarks"
                 variant="secondary"
                 size="lg"
-                className="bg-white/10 hover:bg-white/20 text-white border border-white/30 backdrop-blur-sm w-48 mx-auto sm:mx-0 truncate"
+                className="bg-white/10 hover:bg-white/20 text-white border border-white/30 backdrop-blur-sm w-60 mx-auto sm:mx-0 truncate"
               >
                 {t("home.viewBookmarks")}
               </PillButton>
