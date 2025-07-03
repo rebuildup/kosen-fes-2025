@@ -61,7 +61,7 @@ const convertItemCoreToItem = (itemCore: ItemCore): Item => {
 
 // 画像パスをpublicルート基準に変換
 const toPublicImagePath = (url: string) =>
-  url.replace(/^\.?\/?images\//, "/images/");
+  url.replace(/^\.?\/?images\//, "./images/");
 
 const getRandomAnyImage = () => {
   const images = events
