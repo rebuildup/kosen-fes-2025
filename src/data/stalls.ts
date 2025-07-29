@@ -1,4 +1,7 @@
 // src/data/stalls.ts
+// Copyright (c) 2025 Ube National College of Technology. All Rights Reserved.
+// このファイルの内容は宇部高等専門学校の著作権により保護されています。
+// 許可なく使用することはできません。
 import { Stall } from "../types/common";
 
 export const stalls: Stall[] = [
@@ -212,8 +215,7 @@ export const stalls: Stall[] = [
     id: "stall-15",
     type: "stall",
     title: "ベビーカステラ",
-    description:
-      "2Sによる美味しいベビーカステラをお楽しみください。",
+    description: "2Sによる美味しいベビーカステラをお楽しみください。",
     imageUrl: "./images/stalls/stall-21.jpg",
     date: "2025-11-08",
     time: "10:00 - 18:00",
@@ -227,8 +229,7 @@ export const stalls: Stall[] = [
     id: "stall-16",
     type: "stall",
     title: "綿菓子",
-    description:
-      "男子バレー部による美味しいベビーカステラをお楽しみください。",
+    description: "男子バレー部による美味しいベビーカステラをお楽しみください。",
     imageUrl: "./images/stalls/stall-16.jpg",
     date: "2025-11-08",
     time: "10:00 - 18:00",
@@ -242,8 +243,7 @@ export const stalls: Stall[] = [
     id: "stall-17",
     type: "stall",
     title: "チャーシュー丼",
-    description:
-      "チーム優勝による美味しいベビーカステラをお楽しみください。",
+    description: "チーム優勝による美味しいベビーカステラをお楽しみください。",
     imageUrl: "./images/stalls/stall-17.jpg",
     date: "2025-11-08",
     time: "10:00 - 18:00",
@@ -282,5 +282,4 @@ export const stalls: Stall[] = [
     organizer: "5M",
     products: ["焼きそば", "野菜焼きそば", "特製焼きそば"],
   },
-
 ];

@@ -4,6 +4,10 @@
  * This file consolidates all location coordinate data that was previously
  * scattered across different files. It provides a unified interface for
  * accessing coordinates for buildings, landmarks, and special areas.
+ *
+ * Copyright (c) 2025 Ube National College of Technology. All Rights Reserved.
+ * このファイルの内容は宇部高等専門学校の著作権により保護されています。
+ * 許可なく使用することはできません。
  */
 
 import { Point } from "../types/map";

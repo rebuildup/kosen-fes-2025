@@ -1,4 +1,7 @@
 // src/data/sponsors.ts
+// Copyright (c) 2025 Ube National College of Technology. All Rights Reserved.
+// このファイルの内容は宇部高等専門学校の著作権により保護されています。
+// 許可なく使用することはできません。
 import { Sponsor } from "../types/common";
 
 export const sponsors: Sponsor[] = [

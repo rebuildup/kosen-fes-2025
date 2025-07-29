@@ -17,13 +17,13 @@
 
 ## 技術スタック
 
-- React v19（最新機能と高いパフォーマンス）
+- React v18.2.0（最新機能と高いパフォーマンス）
 - TypeScript（型安全な開発をサポート）
 - Vite（高速なビルド／開発サーバー）
 - React Router（クライアントサイドルーティング）
 - Context API（グローバルな状態管理）
 - GSAP（高度なアニメーションライブラリ）
-- TailwindCSS 3.4.4（ユーティリティファースト CSS フレームワーク）
+- TailwindCSS 4.1.10（ユーティリティファースト CSS フレームワーク）
 - PostCSS（CSS 変換ツール（TailwindCSS 処理用））
 - CSS Variables（テーマ変数によるカスタマイズ）
 
@@ -33,6 +33,11 @@
 kosen-fes-2025/
 ├── public/               # 静的資産・画像
 ├── src/
+│   ├── app/             # アプリケーション設定
+│   │   ├── config/       # アプリ設定
+│   │   ├── providers/    # プロバイダー設定
+│   │   └── router/       # ルーティング設定
+│   ├── assets/          # アセット（アイコン等）
 │   ├── components/      # 再利用可能な UI コンポーネント
 │   │   ├── bookmarks/    # ブックマーク関連
 │   │   ├── common/       # 共通 UI 要素
@@ -40,21 +45,36 @@ kosen-fes-2025/
 │   │   ├── events/       # イベント一覧・詳細
 │   │   ├── exhibits/     # 展示一覧・詳細
 │   │   ├── home/         # ホームページ
+│   │   ├── icons/        # アイコンコンポーネント
 │   │   ├── layout/       # ヘッダー／サイドバー／フッター
 │   │   ├── map/          # 会場マップ
 │   │   ├── schedule/     # スケジュール表示
 │   │   └── search/       # 検索機能
 │   ├── context/         # React Context 定義
-│   ├── data/            # モックデータ（events／exhibits／stalls）
+│   ├── data/            # データ管理
+│   │   ├── buildings.ts   # 建物データ
+│   │   ├── dataManager.ts # データ管理システム
+│   │   ├── events.ts      # イベント情報
+│   │   ├── exhibits.ts    # 展示情報
+│   │   ├── locationCoordinates.ts # 座標データ
+│   │   ├── sponsors.ts    # スポンサー情報
+│   │   ├── stalls.ts      # 屋台情報
+│   │   └── store.ts       # データストア
+│   ├── hooks/           # カスタムフック
 │   ├── pages/           # ページコンポーネント
-│   ├── styles/          # CSSスタイル
-│   │   ├── components/   # コンポーネント別スタイル
-│   │   └── theme/        # テーマ変数／スタイル
+│   ├── shared/          # 共有コンポーネント・ユーティリティ
+│   │   ├── components/   # 共有UIコンポーネント
+│   │   ├── constants/    # 定数定義
+│   │   ├── hooks/        # 共有フック
+│   │   ├── types/        # 共有型定義
+│   │   └── utils/        # 共有ユーティリティ
 │   ├── types/           # TypeScript 型定義
 │   ├── utils/           # ヘルパー関数
 │   ├── App.tsx          # メインアプリコンポーネント
 │   ├── AppProviders.tsx # Context プロバイダー設定
-│   └── main.tsx         # エントリーポイント
+│   ├── index.css        # グローバルスタイル
+│   ├── main.tsx         # エントリーポイント
+│   └── routes.tsx       # ルーティング設定
 ├── index.html           # HTML テンプレート
 ├── package.json         # 依存関係定義
 ├── tsconfig.json        # TypeScript 設定
@@ -76,15 +96,23 @@ kosen-fes-2025/
   - `events.ts` - イベント情報
   - `exhibits.ts` - 展示情報
   - `stalls.ts` - 屋台情報
+  - `sponsors.ts` - スポンサー情報
+  - `buildings.ts` - 建物データ
+  - `locationCoordinates.ts` - 座標データ
+  - `dataManager.ts` - データ管理システム
 - **pages/フォルダ** - ページコンポーネント
   - `Home.tsx` - トップページ
   - `Events.tsx` - イベント一覧ページ
   - `Exhibits.tsx` - 展示・屋台一覧ページ
+  - `Sponsors.tsx` - スポンサー一覧ページ
   - `TimeSchedule.tsx` - タイムテーブルページ
   - `Map.tsx` - インタラクティブマップページ
   - `Detail.tsx` - 詳細表示ページ
   - `Search.tsx` - 検索結果ページ
   - `Bookmarks.tsx` - ブックマーク一覧ページ
+  - `ContentPreview.tsx` - コンテンツプレビューページ
+  - `Error.tsx` - エラーページ
+  - `NotFound.tsx` - 404 ページ
 - **components/common/フォルダ** - Card、Tag、SearchBar などの汎用コンポーネント
 - **utils/フォルダ** - ユーティリティファイル
   - `animations.ts` - GSAP 用アニメーション関数
@@ -143,10 +171,11 @@ kosen-fes-2025/
   type: "event",
   title: "イベントタイトル",
   description: "詳細説明文",
-  imageUrl: "/images/events/event-7.jpg",
+  imageUrl: "./images/events/event-7.jpg",
   date: "2025-11-08",      // YYYY-MM-DD
   time: "14:00 - 15:30",    // HH:MM - HH:MM
   location: "Main Stage",
+  coordinates: { x: 326.4, y: 1039.7 }, // マップ座標
   tags: ["performance", "music"],
   organizer: "主催者名",
   duration: 90,               // 分
@@ -163,10 +192,11 @@ kosen-fes-2025/
   type: "exhibit",
   title: "展示タイトル",
   description: "詳細説明文",
-  imageUrl: "/images/exhibits/exhibit-7.jpg",
+  imageUrl: "./images/exhibits/exhibit-7.jpg",
   date: "2025-11-08",
   time: "10:00 - 18:00",
   location: "Art Building, Gallery Hall",
+  coordinates: { x: 790.2, y: 948.5 }, // マップ座標
   tags: ["art", "digital"],
   creator: "制作者名",
 }
@@ -182,12 +212,34 @@ kosen-fes-2025/
   type: "stall",
   title: "屋台タイトル",
   description: "詳細説明文",
-  imageUrl: "/images/stalls/stall-7.jpg",
+  imageUrl: "./images/stalls/stall-7.jpg",
   date: "2025-11-08",
   time: "11:00 - 20:00",
   location: "Food Court Area, Stall 6",
+  coordinates: { x: 88.0, y: 968.5 }, // マップ座標
   tags: ["food", "japanese"],
-  products: ["Product 1", "Product 2"],
+  organizer: "運営者名",
+  products: ["商品1", "商品2"],
+}
+```
+
+### スポンサー追加
+
+`src/data/sponsors.ts` に以下の形式でオブジェクトを追加してください。
+
+```ts
+{
+  id: "sponsor-10",
+  type: "sponsor",
+  title: "スポンサー名",
+  description: "詳細説明文",
+  imageUrl: "./images/sponsors/sponsor-10.jpg",
+  date: "2025-11-08",
+  time: "10:00 - 18:00",
+  location: "メインホール",
+  tags: ["スポンサー", "技術"],
+  website: "https://example.com/",
+  contactEmail: "contact@example.com", // オプション
 }
 ```
 
@@ -199,10 +251,12 @@ kosen-fes-2025/
    - `/public/images/events/`
    - `/public/images/exhibits/`
    - `/public/images/stalls/`
+   - `/public/images/sponsors/`
 2. ファイル名の例
    - `event-{番号}.jpg`
    - `exhibit-{番号}.jpg`
    - `stall-{番号}.jpg`
+   - `sponsor-{番号}.jpg`
 3. 推奨設定
    - サイズ：800×450px（16:9）
    - 形式：JPG／WebP
@@ -210,12 +264,18 @@ kosen-fes-2025/
 
 ### 会場マップ更新
 
-`src/components/map/MapDisplay.tsx` 内の `locationCoordinates` に新規スポットを追加します。
+`src/data/locationCoordinates.ts` 内の `locationCoordinates` に新規スポットを追加します。
 
 ```ts
-const locationCoordinates: Record<string, { x: number; y: number }> = {
+export const locationCoordinates: Record<string, LocationCoordinate> = {
   // 既存のマッピング,
-  新しいスポット名: { x: 45, y: 65 },
+  新しいスポット名: {
+    id: "new-location",
+    name: "新しいスポット名",
+    coordinates: { x: 45, y: 65 },
+    type: "landmark",
+    category: "general",
+  },
 };
 ```
 
@@ -227,14 +287,13 @@ const locationCoordinates: Record<string, { x: number; y: number }> = {
 
 ### スタイル調整（TailwindCSS 完全移行済み）
 
-**📌 重要**: このプロジェクトは 2025 年 6 月に TailwindCSS へ完全移行済みです。レガシー CSS ファイルは削除され、すべてのスタイリングが TailwindCSS で行われています。
+**📌 重要**: このプロジェクトは TailwindCSS 4.1.10 を使用しており、すべてのスタイリングが TailwindCSS で行われています。
 
-- **TailwindCSS 3.4.4**：すべてのスタイリングを担当
-  - 設定：`tailwind.config.js`（カスタムカラー、アニメーション、ユーティリティを定義）
+- **TailwindCSS 4.1.10**：すべてのスタイリングを担当
+  - 設定：Vite プラグインとして統合（`@tailwindcss/vite`）
   - メイン CSS：`src/index.css`（TailwindCSS ディレクティブとカスタムコンポーネント）
-- **CSS Variables**：テーマ変数は `src/styles/theme.css` で定義（TailwindCSS と並行使用）
-- **グローバルスタイル**：`src/styles/global.css`（スクロールバー、フォーカス、選択のみ）
-- **コンポーネント**：個別の CSS files は廃止、全コンポーネントで TailwindCSS クラスを使用
+- **CSS Variables**：テーマ変数は `src/index.css` で定義
+- **グローバルスタイル**：`src/index.css` で一元管理
 
 ### TailwindCSS 使用方法
 
@@ -291,7 +350,7 @@ const locationCoordinates: Record<string, { x: number; y: number }> = {
 
 ### TailwindCSS カスタム設定
 
-`tailwind.config.js` で定義されているカスタム設定は以下の通りです。
+`src/index.css` で定義されているカスタム設定は以下の通りです。
 
 - カスタムカラー（primary, secondary, accent で各 50-950 シェード）
 - カスタムフォント（Inter（sans）、JetBrains Mono（mono））
@@ -316,7 +375,48 @@ const locationCoordinates: Record<string, { x: number; y: number }> = {
 
 ## ライセンス
 
-MIT ライセンス
+### ソフトウェア部分（MIT ライセンス）
+
+このプロジェクトのソフトウェア部分（ソースコード、設定ファイル、ドキュメント）は MIT ライセンスの下で公開されています。
+
+```
+MIT License
+
+Copyright (c) 2025 Ube National College of Technology
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+```
+
+### コンテンツ部分（All Rights Reserved）
+
+以下のコンテンツは宇部高等専門学校の著作権により保護されており、許可なく使用することはできません：
+
+- **画像ファイル**：`public/images/` ディレクトリ内のすべての画像
+- **コンテンツデータ**：`src/data/` ディレクトリ内の以下のファイル
+  - `events.ts` - イベント情報
+  - `exhibits.ts` - 展示情報
+  - `stalls.ts` - 屋台情報
+  - `sponsors.ts` - スポンサー情報
+  - `buildings.ts` - 建物データ
+  - `locationCoordinates.ts` - 座標データ
+
+これらのコンテンツを使用する場合は、宇部高等専門学校の事前許可が必要です。
 
 ## クレジット
 
