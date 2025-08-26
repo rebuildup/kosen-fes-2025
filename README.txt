@@ -125,3 +125,20 @@ CursorとDify,Gemini Proは学生版が無料で出てたのですぐに導入�
 スポンサー→リンク
 
 全体の委員長とバザー長に送りました。期待薄ですが気長に待ちます
+
+
+図書館のPCから接続＆更新メモ
+1.gitignoreからビルドフォルダ(dist/)を削除 ビルドしてコミット (この部分はリポジトリからCodeSpaceを開いて出来た)
+2.リポジトリをzipでDL 解凍
+3.ポータブルfilezillaをDL (https://portableapps.com/apps/internet/filezilla_portable) 安全性は知りません
+4.ポータブルfilezillaを開く
+5.ファイル>サイトマネージャー>
+    プロトコル: FTP - ファイル転送プロトコル
+    ホスト: kirhogehoge.jp ポート: (空欄)
+    暗号化: 平文のFTPのみを使用する(安全でない)
+    ログオンタイプ: 通常
+    ユーザー: kirhogehogehoge..hogege
+    パスワード: hogehogege
+    >接続
+6.あとはビルドフォルダの中身をDD
+7.成功 実際のサイトを確認(コンソールとか)
