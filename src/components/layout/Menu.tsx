@@ -7,14 +7,16 @@ import ThemeToggleIcon from "../common/ThemeToggleIcon";
 import LanguageToggleIcon from "../common/LanguageToggleIcon";
 import { gsap } from "gsap";
 import { DURATION, EASE } from "../../utils/animations";
-import { HomeIcon } from "../icons/HomeIcon";
-import { EventIcon } from "../icons/EventIcon";
-import { ExhibitIcon } from "../icons/ExhibitIcon";
-import { ScheduleIcon } from "../icons/ScheduleIcon";
-import { MapIcon } from "../icons/MapIcon";
-import { BookmarkIcon } from "../icons/BookmarkIcon";
-import { SearchIcon } from "../icons/SearchIcon";
-import { XIcon } from "../icons/XIcon"; // Let's create this for the close button
+import {
+  HomeIcon,
+  EventIcon,
+  ExhibitIcon,
+  ScheduleIcon,
+  MapIcon,
+  BookmarkIcon,
+  SearchIcon,
+  XIcon,
+} from "../icons";
 
 // Create the XIcon component first
 // Path: src/components/icons/XIcon.tsx

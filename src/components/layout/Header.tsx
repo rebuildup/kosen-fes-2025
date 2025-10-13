@@ -3,11 +3,13 @@ import { NavLink } from "react-router-dom";
 import { useLanguage } from "../../context/LanguageContext";
 import { useTheme } from "../../context/ThemeContext";
 import Logo from "../common/Logo";
-import { HomeIcon } from "../icons/HomeIcon";
-import { EventIcon } from "../icons/EventIcon";
-import { ExhibitIcon } from "../icons/ExhibitIcon";
-import { ScheduleIcon } from "../icons/ScheduleIcon";
-import { MapIcon } from "../icons/MapIcon";
+import {
+  HomeIcon,
+  EventIcon,
+  ExhibitIcon,
+  ScheduleIcon,
+  MapIcon,
+} from "../icons";
 
 const Header = () => {
   const { t } = useLanguage();

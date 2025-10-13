@@ -1,9 +1,19 @@
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
+import {
+  Maximize2,
+  Minimize2,
+  RotateCcw,
+  ZoomIn as ZoomInIcon,
+  ZoomOut as ZoomOutIcon,
+} from "lucide-react";
 
 interface ZoomControlsProps {
   onZoomIn: () => void;
   onZoomOut: () => void;
   onReset: () => void;
+  onToggleFullscreen?: () => void;
+  isFullscreen?: boolean;
+  fullscreenLabel?: string;
   scale: number;
   minScale: number;
   maxScale: number;
@@ -13,11 +23,28 @@ const ZoomControls = ({
   onZoomIn,
   onZoomOut,
   onReset,
+  onToggleFullscreen,
+  isFullscreen = false,
+  fullscreenLabel,
   scale,
   minScale,
   maxScale,
 }: ZoomControlsProps) => {
-  // キーボードショートカット
+  const zoomInDisabled = useMemo(() => scale >= maxScale, [scale, maxScale]);
+  const zoomOutDisabled = useMemo(() => scale <= minScale, [scale, minScale]);
+  //const formattedScale = useMemo(() => `${Math.round(scale * 100)}%`, [scale]);
+
+  const baseZoomButtonClass =
+    "flex items-center justify-center bg-white text-slate-700 transition-colors duration-150 hover:bg-slate-50 active:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40 touch-manipulation h-11 w-11 text-base font-semibold";
+  const baseUtilityButtonClass =
+    "flex items-center justify-center bg-slate-100 text-slate-700 transition-colors duration-150 hover:bg-slate-200 active:bg-slate-300 disabled:cursor-not-allowed disabled:opacity-40 touch-manipulation h-11 w-11 text-sm";
+
+  const zoomGroupClass =
+    "flex flex-col overflow-hidden border border-slate-200 shadow-sm rounded-md bg-white";
+  const utilityGroupClass =
+    "flex flex-col overflow-hidden border border-slate-200 shadow-sm rounded-md bg-slate-100";
+
+  // Keyboard shortcuts for zoom/reset
   useEffect(() => {
     const handleKeyboard = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key === "+") {
@@ -38,106 +65,131 @@ const ZoomControls = ({
     return () => document.removeEventListener("keydown", handleKeyboard);
   }, [onZoomIn, onZoomOut, onReset]);
 
+  const handleFullscreenToggle = () => {
+    if (onToggleFullscreen) {
+      onToggleFullscreen();
+    }
+  };
+
+  const resolvedFullscreenLabel =
+    fullscreenLabel ?? (isFullscreen ? "全画面表示を終了" : "全画面表示");
+
   return (
-    <div className="absolute top-4 right-4 z-10 flex flex-col gap-1 bg-white/95 rounded-lg p-2 shadow-lg border">
-      {/* ズームイン */}
-      <button
-        onClick={onZoomIn}
-        onTouchStart={(e) => {
-          // ReactのtouchStartはpassiveなのでpreventDefault()を削除
-          e.stopPropagation();
-        }}
-        onTouchEnd={(e) => {
-          e.stopPropagation();
-          if (!e.currentTarget.disabled) {
-            onZoomIn();
-          }
-        }}
-        disabled={scale >= maxScale}
-        className="flex items-center justify-center w-8 h-8 rounded text-gray-700 hover:bg-gray-100 active:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors touch-manipulation"
-        title="ズームイン (Ctrl/Cmd + +)"
-        style={{ touchAction: "manipulation" }}
-      >
-        <svg
-          width="16"
-          height="16"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
+    <div
+      className="absolute bottom-4 right-4 z-20 flex w-auto flex-col items-end gap-2"
+      style={{
+        WebkitFontSmoothing: "antialiased",
+        MozOsxFontSmoothing: "grayscale",
+      }}
+    >
+      {/* Zoom controls */}
+      <div className={zoomGroupClass}>
+        <button
+          type="button"
+          onClick={onZoomIn}
+          onTouchStart={(e) => {
+            e.stopPropagation();
+          }}
+          onTouchEnd={(e) => {
+            e.stopPropagation();
+            if (!e.currentTarget.disabled) {
+              onZoomIn();
+            }
+          }}
+          disabled={zoomInDisabled}
+          aria-label="ズームイン (Ctrl/Cmd + +)"
+          className={`${baseZoomButtonClass} border-b border-slate-200`}
+          title="ズームイン (Ctrl/Cmd + +)"
+          style={{ touchAction: "manipulation" }}
         >
-          <circle cx="11" cy="11" r="8" />
-          <path d="m21 21-4.35-4.35" />
-          <line x1="8" y1="11" x2="14" y2="11" />
-          <line x1="11" y1="8" x2="11" y2="14" />
-        </svg>
-      </button>
+          <ZoomInIcon
+            strokeWidth={2.5}
+            className="h-5 w-5"
+            style={{ vectorEffect: "non-scaling-stroke" }}
+          />
+        </button>
 
-      {/* ズームアウト */}
-      <button
-        onClick={onZoomOut}
-        onTouchStart={(e) => {
-          // ReactのtouchStartはpassiveなのでpreventDefault()を削除
-          e.stopPropagation();
-        }}
-        onTouchEnd={(e) => {
-          e.stopPropagation();
-          if (!e.currentTarget.disabled) {
-            onZoomOut();
-          }
-        }}
-        disabled={scale <= minScale}
-        className="flex items-center justify-center w-8 h-8 rounded text-gray-700 hover:bg-gray-100 active:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors touch-manipulation"
-        title="ズームアウト (Ctrl/Cmd + -)"
-        style={{ touchAction: "manipulation" }}
-      >
-        <svg
-          width="16"
-          height="16"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
+        <button
+          type="button"
+          onClick={onZoomOut}
+          onTouchStart={(e) => {
+            e.stopPropagation();
+          }}
+          onTouchEnd={(e) => {
+            e.stopPropagation();
+            if (!e.currentTarget.disabled) {
+              onZoomOut();
+            }
+          }}
+          disabled={zoomOutDisabled}
+          aria-label="ズームアウト (Ctrl/Cmd + -)"
+          className={baseZoomButtonClass}
+          title="ズームアウト (Ctrl/Cmd + -)"
+          style={{ touchAction: "manipulation" }}
         >
-          <circle cx="11" cy="11" r="8" />
-          <path d="m21 21-4.35-4.35" />
-          <line x1="8" y1="11" x2="14" y2="11" />
-        </svg>
-      </button>
+          <ZoomOutIcon
+            strokeWidth={2.5}
+            className="h-5 w-5"
+            style={{ vectorEffect: "non-scaling-stroke" }}
+          />
+        </button>
+      </div>
 
-      {/* リセット */}
-      <button
-        onClick={onReset}
-        onTouchStart={(e) => {
-          // ReactのtouchStartはpassiveなのでpreventDefault()を削除
-          e.stopPropagation();
-        }}
-        onTouchEnd={(e) => {
-          e.stopPropagation();
-          onReset();
-        }}
-        className="flex items-center justify-center w-8 h-8 rounded text-gray-700 hover:bg-gray-100 active:bg-gray-200 transition-colors touch-manipulation"
-        title="リセット (Ctrl/Cmd + 0)"
-        style={{ touchAction: "manipulation" }}
-      >
-        <svg
-          width="16"
-          height="16"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
+      {/* Reset & scale */}
+      <div className={utilityGroupClass}>
+        <button
+          type="button"
+          onClick={onReset}
+          onTouchStart={(e) => {
+            e.stopPropagation();
+          }}
+          onTouchEnd={(e) => {
+            e.stopPropagation();
+            onReset();
+          }}
+          aria-label="リセット (Ctrl/Cmd + 0)"
+          className={`${baseUtilityButtonClass} border-b border-slate-100`}
+          title="リセット (Ctrl/Cmd + 0)"
+          style={{ touchAction: "manipulation" }}
         >
-          <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />
-          <path d="M21 3v5h-5" />
-          <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" />
-          <path d="M3 21v-5h5" />
-        </svg>
-      </button>
+          <RotateCcw
+            strokeWidth={2.5}
+            className="h-5 w-5"
+            style={{ vectorEffect: "non-scaling-stroke" }}
+          />
+        </button>
 
-      {/* ズーム倍率表示 */}
-      <div className="flex items-center justify-center w-8 h-6 text-xs font-medium text-gray-600 bg-gray-50 rounded mt-1">
-        {Math.round(scale * 100)}%
+        {onToggleFullscreen && (
+          <button
+            type="button"
+            onClick={handleFullscreenToggle}
+            onTouchStart={(e) => {
+              e.stopPropagation();
+            }}
+            onTouchEnd={(e) => {
+              e.stopPropagation();
+              handleFullscreenToggle();
+            }}
+            aria-label={resolvedFullscreenLabel}
+            className={baseUtilityButtonClass}
+            title={resolvedFullscreenLabel}
+            style={{ touchAction: "manipulation" }}
+          >
+            {isFullscreen ? (
+              <Minimize2
+                strokeWidth={2.5}
+                className="h-5 w-5"
+                style={{ vectorEffect: "non-scaling-stroke" }}
+              />
+            ) : (
+              <Maximize2
+                strokeWidth={2.5}
+                className="h-5 w-5"
+                style={{ vectorEffect: "non-scaling-stroke" }}
+              />
+            )}
+          </button>
+        )}
       </div>
     </div>
   );

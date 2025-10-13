@@ -87,13 +87,6 @@ const TagFilter = ({ onFilter, compact = false }: TagFilterProps) => {
           )}
         </div>
       </div>
-
-      <div className="mt-3 pt-3 border-t border-[var(--border-color)]">
-        <div className="text-xs text-[var(--text-secondary)] flex items-center gap-1">
-          <span>💡</span>
-          {t("search.tagSearchHint")}
-        </div>
-      </div>
     </div>
   );
 };

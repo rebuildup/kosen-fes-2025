@@ -239,7 +239,11 @@
       0 2px 4px -1px rgba(0, 0, 0, 0.06);
   }
 
-  :root[data-theme="dark"] .card:hover,
+  :root[data-theme="dark"] .card:hover {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3),
+      0 2px 4px -1px rgba(0, 0, 0, 0.2);
+  }
+
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme]) .card:hover {
       box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3),
@@ -552,17 +556,14 @@
     will-change: transform;
 
     /* 最高品質レンダリング設定 */
-    shape-rendering: crispEdges;
+    shape-rendering: geometricPrecision;
     text-rendering: optimizeLegibility;
-    image-rendering: -webkit-optimize-contrast;
-    image-rendering: -moz-crisp-edges;
-    image-rendering: crisp-edges;
-    image-rendering: pixelated;
+    image-rendering: auto;
 
     /* フォント最適化 */
-    font-smooth: never;
-    -webkit-font-smoothing: subpixel-antialiased;
-    -moz-osx-font-smoothing: auto;
+    font-smooth: auto;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
     font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
     font-variant-numeric: lining-nums;
     font-optical-sizing: auto;
@@ -999,7 +1000,10 @@
     background-color: rgba(255, 255, 255, 0.8);
   }
 
-  :root[data-theme="dark"] .header-blur,
+  :root[data-theme="dark"] .header-blur {
+    background-color: rgba(21, 32, 43, 0.8);
+  }
+
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme]) .header-blur {
       background-color: rgba(21, 32, 43, 0.8);
@@ -1468,8 +1472,8 @@
     font-style: normal;
     letter-spacing: -0.01em;
     text-rendering: optimizeLegibility;
-    -webkit-font-smoothing: subpixel-antialiased;
-    -moz-osx-font-smoothing: auto;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
     font-feature-settings: "kern" 1, "liga" 1, "calt" 1, "ss01" 1;
     font-variant-numeric: lining-nums;
     font-optical-sizing: auto;
@@ -1480,7 +1484,7 @@
 
   /* マップマーカー専用最適化 */
   .map-marker-ultra-quality {
-    shape-rendering: crispEdges;
+    shape-rendering: geometricPrecision;
     vector-effect: non-scaling-stroke;
     stroke-linejoin: round;
     stroke-linecap: round;

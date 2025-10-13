@@ -42,6 +42,9 @@ const splitEventData = (event: any): { core: EventCore; details: any } => ({
     imageUrl: event.imageUrl,
     organizer: event.organizer,
     duration: event.duration,
+    showOnMap: event.showOnMap,
+    showOnSchedule: event.showOnSchedule,
+    dayAvailability: event.dayAvailability,
   },
   details: {
     description: event.description,

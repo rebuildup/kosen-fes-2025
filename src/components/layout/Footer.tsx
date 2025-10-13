@@ -1,12 +1,14 @@
 import { NavLink } from "react-router-dom";
 import { useLanguage } from "../../context/LanguageContext";
 import { MutableRefObject } from "react";
-import { HomeIcon } from "../icons/HomeIcon";
-import { EventIcon } from "../icons/EventIcon";
-import { ExhibitIcon } from "../icons/ExhibitIcon";
-import { ScheduleIcon } from "../icons/ScheduleIcon";
-import { MapIcon } from "../icons/MapIcon";
-import { MenuIcon } from "../icons/MenuIcon";
+import {
+  HomeIcon,
+  EventIcon,
+  ExhibitIcon,
+  ScheduleIcon,
+  MapIcon,
+  MenuIcon,
+} from "../icons";
 
 interface FooterProps {
   setMenuOpen: (open: boolean) => void;

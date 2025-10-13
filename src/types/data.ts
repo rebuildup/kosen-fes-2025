@@ -26,6 +26,9 @@ export interface EventCore extends ItemCore {
   type: "event";
   organizer: string;
   duration: number;
+  showOnMap: boolean;
+  showOnSchedule: boolean;
+  dayAvailability: "day1" | "day2" | "both";
 }
 
 export interface ExhibitCore extends ItemCore {
@@ -113,6 +116,9 @@ export interface Event extends BaseEntity {
   location: string;
   organizer: string;
   duration: number;
+  showOnMap: boolean;
+  showOnSchedule: boolean;
+  dayAvailability: "day1" | "day2" | "both";
 }
 
 // 展示関連の型

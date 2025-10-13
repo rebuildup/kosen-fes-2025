@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useLanguage } from "../context/LanguageContext";
 import { useTag } from "../context/TagContext";
 import { dataManager } from "../data/dataManager";
@@ -23,6 +23,17 @@ const Exhibits = () => {
   const [categoryFilter, setCategoryFilter] = useState<
     "all" | "exhibits" | "stalls"
   >("all");
+  // Choose a random hero image from exhibits or stalls. Define the function
+  // before it's used to avoid TDZ (temporal dead zone) errors.
+  function getRandomExhibitOrStallImage() {
+    const images = [
+      ...exhibits.map((e) => e.imageUrl),
+      ...stalls.map((s) => s.imageUrl),
+    ].filter(Boolean as any);
+    return images[Math.floor(Math.random() * images.length)] || "";
+  }
+
+  const heroImage = useMemo(() => getRandomExhibitOrStallImage(), []);
 
   // Filter exhibits by category and tags
   useEffect(() => {
@@ -74,13 +85,7 @@ const Exhibits = () => {
     return t("exhibits.noExhibits");
   };
 
-  const getRandomExhibitOrStallImage = () => {
-    const images = [
-      ...exhibits.map((e) => e.imageUrl),
-      ...stalls.map((s) => s.imageUrl),
-    ].filter(Boolean);
-    return images[Math.floor(Math.random() * images.length)] || "";
-  };
+  // getRandomExhibitOrStallImage defined above
 
   return (
     <div className="min-h-screen bg-[var(--bg-primary)]">
@@ -88,7 +93,7 @@ const Exhibits = () => {
       <section className="relative overflow-hidden py-16">
         {/* 透かし画像 */}
         <img
-          src={getRandomExhibitOrStallImage()}
+          src={heroImage}
           className="absolute inset-0 w-full h-full object-cover opacity-20 z-0 pointer-events-none"
           alt=""
           aria-hidden="true"

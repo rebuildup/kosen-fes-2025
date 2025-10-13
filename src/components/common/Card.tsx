@@ -7,9 +7,7 @@ import Tag from "./Tag";
 import ItemTypeIcon from "./ItemTypeIcon";
 import { gsap } from "gsap";
 import { DURATION, EASE } from "../../utils/animations";
-import { TimeIcon } from "../icons/TimeIcon";
-import { LocationIcon } from "../icons/LocationIcon";
-import { PeopleIcon } from "../icons/PeopleIcon";
+import { TimeIcon, LocationIcon, PeopleIcon } from "../icons";
 
 interface CardProps {
   item: Item;

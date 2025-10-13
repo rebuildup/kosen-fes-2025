@@ -1,0 +1,15 @@
+[
+  {
+    "id": "sponsor-1",
+    "type": "sponsor",
+    "title": "スポンサー",
+    "description": "宇部市を拠点とする技術系企業で、技術教育とイノベーションをサポートしています。",
+    "imageUrl": "./images/sponsors/sponsor-1.jpg",
+    "date": "2025-11-08",
+    "time": "10:00 - 18:00",
+    "location": "スポンサー",
+    "tags": ["スポンサー", "技術", "産業"],
+    "website": "https://www.ube-technology.co.jp/",
+    "contactEmail": "info@ube-technology.co.jp"
+  }
+]

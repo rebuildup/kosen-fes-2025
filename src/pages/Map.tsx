@@ -1,5 +1,5 @@
 // src/pages/Map.tsx
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { useLanguage } from "../context/LanguageContext";
 import { useTag } from "../context/TagContext";
 import { events } from "../data/events";
@@ -27,61 +27,41 @@ const Map = () => {
   const { t } = useLanguage();
   const { filterItemsByTags, selectedTags } = useTag();
 
-  const [filteredItems, setFilteredItems] = useState<NonSponsorItem[]>([]);
+  const mapHeight = "70vh";
   const [hoveredLocation, setHoveredLocation] = useState<string | null>(null);
   const [selectedLocation, setSelectedLocation] = useState<string | null>(null);
-  const [locationItems, setLocationItems] = useState<
-    Record<string, NonSponsorItem[]>
-  >({});
-
-  // Get all unique locations - memoize to prevent unnecessary re-renders
+  const mapEvents = useMemo(
+    () => events.filter((event) => event.showOnMap),
+    []
+  );
+  const baseItems = useMemo<NonSponsorItem[]>(
+    () => [...mapEvents, ...exhibits, ...stalls],
+    [mapEvents]
+  );
   const allLocations = useMemo(
-    () => [
-      ...new Set(
-        [...events, ...exhibits, ...stalls].map((item) => item.location)
-      ),
-    ],
-    [] // 空の依存配列でlocation listを安定化
+    () => [...new Set(baseItems.map((item) => item.location))],
+    [baseItems]
   );
-
-  // メモ化されたフィルタリング関数
-  const memoizedFilterItemsByTags = useCallback(
-    (items: Item[]) => {
-      if (selectedTags.length === 0) return items;
-      return filterItemsByTags(items);
-    },
-    [selectedTags, filterItemsByTags]
-  );
-
-  // Group items by location
-  useEffect(() => {
-    // Start with only events, exhibits, and stalls (no sponsors)
-    const baseItems: NonSponsorItem[] = [...events, ...exhibits, ...stalls];
-    let itemsToFilter = baseItems;
-
-    // Apply tag filtering if needed
-    if (selectedTags.length > 0) {
-      // Filter items and ensure we only keep non-sponsor items
-      const filteredByTags = memoizedFilterItemsByTags(baseItems);
-      itemsToFilter = filteredByTags.filter(isNonSponsorItem);
+  const filteredItems = useMemo(() => {
+    if (selectedTags.length === 0) {
+      return baseItems;
     }
-
-    setFilteredItems(itemsToFilter);
-
-    // Group items by location
-    const groupedByLocation: Record<string, NonSponsorItem[]> = {};
+    return filterItemsByTags(baseItems).filter(isNonSponsorItem);
+  }, [baseItems, selectedTags, filterItemsByTags]);
+  const locationItems = useMemo(() => {
+    const grouped: Record<string, NonSponsorItem[]> = {};
 
     allLocations.forEach((location) => {
-      const itemsAtLocation = itemsToFilter.filter(
+      const itemsAtLocation = filteredItems.filter(
         (item) => item.location === location
       );
       if (itemsAtLocation.length > 0) {
-        groupedByLocation[location] = itemsAtLocation;
+        grouped[location] = itemsAtLocation;
       }
     });
 
-    setLocationItems(groupedByLocation);
-  }, [selectedTags, memoizedFilterItemsByTags, allLocations]);
+    return grouped;
+  }, [allLocations, filteredItems]);
 
   // Handle location hover
   const handleLocationHover = useCallback((location: string | null) => {
@@ -159,7 +139,11 @@ const Map = () => {
                   {/* Map Display - Larger size */}
                   <div
                     className="map-container relative m-4"
-                    style={{ minHeight: "70vh" }}
+                    style={{
+                      minHeight: mapHeight,
+                      backgroundColor: "var(--color-bg-secondary)",
+                      borderColor: "var(--color-border-primary)",
+                    }}
                   >
                     <VectorMap
                       mode="display"
@@ -180,7 +164,7 @@ const Map = () => {
                           onClick: () => {},
                           onHover: () => {},
                         }))}
-                      height="70vh"
+                      height={mapHeight}
                       className="rounded-lg"
                       maxZoom={8}
                       minZoom={0.3}
@@ -211,3 +195,7 @@ const Map = () => {
 };
 
 export default Map;
+
+
+
+

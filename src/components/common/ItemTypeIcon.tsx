@@ -1,8 +1,5 @@
 import { ItemType } from "../../types/common";
-import { EventIcon } from "../icons/EventIcon";
-import { ExhibitIcon } from "../icons/ExhibitIcon";
-import { MapIcon } from "../icons/MapIcon";
-import { SponsorIcon } from "../icons/SponsorIcon";
+import { EventIcon, ExhibitIcon, MapIcon, SponsorIcon } from "../icons";
 
 interface ItemTypeIconProps {
   type: ItemType;

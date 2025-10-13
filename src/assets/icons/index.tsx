@@ -36,19 +36,4 @@ export const Icon: React.FC<React.SVGProps<SVGSVGElement> & IconProps> = ({
   );
 };
 
-export { AlertIcon } from "../../components/icons/AlertIcon";
-export { BookmarkIcon } from "../../components/icons/BookmarkIcon";
-export { EventIcon } from "../../components/icons/EventIcon";
-export { ExhibitIcon } from "../../components/icons/ExhibitIcon";
-export { HomeIcon } from "../../components/icons/HomeIcon";
-export { LocationIcon } from "../../components/icons/LocationIcon";
-export { MapIcon } from "../../components/icons/MapIcon";
-export { MenuIcon } from "../../components/icons/MenuIcon";
-export { MoonIcon } from "../../components/icons/MoonIcon";
-export { PeopleIcon } from "../../components/icons/PeopleIcon";
-export { ScheduleIcon } from "../../components/icons/ScheduleIcon";
-export { SearchIcon } from "../../components/icons/SearchIcon";
-export { SponsorIcon } from "../../components/icons/SponsorIcon";
-export { SunIcon } from "../../components/icons/SunIcon";
-export { TimeIcon } from "../../components/icons/TimeIcon";
-export { XIcon } from "../../components/icons/XIcon";
+export * from "../../components/icons";

@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { ArrowRight } from "lucide-react";
 
 interface PillButtonProps {
   to?: string;
@@ -35,8 +36,8 @@ const PillButton = ({
     inline-flex items-center gap-3 rounded-full font-semibold 
     transition-all duration-300 focus:outline-none focus:ring-2 
     focus:ring-offset-2 disabled:opacity-50 
-    disabled:cursor-not-allowed transform hover:scale-105
-    group shadow-md hover:shadow-lg glass-button glass-interactive
+    disabled:cursor-not-allowed transform
+    group shadow-md glass-button glass-interactive
     ${sizeClasses[size]} ${className}
   `;
 
@@ -69,8 +70,8 @@ const PillButton = ({
 
   // Enhanced arrow icon with animation
   const ArrowIcon = () => (
-    <span className="transition-transform duration-200 group-hover:translate-x-1 ml-1 flex-shrink-0">
-      →
+    <span className="ml-1/2 flex-shrink-0">
+      <ArrowRight size={16} />
     </span>
   );
 

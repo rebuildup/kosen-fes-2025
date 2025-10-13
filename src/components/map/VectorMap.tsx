@@ -5,10 +5,21 @@ import React, {
   useEffect,
   useMemo,
 } from "react";
+import type { CSSProperties } from "react";
+import type { LucideIcon } from "lucide-react";
 import { CAMPUS_MAP_BOUNDS } from "../../data/buildings";
 import { UnifiedCard } from "../../shared/components/ui/UnifiedCard";
 import { Item } from "../../types/common";
 import ZoomControls from "./ZoomControls";
+import { useLanguage } from "../../context/LanguageContext";
+import { EventIcon, ExhibitIcon, MapIcon } from "../icons";
+
+const ADJUSTED_MAP_BOUNDS = {
+  width: 1100,
+  height: 800,
+  marginX: 50,
+  marginY: 40,
+};
 
 interface Coordinate {
   x: number;
@@ -36,6 +47,15 @@ interface PointCluster {
   count: number;
 }
 
+const POINT_TYPE_ICONS: Record<InteractivePoint["type"], LucideIcon> = {
+  event: EventIcon,
+  exhibit: ExhibitIcon,
+  stall: MapIcon,
+  location: MapIcon,
+};
+
+const LABEL_MAX_LENGTH = 18;
+
 interface VectorMapProps {
   // 基本設定
   mode?: "display" | "detail" | "interactive";
@@ -53,6 +73,10 @@ interface VectorMapProps {
 
   // 設定
   showControls?: boolean;
+  enableFullscreen?: boolean;
+  onToggleFullscreen?: () => void;
+  isFullscreen?: boolean;
+  fullscreenLabel?: string;
   maxZoom?: number;
   minZoom?: number;
   initialZoom?: number; // 追加: 初期ズーム倍率
@@ -64,6 +88,58 @@ interface ViewBox {
   width: number;
   height: number;
 }
+const clamp = (value: number, min: number, max: number) =>
+  Math.max(min, Math.min(max, value));
+
+const computeFittedViewBox = (
+  points: InteractivePoint[],
+  zoom: number
+): ViewBox => {
+  const mapWidth = CAMPUS_MAP_BOUNDS.width;
+  const mapHeight = CAMPUS_MAP_BOUNDS.height;
+  const targetWidth = mapWidth / zoom;
+  const targetHeight = mapHeight / zoom;
+
+  let centerX = mapWidth / 2;
+  let centerY = mapHeight / 2;
+
+  if (points.length > 0) {
+    const xs = points.map((p) => p.coordinates.x);
+    const ys = points.map((p) => p.coordinates.y);
+    const minX = Math.min(...xs);
+    const maxX = Math.max(...xs);
+    const minY = Math.min(...ys);
+    const maxY = Math.max(...ys);
+    centerX = (minX + maxX) / 2;
+    centerY = (minY + maxY) / 2;
+  }
+
+  const horizontalPadding = mapWidth * 0.2;
+  const verticalPadding = mapHeight * 0.2;
+
+  const minX = -horizontalPadding;
+  const maxX = mapWidth + horizontalPadding - targetWidth;
+  const minY = -verticalPadding;
+  const maxY = mapHeight + verticalPadding - targetHeight;
+
+  return {
+    x: clamp(centerX - targetWidth / 2, minX, maxX),
+    y: clamp(centerY - targetHeight / 2, minY, maxY),
+    width: targetWidth,
+    height: targetHeight,
+  };
+};
+
+const resolveInitialViewBox = (
+  points: InteractivePoint[],
+  mode: VectorMapProps["mode"],
+  zoom: number
+): ViewBox => {
+  if (mode === "display" && points.length > 0) {
+    return computeFittedViewBox(points, zoom);
+  }
+  return computeFittedViewBox([], zoom);
+};
 
 const VectorMap: React.FC<VectorMapProps> = ({
   mode = "display",
@@ -75,28 +151,32 @@ const VectorMap: React.FC<VectorMapProps> = ({
   onPointHover,
   onMapClick,
   showControls = true,
+  enableFullscreen = true,
+  onToggleFullscreen,
+  isFullscreen,
+  fullscreenLabel,
   maxZoom = 10,
   minZoom = 0.1,
   initialZoom = 1, // 追加: デフォルト値
 }) => {
+  const { t } = useLanguage();
   const svgRef = useRef<SVGSVGElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const [internalFullscreen, setInternalFullscreen] = useState(false);
+  const [placeholderHeight, setPlaceholderHeight] = useState<number | null>(
+    null
+  );
 
-  // マップの実際の範囲に合わせた調整済み境界
-  // 削除した右側屋根部分を考慮して幅を1100に調整、上下左右に適度な余白を追加
-  const ADJUSTED_MAP_BOUNDS = {
-    width: 1100, // 右側を削除したため幅を縮小
-    height: 800, // 高さも適度に調整
-    marginX: 50, // 左右の余白
-    marginY: 40, // 上下の余白
-  };
+  const fullscreenEnabled = enableFullscreen !== false;
+  const resolvedFullscreen =
+    typeof isFullscreen === "boolean" ? isFullscreen : internalFullscreen;
+  const resolvedFullscreenLabel =
+    fullscreenLabel ??
+    (resolvedFullscreen ? t("map.exitFullscreen") : t("map.enterFullscreen"));
 
-  const [viewBox, setViewBox] = useState<ViewBox>({
-    x: 0,
-    y: 0,
-    width: CAMPUS_MAP_BOUNDS.width / initialZoom, // 初期ズーム倍率を反映
-    height: CAMPUS_MAP_BOUNDS.height / initialZoom, // 初期ズーム倍率を反映
-  });
+  const [viewBox, setViewBox] = useState<ViewBox>(() =>
+    resolveInitialViewBox(points, mode, initialZoom)
+  );
 
   // Interaction state
   const [isDragging, setIsDragging] = useState(false);
@@ -106,7 +186,51 @@ const VectorMap: React.FC<VectorMapProps> = ({
 
   // Touch state for mobile
   const [lastTapTime, setLastTapTime] = useState<number>(0);
-  const [currentZoomLevel, setCurrentZoomLevel] = useState<number>(initialZoom); // 初期ズーム倍率を反映
+  const [currentZoomLevel, setCurrentZoomLevel] = useState<number>(initialZoom);
+
+  const handleFullscreenToggle = useCallback(() => {
+    if (!fullscreenEnabled) {
+      return;
+    }
+
+    if (!resolvedFullscreen && containerRef.current) {
+      const rect = containerRef.current.getBoundingClientRect();
+      if (rect.height > 0) {
+        setPlaceholderHeight(rect.height);
+      }
+    }
+
+    if (onToggleFullscreen) {
+      onToggleFullscreen();
+      return;
+    }
+
+    setInternalFullscreen((prev) => !prev);
+  }, [fullscreenEnabled, onToggleFullscreen, resolvedFullscreen]);
+
+  useEffect(() => {
+    const derivedZoom = CAMPUS_MAP_BOUNDS.width / viewBox.width;
+    setCurrentZoomLevel(derivedZoom);
+  }, [viewBox.width]);
+
+  useEffect(() => {
+    if (resolvedFullscreen) {
+      return;
+    }
+
+    if (containerRef.current) {
+      const rect = containerRef.current.getBoundingClientRect();
+      if (rect.height > 0) {
+        setPlaceholderHeight((prev) => {
+          if (prev === null || Math.abs(prev - rect.height) > 1) {
+            return rect.height;
+          }
+          return prev;
+        });
+      }
+    }
+  }, [resolvedFullscreen, height]);
+
   const [isShiftPressed, setIsShiftPressed] = useState<boolean>(false);
 
   // Touch interaction state
@@ -265,13 +389,8 @@ const VectorMap: React.FC<VectorMapProps> = ({
   }, [minZoom, ADJUSTED_MAP_BOUNDS]);
 
   const resetView = useCallback(() => {
-    setViewBox({
-      x: 0,
-      y: 0,
-      width: CAMPUS_MAP_BOUNDS.width,
-      height: CAMPUS_MAP_BOUNDS.height,
-    });
-  }, []);
+    setViewBox(resolveInitialViewBox(points, mode, initialZoom));
+  }, [points, mode, initialZoom]);
 
   const zoomToPoint = useCallback(
     (point: Coordinate, zoomLevel: number = 2) => {
@@ -1290,34 +1409,7 @@ const VectorMap: React.FC<VectorMapProps> = ({
   const autoFitToPoints = useCallback(() => {
     if (points.length === 0) return;
 
-    // Find the bounding box of all points
-    const pointCoords = points.map((p) => p.coordinates);
-    const minX = Math.min(...pointCoords.map((p) => p.x));
-    const maxX = Math.max(...pointCoords.map((p) => p.x));
-    const minY = Math.min(...pointCoords.map((p) => p.y));
-    const maxY = Math.max(...pointCoords.map((p) => p.y));
-
-    const centerX = (minX + maxX) / 2;
-    const centerY = (minY + maxY) / 2;
-
-    // Use initial zoom for consistent scaling
-    const optimalScale = initialZoom;
-
-    // Set the view to fit all points
-    const targetWidth = CAMPUS_MAP_BOUNDS.width / optimalScale;
-    const targetHeight = CAMPUS_MAP_BOUNDS.height / optimalScale;
-
-    setViewBox({
-      x: centerX - targetWidth / 2,
-      y: centerY - targetHeight / 2,
-      width: targetWidth,
-      height: targetHeight,
-    });
-
-    setCurrentZoomLevel(optimalScale);
-    if (initialZoom !== optimalScale) {
-      alert(`初期ズーム: ${initialZoom}, 調整後ズーム: ${optimalScale}`);
-    }
+    setViewBox(computeFittedViewBox(points, initialZoom));
   }, [points, initialZoom]);
 
   // Auto zoom to highlight point (for detail pages)
@@ -1336,12 +1428,11 @@ const VectorMap: React.FC<VectorMapProps> = ({
   // Auto fit to all points (for map page)
   useEffect(() => {
     if (mode === "display" && points.length > 0) {
-      const timer = setTimeout(() => {
-        autoFitToPoints();
-      }, 300);
-      return () => clearTimeout(timer);
+      const frame = requestAnimationFrame(() => autoFitToPoints());
+      return () => cancelAnimationFrame(frame);
     }
-  }, [mode, autoFitToPoints]);
+    return undefined;
+  }, [mode, points.length, autoFitToPoints]);
 
   // Reset auto zoom flag when highlightPoint changes
   useEffect(() => {
@@ -1377,6 +1468,14 @@ const VectorMap: React.FC<VectorMapProps> = ({
     // ズームレベルが1.5以上の時のみテキストを表示
     return zoomLevel >= 1.5;
   }, [viewBox.width, ADJUSTED_MAP_BOUNDS, mode]);
+
+  const getLabelDirection = useCallback(
+    (x: number): "left" | "right" => {
+      const viewCenterX = viewBox.x + viewBox.width / 2;
+      return x > viewCenterX ? "left" : "right";
+    },
+    [viewBox.x, viewBox.width]
+  );
 
   // クラスタリング機能
   const CLUSTER_DISTANCE_THRESHOLD = 35; // ピクセル単位（50→35にさらに減少でクラスタリングを積極化）
@@ -1445,6 +1544,32 @@ const VectorMap: React.FC<VectorMapProps> = ({
 
   const clusters = useMemo(() => createClusters(), [createClusters]);
 
+  useEffect(() => {
+    if (!fullscreenEnabled || !resolvedFullscreen) {
+      return;
+    }
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        if (onToggleFullscreen) {
+          onToggleFullscreen();
+        } else {
+          setInternalFullscreen(false);
+        }
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [fullscreenEnabled, onToggleFullscreen, resolvedFullscreen]);
+
   // SVGのクリーンアップとレンダリング最適化
   useEffect(() => {
     // コンポーネントアンマウント時のクリーンアップ
@@ -1455,54 +1580,93 @@ const VectorMap: React.FC<VectorMapProps> = ({
     };
   }, []);
 
-  return (
-    <div
-      ref={containerRef}
-      className={`relative overflow-hidden vector-map-container ${className}`}
-      style={{
-        height,
-        cursor: isDragging ? "grabbing" : isShiftPressed ? "zoom-in" : "grab",
-        touchAction: "manipulation", // ズームとパンを許可しつつページスクロールも有効
-        userSelect: "none",
-        WebkitUserSelect: "none",
-        WebkitTouchCallout: "none",
-        imageRendering: "optimizeQuality" as any,
-        shapeRendering: "geometricPrecision" as any,
-      }}
-    >
-      {/* Controls */}
-      {showControls && (
-        <ZoomControls
-          onZoomIn={zoomIn}
-          onZoomOut={zoomOut}
-          onReset={resetView}
-          scale={CAMPUS_MAP_BOUNDS.width / viewBox.width}
-          minScale={minZoom}
-          maxScale={maxZoom}
-        />
-      )}
+  const placeholderStyle: CSSProperties | undefined = resolvedFullscreen
+    ? placeholderHeight !== null
+      ? { height: `${placeholderHeight}px`, width: "100%" }
+      : height
+      ? { minHeight: height, width: "100%" }
+      : { width: "100%" }
+    : undefined;
 
-      {/* Vector SVG Map */}
-      <svg
-        ref={svgRef}
-        className="w-full h-full"
-        viewBox={`${viewBox.x} ${viewBox.y} ${viewBox.width} ${viewBox.height}`}
-        preserveAspectRatio="xMidYMid meet"
-        onMouseDown={handleMouseDown}
-        onTouchStart={handleTouchStart}
-        onClick={handleSVGClick}
-        onMouseLeave={handleMouseLeave}
-        style={{
-          vectorEffect: "non-scaling-stroke",
-          shapeRendering: "geometricPrecision",
-          textRendering: "geometricPrecision",
-          willChange: "transform",
-          backfaceVisibility: "hidden",
-        }}
+  const containerClassNames = [
+    "relative overflow-hidden vector-map-container",
+    className,
+    resolvedFullscreen ? "rounded-none" : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
+
+  const containerStyle: CSSProperties = {
+    height: resolvedFullscreen ? "100vh" : height,
+    width: resolvedFullscreen ? "100vw" : "100%",
+    maxWidth: resolvedFullscreen ? "100vw" : "100%",
+    cursor: isDragging ? "grabbing" : isShiftPressed ? "zoom-in" : "grab",
+    touchAction: "manipulation",
+    userSelect: "none",
+    WebkitUserSelect: "none",
+    WebkitTouchCallout: "none",
+    imageRendering: "optimizeQuality" as any,
+    shapeRendering: "geometricPrecision" as any,
+    borderRadius: resolvedFullscreen ? 0 : undefined,
+    position: resolvedFullscreen ? "fixed" : undefined,
+    inset: resolvedFullscreen ? 0 : undefined,
+    zIndex: resolvedFullscreen ? 60 : undefined,
+    backgroundColor: resolvedFullscreen
+      ? "var(--color-bg-secondary)"
+      : undefined,
+    boxShadow: resolvedFullscreen
+      ? "0 20px 40px rgba(15, 23, 42, 0.35)"
+      : undefined,
+  };
+
+  return (
+    <>
+      {resolvedFullscreen && (
+        <div aria-hidden="true" className="w-full" style={placeholderStyle} />
+      )}
+      <div
+        ref={containerRef}
+        className={containerClassNames}
+        style={containerStyle}
       >
-        <defs>
-          <style>
-            {`
+        {/* Controls */}
+        {showControls && (
+          <ZoomControls
+            onZoomIn={zoomIn}
+            onZoomOut={zoomOut}
+            onReset={resetView}
+            onToggleFullscreen={
+              fullscreenEnabled ? handleFullscreenToggle : undefined
+            }
+            isFullscreen={resolvedFullscreen}
+            fullscreenLabel={resolvedFullscreenLabel}
+            scale={CAMPUS_MAP_BOUNDS.width / viewBox.width}
+            minScale={minZoom}
+            maxScale={maxZoom}
+          />
+        )}
+
+        {/* Vector SVG Map */}
+        <svg
+          ref={svgRef}
+          className="w-full h-full"
+          viewBox={`${viewBox.x} ${viewBox.y} ${viewBox.width} ${viewBox.height}`}
+          preserveAspectRatio="xMidYMid meet"
+          onMouseDown={handleMouseDown}
+          onTouchStart={handleTouchStart}
+          onClick={handleSVGClick}
+          onMouseLeave={handleMouseLeave}
+          style={{
+            vectorEffect: "non-scaling-stroke",
+            shapeRendering: "geometricPrecision",
+            textRendering: "geometricPrecision",
+            willChange: "transform",
+            backfaceVisibility: "hidden",
+          }}
+        >
+          <defs>
+            <style>
+              {`
               .map-base { fill: #e6e6e6; }
               .map-roof { fill: #b3b3b3; }
               .map-building { fill: gray; }
@@ -1527,454 +1691,491 @@ const VectorMap: React.FC<VectorMapProps> = ({
                 stroke-linejoin: round;
               }
             `}
-          </style>
-        </defs>
+            </style>
+          </defs>
 
-        {/* Base Layer */}
-        <g id="base">
-          <polygon
-            className="map-base"
-            points="709.5134 643.5586 769.4722 667.5421 813.4421 701.5188 835.427 731.4983 975.331 815.4407 1053.2776 809.4448 1079.2598 835.427 1067.268 849.4174 693.5243 835.427 695.523 759.4791 699.5202 637.5627 701.5188 621.5737 717.5079 543.6271 657.549 405.7217 645.5572 411.7176 689.5271 521.6422 695.523 549.623 683.5312 631.5668 679.5339 653.5517 675.5367 821.4366 673.538 831.4297 657.549 835.427 503.6546 831.4297 491.6628 825.4339 487.6655 805.4476 497.6587 321.7789 493.6614 313.7848 169.8835 305.7903 163.8876 309.7875 165.8862 325.7766 447.6929 337.7683 459.6847 349.7601 461.6833 451.6902 67.9534 441.697 69.952 395.7286 57.9602 391.7313 57.9602 365.7491 63.9561 309.7875 75.9479 301.793 77.9465 277.8095 35.9753 281.8067 31.9781 331.7724 37.974 463.682 25.9822 971.3338 13.9904 955.3447 5.9959 933.3598 9.9931 97.9328 9.9931 0 501.6559 0 569.6093 205.8588 725.5024 547.6244 709.5134 643.5586"
-          />
-          <polygon
-            className="map-base"
-            points="459.6847 651.5531 447.6929 661.5463 67.9534 655.5504 65.9548 569.6093 73.9493 463.682 459.6847 477.6724 459.6847 651.5531"
-          />
-          <polygon
-            className="map-base"
-            points="453.6888 961.3406 428.1581 976.6573 242.4325 971.3509 231.841 957.3434 197.8643 959.342 191.8684 969.3352 53.963 967.3365 49.9657 959.342 49.9657 835.427 55.9616 831.4297 59.9589 815.4407 65.9548 691.5257 77.9465 681.5326 169.8835 681.5326 249.8286 689.5271 375.7423 689.5271 445.6943 693.5243 455.6875 703.5175 449.6916 905.379 453.6888 961.3406"
-          />
-          <polygon
-            className="map-base"
-            points="321.7793 1193.1816 315.7834 1193.1816 263.8191 1187.1857 21.9849 1185.1871 0 1169.1981 3.9973 1045.2831 7.9945 1021.2995 23.9836 1009.3077 159.7644 1011.3064 167.8849 1015.3036 171.8821 1023.2981 173.8807 1037.2885 251.8273 1039.2872 275.8108 1043.2844 275.8108 1115.2351 279.8081 1121.231 351.7587 1123.2296 357.7546 1125.2282 359.7533 1129.2255 355.756 1161.2036 337.7683 1173.1953 321.7793 1193.1816"
-          />
-          <polygon
-            className="map-base"
-            points="907.3776 1161.2036 869.4037 1165.2008 695.523 1157.2063 525.6395 1157.2063 483.6683 1097.2474 485.6669 933.3598 491.6628 875.3996 499.6573 865.4064 547.6244 859.4105 727.501 871.4023 905.379 877.3982 911.3749 883.3941 907.3776 1161.2036"
-          />
-          <polygon
-            className="map-base"
-            points="905.379 1289.1158 847.4188 1273.1268 489.6641 1213.1679 455.6875 1165.2008 421.7108 1165.2008 419.7121 1151.2104 437.6998 1149.2118 439.6984 1133.2227 475.6737 1133.2227 481.6696 1145.2145 507.6518 1177.1926 523.6408 1183.1885 881.3955 1201.1761 901.3818 1221.1624 907.3776 1229.1569 905.379 1289.1158"
-          />
-          <polygon
-            className="map-base"
-            points="1099.2461 1245.146 959.342 1249.1432 943.353 1243.1474 941.3543 1065.2694 941.3543 913.3735 945.3516 905.379 953.3461 905.379 1087.2543 923.3667 1105.2419 939.3557 1099.2461 1245.146"
-          />
-          <polygon
-            className="map-base"
-            points="1097.2474 1339.0816 1087.2543 1343.0788 965.3379 1303.1062 951.3475 1283.1199 955.3447 1275.1254 1123.2296 1269.1295 1125.2282 921.3681 1117.2337 905.379 989.3214 891.3886 985.3242 883.3941 991.3201 879.3968 1113.2365 877.3982 1301.1076 1083.257 1097.2474 1339.0816"
-          />
-        </g>
+          {/* Base Layer */}
+          <g id="base">
+            <polygon
+              className="map-base"
+              points="709.5134 643.5586 769.4722 667.5421 813.4421 701.5188 835.427 731.4983 975.331 815.4407 1053.2776 809.4448 1079.2598 835.427 1067.268 849.4174 693.5243 835.427 695.523 759.4791 699.5202 637.5627 701.5188 621.5737 717.5079 543.6271 657.549 405.7217 645.5572 411.7176 689.5271 521.6422 695.523 549.623 683.5312 631.5668 679.5339 653.5517 675.5367 821.4366 673.538 831.4297 657.549 835.427 503.6546 831.4297 491.6628 825.4339 487.6655 805.4476 497.6587 321.7789 493.6614 313.7848 169.8835 305.7903 163.8876 309.7875 165.8862 325.7766 447.6929 337.7683 459.6847 349.7601 461.6833 451.6902 67.9534 441.697 69.952 395.7286 57.9602 391.7313 57.9602 365.7491 63.9561 309.7875 75.9479 301.793 77.9465 277.8095 35.9753 281.8067 31.9781 331.7724 37.974 463.682 25.9822 971.3338 13.9904 955.3447 5.9959 933.3598 9.9931 97.9328 9.9931 0 501.6559 0 569.6093 205.8588 725.5024 547.6244 709.5134 643.5586"
+            />
+            <polygon
+              className="map-base"
+              points="459.6847 651.5531 447.6929 661.5463 67.9534 655.5504 65.9548 569.6093 73.9493 463.682 459.6847 477.6724 459.6847 651.5531"
+            />
+            <polygon
+              className="map-base"
+              points="453.6888 961.3406 428.1581 976.6573 242.4325 971.3509 231.841 957.3434 197.8643 959.342 191.8684 969.3352 53.963 967.3365 49.9657 959.342 49.9657 835.427 55.9616 831.4297 59.9589 815.4407 65.9548 691.5257 77.9465 681.5326 169.8835 681.5326 249.8286 689.5271 375.7423 689.5271 445.6943 693.5243 455.6875 703.5175 449.6916 905.379 453.6888 961.3406"
+            />
+            <polygon
+              className="map-base"
+              points="321.7793 1193.1816 315.7834 1193.1816 263.8191 1187.1857 21.9849 1185.1871 0 1169.1981 3.9973 1045.2831 7.9945 1021.2995 23.9836 1009.3077 159.7644 1011.3064 167.8849 1015.3036 171.8821 1023.2981 173.8807 1037.2885 251.8273 1039.2872 275.8108 1043.2844 275.8108 1115.2351 279.8081 1121.231 351.7587 1123.2296 357.7546 1125.2282 359.7533 1129.2255 355.756 1161.2036 337.7683 1173.1953 321.7793 1193.1816"
+            />
+            <polygon
+              className="map-base"
+              points="907.3776 1161.2036 869.4037 1165.2008 695.523 1157.2063 525.6395 1157.2063 483.6683 1097.2474 485.6669 933.3598 491.6628 875.3996 499.6573 865.4064 547.6244 859.4105 727.501 871.4023 905.379 877.3982 911.3749 883.3941 907.3776 1161.2036"
+            />
+            <polygon
+              className="map-base"
+              points="905.379 1289.1158 847.4188 1273.1268 489.6641 1213.1679 455.6875 1165.2008 421.7108 1165.2008 419.7121 1151.2104 437.6998 1149.2118 439.6984 1133.2227 475.6737 1133.2227 481.6696 1145.2145 507.6518 1177.1926 523.6408 1183.1885 881.3955 1201.1761 901.3818 1221.1624 907.3776 1229.1569 905.379 1289.1158"
+            />
+            <polygon
+              className="map-base"
+              points="1099.2461 1245.146 959.342 1249.1432 943.353 1243.1474 941.3543 1065.2694 941.3543 913.3735 945.3516 905.379 953.3461 905.379 1087.2543 923.3667 1105.2419 939.3557 1099.2461 1245.146"
+            />
+            <polygon
+              className="map-base"
+              points="1097.2474 1339.0816 1087.2543 1343.0788 965.3379 1303.1062 951.3475 1283.1199 955.3447 1275.1254 1123.2296 1269.1295 1125.2282 921.3681 1117.2337 905.379 989.3214 891.3886 985.3242 883.3941 991.3201 879.3968 1113.2365 877.3982 1301.1076 1083.257 1097.2474 1339.0816"
+            />
+          </g>
 
-        {/* Roof Layer */}
-        <g id="roof">
-          <polygon
-            className="map-roof"
-            points="199.8629 797.453 79.9452 793.4558 79.9452 781.464 201.8615 783.4626 199.8629 797.453"
-          />
-          <polygon
-            className="map-roof"
-            points="191.8684 815.4407 77.9465 811.4434 77.9465 799.4517 193.867 801.4503 191.8684 815.4407"
-          />
-          <polygon
-            className="map-roof"
-            points="91.9369 867.4051 131.9095 869.4037 129.9109 881.3955 61.9575 879.3968 59.9589 845.4201 91.9369 849.4174 91.9369 867.4051"
-          />
-          <polygon
-            className="map-roof"
-            points="201.8615 833.4284 199.8629 879.3968 149.8972 877.3982 151.8958 857.4119 95.9342 853.4147 95.9342 839.4243 151.8958 841.4229 153.8944 831.4297 201.8615 833.4284"
-          />
-          <polygon
-            className="map-roof"
-            points="319.7807 817.4393 297.7957 817.4393 297.7957 797.453 319.6326 797.2852 319.7807 817.4393"
-          />
-          <polygon
-            className="map-roof"
-            points="743.4901 911.3749 583.5997 905.379 583.5997 885.3927 745.4887 889.39 743.4901 911.3749"
-          />
-          <polygon
-            className="map-roof"
-            points="731.4983 985.3242 631.5668 981.3269 631.5668 969.3352 733.4969 973.3324 731.4983 985.3242"
-          />
-          <polygon
-            className="map-roof"
-            points="851.416 987.3228 745.4887 985.3242 745.4887 971.3338 851.416 973.3324 851.416 987.3228"
-          />
-          <rect
-            className="map-roof"
-            x="535.6326"
-            y="621.5737"
-            width="31.9781"
-            height="61.9575"
-          />
+          {/* Roof Layer */}
+          <g id="roof">
+            <polygon
+              className="map-roof"
+              points="199.8629 797.453 79.9452 793.4558 79.9452 781.464 201.8615 783.4626 199.8629 797.453"
+            />
+            <polygon
+              className="map-roof"
+              points="191.8684 815.4407 77.9465 811.4434 77.9465 799.4517 193.867 801.4503 191.8684 815.4407"
+            />
+            <polygon
+              className="map-roof"
+              points="91.9369 867.4051 131.9095 869.4037 129.9109 881.3955 61.9575 879.3968 59.9589 845.4201 91.9369 849.4174 91.9369 867.4051"
+            />
+            <polygon
+              className="map-roof"
+              points="201.8615 833.4284 199.8629 879.3968 149.8972 877.3982 151.8958 857.4119 95.9342 853.4147 95.9342 839.4243 151.8958 841.4229 153.8944 831.4297 201.8615 833.4284"
+            />
+            <polygon
+              className="map-roof"
+              points="319.7807 817.4393 297.7957 817.4393 297.7957 797.453 319.6326 797.2852 319.7807 817.4393"
+            />
+            <polygon
+              className="map-roof"
+              points="743.4901 911.3749 583.5997 905.379 583.5997 885.3927 745.4887 889.39 743.4901 911.3749"
+            />
+            <polygon
+              className="map-roof"
+              points="731.4983 985.3242 631.5668 981.3269 631.5668 969.3352 733.4969 973.3324 731.4983 985.3242"
+            />
+            <polygon
+              className="map-roof"
+              points="851.416 987.3228 745.4887 985.3242 745.4887 971.3338 851.416 973.3324 851.416 987.3228"
+            />
+            <rect
+              className="map-roof"
+              x="535.6326"
+              y="621.5737"
+              width="31.9781"
+              height="61.9575"
+            />
 
-          <rect
-            className="map-roof"
-            x="801.4503"
-            y="737.4942"
-            width="27.9808"
-            height="67.9534"
-          />
-          <polygon
-            className="map-roof"
-            points="735.4955 809.4448 703.5175 809.4448 705.5161 747.4873 735.4955 747.4873 735.4955 809.4448"
-          />
-          <polygon
-            className="map-roof"
-            points="759.4791 719.5065 741.4914 719.5065 743.4901 677.5353 759.4791 679.5339 759.4791 719.5065"
-          />
+            <rect
+              className="map-roof"
+              x="801.4503"
+              y="737.4942"
+              width="27.9808"
+              height="67.9534"
+            />
+            <polygon
+              className="map-roof"
+              points="735.4955 809.4448 703.5175 809.4448 705.5161 747.4873 735.4955 747.4873 735.4955 809.4448"
+            />
+            <polygon
+              className="map-roof"
+              points="759.4791 719.5065 741.4914 719.5065 743.4901 677.5353 759.4791 679.5339 759.4791 719.5065"
+            />
 
-          <polygon
-            className="map-roof"
-            points="677.5353 1043.2844 641.56 1043.2844 641.56 1023.2981 661.5463 1023.2981 661.5463 1015.3036 679.5339 1015.3036 677.5353 1043.2844"
-          />
+            <polygon
+              className="map-roof"
+              points="677.5353 1043.2844 641.56 1043.2844 641.56 1023.2981 661.5463 1023.2981 661.5463 1015.3036 679.5339 1015.3036 677.5353 1043.2844"
+            />
 
-          <polygon
-            className="map-roof"
-            points="625.5709 1027.2954 593.5929 1025.2968 593.5929 1015.3036 627.5696 1017.3023 625.5709 1027.2954"
-          />
+            <polygon
+              className="map-roof"
+              points="625.5709 1027.2954 593.5929 1025.2968 593.5929 1015.3036 627.5696 1017.3023 625.5709 1027.2954"
+            />
 
-          <rect
-            className="map-roof"
-            x="565.6121"
-            y="1011.3064"
-            width="21.9849"
-            height="19.9863"
-          />
+            <rect
+              className="map-roof"
+              x="565.6121"
+              y="1011.3064"
+              width="21.9849"
+              height="19.9863"
+            />
 
-          <polygon
-            className="map-roof"
-            points="1071.2652 985.3242 965.3379 985.3242 965.3379 949.3489 1071.2652 953.3461 1071.2652 985.3242"
-          />
+            <polygon
+              className="map-roof"
+              points="1071.2652 985.3242 965.3379 985.3242 965.3379 949.3489 1071.2652 953.3461 1071.2652 985.3242"
+            />
 
-          <polygon
-            className="map-roof"
-            points="743.4901 1041.2858 687.5284 1039.2872 689.5271 1019.3009 743.4901 1021.2995 743.4901 1041.2858"
-          />
-          <polygon
-            className="map-roof"
-            points="797.453 1035.2899 765.475 1035.2899 767.4736 1015.3036 799.4517 1017.3023 797.453 1035.2899"
-          />
-          <polygon
-            className="map-roof"
-            points="895.3859 1037.2885 823.4352 1033.2913 823.4352 1019.3009 895.3859 1023.2981 895.3859 1037.2885"
-          />
-          <polygon
-            className="map-roof"
-            points="907.3776 977.3297 883.3941 977.3297 885.3927 889.39 908.5597 889.823 907.3776 977.3297"
-          />
+            <polygon
+              className="map-roof"
+              points="743.4901 1041.2858 687.5284 1039.2872 689.5271 1019.3009 743.4901 1021.2995 743.4901 1041.2858"
+            />
+            <polygon
+              className="map-roof"
+              points="797.453 1035.2899 765.475 1035.2899 767.4736 1015.3036 799.4517 1017.3023 797.453 1035.2899"
+            />
+            <polygon
+              className="map-roof"
+              points="895.3859 1037.2885 823.4352 1033.2913 823.4352 1019.3009 895.3859 1023.2981 895.3859 1037.2885"
+            />
+            <polygon
+              className="map-roof"
+              points="907.3776 977.3297 883.3941 977.3297 885.3927 889.39 908.5597 889.823 907.3776 977.3297"
+            />
 
-          <polygon
-            className="map-roof"
-            points="881.3955 937.3571 869.4037 937.3571 869.4037 889.39 883.3941 889.39 881.3955 937.3571"
-          />
-          <polygon
-            className="map-roof"
-            points="325.7766 885.3927 309.7875 885.3927 313.7848 867.4051 327.7752 869.4037 325.7766 885.3927"
-          />
-          <polygon
-            className="map-roof"
-            points="347.7615 883.3941 333.7711 883.3941 335.7697 869.4037 349.7601 871.4023 347.7615 883.3941"
-          />
-          <polygon
-            className="map-roof"
-            points="369.7464 885.3927 357.7546 885.3927 357.7546 869.4037 369.7464 871.4023 369.7464 885.3927"
-          />
-          <rect
-            className="map-roof"
-            x="423.7094"
-            y="907.3776"
-            width="93.9356"
-            height="11.9918"
-          />
-          <polygon
-            className="map-roof"
-            points="217.8506 705.5161 157.8917 699.5202 159.8903 685.5298 219.8492 689.5271 217.8506 705.5161"
-          />
-          <polygon
-            className="map-roof"
-            points="321.7793 717.5079 265.8177 715.5092 267.8163 693.5243 321.7793 693.5243 321.7793 717.5079"
-          />
-          <rect
-            className="map-roof"
-            x="343.7642"
-            y="695.523"
-            width="53.963"
-            height="21.9849"
-          />
+            <polygon
+              className="map-roof"
+              points="881.3955 937.3571 869.4037 937.3571 869.4037 889.39 883.3941 889.39 881.3955 937.3571"
+            />
+            <polygon
+              className="map-roof"
+              points="325.7766 885.3927 309.7875 885.3927 313.7848 867.4051 327.7752 869.4037 325.7766 885.3927"
+            />
+            <polygon
+              className="map-roof"
+              points="347.7615 883.3941 333.7711 883.3941 335.7697 869.4037 349.7601 871.4023 347.7615 883.3941"
+            />
+            <polygon
+              className="map-roof"
+              points="369.7464 885.3927 357.7546 885.3927 357.7546 869.4037 369.7464 871.4023 369.7464 885.3927"
+            />
+            <rect
+              className="map-roof"
+              x="423.7094"
+              y="907.3776"
+              width="93.9356"
+              height="11.9918"
+            />
+            <polygon
+              className="map-roof"
+              points="217.8506 705.5161 157.8917 699.5202 159.8903 685.5298 219.8492 689.5271 217.8506 705.5161"
+            />
+            <polygon
+              className="map-roof"
+              points="321.7793 717.5079 265.8177 715.5092 267.8163 693.5243 321.7793 693.5243 321.7793 717.5079"
+            />
+            <rect
+              className="map-roof"
+              x="343.7642"
+              y="695.523"
+              width="53.963"
+              height="21.9849"
+            />
 
-          <polygon
-            className="map-roof"
-            points="353.7574 1151.2104 321.7793 1149.2118 321.7793 1129.2255 353.7574 1131.2241 353.7574 1151.2104"
-          />
-        </g>
+            <polygon
+              className="map-roof"
+              points="353.7574 1151.2104 321.7793 1149.2118 321.7793 1129.2255 353.7574 1131.2241 353.7574 1151.2104"
+            />
+          </g>
 
-        {/* Buildings Layer */}
-        <g id="buildings">
-          <polygon
-            id="第二体育館"
-            className="map-building"
-            points="213.8533 275.8108 133.9082 275.8108 131.9095 283.8053 109.9246 283.8053 109.9246 273.8122 81.9438 273.8122 81.9438 251.8273 25.9822 249.8286 29.9794 103.9287 223.8465 107.926 213.8533 275.8108"
-          />
+          {/* Buildings Layer */}
+          <g id="buildings">
+            <polygon
+              id="第二体育館"
+              className="map-building"
+              points="213.8533 275.8108 133.9082 275.8108 131.9095 283.8053 109.9246 283.8053 109.9246 273.8122 81.9438 273.8122 81.9438 251.8273 25.9822 249.8286 29.9794 103.9287 223.8465 107.926 213.8533 275.8108"
+            />
 
-          <polygon
-            id="管理棟"
-            className="map-building"
-            points="267.8163 777.4668 263.8191 897.3845 387.7341 899.3831 387.7341 879.3968 433.7025 881.3955 431.7039 953.3461 63.9561 943.353 67.9534 893.3872 207.8574 895.3859 211.0996 776.0485 267.8163 777.4668"
-          />
-          <polygon
-            id="図書館棟"
-            className="map-building"
-            points="613.5792 365.7491 637.5627 365.7491 637.5627 415.7149 647.5559 415.7149 647.5559 451.6902 637.5627 451.6902 637.5627 499.6573 581.6011 499.6573 581.6011 545.6258 667.5421 545.6258 667.5421 629.5682 509.6504 629.5682 509.6504 535.6326 525.6395 535.6326 525.6395 497.6587 513.6477 497.6587 513.6477 359.7533 613.5792 361.7519 613.5792 365.7491"
-          />
-          <polygon
-            id="学生会館"
-            className="map-building"
-            points="661.5463 791.4572 515.6463 785.4613 515.6463 675.5367 661.5463 675.5367 661.5463 791.4572"
-          />
-          <polygon
-            id="物質棟"
-            className="map-building"
-            points="817.4393 1149.2118 531.6354 1141.2173 529.6367 1057.2748 549.623 1057.2748 549.623 1061.2721 591.5942 1063.2707 595.5915 1053.2776 887.3914 1069.2666 885.3927 1149.2118 835.427 1149.2118 817.4393 1149.2118"
-          />
-          <polygon
-            id="一般棟"
-            className="map-building"
-            points="853.4147 963.3393 549.623 955.3447 547.6244 961.3406 511.6491 959.342 513.6477 889.39 553.6203 891.3886 555.6189 905.379 855.4133 917.3708 853.4147 963.3393"
-          />
-          <polygon
-            id="第一体育館"
-            className="map-building"
-            points="1077.2611 1197.1789 1069.2666 1197.1789 1065.2694 1227.1583 959.342 1225.1597 961.3406 1199.1775 953.3461 1199.1775 955.3447 979.3283 1081.2584 981.3269 1077.2611 1197.1789"
-          />
-          <polygon
-            id="経営情報学科棟"
-            className="map-building"
-            points="831.4297 835.427 831.4297 795.4544 935.3585 799.4517 935.3585 805.4476 955.3447 807.4462 955.3447 839.4243 831.4297 835.427"
-          />
+            <polygon
+              id="管理棟"
+              className="map-building"
+              points="267.8163 777.4668 263.8191 897.3845 387.7341 899.3831 387.7341 879.3968 433.7025 881.3955 431.7039 953.3461 63.9561 943.353 67.9534 893.3872 207.8574 895.3859 211.0996 776.0485 267.8163 777.4668"
+            />
+            <polygon
+              id="図書館棟"
+              className="map-building"
+              points="613.5792 365.7491 637.5627 365.7491 637.5627 415.7149 647.5559 415.7149 647.5559 451.6902 637.5627 451.6902 637.5627 499.6573 581.6011 499.6573 581.6011 545.6258 667.5421 545.6258 667.5421 629.5682 509.6504 629.5682 509.6504 535.6326 525.6395 535.6326 525.6395 497.6587 513.6477 497.6587 513.6477 359.7533 613.5792 361.7519 613.5792 365.7491"
+            />
+            <polygon
+              id="学生会館"
+              className="map-building"
+              points="661.5463 791.4572 515.6463 785.4613 515.6463 675.5367 661.5463 675.5367 661.5463 791.4572"
+            />
+            <polygon
+              id="物質棟"
+              className="map-building"
+              points="817.4393 1149.2118 531.6354 1141.2173 529.6367 1057.2748 549.623 1057.2748 549.623 1061.2721 591.5942 1063.2707 595.5915 1053.2776 887.3914 1069.2666 885.3927 1149.2118 835.427 1149.2118 817.4393 1149.2118"
+            />
+            <polygon
+              id="一般棟"
+              className="map-building"
+              points="853.4147 963.3393 549.623 955.3447 547.6244 961.3406 511.6491 959.342 513.6477 889.39 553.6203 891.3886 555.6189 905.379 855.4133 917.3708 853.4147 963.3393"
+            />
+            <polygon
+              id="第一体育館"
+              className="map-building"
+              points="1077.2611 1197.1789 1069.2666 1197.1789 1065.2694 1227.1583 959.342 1225.1597 961.3406 1199.1775 953.3461 1199.1775 955.3447 979.3283 1081.2584 981.3269 1077.2611 1197.1789"
+            />
+            <polygon
+              id="経営情報学科棟"
+              className="map-building"
+              points="831.4297 835.427 831.4297 795.4544 935.3585 799.4517 935.3585 805.4476 955.3447 807.4462 955.3447 839.4243 831.4297 835.427"
+            />
 
-          <polygon
-            id="ものづくり工房"
-            className="map-building"
-            points="793.4558 803.4489 739.4928 803.4489 741.4914 717.5079 795.4544 719.5065 793.4558 803.4489"
-          />
+            <polygon
+              id="ものづくり工房"
+              className="map-building"
+              points="793.4558 803.4489 739.4928 803.4489 741.4914 717.5079 795.4544 719.5065 793.4558 803.4489"
+            />
 
-          <polygon
-            id="実習工場"
-            className="map-building"
-            points="287.8026 435.7012 73.9493 425.708 73.9493 388.4282 61.9575 385.7354 63.9561 369.7464 73.9493 369.7464 77.9465 305.7903 115.9205 307.7889 115.9205 321.7793 155.8931 321.7793 155.8931 335.7697 289.8012 345.7628 287.8026 435.7012"
-          />
-          <polygon
-            id="経営情報学科棟2"
-            className="map-building"
-            points="447.6929 447.6929 299.7944 441.697 301.793 409.719 293.7985 407.7204 295.7971 351.7587 451.6902 357.7546 447.6929 447.6929"
-          />
-          <polygon
-            id="実習工場2"
-            className="map-building"
-            points="307.7889 643.5586 71.9507 637.5627 81.9438 487.6655 309.7875 495.66 307.8605 638.2678 307.7889 643.5586"
-          />
-          <polygon
-            id="制御情報工学科棟"
-            className="map-building"
-            points="425.708 565.6121 311.7862 563.6134 313.7848 503.6546 425.708 507.6518 425.708 565.6121"
-          />
-          <polygon
-            id="地域共同テクノセンター"
-            className="map-building"
-            points="425.708 641.56 307.8605 638.2678 308.815 567.6285 425.708 571.6079 425.708 641.56"
-          />
-          <polygon
-            id="機電棟"
-            className="map-building"
-            points="439.6984 783.4626 267.8163 777.4668 211.0996 776.0485 69.952 771.4709 69.952 717.5079 439.6984 727.501 439.6984 783.4626"
-          />
-          <polygon
-            id="専攻科棟"
-            className="map-building"
-            points="153.8944 1133.2227 57.9602 1135.2214 59.9589 1047.2817 243.8328 1053.2776 241.8341 1133.2227 171.8821 1131.2241 169.8835 1121.231 153.8944 1121.231 153.8944 1133.2227"
-          />
-          <polygon
-            className="map-building"
-            points="533.634 1111.2378 511.6491 1111.2378 513.6477 957.3434 533.634 957.3434 533.634 1111.2378"
-          />
-          <polygon
-            id="武道場"
-            className="map-building"
-            points="1187.1857 1169.1981 1131.2241 1165.2008 1129.2977 1008.296 1189.1844 1011.3064 1187.1857 1169.1981"
-          />
-        </g>
+            <polygon
+              id="実習工場"
+              className="map-building"
+              points="287.8026 435.7012 73.9493 425.708 73.9493 388.4282 61.9575 385.7354 63.9561 369.7464 73.9493 369.7464 77.9465 305.7903 115.9205 307.7889 115.9205 321.7793 155.8931 321.7793 155.8931 335.7697 289.8012 345.7628 287.8026 435.7012"
+            />
+            <polygon
+              id="経営情報学科棟2"
+              className="map-building"
+              points="447.6929 447.6929 299.7944 441.697 301.793 409.719 293.7985 407.7204 295.7971 351.7587 451.6902 357.7546 447.6929 447.6929"
+            />
+            <polygon
+              id="実習工場2"
+              className="map-building"
+              points="307.7889 643.5586 71.9507 637.5627 81.9438 487.6655 309.7875 495.66 307.8605 638.2678 307.7889 643.5586"
+            />
+            <polygon
+              id="制御情報工学科棟"
+              className="map-building"
+              points="425.708 565.6121 311.7862 563.6134 313.7848 503.6546 425.708 507.6518 425.708 565.6121"
+            />
+            <polygon
+              id="地域共同テクノセンター"
+              className="map-building"
+              points="425.708 641.56 307.8605 638.2678 308.815 567.6285 425.708 571.6079 425.708 641.56"
+            />
+            <polygon
+              id="機電棟"
+              className="map-building"
+              points="439.6984 783.4626 267.8163 777.4668 211.0996 776.0485 69.952 771.4709 69.952 717.5079 439.6984 727.501 439.6984 783.4626"
+            />
+            <polygon
+              id="専攻科棟"
+              className="map-building"
+              points="153.8944 1133.2227 57.9602 1135.2214 59.9589 1047.2817 243.8328 1053.2776 241.8341 1133.2227 171.8821 1131.2241 169.8835 1121.231 153.8944 1121.231 153.8944 1133.2227"
+            />
+            <polygon
+              className="map-building"
+              points="533.634 1111.2378 511.6491 1111.2378 513.6477 957.3434 533.634 957.3434 533.634 1111.2378"
+            />
+            <polygon
+              id="武道場"
+              className="map-building"
+              points="1187.1857 1169.1981 1131.2241 1165.2008 1129.2977 1008.296 1189.1844 1011.3064 1187.1857 1169.1981"
+            />
+          </g>
 
         {/* Interactive Points/Clusters Layer */}
         <g id="points">
-          {clusters.map((cluster) => (
-            <g key={cluster.id} className="map-cluster">
-              {cluster.count === 1 ? (
-                // 単一ポイント
-                <>
-                  <circle
-                    cx={cluster.coordinates.x}
-                    cy={cluster.coordinates.y}
-                    r={getPointSize(cluster.points[0].size || 8)}
-                    fill={
-                      cluster.points[0].color ||
-                      getPointColor(cluster.points[0].type)
-                    }
+          {clusters.map((cluster) => {
+            if (cluster.count === 1) {
+              const point = cluster.points[0];
+              const baseColor = point.color || getPointColor(point.type);
+              const radius = Math.max(getPointSize(point.size || 8), 6);
+              const pointerHeight = radius * 1.6;
+              const pointerWidth = radius * 0.95;
+              const pointerControlY = -pointerHeight - radius * 0.3;
+              const circleCenterY = -(pointerHeight + radius);
+              const innerCircleRadius = radius * 0.55;
+              const iconSize = radius * 1.25;
+              const labelDirection = getLabelDirection(cluster.coordinates.x);
+              const labelPadding = Math.max(14, radius * 1.2);
+              const labelX =
+                labelDirection === "right"
+                  ? radius + labelPadding
+                  : -(radius + labelPadding);
+              const labelAnchor =
+                labelDirection === "right" ? "start" : "end";
+              const labelFontSize = getTextSize();
+              const trimmedTitle =
+                point.title.length > LABEL_MAX_LENGTH
+                  ? `${point.title.substring(0, LABEL_MAX_LENGTH)}...`
+                  : point.title;
+              const isActive =
+                point.isHovered ||
+                hoveredPoint === point.id ||
+                mobileHoveredPoint === point.id;
+              const markerOpacity = isActive ? 1 : 0.92;
+              const IconComponent = POINT_TYPE_ICONS[point.type] ?? MapIcon;
+              const strokeWidth = Math.max(1.5, radius * 0.22);
+              const pointerPath = `M 0 0 L ${pointerWidth} ${-pointerHeight} Q 0 ${pointerControlY} ${-pointerWidth} ${-pointerHeight} Z`;
+
+              return (
+                <g
+                  key={cluster.id}
+                  className="map-cluster"
+                  transform={`translate(${cluster.coordinates.x}, ${cluster.coordinates.y})`}
+                  opacity={markerOpacity}
+                  style={{
+                    cursor: "pointer",
+                    transition: "opacity 0.2s ease",
+                  }}
+                  onClick={(e) => handlePointClick(point, e)}
+                  onMouseEnter={() => handlePointHover(point)}
+                  onMouseLeave={() => handlePointHover(null)}
+                  onTouchEnd={(e) => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    handlePointClick(point, undefined, true);
+                  }}
+                >
+                  <path
+                    d={pointerPath}
+                    fill={baseColor}
                     stroke="white"
-                    strokeWidth={2}
-                    opacity={
-                      cluster.points[0].isHovered ||
-                      hoveredPoint === cluster.points[0].id ||
-                      mobileHoveredPoint === cluster.points[0].id
-                        ? 1
-                        : 0.9
-                    }
-                    style={{
-                      cursor: "pointer",
-                      transition: "opacity 0.2s ease",
-                    }}
-                    onClick={(e) => handlePointClick(cluster.points[0], e)}
-                    onMouseEnter={() => handlePointHover(cluster.points[0])}
-                    onMouseLeave={() => handlePointHover(null)}
-                    onTouchEnd={(e) => {
-                      // Handle touch end on point elements
-                      e.stopPropagation();
-                      e.preventDefault();
-                      handlePointClick(cluster.points[0], undefined, true);
-                    }}
+                    strokeWidth={strokeWidth}
+                    strokeLinejoin="round"
                   />
+                  <circle
+                    cx={0}
+                    cy={circleCenterY}
+                    r={radius}
+                    fill={baseColor}
+                    stroke="white"
+                    strokeWidth={strokeWidth}
+                  />
+                  <circle
+                    cx={0}
+                    cy={circleCenterY}
+                    r={innerCircleRadius}
+                    fill="white"
+                    opacity={0.95}
+                  />
+                  <g
+                    transform={`translate(${-iconSize / 2}, ${circleCenterY - iconSize / 2})`}
+                    style={{ pointerEvents: "none" }}
+                  >
+                    <IconComponent
+                      size={iconSize}
+                      color={baseColor}
+                      strokeWidth={2}
+                    />
+                  </g>
                   {shouldShowText() && (
                     <text
-                      x={cluster.coordinates.x}
-                      y={
-                        cluster.coordinates.y -
-                        getPointSize(cluster.points[0].size || 8) -
-                        5
-                      }
+                      x={labelX}
+                      y={circleCenterY}
                       className="map-text"
-                      fontSize={getTextSize()}
+                      fontSize={labelFontSize}
                       fill="#1f2937"
-                      textAnchor="middle"
-                      onClick={(e) => handlePointClick(cluster.points[0], e)}
-                      onMouseEnter={() => handlePointHover(cluster.points[0])}
-                      onMouseLeave={() => handlePointHover(null)}
-                      onTouchEnd={(e) => {
-                        // Handle touch end on text elements
-                        e.stopPropagation();
-                        e.preventDefault();
-                        handlePointClick(cluster.points[0], undefined, true);
+                      textAnchor={labelAnchor}
+                      dominantBaseline="middle"
+                      style={{
+                        cursor: "pointer",
+                        fontWeight: 600,
+                        paintOrder: "stroke",
+                        stroke: "white",
+                        strokeWidth: 0.8,
                       }}
-                      style={{ cursor: "pointer" }}
                     >
-                      {cluster.points[0].title.length > 8
-                        ? cluster.points[0].title.substring(0, 8) + "..."
-                        : cluster.points[0].title}
+                      {trimmedTitle}
                     </text>
                   )}
-                </>
-              ) : (
-                // クラスター（複数ポイント）
-                <>
-                  <circle
-                    cx={cluster.coordinates.x}
-                    cy={cluster.coordinates.y}
-                    r={getPointSize(12)} // 少し大きめのサイズ
-                    fill="#6366f1"
-                    stroke="white"
-                    strokeWidth={3}
-                    opacity={0.9}
-                    style={{
-                      cursor: "pointer",
-                      transition: "opacity 0.2s ease",
-                    }}
+                </g>
+              );
+            }
+
+            return (
+              <g key={cluster.id} className="map-cluster">
+                <circle
+                  cx={cluster.coordinates.x}
+                  cy={cluster.coordinates.y}
+                  r={getPointSize(12)}
+                  fill="#6366f1"
+                  stroke="white"
+                  strokeWidth={3}
+                  opacity={0.9}
+                  style={{
+                    cursor: "pointer",
+                    transition: "opacity 0.2s ease",
+                  }}
+                  onClick={(e) => handleClusterClick(cluster, e)}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.opacity = "1";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.opacity = "0.9";
+                  }}
+                  onTouchEnd={(e) => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    handleClusterClick(cluster);
+                  }}
+                />
+                {shouldShowText() && (
+                  <text
+                    x={cluster.coordinates.x}
+                    y={cluster.coordinates.y}
+                    className="map-cluster-text"
+                    fontSize={getTextSize() * 0.8}
+                    fill="white"
+                    textAnchor="middle"
+                    dominantBaseline="central"
+                    fontWeight="bold"
                     onClick={(e) => handleClusterClick(cluster, e)}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.opacity = "1";
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.opacity = "0.9";
-                    }}
                     onTouchEnd={(e) => {
-                      // Handle touch end on cluster elements
                       e.stopPropagation();
                       e.preventDefault();
                       handleClusterClick(cluster);
                     }}
-                  />
-                  {shouldShowText() && (
-                    <text
-                      x={cluster.coordinates.x}
-                      y={cluster.coordinates.y}
-                      className="map-cluster-text"
-                      fontSize={getTextSize() * 0.8}
-                      fill="white"
-                      textAnchor="middle"
-                      dominantBaseline="central"
-                      fontWeight="bold"
-                      onClick={(e) => handleClusterClick(cluster, e)}
-                      onTouchEnd={(e) => {
-                        // Handle touch end on cluster text elements
-                        e.stopPropagation();
-                        e.preventDefault();
-                        handleClusterClick(cluster);
-                      }}
-                      style={{ cursor: "pointer", pointerEvents: "auto" }}
-                    >
-                      {cluster.count}
-                    </text>
-                  )}
-                </>
-              )}
-            </g>
-          ))}
-
-          {/* Highlight Point */}
-          {highlightPoint && (
-            <g>
-              {/* Pulsing outer ring */}
-              <circle
-                cx={highlightPoint.x}
-                cy={highlightPoint.y}
-                r={getPointSize(25)}
-                fill="#8b5cf6"
-                opacity="0.3"
-              >
-                <animate
-                  attributeName="r"
-                  values={`${getPointSize(20)};${getPointSize(
-                    35
-                  )};${getPointSize(20)}`}
-                  dur="2s"
-                  repeatCount="indefinite"
-                />
-                <animate
-                  attributeName="opacity"
-                  values="0.3;0.1;0.3"
-                  dur="2s"
-                  repeatCount="indefinite"
-                />
-              </circle>
-              {/* Main point */}
-              <circle
-                cx={highlightPoint.x}
-                cy={highlightPoint.y}
-                r={getPointSize(16)}
-                fill="#8b5cf6"
-                stroke="white"
-                strokeWidth={4}
-                opacity="1"
-              />
-              {/* Inner white dot */}
-              <circle
-                cx={highlightPoint.x}
-                cy={highlightPoint.y}
-                r={getPointSize(8)}
-                fill="white"
-                opacity="0.9"
-              />
-            </g>
-          )}
+                    style={{ cursor: "pointer", pointerEvents: "auto" }}
+                  >
+                    {cluster.count}
+                  </text>
+                )}
+              </g>
+            );
+          })}
         </g>
+
+        {/* Highlight Point */}
+        {highlightPoint && (
+          <g>
+            {/* Pulsing outer ring */}
+            <circle
+              cx={highlightPoint.x}
+              cy={highlightPoint.y}
+              r={getPointSize(25)}
+              fill="#8b5cf6"
+              opacity="0.3"
+            >
+              <animate
+                attributeName="r"
+                values={`${getPointSize(20)};${getPointSize(35)};${getPointSize(20)}`}
+                dur="2s"
+                repeatCount="indefinite"
+              />
+              <animate
+                attributeName="opacity"
+                values="0.3;0.1;0.3"
+                dur="2s"
+                repeatCount="indefinite"
+              />
+            </circle>
+            {/* Main point */}
+            <circle
+              cx={highlightPoint.x}
+              cy={highlightPoint.y}
+              r={getPointSize(16)}
+              fill="#8b5cf6"
+              stroke="white"
+              strokeWidth={4}
+              opacity="1"
+            />
+            {/* Inner white dot */}
+            <circle
+              cx={highlightPoint.x}
+              cy={highlightPoint.y}
+              r={getPointSize(8)}
+              fill="white"
+              opacity="0.9"
+            />
+          </g>
+        )}
       </svg>
 
       {/* Single Content Card Overlay */}
@@ -2064,6 +2265,7 @@ const VectorMap: React.FC<VectorMapProps> = ({
         </div>
       )}
     </div>
+  </>
   );
 };
 

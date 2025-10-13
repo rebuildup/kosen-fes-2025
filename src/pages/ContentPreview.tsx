@@ -374,6 +374,14 @@ const ContentPreview = () => {
           type: "event",
           organizer: formData.organizer || "主催者未設定",
           duration: formData.duration || 60,
+          showOnMap: true,
+          showOnSchedule: true,
+          dayAvailability:
+            formData.date === "2025-11-08"
+              ? "day1"
+              : formData.date === "2025-11-09"
+                ? "day2"
+                : "both",
         } as Event;
       case "exhibit":
         return {

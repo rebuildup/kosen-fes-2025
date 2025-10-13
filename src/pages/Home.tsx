@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { useLanguage } from "../context/LanguageContext";
 import { useData } from "../context/DataContext";
-import { ItemCore } from "../types/data";
+import { ItemCore, EventCore } from "../types/data";
 import { Item } from "../types/common";
 import UnifiedCard from "../shared/components/ui/UnifiedCard";
 import TagCloud from "../components/common/TagCloud";
@@ -28,6 +28,15 @@ const convertItemCoreToItem = (itemCore: ItemCore): Item => {
         type: "event",
         organizer: (itemCore as any).organizer || "",
         duration: (itemCore as any).duration || 0,
+        showOnMap:
+          (itemCore as EventCore).showOnMap !== undefined
+            ? (itemCore as EventCore).showOnMap
+            : true,
+        showOnSchedule:
+          (itemCore as EventCore).showOnSchedule !== undefined
+            ? (itemCore as EventCore).showOnSchedule
+            : true,
+        dayAvailability: (itemCore as EventCore).dayAvailability || "day1",
       };
     case "exhibit":
       return {
@@ -55,6 +64,9 @@ const convertItemCoreToItem = (itemCore: ItemCore): Item => {
         type: "event",
         organizer: "",
         duration: 0,
+        showOnMap: true,
+        showOnSchedule: true,
+        dayAvailability: "day1",
       };
   }
 };
@@ -169,7 +181,7 @@ const Home = () => {
               to="/schedule"
               variant="secondary"
               size="lg"
-              className="bg-[var(--bg-secondary)] hover:bg-[var(--bg-tertiary)] text-[var(--text-primary)] border border-[var(--border-color)] shadow-lg hover:shadow-xl transition-all duration-300"
+              className="bg-[var(--bg-secondary)] hover:bg-[var(--bg-tertiary)] text-[var(--text-primary)] border border-[var(--border-color)] shadow-lg "
             >
               {t("home.viewSchedule")}
             </PillButton>
@@ -304,7 +316,7 @@ const Home = () => {
                 {/* 日付ヘッダー */}
                 <div className="flex items-center justify-center mb-8">
                   <div
-                    className="px-6 py-3 rounded-full text-white font-semibold text-lg shadow-lg"
+                    className="px-6 py-3 rounded-full text-white font-semibold text-base shadow-lg"
                     style={{ background: "var(--instagram-gradient)" }}
                   >
                     {formatDate(date)}
@@ -380,7 +392,7 @@ const Home = () => {
                 to="/map"
                 variant="secondary"
                 size="lg"
-                className="bg-white hover:bg-gray-50 text-gray-900 shadow-lg hover:shadow-xl font-semibold w-60 mx-auto sm:mx-0 truncate"
+                className="bg-white hover:bg-gray-50 text-gray-900 shadow-lg  font-semibold w-60 mx-auto sm:mx-0 truncate"
               >
                 {t("home.viewMap")}
               </PillButton>

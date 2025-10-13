@@ -21,6 +21,9 @@ export interface Event extends BaseItem {
   type: "event";
   organizer: string;
   duration: number; // in minutes
+  showOnMap: boolean;
+  showOnSchedule: boolean;
+  dayAvailability: "day1" | "day2" | "both";
 }
 
 export interface Exhibit extends BaseItem {

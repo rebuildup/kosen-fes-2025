@@ -1,6 +1,6 @@
 import { useBookmark } from "../../context/BookmarkContext";
 import { useLanguage } from "../../context/LanguageContext";
-import { BookmarkIcon } from "../icons/BookmarkIcon";
+import { BookmarkIcon } from "../icons";
 
 interface BookmarkButtonProps {
   itemId: string;

@@ -13,9 +13,7 @@ import Tag from "../../../components/common/Tag";
 import ItemTypeIcon from "../../../components/common/ItemTypeIcon";
 import { gsap } from "gsap";
 import { DURATION, EASE } from "../../../utils/animations";
-import { TimeIcon } from "../../../components/icons/TimeIcon";
-import { LocationIcon } from "../../../components/icons/LocationIcon";
-import { PeopleIcon } from "../../../components/icons/PeopleIcon";
+import { TimeIcon, LocationIcon, PeopleIcon } from "../../../components/icons";
 
 interface UnifiedCardProps {
   item: Item;

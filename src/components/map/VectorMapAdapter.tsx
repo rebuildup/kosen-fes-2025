@@ -73,7 +73,8 @@ const VectorMapAdapter: React.FC<VectorMapAdapterProps> = ({
 }) => {
   // 全てのコンテンツデータを取得
   const allContentData = useMemo(() => {
-    return [...events, ...stalls, ...exhibits];
+    const mapEvents = events.filter((event) => event.showOnMap);
+    return [...mapEvents, ...stalls, ...exhibits];
   }, []);
 
   // 従来のマーカーとコンテンツを新しいInteractivePointsに変換

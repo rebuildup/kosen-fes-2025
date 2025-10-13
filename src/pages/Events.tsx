@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useLanguage } from "../context/LanguageContext";
 import { useTag } from "../context/TagContext";
 import { dataManager } from "../data/dataManager";
@@ -26,9 +26,8 @@ const Events = () => {
   >("default");
   const [filteredEvents, setFilteredEvents] = useState<Item[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [dateFilter, setDateFilter] = useState<
-    "all" | "2025-11-08" | "2025-11-09"
-  >("all");
+  const [dateFilter, setDateFilter] = useState<"all" | "day1" | "day2">("all");
+  const heroImage = useMemo(() => getRandomEventImage(), []);
 
   // Filter events by selected day and tags
   useEffect(() => {
@@ -41,8 +40,18 @@ const Events = () => {
 
       // Filter by day
       if (dateFilter !== "all") {
-        const day = dateFilter === "2025-11-08" ? "2025-11-08" : "2025-11-09";
-        filtered = filtered.filter((event) => event.date === day);
+        filtered = filtered.filter((event) => {
+          if (event.type !== "event") {
+            return false;
+          }
+
+          const dayAvailability = (event as any).dayAvailability;
+          if (dayAvailability === "both") {
+            return true;
+          }
+
+          return dayAvailability === dateFilter;
+        });
       }
 
       // Apply tag filtering
@@ -60,8 +69,8 @@ const Events = () => {
   // Tab options for date filter
   const dateOptions = [
     { value: "all", label: t("events.filters.all") },
-    { value: "2025-11-08", label: t("events.filters.day1") },
-    { value: "2025-11-09", label: t("events.filters.day2") },
+    { value: "day1", label: t("events.filters.day1") },
+    { value: "day2", label: t("events.filters.day2") },
   ];
 
   return (
@@ -70,7 +79,7 @@ const Events = () => {
       <section className="relative overflow-hidden py-16">
         {/* 透かし画像 */}
         <img
-          src={getRandomEventImage()}
+          src={heroImage}
           className="absolute inset-0 w-full h-full object-cover opacity-20 z-0 pointer-events-none"
           alt=""
           aria-hidden="true"

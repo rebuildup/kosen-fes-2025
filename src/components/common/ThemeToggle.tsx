@@ -1,7 +1,6 @@
 import { useTheme } from "../../context/ThemeContext";
 import { useLanguage } from "../../context/LanguageContext";
-import { SunIcon } from "../icons/SunIcon";
-import { MoonIcon } from "../icons/MoonIcon";
+import { SunIcon, MoonIcon } from "../icons";
 
 const ThemeToggle = () => {
   const { theme, toggleTheme } = useTheme();

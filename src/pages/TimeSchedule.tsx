@@ -2,22 +2,12 @@ import { useState, useEffect, useMemo } from "react";
 import { useLanguage } from "../context/LanguageContext";
 import { useTag } from "../context/TagContext";
 import { events } from "../data/events";
-import { exhibits } from "../data/exhibits";
-import { stalls } from "../data/stalls";
-import { Item, Event, Exhibit, Stall } from "../types/common";
+import { Item, Event } from "../types/common";
 import SelectedTags from "../components/common/SelectedTags";
 import TagFilter from "../components/common/TagFilter";
 import TimelineDay from "../components/schedule/TimelineDay";
 
-// Type for non-sponsor items
-type NonSponsorItem = Event | Exhibit | Stall;
-
-// Type guard to check if an item is a non-sponsor item
-const isNonSponsorItem = (item: Item): item is NonSponsorItem => {
-  return (
-    item.type === "event" || item.type === "exhibit" || item.type === "stall"
-  );
-};
+const isEventItem = (item: Item): item is Event => item.type === "event";
 
 const TimeSchedule = () => {
   const { t } = useLanguage();
@@ -25,7 +15,7 @@ const TimeSchedule = () => {
 
   const [selectedDay, setSelectedDay] = useState<"day1" | "day2">("day1");
   const [filteredItems, setFilteredItems] = useState<{
-    [key: string]: NonSponsorItem[];
+    [key: string]: Event[];
   }>({
     day1: [],
     day2: [],
@@ -58,52 +48,62 @@ const TimeSchedule = () => {
     setPrevTagsHash(currentTagsHash);
   }, [currentTagsHash, prevTagsHash]);
 
-  // Get all items sorted by time for each day
+  const getStartMinutes = (timeRange: string) => {
+    const [start] = timeRange.split(" - ");
+    const [hours, minutes] = start.split(":").map((value) =>
+      Number.parseInt(value, 10)
+    );
+    return hours * 60 + minutes;
+  };
+
+  // Get all events sorted by time for each day
   useEffect(() => {
-    // Start with only events, exhibits, and stalls (no sponsors)
-    const baseItems: NonSponsorItem[] = [...events, ...exhibits, ...stalls];
+    const scheduleEvents = events.filter(
+      (eventItem) => eventItem.showOnSchedule
+    );
 
-    // Group items by date
-    const day1 = "2025-11-08";
-    const day2 = "2025-11-09";
+    const day1Date = "2025-11-08";
+    const day2Date = "2025-11-09";
 
-    let day1Items = baseItems.filter((item) => item.date === day1);
-    let day2Items = baseItems.filter((item) => item.date === day2);
-
-    // Apply tag filtering if any tags are selected
-    if (selectedTags.length > 0) {
-      // Filter items and ensure we only keep non-sponsor items
-      const day1FilteredByTags =
-        filterItemsByTags(day1Items).filter(isNonSponsorItem);
-      const day2FilteredByTags =
-        filterItemsByTags(day2Items).filter(isNonSponsorItem);
-
-      day1Items = day1FilteredByTags;
-      day2Items = day2FilteredByTags;
-    }
-
-    // Sort items by time
-    const sortByTime = (a: NonSponsorItem, b: NonSponsorItem) => {
-      // Extract hours and minutes from time strings (format: "HH:MM - HH:MM")
-      const aStartTime = a.time.split(" - ")[0];
-      const bStartTime = b.time.split(" - ")[0];
-
-      // Compare times
-      return aStartTime.localeCompare(bStartTime);
+    const filterByTags = (items: Event[]): Event[] => {
+      if (selectedTags.length === 0) {
+        return items;
+      }
+      return filterItemsByTags(items).filter(isEventItem);
     };
 
-    day1Items.sort(sortByTime);
-    day2Items.sort(sortByTime);
+    const buildDayEvents = (day: "day1" | "day2") => {
+      const targetDate = day === "day1" ? day1Date : day2Date;
+
+      const eventsForDay = scheduleEvents
+        .filter((eventItem) => {
+          if (eventItem.dayAvailability === "both") {
+            return true;
+          }
+          return eventItem.dayAvailability === day;
+        })
+        .map((eventItem) =>
+          eventItem.dayAvailability === "both"
+            ? { ...eventItem, date: targetDate }
+            : eventItem
+        );
+
+      const taggedEvents = filterByTags(eventsForDay);
+
+      return taggedEvents.sort(
+        (a, b) => getStartMinutes(a.time) - getStartMinutes(b.time)
+      );
+    };
 
     setFilteredItems({
-      day1: day1Items,
-      day2: day2Items,
+      day1: buildDayEvents("day1"),
+      day2: buildDayEvents("day2"),
     });
   }, [selectedTags, filterItemsByTags]);
 
   // Group items by time slot for better display
-  const groupItemsByTimeSlot = (items: NonSponsorItem[]) => {
-    const grouped: { [timeSlot: string]: NonSponsorItem[] } = {};
+  const groupItemsByTimeSlot = (items: Event[]) => {
+    const grouped: { [timeSlot: string]: Event[] } = {};
 
     items.forEach((item) => {
       const timeSlot = item.time.split(" - ")[0]; // Use start time as the time slot
@@ -119,11 +119,13 @@ const TimeSchedule = () => {
   };
 
   // Get time slots in chronological order
-  const getOrderedTimeSlots = (items: NonSponsorItem[]) => {
+  const getOrderedTimeSlots = (items: Event[]) => {
     const timeSlots = Array.from(
       new Set(items.map((item) => item.time.split(" - ")[0]))
     );
-    return timeSlots.sort();
+    return timeSlots.sort(
+      (a, b) => getStartMinutes(a) - getStartMinutes(b)
+    );
   };
 
   return (

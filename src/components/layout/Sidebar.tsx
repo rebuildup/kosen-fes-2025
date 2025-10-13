@@ -4,15 +4,17 @@ import { useBookmark } from "../../context/BookmarkContext";
 import ThemeToggleIcon from "../common/ThemeToggleIcon";
 import LanguageToggleIcon from "../common/LanguageToggleIcon";
 import SidebarLink from "./SidebarLink";
-import { BookmarkIcon } from "../icons/BookmarkIcon";
-import { EventIcon } from "../icons/EventIcon";
-import { ExhibitIcon } from "../icons/ExhibitIcon";
-import { ScheduleIcon } from "../icons/ScheduleIcon";
-import { MapIcon } from "../icons/MapIcon";
-import { SponsorIcon } from "../icons/SponsorIcon";
-import { SearchIcon } from "../icons/SearchIcon";
-import { HomeIcon } from "../icons/HomeIcon";
-import { InfoIcon } from "../icons/InfoIcon";
+import {
+  BookmarkIcon,
+  EventIcon,
+  ExhibitIcon,
+  ScheduleIcon,
+  MapIcon,
+  SponsorIcon,
+  SearchIcon,
+  HomeIcon,
+  InfoIcon,
+} from "../icons";
 
 const Sidebar = () => {
   const { t } = useLanguage();

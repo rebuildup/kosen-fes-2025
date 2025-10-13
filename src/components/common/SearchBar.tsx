@@ -4,7 +4,7 @@ import { useSearch } from "../../context/SearchContext";
 import { useLanguage } from "../../context/LanguageContext";
 import { gsap } from "gsap";
 import { DURATION, EASE } from "../../utils/animations";
-import { SearchIcon } from "../icons/SearchIcon";
+import { SearchIcon } from "../icons";
 
 interface SearchBarProps {
   variant?: "default" | "large" | "inline";
