@@ -217,8 +217,11 @@ export const UnifiedCard = React.memo(
 
     // Handle mouse events
     const handleMouseEnter = useCallback(() => {
-      if (!showAnimation) return;
+      // Always set hovered state so UI can show/hide details.
       setIsHovered(true);
+
+      // If animations enabled, play timeline
+      if (!showAnimation) return;
       const timeline = (cardRef.current as any)?._hoverTimeline;
       if (timeline) {
         timeline.play();
@@ -226,8 +229,11 @@ export const UnifiedCard = React.memo(
     }, [showAnimation]);
 
     const handleMouseLeave = useCallback(() => {
-      if (!showAnimation) return;
+      // Always clear hovered state so UI can hide details.
       setIsHovered(false);
+
+      // If animations enabled, reverse timeline
+      if (!showAnimation) return;
       const timeline = (cardRef.current as any)?._hoverTimeline;
       if (timeline) {
         timeline.reverse();
@@ -383,7 +389,7 @@ export const UnifiedCard = React.memo(
                     : t("actions.bookmark")
                 }
               >
-                <span className="text-lg">
+                <span className="text-lg mix-diff">
                   {isBookmarked(item.id) ? "★" : "☆"}
                 </span>
               </button>
@@ -391,7 +397,7 @@ export const UnifiedCard = React.memo(
 
             {/* Always visible basic content */}
             <div className="space-y-2">
-              <h2 className="text-xl font-bold leading-tight line-clamp-2">
+              <h2 className="text-xl font-bold leading-tight line-clamp-2 mix-diff">
                 {formatText(item.title)}
               </h2>
 
@@ -411,7 +417,7 @@ export const UnifiedCard = React.memo(
             <div className="absolute inset-0 p-6 flex flex-col justify-end bg-gradient-to-t from-black/50 via-black/20 to-transparent">
               <div className="space-y-3">
                 {/* Title */}
-                <h2 className="text-xl font-bold leading-tight line-clamp-2">
+                <h2 className="text-xl font-bold leading-tight line-clamp-2 mix-diff">
                   {formatText(item.title)}
                 </h2>
 
@@ -528,10 +534,17 @@ export const UnifiedCard = React.memo(
                 "linear-gradient(to right, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.15) 50%, rgba(0,0,0,0.03) 80%, transparent 100%)",
             }}
           >
-            {/* Always visible basic content */}
-            <div className="absolute bottom-0 left-0 right-0 p-3">
+            {/* Basic content (hide via display when hovered to avoid overlap) */}
+            <div
+              className="absolute bottom-0 left-0 right-0 p-3"
+              style={{
+                display: isHovered ? "none" : "block",
+                opacity: !isInitialized ? 0 : 1,
+                transition: "opacity 120ms linear",
+              }}
+            >
               <div className="schedule-card-time">{item.time}</div>
-              <h3 className="schedule-card-title mb-1">
+              <h3 className="schedule-card-title mb-1 mix-diff">
                 {formatText(item.title)}
               </h3>
               <div className="flex items-center gap-1 text-xs opacity-80">
@@ -540,19 +553,34 @@ export const UnifiedCard = React.memo(
               </div>
             </div>
 
-            {/* Background gradient overlay - left-to-right animation */}
+            {/* Background gradient overlay - show only when hovered to avoid overlap */}
             <div
               className="absolute inset-0 pointer-events-none"
               style={{
                 background:
                   "linear-gradient(to right, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.2) 40%, rgba(0,0,0,0.05) 70%, transparent 100%)",
+                display: !isInitialized ? "none" : isHovered ? "block" : "none",
+                opacity: !isInitialized ? 0 : isHovered ? 1 : 0,
+                transition: "opacity 120ms linear",
               }}
             />
 
-            {/* Content container - bottom-to-top animation */}
-            <div className="absolute inset-0 p-4 pt-12 flex flex-col justify-center text-white">
+            {/* Content container - show only when hovered (use display to avoid overlap) */}
+            <div
+              className="absolute inset-0 p-4 pt-12 flex flex-col justify-center text-white"
+              style={{
+                display: !isInitialized ? "none" : isHovered ? "flex" : "none",
+                opacity: !isInitialized ? 0 : isHovered ? 1 : 0,
+                pointerEvents: !isInitialized
+                  ? "none"
+                  : isHovered
+                  ? "auto"
+                  : "none",
+                transition: "opacity 120ms linear",
+              }}
+            >
               <div className="space-y-3 max-h-full overflow-y-auto scrollbar-thin pr-2">
-                <h3 className="text-lg font-semibold">
+                <h3 className="text-lg font-semibold mix-diff">
                   {formatText(item.title)}
                 </h3>
 
@@ -683,21 +711,17 @@ export const UnifiedCard = React.memo(
                 "linear-gradient(to right, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.15) 50%, rgba(0,0,0,0.03) 80%, transparent 100%)",
             }}
           >
-            {/* Always visible basic content */}
+            {/* Basic content (hidden when hovered to avoid overlap) */}
             <div
-              className={`
-              absolute bottom-0 left-0 right-0 p-3 transition-all duration-200 transform-gpu
-              ${
-                !isInitialized
-                  ? "opacity-0"
-                  : isHovered
-                  ? "opacity-0 translate-y-2 pointer-events-none"
-                  : "opacity-100 translate-y-0"
-              }
-            `}
+              className={`absolute bottom-0 left-0 right-0 p-3 transition-all duration-200 transform-gpu`}
+              style={{
+                display: isHovered ? "none" : "block",
+                opacity: !isInitialized ? 0 : 1,
+                transition: "opacity 120ms linear",
+              }}
             >
               <div className="schedule-card-time">{item.time}</div>
-              <h3 className="schedule-card-title mb-1">
+              <h3 className="schedule-card-title mb-1 mix-diff">
                 {formatText(item.title)}
               </h3>
               <div className="flex items-center gap-1 text-xs opacity-80">
@@ -706,41 +730,34 @@ export const UnifiedCard = React.memo(
               </div>
             </div>
 
-            {/* Background gradient overlay - left-to-right animation */}
+            {/* Background gradient overlay - show only when hovered to avoid overlap */}
             <div
-              className={`
-              absolute inset-0 pointer-events-none
-              transition-all duration-400 ease-out transform-gpu
-              ${
-                !isInitialized
-                  ? "opacity-0 -translate-x-4"
-                  : isHovered
-                  ? "opacity-100 translate-x-0"
-                  : "opacity-0 -translate-x-4"
-              }
-            `}
+              className="absolute inset-0 pointer-events-none"
               style={{
                 background:
                   "linear-gradient(to right, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.2) 40%, rgba(0,0,0,0.05) 70%, transparent 100%)",
+                display: !isInitialized ? "none" : isHovered ? "block" : "none",
+                opacity: !isInitialized ? 0 : isHovered ? 1 : 0,
+                transition: "opacity 120ms linear",
               }}
             />
 
-            {/* Content container - bottom-to-top animation */}
+            {/* Content container - show only when hovered (use visibility to avoid overlap) */}
             <div
-              className={`
-              absolute inset-0 p-4 pt-12 flex flex-col justify-center text-white
-              transition-all duration-300 ease-out transform-gpu delay-100
-              ${
-                !isInitialized
-                  ? "opacity-0 translate-y-4 pointer-events-none"
+              className={`absolute inset-0 p-4 pt-12 flex flex-col justify-center text-white`}
+              style={{
+                display: !isInitialized ? "none" : isHovered ? "flex" : "none",
+                opacity: !isInitialized ? 0 : isHovered ? 1 : 0,
+                pointerEvents: !isInitialized
+                  ? "none"
                   : isHovered
-                  ? "opacity-100 translate-y-0 pointer-events-auto"
-                  : "opacity-0 translate-y-4 pointer-events-none"
-              }
-            `}
+                  ? "auto"
+                  : "none",
+                transition: "opacity 120ms linear",
+              }}
             >
               <div className="space-y-3 max-h-full overflow-y-auto scrollbar-thin pr-2">
-                <h3 className="text-lg font-semibold">
+                <h3 className="text-lg font-semibold mix-diff">
                   {formatText(item.title)}
                 </h3>
 
@@ -770,7 +787,10 @@ export const UnifiedCard = React.memo(
                 </div>
 
                 {showTags && item.tags && item.tags.length > 0 && (
-                  <div className="flex gap-1 overflow-x-auto scrollbar-hide">
+                  <div
+                    style={{ display: isHovered ? "flex" : "none" }}
+                    className="flex gap-1 overflow-x-auto scrollbar-hide"
+                  >
                     {item.tags.map((tagName) => (
                       <span key={tagName} className="flex-shrink-0">
                         <Tag tag={tagName} size="small" interactive={false} />
@@ -870,25 +890,35 @@ export const UnifiedCard = React.memo(
                   : t("actions.bookmark")
               }
             >
-              <span className="text-sm">
+              <span className="text-sm mix-diff">
                 {isBookmarked(item.id) ? "★" : "☆"}
               </span>
             </button>
 
-            {/* Title Only - Always Visible */}
+            {/* Title Only - Always Visible (hide when hovered) */}
             <div
-              className={`absolute bottom-0 left-0 right-0 p-3 transition-opacity duration-300 ${
-                isHovered ? "opacity-0" : "opacity-100"
-              }`}
+              className={`absolute bottom-0 left-0 right-0 p-3`}
+              style={{
+                visibility: isHovered ? "hidden" : "visible",
+                opacity: isHovered ? 0 : 1,
+                pointerEvents: isHovered ? "none" : "auto",
+                transition: "opacity 120ms linear",
+              }}
             >
-              <h3 className="font-semibold text-lg truncate">
+              <h3 className="font-semibold text-lg truncate mix-diff">
                 {formatText(item.title)}
               </h3>
             </div>
 
-            {/* Hover overlay with view details button */}
+            {/* Hover overlay with view details button (show when hovered) */}
             <div
               className={`absolute inset-0 bg-gradient-to-t from-black/50 via-black/20 to-transparent p-4 pb-6 flex flex-col justify-end items-center`}
+              style={{
+                visibility: isHovered ? "visible" : "hidden",
+                opacity: isHovered ? 1 : 0,
+                pointerEvents: isHovered ? "auto" : "none",
+                transition: "opacity 120ms linear",
+              }}
             >
               <div className="text-center space-y-3 w-full">
                 <div className="overflow-hidden">
@@ -965,12 +995,22 @@ export const UnifiedCard = React.memo(
                 : t("actions.bookmark")
             }
           >
-            <span className="text-sm">{isBookmarked(item.id) ? "★" : "☆"}</span>
+            <span className="text-sm mix-diff">
+              {isBookmarked(item.id) ? "★" : "☆"}
+            </span>
           </button>
 
-          {/* Basic Info - Visible when not hovered */}
-          <div className={`absolute bottom-0 left-0 right-0 p-3 space-y-1`}>
-            <SmartScrollableText className="font-semibold text-lg">
+          {/* Basic Info - Visible when not hovered (use visibility to fully hide on hover) */}
+          <div
+            className={`absolute bottom-0 left-0 right-0 p-3 space-y-1`}
+            style={{
+              visibility: isHovered ? "hidden" : "visible",
+              opacity: isHovered ? 0 : 1,
+              pointerEvents: isHovered ? "none" : "auto",
+              transition: "opacity 120ms linear",
+            }}
+          >
+            <SmartScrollableText className="font-semibold text-lg mix-diff">
               {formatText(item.title)}
             </SmartScrollableText>
 
@@ -983,8 +1023,13 @@ export const UnifiedCard = React.memo(
           {/* Detailed overlay on hover */}
           <div
             ref={metaRef}
-            className={`absolute inset-0 bg-gradient-to-t from-black/50 via-black/20 to-transparent p-4 flex flex-col justify-center pointer-events-none`}
-            style={{ visibility: isHovered ? "visible" : "hidden" }}
+            className={`absolute inset-0 bg-gradient-to-t from-black/50 via-black/20 to-transparent p-4 flex flex-col justify-center`}
+            style={{
+              visibility: isHovered ? "visible" : "hidden",
+              opacity: isHovered ? 1 : 0,
+              pointerEvents: isHovered ? "auto" : "none",
+              transition: "opacity 120ms linear",
+            }}
           >
             <div className="space-y-3">
               <SmartScrollableText className="text-lg font-semibold">
@@ -1022,8 +1067,13 @@ export const UnifiedCard = React.memo(
           {showTags && item.tags && item.tags.length > 0 && (
             <div
               ref={tagsRef}
-              className={`absolute bottom-3 left-3 right-3 pointer-events-none`}
-              style={{ visibility: isHovered ? "visible" : "hidden" }}
+              className={`absolute bottom-3 left-3 right-3`}
+              style={{
+                visibility: isHovered ? "visible" : "hidden",
+                opacity: isHovered ? 1 : 0,
+                pointerEvents: isHovered ? "auto" : "none",
+                transition: "opacity 120ms linear",
+              }}
             >
               <div
                 className="flex gap-1 overflow-x-auto scrollbar-hide"

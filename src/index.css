@@ -1499,6 +1499,24 @@
       text-shadow: 0 0 1px rgba(255, 255, 255, 0.8);
     }
 
+    /* mix-blend-mode utility for icons and text that should invert over varied backgrounds */
+    .mix-diff {
+      mix-blend-mode: difference;
+      /* Reasonable default color to ensure contrast; components can override */
+      color: white;
+    }
+    /* Fallback and testing helpers
+       - .mix-diff-fallback : explicit fallback which inverts colors (useful when blending doesn't produce visible change)
+       - body.mix-diff-use-fallback : toggle to use filter-based fallback across the app for quick testing
+    */
+    .mix-diff-fallback {
+      filter: invert(1) hue-rotate(180deg);
+    }
+
+    body.mix-diff-use-fallback .mix-diff {
+      mix-blend-mode: normal !important;
+      filter: invert(1) hue-rotate(180deg) !important;
+    }
     .map-marker-ultra-quality {
       shape-rendering: geometricPrecision;
     }

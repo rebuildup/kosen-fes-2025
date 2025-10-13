@@ -1,10 +1,11 @@
 // src/pages/Sponsors.tsx
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useLanguage } from "../context/LanguageContext";
 import { dataManager } from "../data/dataManager";
 import { Item } from "../types/common";
 import CardGrid from "../components/common/CardGrid";
 import CardListToggle from "../components/common/CardListToggle";
+import { sponsors } from "../data/sponsors";
 
 const Sponsors = () => {
   const { t } = useLanguage();
@@ -14,6 +15,14 @@ const Sponsors = () => {
   >("default");
   const [filteredSponsors, setFilteredSponsors] = useState<Item[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+
+  // Choose a random hero image from sponsors
+  function getRandomSponsorImage() {
+    const images = sponsors.map((s) => s.imageUrl).filter(Boolean as any);
+    return images[Math.floor(Math.random() * images.length)] || "";
+  }
+
+  const heroImage = useMemo(() => getRandomSponsorImage(), []);
 
   // Get all sponsors
   useEffect(() => {
@@ -33,6 +42,13 @@ const Sponsors = () => {
     <div className="min-h-screen bg-[var(--bg-primary)]">
       {/* Hero Section */}
       <section className="relative overflow-hidden py-16 rounded-lg">
+        {/* 透かし画像 */}
+        <img
+          src={heroImage}
+          className="absolute inset-0 w-full h-full object-cover opacity-20 z-0 pointer-events-none"
+          alt=""
+          aria-hidden="true"
+        />
         <div
           className="absolute inset-0 opacity-10"
           style={{ background: "var(--instagram-gradient)" }}

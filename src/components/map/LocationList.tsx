@@ -81,6 +81,7 @@ const LocationList = ({
                       variant="compact"
                       showTags={false}
                       showDescription={false}
+                      showAnimation={true}
                     />
 
                     {/* Location info overlay */}

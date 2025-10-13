@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { ArrowLeft } from "lucide-react";
 import { useLanguage } from "../context/LanguageContext";
 import { useBookmark } from "../context/BookmarkContext";
 import { events } from "../data/events";
@@ -320,7 +321,10 @@ const Detail = () => {
         <div className="max-w-7xl mx-auto">
           <div className="flex justify-between items-center mb-8">
             <PillButton onClick={handleBack} variant="secondary">
-              ← {t("detail.back")}
+              <span className="inline-flex items-center gap-2 whitespace-nowrap">
+                <ArrowLeft className="w-4 h-4" />
+                <span>{t("detail.back")}</span>
+              </span>
             </PillButton>
 
             <button

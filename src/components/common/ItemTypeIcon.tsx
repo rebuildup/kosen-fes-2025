@@ -36,7 +36,11 @@ const ItemTypeIcon = ({ type, size = "medium" }: ItemTypeIconProps) => {
     }
   };
 
-  return <span aria-hidden="true">{renderIcon()}</span>;
+  return (
+    <span aria-hidden="true" className="mix-diff">
+      {renderIcon()}
+    </span>
+  );
 };
 
 export default ItemTypeIcon;

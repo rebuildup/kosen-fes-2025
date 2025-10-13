@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import { useLanguage } from "../context/LanguageContext";
 import { useData } from "../context/DataContext";
 import { ItemCore, EventCore } from "../types/data";
@@ -86,6 +87,7 @@ const getRandomAnyImage = () => {
 const Home = () => {
   const { t } = useLanguage();
   const { events, exhibits, stalls, getPopularTags } = useData();
+  const navigate = useNavigate();
   const [featuredEvents, setFeaturedEvents] = useState<Item[]>([]);
   const [featuredExhibits, setFeaturedExhibits] = useState<Item[]>([]);
   const [featuredStalls, setFeaturedStalls] = useState<Item[]>([]);
@@ -95,6 +97,11 @@ const Home = () => {
   const [popularTags, setPopularTags] = useState<string[]>([]);
   const [allDates, setAllDates] = useState<string[]>([]);
   const randomCtaImage = useMemo(() => getRandomAnyImage(), []);
+
+  // Handle tag click - navigate to search page with selected tag
+  const handleTagClick = (tag: string) => {
+    navigate(`/search?tag=${encodeURIComponent(tag)}`);
+  };
 
   // Calculate delay for home page cards
   const calculateHomeDelay = (index: number): number => {
@@ -298,7 +305,11 @@ const Home = () => {
             {t("home.popularTags")}
           </h2>
           <div className="w-full overflow-hidden">
-            <TagCloud tags={popularTags} showCount />
+            <TagCloud
+              tags={popularTags}
+              showCount
+              onTagClick={handleTagClick}
+            />
           </div>
         </div>
       </section>

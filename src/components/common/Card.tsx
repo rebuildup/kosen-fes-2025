@@ -314,7 +314,9 @@ const Card = ({
               : t("actions.bookmark")
           }
         >
-          <span className="text-sm">{isBookmarked(item.id) ? "★" : "☆"}</span>
+          <span className="text-sm mix-diff">
+            {isBookmarked(item.id) ? "★" : "☆"}
+          </span>
         </button>
 
         {/* Basic Info - Visible when not hovered */}
@@ -323,7 +325,7 @@ const Card = ({
             isHovered ? "opacity-0" : "opacity-100"
           }`}
         >
-          <SmartScrollableText className="font-semibold text-lg">
+          <SmartScrollableText className="font-semibold text-lg mix-diff">
             {formatText(item.title)}
           </SmartScrollableText>
 
@@ -342,7 +344,7 @@ const Card = ({
           style={{ visibility: isHovered ? "visible" : "hidden" }}
         >
           <div className="space-y-3">
-            <SmartScrollableText className="text-lg font-semibold">
+            <SmartScrollableText className="text-lg font-semibold mix-diff">
               {formatText(item.title)}
             </SmartScrollableText>
 
