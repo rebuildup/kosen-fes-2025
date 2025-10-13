@@ -284,7 +284,7 @@ const Card = ({
   const cardContent = (
     <div
       ref={cardRef}
-      className="relative group cursor-pointer rounded-lg overflow-hidden aspect-[4/3] glass-card glass-interactive"
+      className="card relative group cursor-pointer rounded-lg overflow-hidden aspect-[4/3] glass-card glass-interactive"
     >
       {/* Background Image */}
       <img
@@ -297,8 +297,8 @@ const Card = ({
         loading="lazy"
       />
 
-      {/* Glassmorphism overlay */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/10 to-transparent text-white">
+      {/* Glassmorphism overlay (use shared .card-gradient-overlay for consistent theming) */}
+      <div className="card-gradient-overlay text-white">
         {/* Type Badge - Top Left */}
         <div className="absolute top-2 left-2 glass-subtle rounded-full p-1.5">
           <ItemTypeIcon type={item.type} size="small" />

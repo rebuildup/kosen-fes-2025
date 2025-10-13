@@ -2,6 +2,7 @@ import { useRef, useEffect, useState, useCallback } from "react";
 import { useSimpleMapZoomPan } from "../../hooks/useMapZoomPan";
 import { CAMPUS_MAP_BOUNDS } from "../../data/buildings";
 import ZoomControls from "./ZoomControls";
+import amenities from "../../data/mapAmenities";
 
 interface Coordinate {
   x: number;
@@ -409,7 +410,121 @@ const SimpleMap = ({
               </text>
             </g>
           )}
+
+          {/* 施設アメニティ（トイレ・ゴミ箱など） */}
+          {amenities.map((a) => {
+            const ax = a.x * CAMPUS_MAP_BOUNDS.width;
+            const ay = a.y * CAMPUS_MAP_BOUNDS.height;
+            const size = getFixedMarkerSize(10);
+            if (a.type === "toilet") {
+              return (
+                <g key={a.id} pointerEvents="auto" className="map-amenity">
+                  <rect
+                    x={ax - size / 2}
+                    y={ay - size / 2}
+                    width={size}
+                    height={size}
+                    rx={2}
+                    fill="#1da1f2"
+                    stroke="white"
+                    strokeWidth={getFixedStrokeWidth(1.5)}
+                    opacity={0.95}
+                  />
+                  <text
+                    x={ax}
+                    y={ay + size / 4}
+                    textAnchor="middle"
+                    fontSize={getFixedTextSize() - 2}
+                    fontWeight={700}
+                    fill="white"
+                    className="map-text-ultra-quality"
+                  >
+                    WC
+                  </text>
+                </g>
+              );
+            }
+
+            if (a.type === "trash") {
+              return (
+                <g key={a.id} pointerEvents="auto" className="map-amenity">
+                  <rect
+                    x={ax - size / 2}
+                    y={ay - size / 2}
+                    width={size}
+                    height={size}
+                    rx={2}
+                    fill="#10b981"
+                    stroke="white"
+                    strokeWidth={getFixedStrokeWidth(1.5)}
+                    opacity={0.95}
+                  />
+                  <text
+                    x={ax}
+                    y={ay + size / 4}
+                    textAnchor="middle"
+                    fontSize={getFixedTextSize() - 2}
+                    fontWeight={700}
+                    fill="white"
+                    className="map-text-ultra-quality"
+                  >
+                    🗑
+                  </text>
+                </g>
+              );
+            }
+
+            return null;
+          })}
         </svg>
+      </div>
+      {/* レジェンド */}
+      <div
+        aria-hidden
+        style={{
+          position: "absolute",
+          left: 12,
+          bottom: 12,
+          zIndex: 30,
+          background: "rgba(255,255,255,0.95)",
+          padding: "8px 10px",
+          borderRadius: 8,
+          border: "1px solid rgba(0,0,0,0.06)",
+          fontSize: 12,
+        }}
+        className="map-legend glass-effect"
+      >
+        <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+          <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+            <span
+              style={{
+                width: 12,
+                height: 12,
+                background: "#1da1f2",
+                borderRadius: 2,
+              }}
+            />
+            <span>トイレ</span>
+          </div>
+          <div
+            style={{
+              display: "flex",
+              gap: 8,
+              alignItems: "center",
+              marginLeft: 10,
+            }}
+          >
+            <span
+              style={{
+                width: 12,
+                height: 12,
+                background: "#10b981",
+                borderRadius: 2,
+              }}
+            />
+            <span>ゴミ箱</span>
+          </div>
+        </div>
       </div>
     </div>
   );

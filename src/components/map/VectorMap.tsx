@@ -140,7 +140,6 @@ const VectorMap: React.FC<VectorMapProps> = ({
   >(null);
   const [lastMobileTapTime, setLastMobileTapTime] = useState<number>(0);
 
-
   // マップ操作でカードを閉じる関数
   const closeCard = useCallback(() => {
     if (selectedPoint) {
@@ -307,7 +306,6 @@ const VectorMap: React.FC<VectorMapProps> = ({
     },
     []
   );
-
 
   // Hide mouse cursor when leaving the map
   const handleMouseLeave = useCallback(() => {
@@ -748,9 +746,11 @@ const VectorMap: React.FC<VectorMapProps> = ({
             // ALWAYS use content area aware transformation for consistent accuracy
             // Content Areaを考慮した座標変換を常に使用 (same as handleSVGClick for consistency)
             const svgX =
-              viewBox.x + (adjustedRelativeX / contentRect.width) * viewBox.width;
+              viewBox.x +
+              (adjustedRelativeX / contentRect.width) * viewBox.width;
             const svgY =
-              viewBox.y + (adjustedRelativeY / contentRect.height) * viewBox.height;
+              viewBox.y +
+              (adjustedRelativeY / contentRect.height) * viewBox.height;
 
             // Apply coordinate limits and precision (same as mouse handler)
             const mapClickMargin =
@@ -1470,7 +1470,6 @@ const VectorMap: React.FC<VectorMapProps> = ({
         shapeRendering: "geometricPrecision" as any,
       }}
     >
-
       {/* Controls */}
       {showControls && (
         <ZoomControls
@@ -1514,7 +1513,7 @@ const VectorMap: React.FC<VectorMapProps> = ({
                   : ""
               }
               .map-point { cursor: pointer; transition: all 0.2s ease; }
-              .map-point:hover { filter: drop-shadow(0 0 8px rgba(0,0,0,0.3)); }
+               
               .map-text { 
                 font-family: system-ui, -apple-system, sans-serif;
                 font-weight: 600;
@@ -1975,7 +1974,6 @@ const VectorMap: React.FC<VectorMapProps> = ({
               />
             </g>
           )}
-
         </g>
       </svg>
 
@@ -2033,7 +2031,7 @@ const VectorMap: React.FC<VectorMapProps> = ({
         >
           {/* Cluster Cards Container */}
           <div
-            className="rounded-lg shadow-xl overflow-hidden backdrop-blur-sm bg-white/90"
+            className="rounded-lg shadow-xl overflow-hidden bg-white/90"
             style={{ width: "100%" }}
           >
             {/* Header */}

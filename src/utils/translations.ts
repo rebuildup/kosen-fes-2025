@@ -10,7 +10,7 @@ export const enTranslations: Translations = {
   language: "en",
   navigation: {
     home: "Home",
-    events: "Events",
+    events: "Stages",
     exhibits: "Exhibits & Stalls",
     stalls: "Stalls",
     schedule: "Schedule",
@@ -76,7 +76,7 @@ export const enTranslations: Translations = {
     title: "Welcome to Ube Kosen Festival 2025",
     subtitle:
       "The 62nd Ube National College of Technology Festival 2025 Theme is POP!",
-    featuredEvents: "Featured Events",
+    featuredEvents: "Featured Stages",
     featuredExhibits: "Featured Exhibits",
     popularTags: "Popular Tags",
     timeline: "Timeline",
@@ -89,7 +89,7 @@ export const enTranslations: Translations = {
     viewSchedule: "View Schedule",
     downloadTicket: "Download Ticket",
     viewTicket: "View Ticket",
-    events: "Events",
+    events: "Stages",
     exhibits: "Exhibits",
     schedule: "Schedule",
     explore: "Explore",
@@ -98,7 +98,7 @@ export const enTranslations: Translations = {
     viewFull: "View Full Schedule",
   },
   events: {
-    title: "Events",
+    title: "Stages",
     description: "Discover exciting events happening throughout the festival",
     noEvents: "No events found",
     noEventsFound: "No events found",
@@ -164,8 +164,8 @@ export const enTranslations: Translations = {
   },
   search: {
     title: "Search",
-    subtitle: "Search and discover events, exhibits, and stalls",
-    placeholder: "Search events, exhibits, and more",
+    subtitle: "Search and discover stages, exhibits, and stalls",
+    placeholder: "Search stages, exhibits, and more",
     noResults: "No search results found",
     searching: "Searching",
     recentSearches: "Recent Searches",
@@ -177,7 +177,7 @@ export const enTranslations: Translations = {
     searchByTags: "Search by Tags",
     tagSearchHint: "Click on a tag to search",
     searchInstructions: {
-      keyword: "Search for events and exhibits by keywords",
+      keyword: "Search for stages and exhibits by keywords",
       tags: "Use tags to filter by interesting categories",
       location: "You can also search by location and time",
     },
@@ -189,13 +189,13 @@ export const enTranslations: Translations = {
   },
   bookmarks: {
     title: "Bookmarks",
-    description: "Save and manage your favorite events and exhibits",
+    description: "Save and manage your favorite stages and exhibits",
     empty: "No bookmarks yet",
     noBookmarks:
-      "No bookmarks yet. Explore events and exhibits and bookmark your favorites!",
+      "No bookmarks yet. Explore stages and exhibits and bookmark your favorites!",
     bookmarkedItems: "Bookmarked Items",
     startBookmarking:
-      "Start bookmarking events and exhibits you're interested in",
+      "Start bookmarking stages and exhibits you're interested in",
     noCategoryItems: "No bookmarked items in this category",
     itemCount: "items",
     noItemsFound: "No items found",
@@ -261,7 +261,7 @@ export const jaTranslations: Translations = {
   language: "ja",
   navigation: {
     home: "ホーム",
-    events: "イベント",
+    events: "ステージ",
     exhibits: "展示・露店",
     stalls: "露店",
     schedule: "タイムスケジュール",
@@ -324,7 +324,7 @@ export const jaTranslations: Translations = {
   home: {
     title: "宇部高専祭 2025へようこそ",
     subtitle: "第62回 宇部高専祭2025 テーマはPOP!",
-    featuredEvents: "注目イベント",
+    featuredEvents: "注目ステージ",
     featuredExhibits: "注目展示",
     popularTags: "人気のタグ",
     timeline: "タイムライン",
@@ -337,7 +337,7 @@ export const jaTranslations: Translations = {
     viewSchedule: "スケジュールを見る",
     downloadTicket: "チケットをダウンロード",
     viewTicket: "チケットを見る",
-    events: "イベント",
+    events: "ステージ",
     exhibits: "展示",
     schedule: "スケジュール",
     explore: "探索",
@@ -346,7 +346,7 @@ export const jaTranslations: Translations = {
     viewFull: "フルスケジュールを見る",
   },
   events: {
-    title: "イベント",
+    title: "ステージ",
     description: "興味のあるイベントやステージを探そう",
     noEvents: "イベントが見つかりません",
     noEventsFound: "イベントが見つかりません",
@@ -389,7 +389,7 @@ export const jaTranslations: Translations = {
   },
   detail: {
     back: "一覧に戻る",
-    event: "イベント",
+    event: "ステージ",
     exhibit: "展示",
     stall: "露店",
     date: "日付",
@@ -412,8 +412,8 @@ export const jaTranslations: Translations = {
   },
   search: {
     title: "検索",
-    subtitle: "イベント/展示/露店を検索して見つけよう",
-    placeholder: "イベント/展示/露店などを検索",
+    subtitle: "ステージ/展示/露店を検索して見つけよう",
+    placeholder: "ステージ/展示/露店などを検索",
     noResults: "検索結果が見つかりません",
     searching: "検索中",
     recentSearches: "最近の検索",
@@ -425,7 +425,7 @@ export const jaTranslations: Translations = {
     searchByTags: "タグで検索",
     tagSearchHint: "タグをクリックして検索",
     searchInstructions: {
-      keyword: "キーワードで検索してイベントや展示を見つけよう",
+      keyword: "キーワードで検索してステージや展示を見つけよう",
       tags: "タグを使って興味のあるカテゴリーを絞り込み",
       location: "場所や時間でも検索できます",
     },
@@ -438,12 +438,12 @@ export const jaTranslations: Translations = {
   },
   bookmarks: {
     title: "ブックマーク",
-    description: "気になるイベントや展示をブックマークして管理しよう",
+    description: "気になるステージや展示をブックマークして管理しよう",
     empty: "ブックマークはまだありません",
     noBookmarks:
-      "まだブックマークがありません。イベントや展示を探索して、お気に入りをブックマークしましょう！",
+      "まだブックマークがありません。ステージや展示を探索して、お気に入りをブックマークしましょう！",
     bookmarkedItems: "ブックマークしたアイテム",
-    startBookmarking: "気になるイベントや展示をブックマークしてみましょう",
+    startBookmarking: "気になるステージや展示をブックマークしてみましょう",
     noCategoryItems: "このカテゴリーにはブックマークされたアイテムがありません",
     itemCount: "アイテム",
     noItemsFound: "アイテムが見つかりません",

@@ -410,7 +410,7 @@ const Detail = () => {
             </div>
 
             {item.imageUrl && (
-              <div className="rounded-lg overflow-hidden backdrop-blur-sm bg-white/5 border border-white/10">
+              <div className="rounded-lg overflow-hidden bg-white/5 border border-white/10">
                 <img
                   src={item.imageUrl}
                   alt={item.title}
@@ -483,7 +483,7 @@ const Detail = () => {
             {/* Campus Map */}
             {(item.location || item.coordinates) && item.type !== "sponsor" && (
               <div
-                className="rounded-lg p-6 backdrop-blur-md bg-white/10 border border-white/20"
+                className="rounded-lg p-6 bg-white/10 border border-white/20"
                 style={{ backgroundColor: "var(--color-bg-secondary)" }}
               >
                 <h3
@@ -530,7 +530,7 @@ const Detail = () => {
             {/* Related Items */}
             {relatedItems.length > 0 && (
               <div
-                className="p-6 rounded-lg backdrop-blur-md bg-white/10 border border-white/20"
+                className="p-6 rounded-lg  bg-white/10 border border-white/20"
                 style={{ backgroundColor: "var(--color-bg-secondary)" }}
               >
                 <h3

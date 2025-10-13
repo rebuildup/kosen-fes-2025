@@ -374,7 +374,7 @@ export const UnifiedCard = React.memo(
           <div className="relative h-full flex flex-col justify-between p-6 text-white">
             {/* Type Badge and Bookmark - Top */}
             <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-2 bg-white/20 backdrop-blur-sm rounded-full px-3 py-1">
+              <div className="flex items-center space-x-2 bg-white/20 rounded-full px-3 py-1">
                 <ItemTypeIcon type={item.type} size="small" />
                 <span className="text-xs font-medium">{typeLabel}</span>
               </div>
@@ -384,7 +384,7 @@ export const UnifiedCard = React.memo(
                 className={`w-10 h-10 flex items-center justify-center rounded-full transition-all duration-200 hover:scale-110 ${
                   isBookmarked(item.id)
                     ? "bg-yellow-500 text-white"
-                    : "bg-white/20 backdrop-blur-sm text-white hover:bg-white/30"
+                    : "bg-white/20 text-white hover:bg-white/30"
                 }`}
                 onClick={handleBookmarkClick}
                 aria-label={
@@ -464,13 +464,13 @@ export const UnifiedCard = React.memo(
                     {item.tags.slice(0, 3).map((tag) => (
                       <span
                         key={tag}
-                        className="px-2 py-1 bg-white/20 backdrop-blur-sm rounded-full text-xs font-medium"
+                        className="px-2 py-1 bg-white/20 rounded-full text-xs font-medium"
                       >
                         {tag}
                       </span>
                     ))}
                     {item.tags.length > 3 && (
-                      <span className="px-2 py-1 bg-white/20 backdrop-blur-sm rounded-full text-xs font-medium">
+                      <span className="px-2 py-1 bg-white/20 rounded-full text-xs font-medium">
                         +{item.tags.length - 3}
                       </span>
                     )}
@@ -479,7 +479,7 @@ export const UnifiedCard = React.memo(
 
                 {/* View Details Button */}
                 <div className="pt-2">
-                  <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-3 py-1.5 text-sm font-medium group-hover:bg-white/30 transition-all duration-200">
+                  <div className="inline-flex items-center gap-2 bg-white/20 rounded-full px-3 py-1.5 text-sm font-medium group-hover:bg-white/30 transition-all duration-200">
                     {t("actions.viewDetails")}
                     <span className="transform group-hover:translate-x-1 transition-transform duration-200">
                       →
@@ -625,13 +625,13 @@ export const UnifiedCard = React.memo(
                     {item.tags.slice(0, 3).map((tag) => (
                       <span
                         key={tag}
-                        className="px-2 py-1 bg-white/20 backdrop-blur-sm rounded-full text-xs"
+                        className="px-2 py-1 bg-white/20 rounded-full text-xs"
                       >
                         {tag}
                       </span>
                     ))}
                     {item.tags.length > 3 && (
-                      <span className="px-2 py-1 bg-white/20 backdrop-blur-sm rounded-full text-xs">
+                      <span className="px-2 py-1 bg-white/20 rounded-full text-xs">
                         +{item.tags.length - 3}
                       </span>
                     )}
@@ -639,7 +639,7 @@ export const UnifiedCard = React.memo(
                 )}
 
                 <div className="pt-2">
-                  <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-3 py-1.5 text-sm font-medium">
+                  <div className="inline-flex items-center gap-2 bg-white/20 rounded-full px-3 py-1.5 text-sm font-medium">
                     {t("actions.viewDetails")}
                     <span>→</span>
                   </div>
@@ -649,7 +649,7 @@ export const UnifiedCard = React.memo(
           </div>
 
           {/* Type Badge */}
-          <div className="absolute top-2 left-2 flex items-center gap-1 bg-white/20 backdrop-blur-sm rounded-full px-2 py-1 text-xs text-white">
+          <div className="absolute top-2 left-2 flex items-center gap-1 bg-white/20 rounded-full px-2 py-1 text-xs text-white">
             <ItemTypeIcon type={item.type} size="small" />
           </div>
 
@@ -659,7 +659,7 @@ export const UnifiedCard = React.memo(
             className={`absolute top-2 right-2 w-8 h-8 flex items-center justify-center rounded-full transition-all duration-200 ${
               isBookmarked(item.id)
                 ? "bg-yellow-500 text-white"
-                : "bg-white/20 backdrop-blur-sm text-white hover:bg-white/30"
+                : "bg-white/20 text-white hover:bg-white/30"
             }`}
             aria-label={
               isBookmarked(item.id)
@@ -819,7 +819,7 @@ export const UnifiedCard = React.memo(
                 )}
 
                 <div className="pt-2">
-                  <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-3 py-1.5 text-sm font-medium">
+                  <div className="inline-flex items-center gap-2 bg-white/20 rounded-full px-3 py-1.5 text-sm font-medium">
                     {t("actions.viewDetails")}
                     <span>→</span>
                   </div>
@@ -829,7 +829,7 @@ export const UnifiedCard = React.memo(
           </div>
 
           {/* Type Badge */}
-          <div className="absolute top-2 left-2 flex items-center gap-1 bg-white/20 backdrop-blur-sm rounded-full px-2 py-1 text-xs text-white">
+          <div className="absolute top-2 left-2 flex items-center gap-1 bg-white/20 rounded-full px-2 py-1 text-xs text-white">
             <ItemTypeIcon type={item.type} size="small" />
           </div>
 
@@ -839,7 +839,7 @@ export const UnifiedCard = React.memo(
             className={`absolute top-2 right-2 w-8 h-8 flex items-center justify-center rounded-full transition-all duration-200 ${
               isBookmarked(item.id)
                 ? "bg-yellow-500 text-white"
-                : "bg-white/20 backdrop-blur-sm text-white hover:bg-white/30"
+                : "bg-white/20 text-white hover:bg-white/30"
             }`}
             aria-label={
               isBookmarked(item.id)
@@ -872,7 +872,7 @@ export const UnifiedCard = React.memo(
       const cardContent = (
         <div
           ref={cardRef}
-          className={`relative group cursor-pointer rounded-lg overflow-hidden backdrop-blur-sm bg-white/5 border border-white/10 aspect-[4/3] ${className}`}
+          className={`relative group cursor-pointer rounded-lg overflow-hidden bg-white/5 border border-white/10 aspect-[4/3] ${className}`}
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
           onClick={handleCardClick}
@@ -891,14 +891,14 @@ export const UnifiedCard = React.memo(
           {/* Glassmorphism overlay */}
           <div className="absolute inset-0 bg-gradient-to-t from-black/35 via-black/8 to-transparent text-white">
             {/* Type Badge - Top Left */}
-            <div className="absolute top-2 left-2 bg-white/20 backdrop-blur-md rounded-full p-1.5 border border-white/20 text-white">
+            <div className="absolute top-2 left-2 bg-white/20 rounded-full p-1.5 border border-white/20 text-white">
               <ItemTypeIcon type={item.type} size="small" />
             </div>
 
             {/* Bookmark Button - Top Right */}
             <button
               onClick={handleBookmarkClick}
-              className={`absolute top-2 right-2 w-8 h-8 flex items-center justify-center rounded-full transition-all duration-200 backdrop-blur-md border border-white/20 pointer-events-auto z-10 ${
+              className={`absolute top-2 right-2 w-8 h-8 flex items-center justify-center rounded-full transition-all duration-200 border border-white/20 pointer-events-auto z-10 ${
                 isBookmarked(item.id)
                   ? "bg-yellow-500/90 text-white"
                   : "bg-white/20 text-white hover:bg-white/30"
@@ -946,7 +946,7 @@ export const UnifiedCard = React.memo(
                   </h3>
                 </div>
 
-                <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-4 py-2 text-sm font-medium hover:bg-white/30 transition-all duration-200">
+                <div className="inline-flex items-center gap-2 bg-white/20 rounded-full px-4 py-2 text-sm font-medium hover:bg-white/30 transition-all duration-200">
                   {t("actions.viewDetails")}
                   <span>→</span>
                 </div>
@@ -975,7 +975,7 @@ export const UnifiedCard = React.memo(
     const cardContent = (
       <div
         ref={cardRef}
-        className={`relative group cursor-pointer rounded-lg overflow-hidden backdrop-blur-sm bg-white/5 border border-white/10 aspect-[4/3] ${className}`}
+        className={`relative group cursor-pointer rounded-lg overflow-hidden bg-white/5 border border-white/10 aspect-[4/3] ${className}`}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
         onClick={handleCardClick}
@@ -994,14 +994,14 @@ export const UnifiedCard = React.memo(
         {/* Glassmorphism overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-black/8 to-transparent text-white">
           {/* Type Badge - Top Left */}
-          <div className="absolute top-2 left-2 bg-white/20 backdrop-blur-md rounded-full p-1.5 border border-white/20">
+          <div className="absolute top-2 left-2 bg-white/20 rounded-full p-1.5 border border-white/20">
             <ItemTypeIcon type={item.type} size="small" />
           </div>
 
           {/* Bookmark Button - Top Right */}
           <button
             onClick={handleBookmarkClick}
-            className={`absolute top-2 right-2 w-8 h-8 flex items-center justify-center rounded-full transition-all duration-200 backdrop-blur-md border border-white/20 pointer-events-auto z-10 ${
+            className={`absolute top-2 right-2 w-8 h-8 flex items-center justify-center rounded-full transition-all duration-200 border border-white/20 pointer-events-auto z-10 ${
               isBookmarked(item.id)
                 ? "bg-yellow-500/90 text-white"
                 : "bg-white/20 text-white hover:bg-white/30"

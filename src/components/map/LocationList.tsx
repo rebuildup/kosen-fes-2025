@@ -30,7 +30,7 @@ const LocationList = ({
 
   return (
     <div
-      className="rounded-lg p-6 backdrop-blur-md bg-white/10 border border-white/20"
+      className="rounded-lg p-6 bg-white/10 border border-white/20"
       style={{ backgroundColor: "var(--color-bg-secondary)" }}
     >
       <h2
@@ -48,7 +48,7 @@ const LocationList = ({
           {t("map.noLocations")}
         </div>
       ) : (
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto scrollbar-thin">
           <div className="flex gap-4 pb-4" style={{ minWidth: "max-content" }}>
             {sortedLocations.map((location) => {
               const items = getItemsForLocation(location);
@@ -86,7 +86,7 @@ const LocationList = ({
                     />
 
                     {/* Location info overlay */}
-                    <div className="absolute top-2 left-2 bg-black/80 backdrop-blur-sm rounded-lg px-3 py-1 text-white">
+                    <div className="absolute top-2 left-2 bg-black/80 rounded-lg px-3 py-1 text-white">
                       <div className="text-sm font-semibold">{location}</div>
                       <div className="text-xs opacity-80">
                         {items.length} {items.length === 1 ? "項目" : "項目"}
@@ -94,7 +94,7 @@ const LocationList = ({
                     </div>
 
                     {/* Type breakdown badge */}
-                    <div className="absolute bottom-2 right-2 bg-black/80 backdrop-blur-sm rounded-lg px-2 py-1">
+                    <div className="absolute bottom-2 right-2 bg-black/80 rounded-lg px-2 py-1">
                       <div className="text-xs text-white">
                         {(() => {
                           const eventCount = items.filter(

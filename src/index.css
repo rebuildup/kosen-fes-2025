@@ -263,9 +263,9 @@
     @apply absolute inset-0 opacity-0 transition-opacity duration-300;
     background: linear-gradient(
       to top,
-      rgba(0, 0, 0, 0.8) 0%,
-      rgba(0, 0, 0, 0.4) 50%,
-      rgba(0, 0, 0, 0.1) 80%,
+      rgba(0, 0, 0, 0.9) 0%,
+      /* Slightly darker */ rgba(0, 0, 0, 0.5) 50%,
+      rgba(0, 0, 0, 0.15) 80%,
       transparent 100%
     );
   }
@@ -1373,8 +1373,8 @@
   }
 
   .scrollbar-thin::-webkit-scrollbar {
-    height: 4px; /* 横スクロールバーの高さ */
-    width: 4px; /* 縦スクロールバーの幅 */
+    height: 4px; /* 横スクロールバーの高さ（調整: 通常サイズに合わせる） */
+    width: 4px; /* 縦スクロールバーの幅（調整: 通常サイズに合わせる） */
   }
 
   .scrollbar-thin::-webkit-scrollbar-track {
@@ -1600,5 +1600,39 @@
       min-width: 36px;
       font-size: 14px;
     }
+  }
+
+  /* ヒーロー画像/トップの透かし切り替え用フェード */
+  .hero-image-fade {
+    opacity: 0;
+    transition: opacity 0.45s ease-in-out;
+  }
+
+  .hero-image-fade.show {
+    opacity: 1;
+  }
+
+  @keyframes imageFadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  .image-fade-anim {
+    animation: imageFadeIn 0.5s ease-in-out both;
+  }
+
+  /* テーマ変更を滑らかにする基本トランジション（大きなレイアウトトランスフォームは避ける） */
+  :root,
+  body,
+  .header,
+  .card,
+  .mobile-footer,
+  .sidebar {
+    transition: background-color 260ms ease, color 260ms ease,
+      border-color 260ms ease, box-shadow 260ms ease;
   }
 }

@@ -1275,7 +1275,7 @@ const ContentPreview = () => {
                   </div>
 
                   {previewItem.imageUrl && (
-                    <div className="rounded-lg overflow-hidden backdrop-blur-sm bg-white/5 border border-white/10">
+                    <div className="rounded-lg overflow-hidden bg-white/5 border border-white/10">
                       <img
                         src={previewItem.imageUrl}
                         alt={previewItem.title}
@@ -1620,8 +1620,6 @@ const ContentPreview = () => {
               >
                 📋 申請フォームを開く
               </PillButton>
-
-              
             </div>
           </div>
         </div>

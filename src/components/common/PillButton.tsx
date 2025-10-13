@@ -48,19 +48,19 @@ const PillButton = ({
           text-white border-0 shadow-lg glass-bold
           bg-gradient-to-r from-[var(--accent-purple)] via-[var(--accent-pink)] to-[var(--accent-orange)]
           hover:from-[var(--accent-pink)] hover:via-[var(--accent-red)] hover:to-[var(--accent-yellow)]
-          focus:ring-[var(--primary-color)] backdrop-blur-sm
+          focus:ring-[var(--primary-color)]
         `;
       case "secondary":
         return `
           text-[var(--text-primary)] border border-[var(--border-color)]/30
           hover:text-[var(--primary-color)] hover:border-[var(--primary-color)]/50
-          focus:ring-[var(--primary-color)] backdrop-blur-md
+          focus:ring-[var(--primary-color)]
         `;
       case "accent":
         return `
           text-[var(--success-color)] border border-[var(--success-color)]/40
           hover:bg-[var(--success-color)]/80 hover:text-white hover:border-[var(--success-color)]
-          focus:ring-[var(--success-color)] backdrop-blur-md
+          focus:ring-[var(--success-color)]
         `;
       default:
         return "";

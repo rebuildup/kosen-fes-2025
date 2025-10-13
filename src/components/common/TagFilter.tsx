@@ -63,8 +63,8 @@ const TagFilter = ({ onFilter, compact = false }: TagFilterProps) => {
         </div>
       )}
 
-      <div className="overflow-x-auto" ref={tagContainerRef}>
-        <div className="flex gap-2 pb-2 min-w-max">
+      <div className="overflow-x-auto scrollbar-thin" ref={tagContainerRef}>
+        <div className="flex gap-2 pb-2 min-w-max items-center">
           {filteredTags.length === 0 ? (
             <div className="text-sm py-4 italic text-[var(--text-secondary)] flex items-center gap-2">
               {searchValue ? t("tags.noTagsFound") : t("tags.searchByTag")}

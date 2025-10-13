@@ -158,7 +158,7 @@ const Map = () => {
                 <div className="relative">
                   {/* Map Display - Larger size */}
                   <div
-                    className="map-container relative w-full"
+                    className="map-container relative m-4"
                     style={{ minHeight: "70vh" }}
                   >
                     <VectorMap

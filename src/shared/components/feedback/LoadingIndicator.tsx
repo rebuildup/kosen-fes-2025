@@ -1,5 +1,6 @@
 import React from "react";
 import { useLanguage } from "../../../context/LanguageContext";
+import { Loader2 } from "lucide-react";
 
 interface LoadingIndicatorProps {
   size?: "small" | "medium" | "large";
@@ -50,23 +51,10 @@ export const LoadingIndicator: React.FC<LoadingIndicatorProps> = ({
     >
       {showSpinner && (
         <div
-          className={`${sizeClasses.spinner} animate-spin text-blue-600 dark:text-blue-400`}
           aria-hidden="true"
+          className={`${sizeClasses.spinner} text-blue-600 dark:text-blue-400`}
         >
-          <svg
-            className="w-full h-full"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-            />
-          </svg>
+          <Loader2 className="w-full h-full animate-spin" />
         </div>
       )}
       <span className={`${sizeClasses.text} text-gray-600 dark:text-gray-400`}>

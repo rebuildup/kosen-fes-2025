@@ -138,7 +138,7 @@ const Home = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--bg-primary)]">
+    <div className="min-h-screen bg-[var(--bg-primary)] scrollbar-thin">
       {/* Hero Section */}
       <section className="bg-[var(--bg-primary)] py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -312,7 +312,7 @@ const Home = () => {
                 </div>
 
                 {/* イベントカードグリッド → 横スクロールリスト */}
-                <div className="flex gap-6 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-thin">
+                <div className="flex gap-6 overflow-x-auto pb-2 snap-x snap-mandatory">
                   {(timelineItems[date] || []).map((item, index) => (
                     <div
                       key={`home-timeline-${date}-${item.id}`}
@@ -388,7 +388,7 @@ const Home = () => {
                 to="/bookmarks"
                 variant="secondary"
                 size="lg"
-                className="bg-white/10 hover:bg-white/20 text-white border border-white/30 backdrop-blur-sm w-60 mx-auto sm:mx-0 truncate"
+                className="bg-white/10 hover:bg-white/20 text-white border border-white/30 w-60 mx-auto sm:mx-0 truncate"
               >
                 {t("home.viewBookmarks")}
               </PillButton>

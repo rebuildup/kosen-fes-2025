@@ -39,7 +39,7 @@ const ZoomControls = ({
   }, [onZoomIn, onZoomOut, onReset]);
 
   return (
-    <div className="absolute top-4 right-4 z-10 flex flex-col gap-1 bg-white/95 backdrop-blur-sm rounded-lg p-2 shadow-lg border">
+    <div className="absolute top-4 right-4 z-10 flex flex-col gap-1 bg-white/95 rounded-lg p-2 shadow-lg border">
       {/* ズームイン */}
       <button
         onClick={onZoomIn}
