@@ -181,7 +181,7 @@ const Home = () => {
               to="/schedule"
               variant="secondary"
               size="lg"
-              className="bg-[var(--bg-secondary)] hover:bg-[var(--bg-tertiary)] text-[var(--text-primary)] border border-[var(--border-color)] shadow-lg "
+              className="bg-[var(--bg-secondary)] hover:bg-[var(--bg-tertiary)] text-[var(--text-primary)] border border-[var(--border-color)] "
             >
               {t("home.viewSchedule")}
             </PillButton>
@@ -224,7 +224,7 @@ const Home = () => {
       </section>
 
       {/* Exhibits Section */}
-      <section className="section bg-[var(--bg-secondary)]">
+      <section className="section bg-[var(--bg-secondary)] rounded-lg">
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center justify-between mb-8">
             <h2 className="section-title flex items-center gap-3 text-[var(--text-primary)]">
@@ -292,7 +292,7 @@ const Home = () => {
       </section>
 
       {/* Tags Section */}
-      <section className="section bg-[var(--bg-secondary)]">
+      <section className="section bg-[var(--bg-secondary)] rounded-lg">
         <div className="max-w-7xl mx-auto">
           <h2 className="section-title text-center mb-8 text-[var(--text-primary)]">
             {t("home.popularTags")}
@@ -363,7 +363,7 @@ const Home = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="relative overflow-hidden">
+      <section className="relative overflow-hidden rounded-tr-lg rounded-tl-lg">
         {/* 透かし画像 */}
         <img
           src={randomCtaImage}

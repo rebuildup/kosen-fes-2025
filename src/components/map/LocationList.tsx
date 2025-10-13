@@ -2,6 +2,7 @@
 import { useLanguage } from "../../context/LanguageContext";
 import { Event, Exhibit, Stall } from "../../types/common";
 import UnifiedCard from "../../shared/components/ui/UnifiedCard";
+import { EventIcon, ExhibitIcon, PeopleIcon } from "../icons";
 
 // Type for non-sponsor items
 type NonSponsorItem = Event | Exhibit | Stall;
@@ -25,8 +26,17 @@ const LocationList = ({
 }: LocationListProps) => {
   const { t } = useLanguage();
 
-  // Sort locations alphabetically
-  const sortedLocations = [...locations].sort();
+  // Keep references to these props to avoid unused variable warnings
+  void hoveredLocation;
+  void selectedLocation;
+
+  // Sort locations by number of items (descending), then alphabetically
+  const sortedLocations = [...locations].sort((a, b) => {
+    const lenA = getItemsForLocation(a).length;
+    const lenB = getItemsForLocation(b).length;
+    if (lenA !== lenB) return lenB - lenA;
+    return a.localeCompare(b);
+  });
 
   return (
     <div
@@ -60,19 +70,7 @@ const LocationList = ({
               return (
                 <div
                   key={location}
-                  className={`
-                    flex-shrink-0 w-72 transition-all duration-200
-                    ${
-                      hoveredLocation === location
-                        ? "ring-2 ring-white/50 rounded-lg"
-                        : ""
-                    }
-                    ${
-                      selectedLocation === location
-                        ? "ring-2 ring-white/80 rounded-lg"
-                        : ""
-                    }
-                  `}
+                  className={`flex-shrink-0 w-72`}
                   onMouseEnter={() => onLocationHover(location)}
                   onMouseLeave={() => onLocationHover(null)}
                   onClick={() => onLocationSelect(location)}
@@ -106,11 +104,44 @@ const LocationList = ({
                           const stallCount = items.filter(
                             (item) => item.type === "stall"
                           ).length;
-                          const parts = [];
-                          if (eventCount > 0) parts.push(`🎭${eventCount}`);
-                          if (exhibitCount > 0) parts.push(`🏛️${exhibitCount}`);
-                          if (stallCount > 0) parts.push(`🍕${stallCount}`);
-                          return parts.join(" ");
+
+                          return (
+                            <div className="flex items-center gap-3">
+                              {eventCount > 0 && (
+                                <div
+                                  className="flex items-center gap-1"
+                                  aria-label={`${eventCount} イベント`}
+                                >
+                                  <EventIcon size={14} />
+                                  <span className="text-xs text-white">
+                                    {eventCount}
+                                  </span>
+                                </div>
+                              )}
+                              {exhibitCount > 0 && (
+                                <div
+                                  className="flex items-center gap-1"
+                                  aria-label={`${exhibitCount} 展示`}
+                                >
+                                  <ExhibitIcon size={14} />
+                                  <span className="text-xs text-white">
+                                    {exhibitCount}
+                                  </span>
+                                </div>
+                              )}
+                              {stallCount > 0 && (
+                                <div
+                                  className="flex items-center gap-1"
+                                  aria-label={`${stallCount} 出店`}
+                                >
+                                  <PeopleIcon size={14} />
+                                  <span className="text-xs text-white">
+                                    {stallCount}
+                                  </span>
+                                </div>
+                              )}
+                            </div>
+                          );
                         })()}
                       </div>
                     </div>

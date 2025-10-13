@@ -30,22 +30,6 @@ const NotFound = () => {
               404
             </div>
 
-            <div className="mb-8">
-              <svg
-                width="120"
-                height="120"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                className="mx-auto"
-                style={{ color: "var(--color-text-secondary)" }}
-              >
-                <circle cx="12" cy="12" r="10" />
-                <path d="M9 9L15 15M15 9L9 15" />
-              </svg>
-            </div>
-
             <h1 className="section-title">{t("errors.pageNotFound")}</h1>
             <p className="section-subtitle">
               {t("errors.pageNotFoundMessage")}

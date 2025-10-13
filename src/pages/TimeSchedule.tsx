@@ -50,9 +50,9 @@ const TimeSchedule = () => {
 
   const getStartMinutes = (timeRange: string) => {
     const [start] = timeRange.split(" - ");
-    const [hours, minutes] = start.split(":").map((value) =>
-      Number.parseInt(value, 10)
-    );
+    const [hours, minutes] = start
+      .split(":")
+      .map((value) => Number.parseInt(value, 10));
     return hours * 60 + minutes;
   };
 
@@ -123,9 +123,7 @@ const TimeSchedule = () => {
     const timeSlots = Array.from(
       new Set(items.map((item) => item.time.split(" - ")[0]))
     );
-    return timeSlots.sort(
-      (a, b) => getStartMinutes(a) - getStartMinutes(b)
-    );
+    return timeSlots.sort((a, b) => getStartMinutes(a) - getStartMinutes(b));
   };
 
   return (
@@ -142,7 +140,7 @@ const TimeSchedule = () => {
             <div className="flex space-x-2">
               <button
                 onClick={() => setSelectedDay("day1")}
-                className={`px-6 py-3 rounded-lg font-medium transition-all duration-200 ${
+                className={`px-16 py-3 rounded-lg text-sm font-medium transition-all duration-200 ${
                   selectedDay === "day1" ? "text-white" : ""
                 }`}
                 style={{
@@ -176,7 +174,7 @@ const TimeSchedule = () => {
               </button>
               <button
                 onClick={() => setSelectedDay("day2")}
-                className={`px-6 py-3 rounded-lg font-medium transition-all duration-200 ${
+                className={`px-16 py-3 rounded-lg font-medium transition-all duration-200 ${
                   selectedDay === "day2" ? "text-white" : ""
                 }`}
                 style={{

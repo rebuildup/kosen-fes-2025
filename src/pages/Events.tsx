@@ -76,7 +76,7 @@ const Events = () => {
   return (
     <div className="min-h-screen bg-[var(--bg-primary)]">
       {/* Hero Section */}
-      <section className="relative overflow-hidden py-16">
+      <section className="relative overflow-hidden py-16  rounded-lg">
         {/* 透かし画像 */}
         <img
           src={heroImage}

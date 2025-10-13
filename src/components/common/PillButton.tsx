@@ -37,7 +37,7 @@ const PillButton = ({
     transition-all duration-300 focus:outline-none focus:ring-2 
     focus:ring-offset-2 disabled:opacity-50 
     disabled:cursor-not-allowed transform
-    group shadow-md glass-button glass-interactive
+    group glass-button glass-interactive
     ${sizeClasses[size]} ${className}
   `;
 
@@ -70,7 +70,7 @@ const PillButton = ({
 
   // Enhanced arrow icon with animation
   const ArrowIcon = () => (
-    <span className="ml-1/2 flex-shrink-0">
+    <span className="transition-all duration-200 group-hover:translate-x-1/12 ml-1/2 flex-shrink-0">
       <ArrowRight size={16} />
     </span>
   );
