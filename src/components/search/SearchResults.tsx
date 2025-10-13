@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback } from "react";
 import { useSearch } from "../../context/SearchContext";
 import { useLanguage } from "../../context/LanguageContext";
 import { useTag } from "../../context/TagContext";
+import { useData } from "../../context/DataContext";
 import { Item } from "../../types/common";
 import CardGrid from "../common/CardGrid";
 import CardListToggle from "../common/CardListToggle";
@@ -17,6 +18,7 @@ const SearchResults = () => {
   const { searchQuery, searchResults, isSearching } = useSearch();
   const { t } = useLanguage();
   const { selectedTags } = useTag();
+  const { filterByTags } = useData();
 
   const [viewMode, setViewMode] = useState<
     "default" | "compact" | "grid" | "list"
@@ -40,8 +42,20 @@ const SearchResults = () => {
 
   // Apply both search and tag filtering
   useEffect(() => {
-    // Apply tag filtering to search results
-    const tagFilteredResults = filterItemsBySelectedTags(searchResults);
+    const normalizedQuery = searchQuery.trim();
+    let baseResults = searchResults as Item[];
+
+    if (!normalizedQuery) {
+      baseResults =
+        selectedTags.length > 0
+          ? (filterByTags(selectedTags) as unknown as Item[])
+          : [];
+    }
+
+    const tagFilteredResults =
+      selectedTags.length > 0
+        ? filterItemsBySelectedTags(baseResults)
+        : baseResults;
 
     // Group results by type
     const groupedResults: FilteredResults = {
@@ -61,7 +75,13 @@ const SearchResults = () => {
     });
 
     setFilteredResults(groupedResults);
-  }, [searchResults, filterItemsBySelectedTags]);
+  }, [
+    searchResults,
+    filterItemsBySelectedTags,
+    selectedTags,
+    searchQuery,
+    filterByTags,
+  ]);
 
   // Highlight matching text
   const highlightSearchQuery = (text: string, query: string): ReactNode => {

@@ -125,7 +125,7 @@ const Events = () => {
             </div>
 
             {/* Tag Filtering */}
-            <TagFilter onFilter={() => {}} compact={true} />
+            <TagFilter compact={true} />
             <SelectedTags />
 
             {/* Events Grid */}

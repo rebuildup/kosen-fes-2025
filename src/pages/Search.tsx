@@ -2,7 +2,6 @@ import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { useSearch } from "../context/SearchContext";
 import { useLanguage } from "../context/LanguageContext";
-import { useTag } from "../context/TagContext";
 import SearchBar from "../components/common/SearchBar";
 import SearchResults from "../components/search/SearchResults";
 import TagFilter from "../components/common/TagFilter";
@@ -10,22 +9,16 @@ import TagFilter from "../components/common/TagFilter";
 const Search = () => {
   const { searchQuery, setSearchQuery, performSearch } = useSearch();
   const { t } = useLanguage();
-  const { selectTag } = useTag();
   const location = useLocation();
 
   // Extract search query and tag from URL when location changes
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const queryParam = params.get("q");
-    const tagParam = params.get("tag");
 
     if (queryParam && queryParam !== searchQuery) {
       setSearchQuery(queryParam);
       performSearch(queryParam);
-    }
-
-    if (tagParam) {
-      selectTag(tagParam);
     }
   }, [location.search]);
 
@@ -83,7 +76,7 @@ const Search = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="space-y-8">
             {/* Tag Search Section - タグで検索機能に変更 */}
-            <TagFilter onFilter={() => {}} compact={false} />
+            <TagFilter compact={false} />
 
             {/* Search Results */}
             <div className="bg-[var(--bg-primary)] rounded-xl">

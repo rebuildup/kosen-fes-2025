@@ -2,7 +2,7 @@ import { useLanguage } from "../../context/LanguageContext";
 import TagFilter from "../common/TagFilter";
 
 interface FilterPanelProps {
-  onFilterChange: () => void;
+  onFilterChange?: (tag: string) => void;
 }
 
 const FilterPanel = ({ onFilterChange }: FilterPanelProps) => {

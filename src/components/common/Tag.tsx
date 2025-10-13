@@ -35,9 +35,9 @@ const Tag = ({
       // Animation for when tag becomes active with scale and glow effect
       gsap.fromTo(
         tagRef.current,
-        { scale: 0.95 },
+        { scale: 1 },
         {
-          scale: 1.05,
+          scale: 1.0,
           duration: DURATION.FAST,
           ease: "back.out(1.7)",
           yoyo: true,
@@ -62,7 +62,7 @@ const Tag = ({
     if (tagRef.current) {
       gsap.fromTo(
         tagRef.current,
-        { scale: 0.9 },
+        { scale: 1 },
         {
           scale: 1,
           duration: DURATION.FAST / 2,
@@ -88,14 +88,13 @@ const Tag = ({
   const baseClasses = `
     inline-flex items-center gap-1 rounded-full font-medium 
     transition-all duration-300 border cursor-pointer
-    transform hover:scale-105 shadow-sm hover:shadow-md
   `;
 
   // Dynamic styling with Instagram gradient for active state
   const getTagClasses = () => {
     if (isActive) {
       return `
-        text-white border-0 shadow-lg
+        text-white
         bg-gradient-to-r from-[var(--accent-purple)] to-[var(--accent-pink)]
         hover:from-[var(--accent-pink)] hover:to-[var(--accent-red)]
       `;

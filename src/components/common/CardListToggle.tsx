@@ -1,5 +1,6 @@
 import { useLanguage } from "../../context/LanguageContext";
-import TabButtons from "./TabButtons";
+import TabButtons, { TabOption } from "./TabButtons";
+import { Grip, LayoutGrid, Menu } from "lucide-react";
 
 interface CardListToggleProps {
   viewMode: "default" | "compact" | "grid" | "list";
@@ -14,18 +15,18 @@ const CardListToggle = ({
 }: CardListToggleProps) => {
   const { t } = useLanguage();
 
-  const viewOptions = [
+  const viewOptions: TabOption[] = [
     {
       value: "default",
-      label: "⊞",
+      label: <LayoutGrid size={16} />,
     },
     {
       value: "compact",
-      label: "☰",
+      label: <Grip size={16} />,
     },
     {
       value: "list",
-      label: "⋯",
+      label: <Menu size={16} />,
     },
   ];
 

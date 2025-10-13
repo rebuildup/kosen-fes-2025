@@ -113,7 +113,7 @@ const Map = () => {
           <div className="space-y-6">
             {/* Filter Section */}
             <div className="space-y-4">
-              <TagFilter onFilter={() => {}} compact={true} />
+              <TagFilter compact={true} />
               <SelectedTags />
             </div>
 

@@ -64,58 +64,103 @@ export const TagProvider = ({ children }: TagProviderProps) => {
     return a.localeCompare(b);
   });
 
-  // Extract tag from URL when location changes - 依存配列を最小化
+  const syncTagsWithUrl = useCallback(
+    (tagsToSync: string[], options?: { replace?: boolean }) => {
+      const params = new URLSearchParams(location.search);
+
+      if (tagsToSync.length > 0) {
+        const encoded = tagsToSync.map((tag) => encodeURIComponent(tag));
+        params.set("tag", encoded.join(","));
+      } else {
+        params.delete("tag");
+      }
+
+      const nextSearch = params.toString();
+      const currentSearch = location.search.replace(/^\?/, "");
+
+      if (nextSearch === currentSearch) {
+        return;
+      }
+
+      const target = `${location.pathname}${
+        nextSearch ? `?${nextSearch}` : ""
+      }${location.hash ?? ""}`;
+
+      navigate(target, { replace: options?.replace ?? true });
+    },
+    [location.hash, location.pathname, location.search, navigate]
+  );
+
+  // Extract tags from URL when location changes
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const tagParam = params.get("tag");
 
-    if (
-      tagParam &&
-      allTags.includes(tagParam) &&
-      !selectedTags.includes(tagParam)
-    ) {
-      setSelectedTags([tagParam]);
+    if (!tagParam) {
+      if (selectedTags.length > 0) {
+        setSelectedTags([]);
+      }
+      return;
     }
-  }, [location.search, allTags.join("")]); // allTagsの内容変化のみ監視
+
+    const decodedTags = tagParam
+      .split(",")
+      .map((tag) => decodeURIComponent(tag.trim()))
+      .filter((tag) => allTags.includes(tag));
+
+    if (decodedTags.length === 0) {
+      if (selectedTags.length > 0) {
+        setSelectedTags([]);
+      }
+      return;
+    }
+
+    const isSameLength = decodedTags.length === selectedTags.length;
+    const isSameOrder =
+      isSameLength &&
+      decodedTags.every((tag, index) => tag === selectedTags[index]);
+
+    if (!isSameOrder) {
+      setSelectedTags(decodedTags);
+    }
+  }, [location.search, allTags.join(""), selectedTags]);
 
   // Toggle a tag (add if not selected, remove if selected)
-  const toggleTag = useCallback((tag: string) => {
-    setSelectedTags((prev) =>
-      prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
-    );
-  }, []);
+  const toggleTag = useCallback(
+    (tag: string) => {
+      setSelectedTags((prev) => {
+        const next = prev.includes(tag)
+          ? prev.filter((t) => t !== tag)
+          : [...prev, tag];
+
+        syncTagsWithUrl(next);
+        return next;
+      });
+    },
+    [syncTagsWithUrl]
+  );
 
   // Select a single tag (replace current selection)
   const selectTag = useCallback(
     (tag: string) => {
-      setSelectedTags([tag]);
+      setSelectedTags((prev) => {
+        if (prev.length === 1 && prev[0] === tag) {
+          return prev;
+        }
 
-      // Update URL with tag parameter
-      const params = new URLSearchParams(location.search);
-      params.set("tag", tag);
-
-      // Navigate to search page if not already there
-      if (location.pathname !== "/search") {
-        navigate(`/search?${params.toString()}`);
-      } else {
-        navigate(`${location.pathname}?${params.toString()}`);
-      }
+        const next = [tag];
+        syncTagsWithUrl(next);
+        return next;
+      });
     },
-    [navigate, location.pathname, location.search]
+    [syncTagsWithUrl]
   );
 
   // Clear all selected tags
   const clearTags = useCallback(() => {
     setSelectedTags([]);
-
-    // Remove tag parameter from URL
-    const params = new URLSearchParams(location.search);
-    params.delete("tag");
-
-    navigate(
-      `${location.pathname}${params.toString() ? `?${params.toString()}` : ""}`
-    );
-  }, [navigate, location.pathname, location.search]);
+    syncTagsWithUrl([], { replace: true });
+  }, [syncTagsWithUrl]);
 
   // Check if a tag is currently selected
   const isTagSelected = useCallback(

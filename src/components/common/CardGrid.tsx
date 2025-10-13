@@ -1,4 +1,5 @@
 import { useMemo, useState, useEffect } from "react";
+import { MonitorX } from "lucide-react";
 import { Item } from "../../types/common";
 import UnifiedCard from "../../shared/components/ui/UnifiedCard";
 import { useLanguage } from "../../context/LanguageContext";
@@ -122,19 +123,7 @@ const CardGrid = ({
     return (
       <div className="flex flex-col items-center justify-center py-16 text-center">
         <div className="text-gray-400 dark:text-gray-500 mb-4">
-          <svg
-            className="w-16 h-16 mx-auto"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={1}
-              d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2M4 13h2m13-8V4a1 1 0 00-1-1H7a1 1 0 00-1 1v1"
-            />
-          </svg>
+          <MonitorX className="w-16 h-16 mx-auto" />
         </div>
         <p className="text-lg text-gray-600 dark:text-gray-400">
           {emptyMessage || getDefaultEmptyMessage()}

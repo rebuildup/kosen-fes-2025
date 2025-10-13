@@ -1,8 +1,8 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, ReactNode } from "react";
 
-interface TabOption {
+export interface TabOption {
   value: string;
-  label: string;
+  label: string | ReactNode;
 }
 
 interface TabButtonsProps {

@@ -210,7 +210,7 @@ const TimeSchedule = () => {
 
             {/* Filters */}
             <div className="space-y-4">
-              <TagFilter onFilter={() => {}} compact={true} />
+              <TagFilter compact={true} />
               <SelectedTags />
             </div>
 

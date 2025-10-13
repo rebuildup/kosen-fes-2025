@@ -1,16 +1,15 @@
 import { useState, useRef } from "react";
-import { useSearch } from "../../context/SearchContext";
+import Tag from "./Tag";
 import { useTag } from "../../context/TagContext";
 import { useLanguage } from "../../context/LanguageContext";
 
 interface TagFilterProps {
-  onFilter?: () => void;
+  onFilter?: (tag: string) => void;
   compact?: boolean;
 }
 
 const TagFilter = ({ onFilter, compact = false }: TagFilterProps) => {
-  const { tags, tagCounts } = useTag();
-  const { performSearch } = useSearch();
+  const { tags, tagCounts, toggleTag, isTagSelected } = useTag();
   const { t } = useLanguage();
   const [searchValue, setSearchValue] = useState("");
   const tagContainerRef = useRef<HTMLDivElement>(null);
@@ -22,8 +21,10 @@ const TagFilter = ({ onFilter, compact = false }: TagFilterProps) => {
 
   // タグをクリックした時に検索を実行
   const handleTagClick = (tag: string) => {
-    performSearch(tag);
-    if (onFilter) onFilter();
+    toggleTag(tag);
+    if (onFilter) {
+      onFilter(tag);
+    }
   };
 
   return (
@@ -42,7 +43,7 @@ const TagFilter = ({ onFilter, compact = false }: TagFilterProps) => {
               placeholder={t("tags.searchTags")}
               value={searchValue}
               onChange={(e) => setSearchValue(e.target.value)}
-              className="w-full px-4 py-3 border rounded-lg text-sm transition-all duration-200 focus:ring-2 focus:ring-opacity-50 bg-[var(--bg-primary)] border-[var(--border-color)] text-[var(--text-primary)] placeholder-[var(--text-secondary)] focus:border-[var(--primary-color)] focus:ring-[var(--primary-color)]/20"
+              className="w-full px-4 py-3 border rounded-lg text-sm transition-all duration-200 focus:ring-2 bg-[var(--bg-primary)] border-[var(--border-color)] placeholder-[var(--text-secondary)] focus:border-[var(--primary-color)] focus:ring-[var(--primary-color)]/20"
             />
             <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
               <svg
@@ -71,18 +72,15 @@ const TagFilter = ({ onFilter, compact = false }: TagFilterProps) => {
             </div>
           ) : (
             filteredTags.map((tag) => (
-              <button
+              <Tag
                 key={tag}
-                onClick={() => handleTagClick(tag)}
-                className="px-3 py-1 text-sm rounded-full border transition-all duration-200 hover:scale-105 bg-[var(--bg-primary)] border-[var(--border-color)] text-[var(--text-primary)] hover:bg-gradient-to-r hover:from-[var(--accent-purple)] hover:to-[var(--accent-pink)] hover:text-white hover:border-transparent hover:shadow-md"
-              >
-                {tag}
-                {tagCounts[tag] && (
-                  <span className="ml-1 text-xs opacity-70">
-                    {tagCounts[tag]}
-                  </span>
-                )}
-              </button>
+                tag={tag}
+                count={tagCounts[tag]}
+                size={compact ? "small" : "medium"}
+                onClick={handleTagClick}
+                role="option"
+                aria-selected={isTagSelected(tag)}
+              />
             ))
           )}
         </div>

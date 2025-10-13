@@ -139,7 +139,7 @@ const Exhibits = () => {
             </div>
 
             {/* Tag Filtering */}
-            <TagFilter onFilter={() => {}} compact={true} />
+            <TagFilter compact={true} />
             <SelectedTags />
 
             {/* Exhibits Grid */}
