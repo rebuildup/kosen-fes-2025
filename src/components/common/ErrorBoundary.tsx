@@ -75,4 +75,7 @@ class ErrorBoundary extends Component<Props, State> {
 }
 
 // HOC to wrap ErrorBoundary with language context
-export default withLanguage(ErrorBoundary);
+const ErrorBoundaryWithLanguage = withLanguage(ErrorBoundary);
+ErrorBoundaryWithLanguage.displayName = "ErrorBoundaryWithLanguage";
+
+export default ErrorBoundaryWithLanguage;

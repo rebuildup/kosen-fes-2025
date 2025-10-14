@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import {
   createContext,
   useContext,
@@ -10,7 +11,7 @@ import dataManager from "../data/dataManager";
 
 interface BookmarkContextType {
   bookmarks: string[];
-  bookmarkedItems: any[];
+  bookmarkedItems: Item[];
   addBookmark: (id: string) => void;
   removeBookmark: (id: string) => void;
   toggleBookmark: (id: string) => void;
@@ -48,12 +49,12 @@ export const BookmarkProvider = ({ children }: BookmarkProviderProps) => {
   });
 
   // Get all items and filter by bookmarked IDs
-  const [bookmarkedItems, setBookmarkedItems] = useState<any[]>([]);
+  const [bookmarkedItems, setBookmarkedItems] = useState<Item[]>([]);
 
   // Update bookmarked items when bookmarks change
   useEffect(() => {
     // Use dataManager to get items by IDs
-    const items = dataManager.getItemsByIds(bookmarks);
+    const items = dataManager.getFullItemsByIds(bookmarks);
     setBookmarkedItems(items);
 
     // Save bookmarks to localStorage

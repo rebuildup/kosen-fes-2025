@@ -17,7 +17,7 @@ export const loadTranslations = async (
     return await response.json();
   } catch (error) {
     console.error("Error loading translations:", error);
-    return {};
+    return {} as Translations;
   }
 };
 
@@ -27,11 +27,15 @@ export const getTranslationValue = (
   key: string
 ): string => {
   const keys = key.split(".");
-  let result: any = translations;
+  let result: Translations | string = translations;
 
   for (const k of keys) {
-    if (result && typeof result === "object" && k in result) {
-      result = result[k];
+    if (typeof result === "object" && result !== null) {
+      const value: string | Translations | undefined = (result as Translations)[k];
+      if (value === undefined) {
+        return key; // Return the key if the translation is not found
+      }
+      result = value;
     } else {
       return key; // Return the key if the translation is not found
     }

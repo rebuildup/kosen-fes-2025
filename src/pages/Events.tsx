@@ -36,7 +36,7 @@ const Events = () => {
     // Simulate loading delay for demonstration
     const timer = setTimeout(() => {
       // Get all events from dataManager
-      let filtered = dataManager.getAllEvents() as Item[];
+      let filtered = dataManager.getAllEvents();
 
       // Filter by day
       if (dateFilter !== "all") {
@@ -45,7 +45,7 @@ const Events = () => {
             return false;
           }
 
-          const dayAvailability = (event as any).dayAvailability;
+          const dayAvailability = event.dayAvailability;
           if (dayAvailability === "both") {
             return true;
           }

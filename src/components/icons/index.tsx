@@ -21,11 +21,9 @@ import {
   Trash2,
 } from "lucide-react";
 
-export interface IconProps {
+export interface IconProps extends React.SVGProps<SVGSVGElement> {
   size?: number;
   color?: string;
-  className?: string;
-  [key: string]: any;
 }
 
 export const Icon: React.FC<IconProps & { children?: React.ReactNode }> = ({

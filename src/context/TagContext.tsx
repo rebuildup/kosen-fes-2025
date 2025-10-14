@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import {
   createContext,
   useContext,
@@ -18,7 +19,7 @@ interface TagContextType {
   selectTag: (tag: string) => void;
   clearTags: () => void;
   isTagSelected: (tag: string) => boolean;
-  filterItemsByTags: (items: any[]) => any[];
+  filterItemsByTags: <T extends { tags?: string[] }>(items: T[]) => T[];
 }
 
 const TagContext = createContext<TagContextType>({
@@ -123,7 +124,7 @@ export const TagProvider = ({ children }: TagProviderProps) => {
     if (!isSameOrder) {
       setSelectedTags(decodedTags);
     }
-  }, [location.search, allTags.join(""), selectedTags]);
+  }, [location.search, allTags, selectedTags]);
 
   // Toggle a tag (add if not selected, remove if selected)
   const toggleTag = useCallback(
@@ -172,7 +173,7 @@ export const TagProvider = ({ children }: TagProviderProps) => {
 
   // Filter items by selected tags
   const filterItemsByTags = useCallback(
-    (items: any[]): any[] => {
+    <T extends { tags?: string[] }>(items: T[]): T[] => {
       if (selectedTags.length === 0) return items;
       return items.filter((item) =>
         selectedTags.every((tag) => item.tags?.includes(tag))

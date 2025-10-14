@@ -7,11 +7,17 @@ import {
   SponsorCore,
   MapData,
   DataState,
+  ItemDetails,
 } from "../types/data";
+import type { Item, Event, Exhibit, Stall, Sponsor } from "../types/common";
 import { events } from "./events";
 import { exhibits } from "./exhibits";
 import { stalls } from "./stalls";
 import { sponsors } from "./sponsors";
+
+type StallDetails = ItemDetails & { products: string[] };
+type SponsorDetails = ItemDetails & { website?: string; contactEmail?: string };
+type CachedDetails = ItemDetails | StallDetails | SponsorDetails;
 
 // Helper to create data state
 const createDataState = <T>(data: T): DataState<T> => ({
@@ -30,7 +36,10 @@ const createLoadingState = <T>(): DataState<T> => ({
 });
 
 // Helper to split data into core and details
-const splitEventData = (event: any): { core: EventCore; details: any } => ({
+const splitEventData = (event: Event): {
+  core: EventCore;
+  details: ItemDetails;
+} => ({
   core: {
     id: event.id,
     type: event.type,
@@ -52,8 +61,8 @@ const splitEventData = (event: any): { core: EventCore; details: any } => ({
 });
 
 const splitExhibitData = (
-  exhibit: any
-): { core: ExhibitCore; details: any } => ({
+  exhibit: Exhibit
+): { core: ExhibitCore; details: ItemDetails } => ({
   core: {
     id: exhibit.id,
     type: exhibit.type,
@@ -70,7 +79,9 @@ const splitExhibitData = (
   },
 });
 
-const splitStallData = (stall: any): { core: StallCore; details: any } => ({
+const splitStallData = (
+  stall: Stall
+): { core: StallCore; details: StallDetails } => ({
   core: {
     id: stall.id,
     type: stall.type,
@@ -88,8 +99,8 @@ const splitStallData = (stall: any): { core: StallCore; details: any } => ({
 });
 
 const splitSponsorData = (
-  sponsor: any
-): { core: SponsorCore; details: any } => ({
+  sponsor: Sponsor
+): { core: SponsorCore; details: SponsorDetails } => ({
   core: {
     id: sponsor.id,
     type: sponsor.type,
@@ -109,7 +120,8 @@ const splitSponsorData = (
 
 class DataManager {
   private store: DataStore;
-  private detailsCache = new Map<string, any>();
+  private detailsCache = new Map<string, CachedDetails>();
+  private fullItemIndex = new Map<string, Item>();
 
   constructor() {
     // Initialize core data immediately
@@ -131,6 +143,18 @@ class DataManager {
     sponsorData.forEach(({ details }, index) => {
       this.detailsCache.set(`sponsor-${sponsors[index].id}`, details);
     });
+    events.forEach((event) => {
+      this.fullItemIndex.set(event.id, event);
+    });
+    exhibits.forEach((exhibit) => {
+      this.fullItemIndex.set(exhibit.id, exhibit);
+    });
+    stalls.forEach((stall) => {
+      this.fullItemIndex.set(stall.id, stall);
+    });
+    sponsors.forEach((sponsor) => {
+      this.fullItemIndex.set(sponsor.id, sponsor);
+    });
 
     this.store = {
       // Core data (loaded immediately)
@@ -146,7 +170,7 @@ class DataManager {
       sponsorDetails: {},
 
       // Map data
-      mapData: createDataState(null as MapData | null),
+      mapData: createDataState<MapData | null>(null),
 
       // User data (loaded from localStorage)
       bookmarks: this.loadBookmarks(),
@@ -182,66 +206,112 @@ class DataManager {
   }
 
   // Get detailed data (loaded on-demand)
-  async getEventDetails(id: string): Promise<any> {
+  async getEventDetails(id: string): Promise<ItemDetails> {
     const cacheKey = `event-${id}`;
-    if (this.store.eventDetails[id]?.data) {
-      return this.store.eventDetails[id].data;
+    const cachedState = this.store.eventDetails[id]?.data;
+    if (cachedState) {
+      return cachedState;
     }
 
-    this.store.eventDetails[id] = createLoadingState();
+    this.store.eventDetails[id] = createLoadingState<ItemDetails>();
 
     // Simulate async loading (in real app, this would be an API call)
     await new Promise((resolve) => setTimeout(resolve, 100));
 
     const details = this.detailsCache.get(cacheKey);
-    this.store.eventDetails[id] = createDataState(details);
+    const eventDetails: ItemDetails =
+      details && "description" in details
+        ? { description: details.description }
+        : { description: "" };
 
-    return details;
+    this.store.eventDetails[id] =
+      createDataState<ItemDetails>(eventDetails);
+
+    return eventDetails;
   }
 
-  async getExhibitDetails(id: string): Promise<any> {
+  async getExhibitDetails(id: string): Promise<ItemDetails> {
     const cacheKey = `exhibit-${id}`;
-    if (this.store.exhibitDetails[id]?.data) {
-      return this.store.exhibitDetails[id].data;
+    const cachedState = this.store.exhibitDetails[id]?.data;
+    if (cachedState) {
+      return cachedState;
     }
 
-    this.store.exhibitDetails[id] = createLoadingState();
+    this.store.exhibitDetails[id] = createLoadingState<ItemDetails>();
     await new Promise((resolve) => setTimeout(resolve, 100));
 
     const details = this.detailsCache.get(cacheKey);
-    this.store.exhibitDetails[id] = createDataState(details);
+    const exhibitDetails: ItemDetails =
+      details && "description" in details
+        ? { description: details.description }
+        : { description: "" };
 
-    return details;
+    this.store.exhibitDetails[id] =
+      createDataState<ItemDetails>(exhibitDetails);
+
+    return exhibitDetails;
   }
 
-  async getStallDetails(id: string): Promise<any> {
+  async getStallDetails(id: string): Promise<StallDetails> {
     const cacheKey = `stall-${id}`;
-    if (this.store.stallDetails[id]?.data) {
-      return this.store.stallDetails[id].data;
+    const cachedState = this.store.stallDetails[id]?.data;
+    if (cachedState) {
+      const cachedDetails = cachedState as Partial<StallDetails>;
+      return {
+        description: cachedState.description,
+        products: Array.isArray(cachedDetails.products)
+          ? cachedDetails.products
+          : [],
+      };
     }
 
-    this.store.stallDetails[id] = createLoadingState();
+    this.store.stallDetails[id] = createLoadingState<ItemDetails>();
     await new Promise((resolve) => setTimeout(resolve, 100));
 
     const details = this.detailsCache.get(cacheKey);
-    this.store.stallDetails[id] = createDataState(details);
+    const stallDetailsSource = details as Partial<StallDetails> | undefined;
+    const products = Array.isArray(stallDetailsSource?.products)
+      ? (stallDetailsSource.products as string[])
+      : [];
+    const stallDetails: StallDetails = {
+      description: stallDetailsSource?.description ?? "",
+      products,
+    };
 
-    return details;
+    this.store.stallDetails[id] =
+      createDataState<ItemDetails>(stallDetails);
+
+    return stallDetails;
   }
 
-  async getSponsorDetails(id: string): Promise<any> {
+  async getSponsorDetails(id: string): Promise<SponsorDetails> {
     const cacheKey = `sponsor-${id}`;
-    if (this.store.sponsorDetails[id]?.data) {
-      return this.store.sponsorDetails[id].data;
+    const cachedState = this.store.sponsorDetails[id]?.data;
+    if (cachedState) {
+      const cachedDetails = cachedState as Partial<SponsorDetails>;
+      return {
+        description: cachedState.description,
+        website: cachedDetails.website,
+        contactEmail: cachedDetails.contactEmail,
+      };
     }
 
-    this.store.sponsorDetails[id] = createLoadingState();
+    this.store.sponsorDetails[id] = createLoadingState<ItemDetails>();
     await new Promise((resolve) => setTimeout(resolve, 100));
 
-    const details = this.detailsCache.get(cacheKey);
-    this.store.sponsorDetails[id] = createDataState(details);
+    const details = this.detailsCache.get(cacheKey) as
+      | Partial<SponsorDetails>
+      | undefined;
+    const sponsorDetails: SponsorDetails = {
+      description: details?.description ?? "",
+      website: details?.website,
+      contactEmail: details?.contactEmail,
+    };
 
-    return details;
+    this.store.sponsorDetails[id] =
+      createDataState<ItemDetails>(sponsorDetails);
+
+    return sponsorDetails;
   }
 
   // Get map data
@@ -250,13 +320,13 @@ class DataManager {
   }
 
   // Search functionality
-  searchItems(query: string): ItemCore[] {
+  searchItems(query: string): Item[] {
     if (!query.trim()) return [];
 
     const normalizedQuery = query.toLowerCase().trim();
     const allItems = this.getAllCoreItems();
 
-    return allItems.filter((item) => {
+    const matchedCores = allItems.filter((item) => {
       return (
         item.title.toLowerCase().includes(normalizedQuery) ||
         item.tags.some((tag: string) =>
@@ -265,6 +335,10 @@ class DataManager {
         item.location.toLowerCase().includes(normalizedQuery)
       );
     });
+
+    return matchedCores
+      .map((core) => this.fullItemIndex.get(core.id))
+      .filter((item): item is Item => Boolean(item));
   }
 
   filterByTags(tags: string[]): ItemCore[] {
@@ -351,20 +425,20 @@ class DataManager {
     return this.store.preferences;
   }
 
-  getAllEvents(): any[] {
-    return this.getCoreEvents() as any[];
+  getAllEvents(): Event[] {
+    return events;
   }
 
-  getAllExhibits(): any[] {
-    return this.getCoreExhibits() as any[];
+  getAllExhibits(): Exhibit[] {
+    return exhibits;
   }
 
-  getAllStalls(): any[] {
-    return this.getCoreStalls() as any[];
+  getAllStalls(): Stall[] {
+    return stalls;
   }
 
-  getAllSponsors(): any[] {
-    return this.getCoreSponsors() as any[];
+  getAllSponsors(): Sponsor[] {
+    return sponsors;
   }
 
   getAllTags(): string[] {
@@ -395,13 +469,15 @@ class DataManager {
       .map(([tag]) => tag);
   }
 
+  getFullItemsByIds(ids: string[]): Item[] {
+    return ids
+      .map((id) => this.fullItemIndex.get(id))
+      .filter((item): item is Item => Boolean(item));
+  }
+
   getItemsByIds(ids: string[]): ItemCore[] {
     const allItems = this.getAllCoreItems();
     return allItems.filter((item) => ids.includes(item.id));
-  }
-
-  filterItemsByTags(items: ItemCore[], tags: string[]): ItemCore[] {
-    return items.filter((item) => tags.every((tag) => item.tags.includes(tag)));
   }
 }
 

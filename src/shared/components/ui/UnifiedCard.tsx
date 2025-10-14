@@ -48,6 +48,7 @@ export const UnifiedCard = React.memo(
     const imageRef = useRef<HTMLImageElement>(null);
     const metaRef = useRef<HTMLDivElement>(null);
     const tagsRef = useRef<HTMLDivElement>(null);
+    const hoverTimelineRef = useRef<gsap.core.Timeline | null>(null);
 
     // Initialize component after first render to prevent flash
     useEffect(() => {
@@ -133,11 +134,6 @@ export const UnifiedCard = React.memo(
       return placeholderImage;
     }, [hasImageError, item, placeholderImage]);
 
-    // Whether the current image is one of the placeholder images
-    const isPlaceholderImage = useMemo(() => {
-      return imageSrc.includes("placeholder");
-    }, [imageSrc]);
-
     // Format text with highlighting if provided
     const formatText = useCallback(
       (text: string) => {
@@ -214,10 +210,11 @@ export const UnifiedCard = React.memo(
       }
 
       // Store timeline for cleanup
-      (card as any)._hoverTimeline = hoverTimeline;
+      hoverTimelineRef.current = hoverTimeline;
 
       return () => {
         hoverTimeline.kill();
+        hoverTimelineRef.current = null;
       };
     }, [variant, showTags, showAnimation]);
 
@@ -228,7 +225,7 @@ export const UnifiedCard = React.memo(
 
       // If animations enabled, play timeline
       if (!showAnimation) return;
-      const timeline = (cardRef.current as any)?._hoverTimeline;
+      const timeline = hoverTimelineRef.current;
       if (timeline) {
         timeline.play();
       }
@@ -240,7 +237,7 @@ export const UnifiedCard = React.memo(
 
       // If animations enabled, reverse timeline
       if (!showAnimation) return;
-      const timeline = (cardRef.current as any)?._hoverTimeline;
+      const timeline = hoverTimelineRef.current;
       if (timeline) {
         timeline.reverse();
       }
@@ -351,20 +348,33 @@ export const UnifiedCard = React.memo(
       const cardContent = (
         <article
           ref={cardRef}
-          className={`relative rounded-xl overflow-hidden h-64 ${className}`}
+          className={`relative rounded-xl overflow-hidden h-64 transition-all duration-300 ease-[cubic-bezier(0,1,0.5,1)] ${className}`}
+          style={{
+            transform: isHovered ? "translateY(-4px)" : "translateY(0)",
+            boxShadow: isHovered
+              ? "0 12px 24px rgba(0, 0, 0, 0.2)"
+              : "0 4px 6px rgba(0, 0, 0, 0.1)",
+          }}
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
           onClick={handleCardClick}
         >
           {/* Full Background Image */}
-          <div className="absolute inset-0">
+          <div className="absolute inset-0 overflow-hidden flex items-center justify-center">
             <img
               ref={imageRef}
               src={imageSrc}
               alt={item.title}
               onLoad={handleImageLoad}
               onError={handleImageError}
-              className="w-full h-full object-cover"
+              className="card-image-no-invert transition-all duration-300 ease-[cubic-bezier(0,1,0.5,1)]"
+              style={{
+                width: isHovered ? "100%" : "110%",
+                height: isHovered ? "100%" : "110%",
+                objectFit: "cover",
+                minWidth: "100%",
+                minHeight: "100%",
+              }}
               loading="lazy"
             />
           </div>
@@ -558,11 +568,11 @@ export const UnifiedCard = React.memo(
               style={{
                 display: !isInitialized ? "none" : isHovered ? "flex" : "none",
                 opacity: !isInitialized ? 0 : isHovered ? 1 : 0,
-                pointerEvents: (!isInitialized
+                pointerEvents: !isInitialized
                   ? "none"
                   : isHovered
                   ? "auto"
-                  : "none") as any,
+                  : "none",
                 transition: "opacity 120ms linear",
               }}
             >
@@ -827,21 +837,36 @@ export const UnifiedCard = React.memo(
       const cardContent = (
         <div
           ref={cardRef}
-          className={`relative group cursor-pointer rounded-lg overflow-hidden bg-white/5 border border-white/10 aspect-[4/3] ${className}`}
+          className={`relative group cursor-pointer rounded-lg overflow-hidden bg-white/5 border border-white/10 aspect-[4/3] transition-all duration-300 ease-[cubic-bezier(0,1,0.5,1)] ${className}`}
+          style={{
+            transform: isHovered ? "translateY(-4px)" : "translateY(0)",
+            boxShadow: isHovered
+              ? "0 10px 20px rgba(0, 0, 0, 0.15)"
+              : "0 2px 4px rgba(0, 0, 0, 0.1)",
+          }}
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
           onClick={handleCardClick}
         >
           {/* Background Image */}
-          <img
-            ref={imageRef}
-            src={imageSrc}
-            alt={item.title}
-            className="w-full h-full object-cover card-image-no-invert"
-            onLoad={handleImageLoad}
-            onError={handleImageError}
-            loading="lazy"
-          />
+          <div className="absolute inset-0 overflow-hidden flex items-center justify-center">
+            <img
+              ref={imageRef}
+              src={imageSrc}
+              alt={item.title}
+              className="card-image-no-invert transition-all duration-300 ease-[cubic-bezier(0,1,0.5,1)]"
+              style={{
+                width: isHovered ? "100%" : "110%",
+                height: isHovered ? "100%" : "110%",
+                objectFit: "cover",
+                minWidth: "100%",
+                minHeight: "100%",
+              }}
+              onLoad={handleImageLoad}
+              onError={handleImageError}
+              loading="lazy"
+            />
+          </div>
 
           {/* Content overlay */}
           <div className="absolute inset-0 text-white">
@@ -867,12 +892,12 @@ export const UnifiedCard = React.memo(
 
             {/* Title Only - Always Visible (hide when hovered) */}
             <div
-              className={`absolute bottom-0 left-0 right-0 p-3`}
+              className={`absolute bottom-0 left-0 right-0 p-3 transition-all duration-300 ease-[cubic-bezier(0,1,0.5,1)]`}
               style={{
                 visibility: isHovered ? "hidden" : "visible",
                 opacity: isHovered ? 0 : 1,
+                transform: isHovered ? "translateY(10px)" : "translateY(0)",
                 pointerEvents: isHovered ? "none" : "auto",
-                transition: "opacity 120ms linear",
               }}
             >
               <h3 className="font-semibold text-lg truncate card-foreground">
@@ -882,24 +907,24 @@ export const UnifiedCard = React.memo(
 
             {/* Hover overlay with view details button (show when hovered) */}
             <div
-              className="absolute inset-0 p-4 pb-6 flex flex-col justify-end items-center"
+              className="absolute inset-0 p-3 pb-4 flex flex-col justify-end items-center transition-all duration-300 ease-[cubic-bezier(0,1,0.5,1)]"
               style={{
                 visibility: isHovered ? "visible" : "hidden",
                 opacity: isHovered ? 1 : 0,
+                transform: isHovered ? "translateY(0)" : "translateY(20px)",
                 pointerEvents: isHovered ? "auto" : "none",
-                transition: "opacity 120ms linear",
               }}
             >
-              <div className="text-center space-y-3 w-full">
+              <div className="text-center space-y-2 w-full">
                 <div className="overflow-hidden">
                   <h3
-                    className={`text-lg font-semibold whitespace-nowrap truncate card-foreground`}
+                    className={`text-base font-semibold whitespace-nowrap truncate card-foreground`}
                   >
                     {formatText(item.title)}
                   </h3>
                 </div>
 
-                <div className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium card-foreground border border-white/40 rounded-md">
+                <div className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium card-foreground border border-white/40 rounded-md">
                   {t("actions.viewDetails")}
                   <span>→</span>
                 </div>
@@ -928,21 +953,36 @@ export const UnifiedCard = React.memo(
     const cardContent = (
       <div
         ref={cardRef}
-        className={`relative group cursor-pointer rounded-lg overflow-hidden bg-white/5 border border-white/10 aspect-[4/3] ${className}`}
+        className={`relative group cursor-pointer rounded-lg overflow-hidden bg-white/5 border border-white/10 aspect-[4/3] transition-all duration-300 ease-[cubic-bezier(0,1,0.5,1)] ${className}`}
+        style={{
+          transform: isHovered ? "translateY(-4px)" : "translateY(0)",
+          boxShadow: isHovered
+            ? "0 10px 20px rgba(0, 0, 0, 0.15)"
+            : "0 2px 4px rgba(0, 0, 0, 0.1)",
+        }}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
         onClick={handleCardClick}
       >
         {/* Background Image */}
-        <img
-          ref={imageRef}
-          src={imageSrc}
-          alt={item.title}
-          className="w-full h-full object-cover card-image-no-invert"
-          onLoad={handleImageLoad}
-          onError={handleImageError}
-          loading="lazy"
-        />
+        <div className="absolute inset-0 overflow-hidden flex items-center justify-center">
+          <img
+            ref={imageRef}
+            src={imageSrc}
+            alt={item.title}
+            className="card-image-no-invert transition-all duration-300 ease-[cubic-bezier(0,1,0.5,1)]"
+            style={{
+              width: isHovered ? "100%" : "110%",
+              height: isHovered ? "100%" : "110%",
+              objectFit: "cover",
+              minWidth: "100%",
+              minHeight: "100%",
+            }}
+            onLoad={handleImageLoad}
+            onError={handleImageError}
+            loading="lazy"
+          />
+        </div>
 
         {/* Content overlay */}
         <div className="absolute inset-0 text-white">
@@ -966,12 +1006,12 @@ export const UnifiedCard = React.memo(
           </button>{" "}
           {/* Basic Info - Visible when not hovered (use visibility to fully hide on hover) */}
           <div
-            className={`absolute bottom-0 left-0 right-0 p-3 space-y-1`}
+            className={`absolute bottom-0 left-0 right-0 p-3 space-y-1 transition-all duration-300 ease-[cubic-bezier(0,1,0.5,1)]`}
             style={{
               visibility: isHovered ? "hidden" : "visible",
               opacity: isHovered ? 0 : 1,
+              transform: isHovered ? "translateY(10px)" : "translateY(0)",
               pointerEvents: isHovered ? "none" : "auto",
-              transition: "opacity 120ms linear",
             }}
           >
             <SmartScrollableText className="font-semibold text-lg card-foreground">
@@ -992,12 +1032,12 @@ export const UnifiedCard = React.memo(
           {/* Detailed overlay on hover */}
           <div
             ref={metaRef}
-            className="absolute inset-0 p-3 flex flex-col justify-center"
+            className="absolute inset-0 p-3 pb-8 flex flex-col justify-end transition-all duration-300 ease-[cubic-bezier(0,1,0.5,1)]"
             style={{
               visibility: isHovered ? "visible" : "hidden",
               opacity: isHovered ? 1 : 0,
+              transform: isHovered ? "translateY(0)" : "translateY(20px)",
               pointerEvents: isHovered ? "auto" : "none",
-              transition: "opacity 120ms linear",
             }}
           >
             <div className="space-y-1">
@@ -1039,12 +1079,12 @@ export const UnifiedCard = React.memo(
           {showTags && item.tags && item.tags.length > 0 && (
             <div
               ref={tagsRef}
-              className={`absolute bottom-1 left-3 right-3`}
+              className={`absolute bottom-1 left-3 right-3 transition-all duration-300 ease-[cubic-bezier(0,1,0.5,1)]`}
               style={{
                 visibility: isHovered ? "visible" : "hidden",
                 opacity: isHovered ? 1 : 0,
+                transform: isHovered ? "translateY(0)" : "translateY(10px)",
                 pointerEvents: isHovered ? "auto" : "none",
-                transition: "opacity 120ms linear",
               }}
             >
               <div

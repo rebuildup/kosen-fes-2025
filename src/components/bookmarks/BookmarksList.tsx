@@ -66,7 +66,8 @@ const BookmarksList = () => {
           day: "numeric",
         }
       );
-    } catch (e) {
+    } catch (error) {
+      console.error("Failed to format bookmark date", error);
       return dateStr;
     }
   };

@@ -4,9 +4,7 @@ import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { DURATION, EASE } from "../../utils/animations";
 
-interface HomeHeroProps {}
-
-const HomeHero = ({}: HomeHeroProps) => {
+const HomeHero = () => {
   const { t } = useLanguage();
   const heroRef = useRef<HTMLElement>(null);
   const titleRef = useRef<HTMLHeadingElement>(null);

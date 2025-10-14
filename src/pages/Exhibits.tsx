@@ -29,7 +29,7 @@ const Exhibits = () => {
     const images = [
       ...exhibits.map((e) => e.imageUrl),
       ...stalls.map((s) => s.imageUrl),
-    ].filter(Boolean as any);
+    ].filter((url): url is string => Boolean(url));
     return images[Math.floor(Math.random() * images.length)] || "";
   }
 
@@ -45,15 +45,15 @@ const Exhibits = () => {
 
       // Get items based on category filter
       if (categoryFilter === "exhibits") {
-        filtered = dataManager.getAllExhibits() as Item[];
+        filtered = dataManager.getAllExhibits();
       } else if (categoryFilter === "stalls") {
-        filtered = dataManager.getAllStalls() as Item[];
+        filtered = dataManager.getAllStalls();
       } else {
         // "all" - combine both exhibits and stalls
         filtered = [
           ...dataManager.getAllExhibits(),
           ...dataManager.getAllStalls(),
-        ] as Item[];
+        ];
       }
 
       // Apply tag filtering

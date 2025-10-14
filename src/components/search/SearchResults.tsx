@@ -31,7 +31,7 @@ const SearchResults = () => {
 
   // Memoize the filtering function to prevent unnecessary re-creation
   const filterItemsBySelectedTags = useCallback(
-    (items: any[]) => {
+    (items: Item[]) => {
       if (selectedTags.length === 0) return items;
       return items.filter((item) =>
         selectedTags.every((tag) => item.tags?.includes(tag))

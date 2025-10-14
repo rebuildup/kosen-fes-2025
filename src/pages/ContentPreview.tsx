@@ -17,6 +17,7 @@ import {
 } from "../components/icons";
 
 type ContentType = "event" | "exhibit" | "stall" | "sponsor";
+type PreviewMode = "card" | "detail" | "schedule" | "map";
 
 interface FormData {
   type: ContentType;
@@ -118,9 +119,9 @@ const ContentPreview = () => {
     duration: 60,
   });
 
-  const [previewMode, setPreviewMode] = useState<
-    "card" | "detail" | "schedule" | "map"
-  >("card");
+  const [previewMode, setPreviewMode] = useState<PreviewMode>("card");
+
+
   const [availableTags, setAvailableTags] = useState<string[]>([]);
   const [newTag, setNewTag] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -275,10 +276,13 @@ const ContentPreview = () => {
 
       return { ...prev, ...updates };
     });
-  }, [formData.type]);
+  }, [formData.type, formData.tags]);
 
   // Handle form changes
-  const handleInputChange = (field: keyof FormData, value: any) => {
+  const handleInputChange = <K extends keyof FormData>(
+    field: K,
+    value: FormData[K]
+  ) => {
     setFormData((prev) => ({
       ...prev,
       [field]: value,
@@ -493,7 +497,9 @@ const ContentPreview = () => {
                   ].map((type) => (
                     <button
                       key={type.value}
-                      onClick={() => handleInputChange("type", type.value)}
+                      onClick={() =>
+                        handleInputChange("type", type.value as ContentType)
+                      }
                       className={`group flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all duration-200 relative overflow-hidden ${
                         formData.type === type.value
                           ? "text-[var(--primary-color)]"
@@ -1149,7 +1155,7 @@ const ContentPreview = () => {
               ].map((mode) => (
                 <button
                   key={mode.key}
-                  onClick={() => setPreviewMode(mode.key as any)}
+                  onClick={() => setPreviewMode(mode.key as PreviewMode)}
                   className={`group flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all duration-200 relative overflow-hidden ${
                     previewMode === mode.key
                       ? "text-[var(--primary-color)]"
@@ -1194,7 +1200,7 @@ const ContentPreview = () => {
                   カードプレビュー
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {generatePreviewItems().map((item, _) => (
+                  {generatePreviewItems().map((item) => (
                     <UnifiedCard
                       key={item.id}
                       item={item}
@@ -1219,7 +1225,7 @@ const ContentPreview = () => {
                 </h3>
                 <div className="space-y-6 max-h-[600px] overflow-y-auto">
                   <div className="flex items-center gap-4 mb-6">
-                    <ItemTypeIcon type={previewItem.type as any} size="large" />
+                    <ItemTypeIcon type={previewItem.type} size="large" />
                     <span
                       className="px-3 py-1 rounded-full text-sm font-medium"
                       style={{

@@ -1,4 +1,4 @@
-import { useRef, useEffect, MutableRefObject } from "react";
+import { useRef, useEffect, useCallback, MutableRefObject } from "react";
 import { NavLink, Link } from "react-router-dom";
 import { createPortal } from "react-dom";
 import { useLanguage } from "../../context/LanguageContext";
@@ -78,6 +78,33 @@ const Menu = ({ setMenuOpen, closeButtonRef }: MenuProps) => {
     requestAnimationFrame(initAnimation);
   }, []);
 
+  // Handle menu close with animation
+  const closeWithAnimation = useCallback(() => {
+    if (menuRef.current && backdropRef.current) {
+      const tl = gsap.timeline({
+        onComplete: () => setMenuOpen(false),
+      });
+
+      tl.to(menuRef.current, {
+        x: "100%",
+        duration: DURATION.NORMAL,
+        ease: EASE.SMOOTH,
+      });
+
+      tl.to(
+        backdropRef.current,
+        {
+          autoAlpha: 0,
+          duration: DURATION.FAST,
+          ease: EASE.SMOOTH,
+        },
+        "-=0.2"
+      );
+    } else {
+      setMenuOpen(false);
+    }
+  }, [setMenuOpen]);
+
   // Handle click outside the menu to close it
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -103,39 +130,12 @@ const Menu = ({ setMenuOpen, closeButtonRef }: MenuProps) => {
       document.removeEventListener("mousedown", handleClickOutside);
       document.removeEventListener("keydown", handleEscapeKey);
     };
-  }, [setMenuOpen]);
-
-  // Handle menu close with animation
-  const closeWithAnimation = () => {
-    if (menuRef.current && backdropRef.current) {
-      const tl = gsap.timeline({
-        onComplete: () => setMenuOpen(false),
-      });
-
-      tl.to(menuRef.current, {
-        x: "100%",
-        duration: DURATION.NORMAL,
-        ease: EASE.SMOOTH,
-      });
-
-      tl.to(
-        backdropRef.current,
-        {
-          autoAlpha: 0,
-          duration: DURATION.FAST,
-          ease: EASE.SMOOTH,
-        },
-        "-=0.2"
-      );
-    } else {
-      setMenuOpen(false);
-    }
-  };
+  }, [closeWithAnimation]);
 
   // Handle menu item click to close the menu
-  const handleMenuItemClick = () => {
+  const handleMenuItemClick = useCallback(() => {
     closeWithAnimation();
-  };
+  }, [closeWithAnimation]);
 
   return createPortal(
     <div className="mobile-menu-overlay">

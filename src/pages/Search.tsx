@@ -51,7 +51,7 @@ const Search = () => {
       setSearchQuery(queryParam);
       performSearch(queryParam);
     }
-  }, [location.search]);
+  }, [location.search, searchQuery, setSearchQuery, performSearch]);
 
   return (
     <div className="min-h-screen bg-[var(--bg-primary)]">

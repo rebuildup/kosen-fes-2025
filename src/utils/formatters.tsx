@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import { Language } from "./translations";
+import type { Language } from "./translations";
 
 /**
  * Format a date string to a localized display format
@@ -50,7 +50,7 @@ export const formatDuration = (minutes: number, language: Language): string => {
  */
 export const getTypeLabel = (
   type: "event" | "exhibit" | "stall" | "sponsor", // Add "sponsor" here
-  translations: Record<string, any>
+  translations: Record<string, string | undefined>
 ): string => {
   switch (type) {
     case "event":

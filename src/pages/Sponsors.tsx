@@ -18,7 +18,7 @@ const Sponsors = () => {
 
   // Choose a random hero image from sponsors
   function getRandomSponsorImage() {
-    const images = sponsors.map((s) => s.imageUrl).filter(Boolean as any);
+    const images = sponsors.map((s) => s.imageUrl).filter((url): url is string => Boolean(url));
     return images[Math.floor(Math.random() * images.length)] || "";
   }
 
@@ -30,7 +30,7 @@ const Sponsors = () => {
 
     // Simulate loading delay for demonstration
     const timer = setTimeout(() => {
-      const allSponsors = dataManager.getAllSponsors() as Item[];
+      const allSponsors = dataManager.getAllSponsors();
       setFilteredSponsors(allSponsors);
       setIsLoading(false);
     }, 500); // 0.5秒のローディング時間

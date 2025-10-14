@@ -37,6 +37,7 @@ export const useCardAnimation = (
   const imageRef = useRef<HTMLImageElement>(null);
   const metaRef = useRef<HTMLDivElement>(null);
   const tagsRef = useRef<HTMLDivElement>(null);
+  const hoverTimelineRef = useRef<gsap.core.Timeline | null>(null);
   
   const isHoveredRef = useRef(false);
 
@@ -133,11 +134,12 @@ export const useCardAnimation = (
       );
     }
 
-    // Store timeline for cleanup
-    (card as any)._hoverTimeline = hoverTimeline;
+    // Store timeline for reuse in handlers
+    hoverTimelineRef.current = hoverTimeline;
 
     return () => {
       hoverTimeline.kill();
+      hoverTimelineRef.current = null;
     };
   }, [variant, showAnimation, hasMetaSection, hasTagsSection]);
 
@@ -146,7 +148,7 @@ export const useCardAnimation = (
     if (!showAnimation) return;
     
     isHoveredRef.current = true;
-    const timeline = (cardRef.current as any)?._hoverTimeline;
+    const timeline = hoverTimelineRef.current;
     if (timeline) {
       timeline.play();
     }
@@ -156,7 +158,7 @@ export const useCardAnimation = (
     if (!showAnimation) return;
     
     isHoveredRef.current = false;
-    const timeline = (cardRef.current as any)?._hoverTimeline;
+    const timeline = hoverTimelineRef.current;
     if (timeline) {
       timeline.reverse();
     }

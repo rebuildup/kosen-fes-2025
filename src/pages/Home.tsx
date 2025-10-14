@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLanguage } from "../context/LanguageContext";
 import { useData } from "../context/DataContext";
-import { ItemCore, EventCore } from "../types/data";
+import { ItemCore, EventCore, ExhibitCore } from "../types/data";
 import { Item } from "../types/common";
 import UnifiedCard from "../shared/components/ui/UnifiedCard";
 import TagCloud from "../components/common/TagCloud";
@@ -23,41 +23,41 @@ const convertItemCoreToItem = (itemCore: ItemCore): Item => {
   };
 
   switch (itemCore.type) {
-    case "event":
+    case "event": {
+      const eventCore = itemCore as EventCore;
       return {
         ...baseItem,
-        type: "event",
-        organizer: (itemCore as any).organizer || "",
-        duration: (itemCore as any).duration || 0,
-        showOnMap:
-          (itemCore as EventCore).showOnMap !== undefined
-            ? (itemCore as EventCore).showOnMap
-            : true,
-        showOnSchedule:
-          (itemCore as EventCore).showOnSchedule !== undefined
-            ? (itemCore as EventCore).showOnSchedule
-            : true,
-        dayAvailability: (itemCore as EventCore).dayAvailability || "day1",
+        type: "event" as const,
+        organizer: eventCore.organizer,
+        duration: eventCore.duration,
+        showOnMap: eventCore.showOnMap,
+        showOnSchedule: eventCore.showOnSchedule,
+        dayAvailability: eventCore.dayAvailability,
       };
-    case "exhibit":
+    }
+    case "exhibit": {
+      const exhibitCore = itemCore as ExhibitCore;
       return {
         ...baseItem,
-        type: "exhibit",
-        creator: (itemCore as any).creator || "",
+        type: "exhibit" as const,
+        creator: exhibitCore.creator,
       };
-    case "stall":
+    }
+    case "stall": {
       return {
         ...baseItem,
-        type: "stall",
-        organizer: (itemCore as any).organizer || "",
+        type: "stall" as const,
+        organizer: "",
         products: [],
       };
-    case "sponsor":
+    }
+    case "sponsor": {
       return {
         ...baseItem,
-        type: "sponsor",
+        type: "sponsor" as const,
         website: "",
       };
+    }
     default:
       // デフォルトはeventとして扱う
       return {

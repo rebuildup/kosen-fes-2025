@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import {
   createContext,
   useContext,
@@ -71,7 +72,7 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
   // Set the initial language attribute on the document
   useEffect(() => {
     document.documentElement.setAttribute("lang", language);
-  }, []);
+  }, [language]);
 
   // Translation function
   const t = (key: string): string => {

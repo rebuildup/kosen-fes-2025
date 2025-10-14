@@ -5,11 +5,14 @@ import { useData } from "./DataContext";
 export const useSearchCompat = () => {
   const { searchItems, addToSearchHistory, searchHistory } = useData();
 
+  type SearchResults = ReturnType<typeof searchItems>;
+  const emptyResults: SearchResults = [];
+
   return {
     searchQuery: "",
     setSearchQuery: () => {},
-    searchResults: [] as any[],
-    performSearch: (query: string) => {
+    searchResults: emptyResults,
+    performSearch: (query: string): SearchResults => {
       addToSearchHistory(query);
       return searchItems(query);
     },
@@ -79,7 +82,7 @@ export const useTagCompat = () => {
       selectedTags = [];
     },
     isTagSelected: (tag: string) => selectedTags.includes(tag),
-    filterItemsByTags: (items: any[]) => {
+    filterItemsByTags: <T extends { tags: string[] }>(items: T[]): T[] => {
       if (selectedTags.length === 0) return items;
       return items.filter((item) =>
         selectedTags.some((tag) => item.tags.includes(tag))

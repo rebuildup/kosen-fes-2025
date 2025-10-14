@@ -62,8 +62,6 @@ const SimpleMap = ({
   highlightCoordinate,
   selectedCoordinate,
   onCoordinateSelect,
-  onLocationHover: _onLocationHover,
-  onLocationSelect: _onLocationSelect,
   showZoomControls = true,
   allowCoordinateSelection = false,
   initialZoom = 1,

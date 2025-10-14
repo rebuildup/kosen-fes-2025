@@ -278,6 +278,35 @@ const VectorMap: React.FC<VectorMapProps> = ({
   }, [selectedPoint, selectedCluster]);
 
   // Convert screen coordinates to SVG coordinates with accurate aspect ratio handling
+  // SVGの実際の描画領域を計算するヘルパー（viewBox比率と描画領域のズレを調整）
+  const getSVGContentRect = useCallback(
+    (svgRect: DOMRect) => {
+      const originalViewBoxRatio =
+        CAMPUS_MAP_BOUNDS.width / CAMPUS_MAP_BOUNDS.height;
+      const svgRatio = svgRect.width / svgRect.height;
+
+      let contentWidth: number;
+      let contentHeight: number;
+      let offsetX: number;
+      let offsetY: number;
+
+      if (originalViewBoxRatio > svgRatio) {
+        contentWidth = svgRect.width;
+        contentHeight = svgRect.width / originalViewBoxRatio;
+        offsetX = 0;
+        offsetY = (svgRect.height - contentHeight) / 2;
+      } else {
+        contentWidth = svgRect.height * originalViewBoxRatio;
+        contentHeight = svgRect.height;
+        offsetX = (svgRect.width - contentWidth) / 2;
+        offsetY = 0;
+      }
+
+      return { width: contentWidth, height: contentHeight, offsetX, offsetY };
+    },
+    []
+  );
+
   const screenToSVG = useCallback(
     (screenX: number, screenY: number): Coordinate => {
       if (!svgRef.current) return { x: 0, y: 0 };
@@ -304,7 +333,7 @@ const VectorMap: React.FC<VectorMapProps> = ({
 
       return { x: svgX, y: svgY };
     },
-    [viewBox]
+    [viewBox, getSVGContentRect]
   );
 
   // Zoom functions with viewBox precision
@@ -346,7 +375,7 @@ const VectorMap: React.FC<VectorMapProps> = ({
         ),
       };
     });
-  }, [maxZoom, ADJUSTED_MAP_BOUNDS]);
+  }, [maxZoom]);
 
   const zoomOut = useCallback(() => {
     setViewBox((prev) => {
@@ -386,7 +415,7 @@ const VectorMap: React.FC<VectorMapProps> = ({
         ),
       };
     });
-  }, [minZoom, ADJUSTED_MAP_BOUNDS]);
+  }, [minZoom]);
 
   const resetView = useCallback(() => {
     setViewBox(resolveInitialViewBox(points, mode, initialZoom));
@@ -531,49 +560,21 @@ const VectorMap: React.FC<VectorMapProps> = ({
   // SVGの実際の描画領域を計算する関数
   // 注意：Content Areaは元のviewBoxサイズ（2000x1343）に基づいて計算する必要がある
   // 現在のzoom/pan状態には依存しない
-  const getSVGContentRect = useCallback(
-    (svgRect: DOMRect) => {
-      // 元のviewBoxのアスペクト比（ズーム/パン前）
-      const originalViewBoxRatio =
-        CAMPUS_MAP_BOUNDS.width / CAMPUS_MAP_BOUNDS.height;
-      // SVG要素のアスペクト比
-      const svgRatio = svgRect.width / svgRect.height;
-
-      let contentWidth: number,
-        contentHeight: number,
-        offsetX: number,
-        offsetY: number;
-
-      if (originalViewBoxRatio > svgRatio) {
-        // 元のviewBoxの方が横長 → 横幅がSVGの幅に合わせられ、上下に余白（letterboxing）
-        contentWidth = svgRect.width;
-        contentHeight = svgRect.width / originalViewBoxRatio;
-        offsetX = 0;
-        offsetY = (svgRect.height - contentHeight) / 2;
-      } else {
-        // 元のviewBoxの方が縦長 → 縦幅がSVGの高さに合わせられ、左右に余白（pillarboxing）
-        contentWidth = svgRect.height * originalViewBoxRatio;
-        contentHeight = svgRect.height;
-        offsetX = (svgRect.width - contentWidth) / 2;
-        offsetY = 0;
-      }
-
-      return { width: contentWidth, height: contentHeight, offsetX, offsetY };
-    },
-    [] // 依存配列から viewBox を削除。元のマップサイズは固定値なので依存しない
-  );
 
   // Touch event handlers for mobile (ViewBox based)
   const [touchDistance, setTouchDistance] = useState<number>(0);
 
-  const getTouchDistance = useCallback((touches: React.TouchList): number => {
+  type TouchCollection = TouchList | React.TouchList;
+
+  const getTouchDistance = useCallback((touches: TouchCollection): number => {
     if (touches.length < 2) return 0;
     const dx = touches[0].clientX - touches[1].clientX;
     const dy = touches[0].clientY - touches[1].clientY;
     return Math.sqrt(dx * dx + dy * dy);
   }, []);
 
-  const getTouchCenter = useCallback((touches: React.TouchList): Coordinate => {
+  const getTouchCenter = useCallback(
+    (touches: TouchCollection): Coordinate => {
     if (touches.length === 1) {
       return { x: touches[0].clientX, y: touches[0].clientY };
     }
@@ -606,7 +607,7 @@ const VectorMap: React.FC<VectorMapProps> = ({
         setIsTouchGesture(true);
       }
     },
-    [viewBox, closeCard, getTouchDistance, getTouchCenter]
+    [viewBox, closeCard, getTouchDistance]
   );
 
   const handleTouchMove = useCallback(
@@ -695,8 +696,8 @@ const VectorMap: React.FC<VectorMapProps> = ({
           height: dragStartViewBox.height,
         });
       } else if (e.touches.length === 2 && touchDistance > 0) {
-        const newDistance = getTouchDistance(e.touches as any);
-        const newCenter = getTouchCenter(e.touches as any);
+        const newDistance = getTouchDistance(e.touches);
+        const newCenter = getTouchCenter(e.touches);
         const scale = touchDistance / newDistance;
 
         const centerSVG = screenToSVG(newCenter.x, newCenter.y);
@@ -769,11 +770,10 @@ const VectorMap: React.FC<VectorMapProps> = ({
       viewBox.width,
       viewBox.height,
       getTouchDistance,
-      getTouchCenter,
-      ADJUSTED_MAP_BOUNDS,
       touchStartPos,
       isTouchGesture,
       closeCard,
+      getTouchCenter,
     ]
   );
 
@@ -901,7 +901,7 @@ const VectorMap: React.FC<VectorMapProps> = ({
         if (e.cancelable) {
           try {
             e.preventDefault();
-          } catch (error) {
+          } catch {
             // Silently handle preventDefault failures
           }
         }
@@ -923,6 +923,7 @@ const VectorMap: React.FC<VectorMapProps> = ({
       isTouchGesture,
       mode,
       onMapClick,
+      getSVGContentRect,
       viewBox,
     ]
   );
@@ -1447,7 +1448,7 @@ const VectorMap: React.FC<VectorMapProps> = ({
         viewBox.width;
       return Math.max(baseSize / Math.sqrt(zoomLevel), 4);
     },
-    [viewBox.width, ADJUSTED_MAP_BOUNDS]
+    [viewBox.width]
   );
 
   const getTextSize = useCallback(() => {
@@ -1455,7 +1456,7 @@ const VectorMap: React.FC<VectorMapProps> = ({
       (ADJUSTED_MAP_BOUNDS.width + ADJUSTED_MAP_BOUNDS.marginX * 2) /
       viewBox.width;
     return Math.max(12 / Math.sqrt(zoomLevel), 8);
-  }, [viewBox.width, ADJUSTED_MAP_BOUNDS]);
+  }, [viewBox.width]);
 
   // テキスト表示のズームレベル制御
   const shouldShowText = useCallback(() => {
@@ -1467,7 +1468,7 @@ const VectorMap: React.FC<VectorMapProps> = ({
       viewBox.width;
     // ズームレベルが1.5以上の時のみテキストを表示
     return zoomLevel >= 1.5;
-  }, [viewBox.width, ADJUSTED_MAP_BOUNDS, mode]);
+  }, [viewBox.width, mode]);
 
   const getLabelDirection = useCallback(
     (x: number): "left" | "right" => {
@@ -1605,8 +1606,8 @@ const VectorMap: React.FC<VectorMapProps> = ({
     userSelect: "none",
     WebkitUserSelect: "none",
     WebkitTouchCallout: "none",
-    imageRendering: "optimizeQuality" as any,
-    shapeRendering: "geometricPrecision" as any,
+    imageRendering: "optimizeQuality" as CSSProperties["imageRendering"],
+    shapeRendering: "geometricPrecision" as CSSProperties["shapeRendering"],
     borderRadius: resolvedFullscreen ? 0 : undefined,
     position: resolvedFullscreen ? "fixed" : undefined,
     inset: resolvedFullscreen ? 0 : undefined,

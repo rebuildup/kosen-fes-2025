@@ -25,7 +25,7 @@ export type {
 export interface AppError {
   code: string;
   message: string;
-  details?: any;
+  details?: unknown;
 }
 
 export interface PaginationParams {
@@ -79,14 +79,14 @@ export interface NavigationItem {
   requiredPermission?: string;
 }
 
-export interface ApiResponse<T = any> {
+export interface ApiResponse<T = unknown> {
   data: T;
   success: boolean;
   message?: string;
   error?: AppError;
 }
 
-export interface CacheEntry<T = any> {
+export interface CacheEntry<T = unknown> {
   data: T;
   timestamp: number;
   expiry: number;

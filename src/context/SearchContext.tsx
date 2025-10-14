@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import {
   createContext,
   useContext,
@@ -7,12 +8,13 @@ import {
   useCallback,
 } from "react";
 import { useNavigate } from "react-router-dom";
+import type { Item } from "../types/common";
 import { dataManager } from "../data/dataManager";
 
 interface SearchContextType {
   searchQuery: string;
   setSearchQuery: (query: string) => void;
-  searchResults: any[];
+  searchResults: Item[];
   performSearch: (query: string) => void;
   isSearching: boolean;
   clearSearch: () => void;
@@ -41,7 +43,7 @@ interface SearchProviderProps {
 
 export const SearchProvider = ({ children }: SearchProviderProps) => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [searchResults, setSearchResults] = useState<any[]>([]);
+  const [searchResults, setSearchResults] = useState<Item[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [searchHistory, setSearchHistory] = useState<string[]>(() => {
     const saved = localStorage.getItem("searchHistory");
@@ -60,7 +62,7 @@ export const SearchProvider = ({ children }: SearchProviderProps) => {
   }, [searchHistory]);
 
   // Function to perform search using dataManager
-  const performSearchQuery = useCallback((query: string): any[] => {
+  const performSearchQuery = useCallback((query: string): Item[] => {
     return dataManager.searchItems(query);
   }, []);
 
