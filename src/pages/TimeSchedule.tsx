@@ -137,10 +137,10 @@ const TimeSchedule = () => {
 
           <div className="space-y-8">
             {/* Day selector */}
-            <div className="flex space-x-2">
+            <div className="flex space-x-2  overflow-x-auto scrollbar-thin">
               <button
                 onClick={() => setSelectedDay("day1")}
-                className={`px-16 py-3 rounded-lg text-sm font-medium transition-all duration-200 ${
+                className={`px-16 py-3 rounded-lg text-sm font-medium transition-all duration-200 text-nowrap ${
                   selectedDay === "day1" ? "text-white" : ""
                 }`}
                 style={{
@@ -174,7 +174,7 @@ const TimeSchedule = () => {
               </button>
               <button
                 onClick={() => setSelectedDay("day2")}
-                className={`px-16 py-3 rounded-lg font-medium transition-all duration-200 ${
+                className={`px-16 py-3 rounded-lg font-medium transition-all duration-200 text-nowrap ${
                   selectedDay === "day2" ? "text-white" : ""
                 }`}
                 style={{

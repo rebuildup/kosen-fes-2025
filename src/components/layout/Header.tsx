@@ -174,7 +174,7 @@ const Header = () => {
                 >
                   <IconComponent
                     size={20}
-                    className="transition-transform duration-200 group-hover:scale-110"
+                    className="transition-transform duration-100 group-hover:scale-105"
                   />
                   <span>{item.label}</span>
                 </NavLink>

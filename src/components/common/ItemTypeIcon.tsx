@@ -37,7 +37,7 @@ const ItemTypeIcon = ({ type, size = "medium" }: ItemTypeIconProps) => {
   };
 
   return (
-    <span aria-hidden="true" className="mix-diff">
+    <span aria-hidden="true" className="card-foreground">
       {renderIcon()}
     </span>
   );

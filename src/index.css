@@ -1350,14 +1350,17 @@
     }
   }
 
-  /* パフォーマンス最適化 */
+  /* パフォーマンス最適化
+     NOTE: will-change / contain をここで一律に付与すると、子要素の
+     mix-blend-mode が期待どおり動作しない（新しい合成コンテキストが作られる）
+     問題があるため、デフォルトでこれらを外します。必要な箇所では個別に
+     will-change を付けるか、パフォーマンス計測に基づいて戻してください。 */
   .glass-effect,
   .glass-subtle,
   .glass-bold,
   .glass-button,
   .glass-card {
-    will-change: backdrop-filter;
-    contain: layout style paint;
+    /* removed will-change/contain to allow mix-blend-mode on child elements */
   }
 
   /* スクロールバーを完全に隠すユーティリティクラス */
@@ -1520,6 +1523,70 @@
     .map-marker-ultra-quality {
       shape-rendering: geometricPrecision;
     }
+
+    /* Ensure card images are not inverted even when fallback toggles exist */
+    .card-image-no-invert {
+      filter: none !important;
+    }
+
+    /* Protect img.card-image-no-invert from the global fallback inversion rule */
+    body.mix-diff-use-fallback img.card-image-no-invert {
+      filter: none !important;
+      mix-blend-mode: normal !important;
+    }
+  }
+
+  /* Ensure mix-diff utility is available on all devices (not only high-DPI) */
+  /* This duplicates the high-DPI rules so PC/low-DPI environments also get the same behavior */
+  .mix-diff {
+    mix-blend-mode: difference;
+    color: white;
+  }
+
+  /* Centralized card foreground helper
+     - Apply this to text/icon containers inside cards so the mix-blend and
+       foreground color are controlled from one place. This reduces the need
+       to sprinkle `mix-diff` all over the codebase. */
+  .card-foreground {
+    mix-blend-mode: difference;
+    color: #eeeeee;
+  }
+
+  .mix-diff-fallback {
+    filter: invert(1) hue-rotate(180deg);
+  }
+
+  body.mix-diff-use-fallback .mix-diff {
+    mix-blend-mode: normal !important;
+    filter: invert(1) hue-rotate(180deg) !important;
+  }
+
+  .card-image-no-invert {
+    filter: none !important;
+  }
+
+  body.mix-diff-use-fallback img.card-image-no-invert {
+    filter: none !important;
+    mix-blend-mode: normal !important;
+  }
+
+  /* Bookmark fallback helpers ------------------------------------------------- */
+  /* If mix-blend-mode is blocked by a stacking context, these rules make the
+     bookmark icon readable using an outline/shadow fallback. The .bookmark-mix
+     class is applied to bookmark wrappers and .bookmark-icon to the inner glyph. */
+  .bookmark-mix .bookmark-icon {
+    /* Try to keep mix-blend-mode when available */
+    mix-blend-mode: difference;
+    color: white;
+    /* Fallback outline for environments where mixing is blocked */
+    -webkit-text-stroke: 1px rgba(0, 0, 0, 0.6);
+    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.6), 0 -1px 0 rgba(0, 0, 0, 0.25);
+  }
+
+  /* Diagnostic helper: enable this class on body to force a visible outline
+     only used for debugging stacking-context issues. */
+  body.show-blend-debug .bookmark-mix {
+    outline: 2px dashed rgba(255, 0, 0, 0.6);
   }
 
   /* 4K/8K環境での超高解像度最適化 */

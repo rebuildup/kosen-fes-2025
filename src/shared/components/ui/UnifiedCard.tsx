@@ -133,6 +133,11 @@ export const UnifiedCard = React.memo(
       return placeholderImage;
     }, [hasImageError, item, placeholderImage]);
 
+    // Whether the current image is one of the placeholder images
+    const isPlaceholderImage = useMemo(() => {
+      return imageSrc.includes("placeholder");
+    }, [imageSrc]);
+
     // Format text with highlighting if provided
     const formatText = useCallback(
       (text: string) => {
@@ -148,9 +153,10 @@ export const UnifiedCard = React.memo(
       const card = cardRef.current;
       const hoverTimeline = gsap.timeline({ paused: true });
 
-      // Card scale and shadow animation
+      // Card shadow animation (avoid animating transform on the card itself
+      // because that creates a new stacking/compositing context and breaks
+      // child mix-blend-mode rendering)
       hoverTimeline.to(card, {
-        y: variant === "featured" ? -8 : variant === "timeline" ? -4 : -6,
         boxShadow:
           variant === "featured"
             ? "0 12px 24px rgba(0, 0, 0, 0.2)"
@@ -361,27 +367,20 @@ export const UnifiedCard = React.memo(
               className="w-full h-full object-cover"
               loading="lazy"
             />
-
-            {/* Gradient Overlay */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/10 to-transparent"></div>
           </div>
 
           {/* Content Overlay */}
-          <div className="relative h-full flex flex-col justify-between p-6 text-white">
+          <div className="relative h-full flex flex-col justify-between p-4 text-white">
             {/* Type Badge and Bookmark - Top */}
             <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-2 bg-white/20 rounded-full px-3 py-1">
+              <div className="flex items-center space-x-2 card-foreground">
                 <ItemTypeIcon type={item.type} size="small" />
                 <span className="text-xs font-medium">{typeLabel}</span>
               </div>
 
               {/* Bookmark Button */}
               <button
-                className={`w-10 h-10 flex items-center justify-center rounded-full ${
-                  isBookmarked(item.id)
-                    ? "bg-yellow-500 text-white"
-                    : "bg-white/20 text-white"
-                }`}
+                className="flex items-center card-foreground"
                 onClick={handleBookmarkClick}
                 aria-label={
                   isBookmarked(item.id)
@@ -389,7 +388,7 @@ export const UnifiedCard = React.memo(
                     : t("actions.bookmark")
                 }
               >
-                <span className="text-lg mix-diff">
+                <span className="text-base">
                   {isBookmarked(item.id) ? "★" : "☆"}
                 </span>
               </button>
@@ -397,49 +396,51 @@ export const UnifiedCard = React.memo(
 
             {/* Always visible basic content */}
             <div className="space-y-2">
-              <h2 className="text-xl font-bold leading-tight line-clamp-2 mix-diff">
+              <h2 className="text-xl font-bold leading-tight line-clamp-2 card-foreground">
                 {formatText(item.title)}
               </h2>
 
-              <div className="flex items-center space-x-4 text-sm opacity-90">
+              <div className="flex items-center space-x-4 text-sm opacity-90 card-foreground">
                 <div className="flex items-center space-x-1">
                   <TimeIcon size={16} />
                   <span>{item.time}</span>
                 </div>
                 <div className="flex items-center space-x-1">
                   <LocationIcon size={16} />
-                  <span className="truncate">{formatText(item.location)}</span>
+                  <span className="truncate card-foreground">
+                    {formatText(item.location)}
+                  </span>
                 </div>
               </div>
             </div>
 
             {/* Hover overlay with detailed information */}
-            <div className="absolute inset-0 p-6 flex flex-col justify-end bg-gradient-to-t from-black/50 via-black/20 to-transparent">
-              <div className="space-y-3">
+            <div className="absolute inset-0 p-4 flex flex-col justify-end">
+              <div className="space-y-2">
                 {/* Title */}
-                <h2 className="text-xl font-bold leading-tight line-clamp-2 mix-diff">
+                <h2 className="text-xl font-bold leading-tight line-clamp-2 card-foreground">
                   {formatText(item.title)}
                 </h2>
 
                 {/* Description */}
                 {showDescription && item.description && (
-                  <p className="text-sm leading-relaxed line-clamp-2 opacity-90">
+                  <p className="text-sm leading-relaxed line-clamp-2 opacity-90 card-foreground">
                     {formatText(item.description)}
                   </p>
                 )}
 
                 {/* Meta Information */}
-                <div className="grid grid-cols-1 gap-1 text-xs opacity-80">
+                <div className="grid grid-cols-1 gap-1 text-xs opacity-80 card-foreground">
                   <div className="flex items-center space-x-2">
                     <TimeIcon size={16} />
-                    <span>
+                    <span className="card-foreground">
                       {item.date} | {item.time}
                     </span>
                   </div>
 
                   <div className="flex items-center space-x-2">
                     <LocationIcon size={16} />
-                    <span className="truncate">
+                    <span className="truncate card-foreground">
                       {formatText(item.location)}
                     </span>
                   </div>
@@ -447,7 +448,7 @@ export const UnifiedCard = React.memo(
                   {organization && (
                     <div className="flex items-center space-x-2">
                       <PeopleIcon size={16} />
-                      <span className="truncate">
+                      <span className="truncate card-foreground">
                         {organizationLabel}: {formatText(organization)}
                       </span>
                     </div>
@@ -460,13 +461,13 @@ export const UnifiedCard = React.memo(
                     {item.tags.slice(0, 3).map((tag) => (
                       <span
                         key={tag}
-                        className="px-2 py-1 bg-white/20 rounded-full text-xs font-medium"
+                        className="px-2 py-1  rounded-full text-xs font-medium card-foreground"
                       >
                         {tag}
                       </span>
                     ))}
                     {item.tags.length > 3 && (
-                      <span className="px-2 py-1 bg-white/20 rounded-full text-xs font-medium">
+                      <span className="px-2 py-1  rounded-full text-xs font-medium card-foreground">
                         +{item.tags.length - 3}
                       </span>
                     )}
@@ -474,8 +475,8 @@ export const UnifiedCard = React.memo(
                 )}
 
                 {/* View Details Button */}
-                <div className="pt-2">
-                  <div className="inline-flex items-center gap-2 bg-white/20 rounded-full px-3 py-1.5 text-sm font-medium">
+                <div className="pt-1">
+                  <div className="inline-flex items-center gap-2 rounded-full px-3 py-1 text-sm font-medium card-foreground">
                     {t("actions.viewDetails")}
                     <span>→</span>
                   </div>
@@ -520,20 +521,14 @@ export const UnifiedCard = React.memo(
             ref={imageRef}
             src={imageSrc}
             alt={item.title}
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover card-image-no-invert"
             onLoad={handleImageLoad}
             onError={handleImageError}
             loading="lazy"
           />
 
-          {/* Gradient overlay with content */}
-          <div
-            className="absolute inset-0 text-white"
-            style={{
-              background:
-                "linear-gradient(to right, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.15) 50%, rgba(0,0,0,0.03) 80%, transparent 100%)",
-            }}
-          >
+          {/* Content overlay */}
+          <div className="absolute inset-0 text-white">
             {/* Basic content (hide via display when hovered to avoid overlap) */}
             <div
               className="absolute bottom-0 left-0 right-0 p-3"
@@ -543,66 +538,60 @@ export const UnifiedCard = React.memo(
                 transition: "opacity 120ms linear",
               }}
             >
-              <div className="schedule-card-time">{item.time}</div>
-              <h3 className="schedule-card-title mb-1 mix-diff">
+              <div className="schedule-card-time card-foreground">
+                {item.time}
+              </div>
+              <h3 className="schedule-card-title mb-1 card-foreground">
                 {formatText(item.title)}
               </h3>
               <div className="flex items-center gap-1 text-xs opacity-80">
                 <LocationIcon size={12} />
-                <span className="truncate">{formatText(item.location)}</span>
+                <span className="truncate card-foreground">
+                  {formatText(item.location)}
+                </span>
               </div>
             </div>
 
-            {/* Background gradient overlay - show only when hovered to avoid overlap */}
-            <div
-              className="absolute inset-0 pointer-events-none"
-              style={{
-                background:
-                  "linear-gradient(to right, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.2) 40%, rgba(0,0,0,0.05) 70%, transparent 100%)",
-                display: !isInitialized ? "none" : isHovered ? "block" : "none",
-                opacity: !isInitialized ? 0 : isHovered ? 1 : 0,
-                transition: "opacity 120ms linear",
-              }}
-            />
-
             {/* Content container - show only when hovered (use display to avoid overlap) */}
             <div
-              className="absolute inset-0 p-4 pt-12 flex flex-col justify-center text-white"
+              className="absolute inset-0 p-3 pt-10 flex flex-col justify-center text-white"
               style={{
                 display: !isInitialized ? "none" : isHovered ? "flex" : "none",
                 opacity: !isInitialized ? 0 : isHovered ? 1 : 0,
-                pointerEvents: !isInitialized
+                pointerEvents: (!isInitialized
                   ? "none"
                   : isHovered
                   ? "auto"
-                  : "none",
+                  : "none") as any,
                 transition: "opacity 120ms linear",
               }}
             >
-              <div className="space-y-3 max-h-full overflow-y-auto scrollbar-thin pr-2">
-                <h3 className="text-lg font-semibold mix-diff">
+              <div className="space-y-2 max-h-full overflow-y-auto scrollbar-thin pr-2">
+                <h3 className="text-lg font-semibold card-foreground">
                   {formatText(item.title)}
                 </h3>
 
                 {showDescription && item.description && (
-                  <p className="text-sm leading-relaxed opacity-90 line-clamp-3">
+                  <p className="text-sm leading-relaxed opacity-90 line-clamp-3 card-foreground">
                     {formatText(item.description)}
                   </p>
                 )}
 
-                <div className="space-y-2 text-sm opacity-80">
+                <div className="space-y-2 text-sm opacity-80 card-foreground">
                   <div className="flex items-center gap-2">
                     <TimeIcon size={16} />
-                    <span>{item.time}</span>
+                    <span className="card-foreground">{item.time}</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <LocationIcon size={16} />
-                    <span>{formatText(item.location)}</span>
+                    <span className="card-foreground">
+                      {formatText(item.location)}
+                    </span>
                   </div>
                   {organization && (
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 card-foreground">
                       <PeopleIcon size={16} />
-                      <span className="truncate">
+                      <span className="truncate card-foreground">
                         {organizationLabel}: {formatText(organization)}
                       </span>
                     </div>
@@ -614,21 +603,21 @@ export const UnifiedCard = React.memo(
                     {item.tags.slice(0, 3).map((tag) => (
                       <span
                         key={tag}
-                        className="px-2 py-1 bg-white/20 rounded-full text-xs"
+                        className="px-2 py-1  rounded-full text-xs card-foreground"
                       >
                         {tag}
                       </span>
                     ))}
                     {item.tags.length > 3 && (
-                      <span className="px-2 py-1 bg-white/20 rounded-full text-xs">
+                      <span className="px-2 py-1  rounded-full text-xs card-foreground">
                         +{item.tags.length - 3}
                       </span>
                     )}
                   </div>
                 )}
 
-                <div className="pt-2">
-                  <div className="inline-flex items-center gap-2 bg-white/20 rounded-full px-3 py-1.5 text-sm font-medium">
+                <div className="pt-1">
+                  <div className="inline-flex items-center gap-2 rounded-full px-3 py-1 text-sm font-medium card-foreground">
                     {t("actions.viewDetails")}
                     <span>→</span>
                   </div>
@@ -638,25 +627,23 @@ export const UnifiedCard = React.memo(
           </div>
 
           {/* Type Badge */}
-          <div className="absolute top-2 left-2 flex items-center gap-1 bg-white/20 rounded-full px-2 py-1 text-xs text-white">
+          <div className="absolute top-2.5 left-2.5 flex items-center gap-1 card-foreground">
             <ItemTypeIcon type={item.type} size="small" />
           </div>
 
           {/* Bookmark Button */}
           <button
             onClick={handleBookmarkClick}
-            className={`absolute top-2 right-2 w-8 h-8 flex items-center justify-center rounded-full ${
-              isBookmarked(item.id)
-                ? "bg-yellow-500 text-white"
-                : "bg-white/20 text-white"
-            }`}
+            className="absolute top-1.5 right-2.5 flex items-center card-foreground"
             aria-label={
               isBookmarked(item.id)
                 ? t("actions.removeBookmark")
                 : t("actions.bookmark")
             }
           >
-            <span className="text-sm">{isBookmarked(item.id) ? "★" : "☆"}</span>
+            <span className="text-base">
+              {isBookmarked(item.id) ? "★" : "☆"}
+            </span>
           </button>
         </div>
       );
@@ -681,7 +668,7 @@ export const UnifiedCard = React.memo(
       const cardContent = (
         <div
           ref={cardRef}
-          className={`schedule-card group cursor-pointer relative overflow-hidden transition-all duration-300 ease-out border rounded-lg ${
+          className={`schedule-card group cursor-pointer relative overflow-hidden transition-all duration-500 ease-[cubic-bezier(0,1,0.5,1)] border rounded-lg ${
             isHovered ? "h-64" : "h-32"
           } ${className}`}
           style={{
@@ -697,54 +684,38 @@ export const UnifiedCard = React.memo(
             ref={imageRef}
             src={imageSrc}
             alt={item.title}
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover card-image-no-invert"
             onLoad={handleImageLoad}
             onError={handleImageError}
             loading="lazy"
           />
 
-          {/* Gradient overlay with content */}
-          <div
-            className="absolute inset-0 text-white"
-            style={{
-              background:
-                "linear-gradient(to right, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.15) 50%, rgba(0,0,0,0.03) 80%, transparent 100%)",
-            }}
-          >
+          {/* Content overlay */}
+          <div className="absolute inset-0 text-white">
             {/* Basic content (hidden when hovered to avoid overlap) */}
             <div
-              className={`absolute bottom-0 left-0 right-0 p-3 transition-all duration-200 transform-gpu`}
+              className={`absolute bottom-0 left-0 right-0 p-3 transition-all duration-200`}
               style={{
                 display: isHovered ? "none" : "block",
                 opacity: !isInitialized ? 0 : 1,
                 transition: "opacity 120ms linear",
               }}
             >
-              <div className="schedule-card-time">{item.time}</div>
-              <h3 className="schedule-card-title mb-1 mix-diff">
+              <div className="schedule-card-time card-foreground">
+                {item.time}
+              </div>
+              <h3 className="schedule-card-title mb-1 card-foreground">
                 {formatText(item.title)}
               </h3>
-              <div className="flex items-center gap-1 text-xs opacity-80">
+              <div className="flex items-center gap-1 text-xs opacity-80 card-foreground">
                 <LocationIcon size={12} />
                 <span className="truncate">{formatText(item.location)}</span>
               </div>
             </div>
 
-            {/* Background gradient overlay - show only when hovered to avoid overlap */}
-            <div
-              className="absolute inset-0 pointer-events-none"
-              style={{
-                background:
-                  "linear-gradient(to right, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.2) 40%, rgba(0,0,0,0.05) 70%, transparent 100%)",
-                display: !isInitialized ? "none" : isHovered ? "block" : "none",
-                opacity: !isInitialized ? 0 : isHovered ? 1 : 0,
-                transition: "opacity 120ms linear",
-              }}
-            />
-
             {/* Content container - show only when hovered (use visibility to avoid overlap) */}
             <div
-              className={`absolute inset-0 p-4 pt-12 flex flex-col justify-center text-white`}
+              className={`absolute inset-0 p-3 pt-10 flex flex-col justify-center text-white`}
               style={{
                 display: !isInitialized ? "none" : isHovered ? "flex" : "none",
                 opacity: !isInitialized ? 0 : isHovered ? 1 : 0,
@@ -756,30 +727,32 @@ export const UnifiedCard = React.memo(
                 transition: "opacity 120ms linear",
               }}
             >
-              <div className="space-y-3 max-h-full overflow-y-auto scrollbar-thin pr-2">
-                <h3 className="text-lg font-semibold mix-diff">
+              <div className="space-y-2 max-h-full overflow-y-auto scrollbar-thin pr-2">
+                <h3 className="text-lg font-semibold card-foreground">
                   {formatText(item.title)}
                 </h3>
 
                 {showDescription && item.description && (
-                  <p className="text-sm leading-relaxed opacity-90 line-clamp-3">
+                  <p className="text-sm leading-relaxed opacity-90 line-clamp-3 card-foreground">
                     {formatText(item.description)}
                   </p>
                 )}
 
-                <div className="space-y-2 text-sm opacity-80">
+                <div className="space-y-1 text-sm opacity-80 card-foreground">
                   <div className="flex items-center gap-2">
                     <TimeIcon size={16} />
-                    <span>{item.time}</span>
+                    <span className="card-foreground">{item.time}</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <LocationIcon size={16} />
-                    <span>{formatText(item.location)}</span>
+                    <span className="card-foreground">
+                      {formatText(item.location)}
+                    </span>
                   </div>
                   {organization && (
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 card-foreground">
                       <PeopleIcon size={16} />
-                      <span className="truncate">
+                      <span className="truncate card-foreground">
                         {organizationLabel}: {formatText(organization)}
                       </span>
                     </div>
@@ -792,15 +765,18 @@ export const UnifiedCard = React.memo(
                     className="flex gap-1 overflow-x-auto scrollbar-hide"
                   >
                     {item.tags.map((tagName) => (
-                      <span key={tagName} className="flex-shrink-0">
+                      <span
+                        key={tagName}
+                        className="flex-shrink-0 card-foreground"
+                      >
                         <Tag tag={tagName} size="small" interactive={false} />
                       </span>
                     ))}
                   </div>
                 )}
 
-                <div className="pt-2">
-                  <div className="inline-flex items-center gap-2 bg-white/20 rounded-full px-3 py-1.5 text-sm font-medium">
+                <div className="pt-1">
+                  <div className="inline-flex items-center gap-2 px-3 py-1 text-sm font-medium card-foreground border border-white/40 rounded-md">
                     {t("actions.viewDetails")}
                     <span>→</span>
                   </div>
@@ -810,25 +786,23 @@ export const UnifiedCard = React.memo(
           </div>
 
           {/* Type Badge */}
-          <div className="absolute top-2 left-2 flex items-center gap-1 bg-white/20 rounded-full px-2 py-1 text-xs text-white">
+          <div className="absolute top-2.5 left-2.5 flex items-center gap-1 card-foreground">
             <ItemTypeIcon type={item.type} size="small" />
           </div>
 
           {/* Bookmark Button */}
           <button
             onClick={handleBookmarkClick}
-            className={`absolute top-2 right-2 w-8 h-8 flex items-center justify-center rounded-full ${
-              isBookmarked(item.id)
-                ? "bg-yellow-500 text-white"
-                : "bg-white/20 text-white"
-            }`}
+            className="absolute top-1.5 right-2.5 flex items-center card-foreground"
             aria-label={
               isBookmarked(item.id)
                 ? t("actions.removeBookmark")
                 : t("actions.bookmark")
             }
           >
-            <span className="text-sm">{isBookmarked(item.id) ? "★" : "☆"}</span>
+            <span className="text-base">
+              {isBookmarked(item.id) ? "★" : "☆"}
+            </span>
           </button>
         </div>
       );
@@ -863,34 +837,30 @@ export const UnifiedCard = React.memo(
             ref={imageRef}
             src={imageSrc}
             alt={item.title}
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover card-image-no-invert"
             onLoad={handleImageLoad}
             onError={handleImageError}
             loading="lazy"
           />
 
-          {/* Glassmorphism overlay */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/35 via-black/8 to-transparent text-white">
+          {/* Content overlay */}
+          <div className="absolute inset-0 text-white">
             {/* Type Badge - Top Left */}
-            <div className="absolute top-2 left-2 bg-white/20 rounded-full p-1.5 border border-white/20 text-white">
+            <div className="absolute top-2.5 left-2.5 card-foreground">
               <ItemTypeIcon type={item.type} size="small" />
             </div>
 
             {/* Bookmark Button - Top Right */}
             <button
               onClick={handleBookmarkClick}
-              className={`absolute top-2 right-2 w-8 h-8 flex items-center justify-center rounded-full transition-all duration-200 border border-white/20 pointer-events-auto z-10 ${
-                isBookmarked(item.id)
-                  ? "bg-yellow-500/90 text-white"
-                  : "bg-white/20 text-white hover:bg-white/30"
-              }`}
+              className="absolute top-1.5 right-2.5 flex items-center pointer-events-auto z-10 card-foreground"
               aria-label={
                 isBookmarked(item.id)
                   ? t("actions.removeBookmark")
                   : t("actions.bookmark")
               }
             >
-              <span className="text-sm mix-diff">
+              <span className="text-base">
                 {isBookmarked(item.id) ? "★" : "☆"}
               </span>
             </button>
@@ -905,14 +875,14 @@ export const UnifiedCard = React.memo(
                 transition: "opacity 120ms linear",
               }}
             >
-              <h3 className="font-semibold text-lg truncate mix-diff">
+              <h3 className="font-semibold text-lg truncate card-foreground">
                 {formatText(item.title)}
               </h3>
             </div>
 
             {/* Hover overlay with view details button (show when hovered) */}
             <div
-              className={`absolute inset-0 bg-gradient-to-t from-black/50 via-black/20 to-transparent p-4 pb-6 flex flex-col justify-end items-center`}
+              className="absolute inset-0 p-4 pb-6 flex flex-col justify-end items-center"
               style={{
                 visibility: isHovered ? "visible" : "hidden",
                 opacity: isHovered ? 1 : 0,
@@ -923,13 +893,13 @@ export const UnifiedCard = React.memo(
               <div className="text-center space-y-3 w-full">
                 <div className="overflow-hidden">
                   <h3
-                    className={`text-lg font-semibold whitespace-nowrap truncate`}
+                    className={`text-lg font-semibold whitespace-nowrap truncate card-foreground`}
                   >
                     {formatText(item.title)}
                   </h3>
                 </div>
 
-                <div className="inline-flex items-center gap-2 bg-white/20 rounded-full px-4 py-2 text-sm font-medium">
+                <div className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium card-foreground border border-white/40 rounded-md">
                   {t("actions.viewDetails")}
                   <span>→</span>
                 </div>
@@ -968,38 +938,32 @@ export const UnifiedCard = React.memo(
           ref={imageRef}
           src={imageSrc}
           alt={item.title}
-          className="w-full h-full object-cover"
+          className="w-full h-full object-cover card-image-no-invert"
           onLoad={handleImageLoad}
           onError={handleImageError}
           loading="lazy"
         />
 
-        {/* Glassmorphism overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-black/8 to-transparent text-white">
+        {/* Content overlay */}
+        <div className="absolute inset-0 text-white">
           {/* Type Badge - Top Left */}
-          <div className="absolute top-2 left-2 bg-white/20 rounded-full p-1.5 border border-white/20">
+          <div className="absolute top-2.5 left-2.5 card-foreground">
             <ItemTypeIcon type={item.type} size="small" />
           </div>
-
           {/* Bookmark Button - Top Right */}
           <button
             onClick={handleBookmarkClick}
-            className={`absolute top-2 right-2 w-8 h-8 flex items-center justify-center rounded-full transition-all duration-200 border border-white/20 pointer-events-auto z-10 ${
-              isBookmarked(item.id)
-                ? "bg-yellow-500/90 text-white"
-                : "bg-white/20 text-white hover:bg-white/30"
-            }`}
+            className="absolute top-1.5 right-2.5 flex items-center pointer-events-auto z-10 card-foreground"
             aria-label={
               isBookmarked(item.id)
                 ? t("actions.removeBookmark")
                 : t("actions.bookmark")
             }
           >
-            <span className="text-sm mix-diff">
+            <span className="text-base">
               {isBookmarked(item.id) ? "★" : "☆"}
             </span>
-          </button>
-
+          </button>{" "}
           {/* Basic Info - Visible when not hovered (use visibility to fully hide on hover) */}
           <div
             className={`absolute bottom-0 left-0 right-0 p-3 space-y-1`}
@@ -1010,20 +974,25 @@ export const UnifiedCard = React.memo(
               transition: "opacity 120ms linear",
             }}
           >
-            <SmartScrollableText className="font-semibold text-lg mix-diff">
+            <SmartScrollableText className="font-semibold text-lg card-foreground">
               {formatText(item.title)}
             </SmartScrollableText>
 
-            <div className="space-y-0.5 text-sm opacity-90">
-              <SmartScrollableText> {item.time}</SmartScrollableText>
-              <SmartScrollableText> {item.location}</SmartScrollableText>
+            <div className="space-y-0.5 text-sm opacity-90 card-foreground">
+              <SmartScrollableText className="card-foreground">
+                {" "}
+                {item.time}
+              </SmartScrollableText>
+              <SmartScrollableText className="card-foreground">
+                {" "}
+                {item.location}
+              </SmartScrollableText>
             </div>
           </div>
-
           {/* Detailed overlay on hover */}
           <div
             ref={metaRef}
-            className={`absolute inset-0 bg-gradient-to-t from-black/50 via-black/20 to-transparent p-4 flex flex-col justify-center`}
+            className="absolute inset-0 p-3 flex flex-col justify-center"
             style={{
               visibility: isHovered ? "visible" : "hidden",
               opacity: isHovered ? 1 : 0,
@@ -1031,30 +1000,34 @@ export const UnifiedCard = React.memo(
               transition: "opacity 120ms linear",
             }}
           >
-            <div className="space-y-3">
-              <SmartScrollableText className="text-lg font-semibold">
+            <div className="space-y-1">
+              <SmartScrollableText className="text-lg font-semibold card-foreground">
                 {formatText(item.title)}
               </SmartScrollableText>
 
               {showDescription && item.description && (
-                <p className="text-sm opacity-90 line-clamp-3">
+                <p className="text-sm opacity-90 line-clamp-3 card-foreground">
                   {formatText(item.description)}
                 </p>
               )}
 
-              <div className="space-y-2 text-sm opacity-80">
+              <div className="space-y-1 text-sm opacity-80 card-foreground">
                 <div className="flex items-center gap-2">
                   <TimeIcon size={16} />
-                  <SmartScrollableText>{item.time}</SmartScrollableText>
+                  <SmartScrollableText className="card-foreground">
+                    {item.time}
+                  </SmartScrollableText>
                 </div>
                 <div className="flex items-center gap-2">
                   <LocationIcon size={16} />
-                  <SmartScrollableText>{item.location}</SmartScrollableText>
+                  <SmartScrollableText className="card-foreground">
+                    {item.location}
+                  </SmartScrollableText>
                 </div>
                 {organization && (
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 card-foreground">
                     <PeopleIcon size={16} />
-                    <SmartScrollableText>
+                    <SmartScrollableText className="card-foreground">
                       {organizationLabel}: {organization}
                     </SmartScrollableText>
                   </div>
@@ -1062,12 +1035,11 @@ export const UnifiedCard = React.memo(
               </div>
             </div>
           </div>
-
           {/* Tags overlay */}
           {showTags && item.tags && item.tags.length > 0 && (
             <div
               ref={tagsRef}
-              className={`absolute bottom-3 left-3 right-3`}
+              className={`absolute bottom-1 left-3 right-3`}
               style={{
                 visibility: isHovered ? "visible" : "hidden",
                 opacity: isHovered ? 1 : 0,
