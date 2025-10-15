@@ -5,8 +5,9 @@ import TagFilter from "../components/common/TagFilter";
 import TimelineDay from "../components/schedule/TimelineDay";
 import { useLanguage } from "../context/LanguageContext";
 import { useTag } from "../context/TagContext";
-import { events } from "../data/events";
+import eventsJson from "../data/events.json";
 import type { Event, Item } from "../types/common";
+const events = eventsJson as Event[];
 
 const isEventItem = (item: Item): item is Event => item.type === "event";
 

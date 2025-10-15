@@ -5,7 +5,7 @@ import CardGrid from "../components/common/CardGrid";
 import CardListToggle from "../components/common/CardListToggle";
 import { useLanguage } from "../context/LanguageContext";
 import { dataManager } from "../data/dataManager";
-import { sponsors } from "../data/sponsors";
+import sponsors from "../data/sponsors.json";
 import { pickRandom } from "../shared/utils/random";
 import type { Item } from "../types/common";
 

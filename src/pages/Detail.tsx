@@ -8,12 +8,16 @@ import Tag from "../components/common/Tag";
 import VectorMap from "../components/map/VectorMap";
 import { useBookmark } from "../context/BookmarkContext";
 import { useLanguage } from "../context/LanguageContext";
-import { events } from "../data/events";
-import { exhibits } from "../data/exhibits";
-import { sponsors } from "../data/sponsors";
-import { stalls } from "../data/stalls";
-import UnifiedCard from "../shared/components/ui/UnifiedCard";
+import eventsJson from "../data/events.json";
+import exhibitsJson from "../data/exhibits.json";
+import sponsorsJson from "../data/sponsors.json";
+import stallsJson from "../data/stalls.json";
 import type { Event, Exhibit, Item, Sponsor, Stall } from "../types/common";
+const events = eventsJson as Event[];
+const exhibits = exhibitsJson as Exhibit[];
+const sponsors = sponsorsJson as Sponsor[];
+const stalls = stallsJson as Stall[];
+import UnifiedCard from "../shared/components/ui/UnifiedCard";
 
 const Detail = () => {
   const { id, type } = useParams<{ type: string; id: string }>();

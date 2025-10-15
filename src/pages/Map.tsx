@@ -7,10 +7,13 @@ import LocationList from "../components/map/LocationList";
 import VectorMap from "../components/map/VectorMap";
 import { useLanguage } from "../context/LanguageContext";
 import { useTag } from "../context/TagContext";
-import { events } from "../data/events";
-import { exhibits } from "../data/exhibits";
-import { stalls } from "../data/stalls";
+import eventsJson from "../data/events.json";
+import exhibitsJson from "../data/exhibits.json";
+import stallsJson from "../data/stalls.json";
 import type { Event, Exhibit, Item, Stall } from "../types/common";
+const events = eventsJson as Event[];
+const exhibits = exhibitsJson as Exhibit[];
+const stalls = stallsJson as Stall[];
 // import { itemsToContentItems } from "../utils/itemHelpers";
 
 // Type for non-sponsor items

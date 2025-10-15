@@ -439,7 +439,7 @@ export const UnifiedCard = React.memo(
               handleBookmarkClick(e);
             }}
             className="pointer-events-auto absolute top-1.5 right-2.5 z-[100] transition-all duration-200"
-            style={{ mixBlendMode: "difference", color: "#eeeeee" }}
+            style={{ color: "#eeeeee", mixBlendMode: "difference" }}
             aria-label={
               isBookmarked(item.id)
                 ? t("actions.removeBookmark")
@@ -613,7 +613,7 @@ export const UnifiedCard = React.memo(
               handleBookmarkClick(e);
             }}
             className="pointer-events-auto absolute top-1.5 right-2.5 z-[100] transition-all duration-200"
-            style={{ mixBlendMode: "difference", color: "#eeeeee" }}
+            style={{ color: "#eeeeee", mixBlendMode: "difference" }}
             aria-label={
               isBookmarked(item.id)
                 ? t("actions.removeBookmark")
@@ -791,7 +791,7 @@ export const UnifiedCard = React.memo(
               handleBookmarkClick(e);
             }}
             className="pointer-events-auto absolute top-1.5 right-2.5 z-[100] transition-all duration-200"
-            style={{ mixBlendMode: "difference", color: "#eeeeee" }}
+            style={{ color: "#eeeeee", mixBlendMode: "difference" }}
             aria-label={
               isBookmarked(item.id)
                 ? t("actions.removeBookmark")
@@ -968,7 +968,7 @@ export const UnifiedCard = React.memo(
               handleBookmarkClick(e);
             }}
             className="pointer-events-auto absolute top-1.5 right-2.5 z-[100] transition-all duration-200"
-            style={{ mixBlendMode: "difference", color: "#eeeeee" }}
+            style={{ color: "#eeeeee", mixBlendMode: "difference" }}
             aria-label={
               isBookmarked(item.id)
                 ? t("actions.removeBookmark")
@@ -1102,7 +1102,7 @@ export const UnifiedCard = React.memo(
             handleBookmarkClick(e);
           }}
           className="pointer-events-auto absolute top-1.5 right-2.5 z-[100] transition-all duration-200"
-          style={{ mixBlendMode: "difference", color: "#eeeeee" }}
+          style={{ color: "#eeeeee", mixBlendMode: "difference" }}
           aria-label={
             isBookmarked(item.id)
               ? t("actions.removeBookmark")

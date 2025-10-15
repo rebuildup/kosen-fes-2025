@@ -8,8 +8,8 @@ import TagFilter from "../components/common/TagFilter";
 import { useLanguage } from "../context/LanguageContext";
 import { useTag } from "../context/TagContext";
 import { dataManager } from "../data/dataManager";
-import { exhibits } from "../data/exhibits";
-import { stalls } from "../data/stalls";
+import exhibits from "../data/exhibits.json";
+import stalls from "../data/stalls.json";
 import { pickRandom } from "../shared/utils/random";
 import type { Item } from "../types/common";
 

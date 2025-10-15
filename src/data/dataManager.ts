@@ -10,10 +10,14 @@ import type {
   SponsorCore,
   StallCore,
 } from "../types/data";
-import { events } from "./events";
-import { exhibits } from "./exhibits";
-import { sponsors } from "./sponsors";
-import { stalls } from "./stalls";
+import eventsJson from "./events.json";
+import exhibitsJson from "./exhibits.json";
+import sponsorsJson from "./sponsors.json";
+import stallsJson from "./stalls.json";
+const events = eventsJson as Event[];
+const exhibits = exhibitsJson as Exhibit[];
+const sponsors = sponsorsJson as Sponsor[];
+const stalls = stallsJson as Stall[];
 
 type StallDetails = ItemDetails & { products: string[] };
 type SponsorDetails = ItemDetails & { website?: string; contactEmail?: string };

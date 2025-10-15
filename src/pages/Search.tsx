@@ -7,10 +7,15 @@ import SearchResults from "../components/search/SearchResults";
 import { useLanguage } from "../context/LanguageContext";
 import { useSearch } from "../context/SearchContext";
 import { useTag } from "../context/TagContext";
-import { events } from "../data/events";
-import { exhibits } from "../data/exhibits";
-import { sponsors } from "../data/sponsors";
-import { stalls } from "../data/stalls";
+import eventsJson from "../data/events.json";
+import exhibitsJson from "../data/exhibits.json";
+import sponsorsJson from "../data/sponsors.json";
+import stallsJson from "../data/stalls.json";
+import type { Event, Exhibit, Sponsor, Stall } from "../types/common";
+const events = eventsJson as Event[];
+const exhibits = exhibitsJson as Exhibit[];
+const sponsors = sponsorsJson as Sponsor[];
+const stalls = stallsJson as Stall[];
 import { pickRandom } from "../shared/utils/random";
 
 // 画像パスをpublicルート基準に変換

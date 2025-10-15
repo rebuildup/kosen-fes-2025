@@ -8,7 +8,7 @@ import TagFilter from "../components/common/TagFilter";
 import { useLanguage } from "../context/LanguageContext";
 import { useTag } from "../context/TagContext";
 import { dataManager } from "../data/dataManager";
-import { events } from "../data/events";
+import events from "../data/events.json";
 import { pickRandom } from "../shared/utils/random";
 import type { Item } from "../types/common";
 
