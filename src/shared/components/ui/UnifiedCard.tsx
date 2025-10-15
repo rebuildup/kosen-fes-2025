@@ -538,7 +538,7 @@ export const UnifiedCard = React.memo(
           />
 
           {/* Content overlay */}
-          <div className="absolute inset-0 text-white">
+          <div className="absolute inset-0">
             {/* Basic content (hide via display when hovered to avoid overlap) */}
             <div
               className="absolute bottom-0 left-0 right-0 p-3"
@@ -554,17 +554,15 @@ export const UnifiedCard = React.memo(
               <h3 className="schedule-card-title mb-1 card-foreground">
                 {formatText(item.title)}
               </h3>
-              <div className="flex items-center gap-1 text-xs opacity-80">
+              <div className="flex items-center gap-1 text-xs opacity-80 card-foreground">
                 <LocationIcon size={12} />
-                <span className="truncate card-foreground">
-                  {formatText(item.location)}
-                </span>
+                <span className="truncate">{formatText(item.location)}</span>
               </div>
             </div>
 
             {/* Content container - show only when hovered (use display to avoid overlap) */}
             <div
-              className="absolute inset-0 p-3 pt-10 flex flex-col justify-center text-white"
+              className="absolute inset-0 p-3 pt-10 flex flex-col justify-center"
               style={{
                 display: !isInitialized ? "none" : isHovered ? "flex" : "none",
                 opacity: !isInitialized ? 0 : isHovered ? 1 : 0,
@@ -701,7 +699,7 @@ export const UnifiedCard = React.memo(
           />
 
           {/* Content overlay */}
-          <div className="absolute inset-0 text-white">
+          <div className="absolute inset-0">
             {/* Basic content (hidden when hovered to avoid overlap) */}
             <div
               className={`absolute bottom-0 left-0 right-0 p-3`}
@@ -724,7 +722,7 @@ export const UnifiedCard = React.memo(
 
             {/* Content container - show only when hovered */}
             <div
-              className={`absolute inset-0 p-3 pt-10 text-white`}
+              className={`absolute inset-0 p-3 pt-10`}
               style={{
                 display: isHovered ? "flex" : "none",
                 flexDirection: "column",
