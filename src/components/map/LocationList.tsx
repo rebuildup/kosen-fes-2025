@@ -70,7 +70,7 @@ const LocationList = ({
               return (
                 <div
                   key={location}
-                  className={`flex-shrink-0 w-72`}
+                  className={`flex-shrink-0 w-80`}
                   onMouseEnter={() => onLocationHover(location)}
                   onMouseLeave={() => onLocationHover(null)}
                   onClick={() => onLocationSelect(location)}
@@ -78,7 +78,7 @@ const LocationList = ({
                   <div className="relative">
                     <UnifiedCard
                       item={firstItem}
-                      variant="compact"
+                      variant="default"
                       showTags={false}
                       showDescription={false}
                       showAnimation={true}

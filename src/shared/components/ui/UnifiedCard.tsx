@@ -704,11 +704,10 @@ export const UnifiedCard = React.memo(
           <div className="absolute inset-0 text-white">
             {/* Basic content (hidden when hovered to avoid overlap) */}
             <div
-              className={`absolute bottom-0 left-0 right-0 p-3 transition-all duration-200`}
+              className={`absolute bottom-0 left-0 right-0 p-3`}
               style={{
                 display: isHovered ? "none" : "block",
                 opacity: !isInitialized ? 0 : 1,
-                transition: "opacity 120ms linear",
               }}
             >
               <div className="schedule-card-time card-foreground">
@@ -723,18 +722,14 @@ export const UnifiedCard = React.memo(
               </div>
             </div>
 
-            {/* Content container - show only when hovered (use visibility to avoid overlap) */}
+            {/* Content container - show only when hovered */}
             <div
-              className={`absolute inset-0 p-3 pt-10 flex flex-col justify-center text-white`}
+              className={`absolute inset-0 p-3 pt-10 text-white`}
               style={{
-                display: !isInitialized ? "none" : isHovered ? "flex" : "none",
-                opacity: !isInitialized ? 0 : isHovered ? 1 : 0,
-                pointerEvents: !isInitialized
-                  ? "none"
-                  : isHovered
-                  ? "auto"
-                  : "none",
-                transition: "opacity 120ms linear",
+                display: isHovered ? "flex" : "none",
+                flexDirection: "column",
+                justifyContent: "center",
+                opacity: !isInitialized ? 0 : 1,
               }}
             >
               <div className="space-y-2 max-h-full overflow-y-auto scrollbar-thin pr-2">
@@ -892,12 +887,10 @@ export const UnifiedCard = React.memo(
 
             {/* Title Only - Always Visible (hide when hovered) */}
             <div
-              className={`absolute bottom-0 left-0 right-0 p-3 transition-all duration-300 ease-[cubic-bezier(0,1,0.5,1)]`}
+              className={`absolute bottom-0 left-0 right-0 p-3`}
               style={{
-                visibility: isHovered ? "hidden" : "visible",
-                opacity: isHovered ? 0 : 1,
-                transform: isHovered ? "translateY(10px)" : "translateY(0)",
-                pointerEvents: isHovered ? "none" : "auto",
+                display: isHovered ? "none" : "block",
+                opacity: !isInitialized ? 0 : 1,
               }}
             >
               <h3 className="font-semibold text-lg truncate card-foreground">
@@ -907,12 +900,13 @@ export const UnifiedCard = React.memo(
 
             {/* Hover overlay with view details button (show when hovered) */}
             <div
-              className="absolute inset-0 p-3 pb-4 flex flex-col justify-end items-center transition-all duration-300 ease-[cubic-bezier(0,1,0.5,1)]"
+              className="absolute inset-0 p-3 pb-4"
               style={{
-                visibility: isHovered ? "visible" : "hidden",
-                opacity: isHovered ? 1 : 0,
-                transform: isHovered ? "translateY(0)" : "translateY(20px)",
-                pointerEvents: isHovered ? "auto" : "none",
+                display: isHovered ? "flex" : "none",
+                flexDirection: "column",
+                justifyContent: "flex-end",
+                alignItems: "center",
+                opacity: !isInitialized ? 0 : 1,
               }}
             >
               <div className="text-center space-y-2 w-full">
@@ -1006,12 +1000,10 @@ export const UnifiedCard = React.memo(
           </button>{" "}
           {/* Basic Info - Visible when not hovered (use visibility to fully hide on hover) */}
           <div
-            className={`absolute bottom-0 left-0 right-0 p-3 space-y-1 transition-all duration-300 ease-[cubic-bezier(0,1,0.5,1)]`}
+            className={`absolute bottom-0 left-0 right-0 p-3 space-y-1`}
             style={{
-              visibility: isHovered ? "hidden" : "visible",
-              opacity: isHovered ? 0 : 1,
-              transform: isHovered ? "translateY(10px)" : "translateY(0)",
-              pointerEvents: isHovered ? "none" : "auto",
+              display: isHovered ? "none" : "block",
+              opacity: !isInitialized ? 0 : 1,
             }}
           >
             <SmartScrollableText className="font-semibold text-lg card-foreground">
@@ -1032,12 +1024,12 @@ export const UnifiedCard = React.memo(
           {/* Detailed overlay on hover */}
           <div
             ref={metaRef}
-            className="absolute inset-0 p-3 pb-8 flex flex-col justify-end transition-all duration-300 ease-[cubic-bezier(0,1,0.5,1)]"
+            className="absolute inset-0 p-3 pb-8"
             style={{
-              visibility: isHovered ? "visible" : "hidden",
-              opacity: isHovered ? 1 : 0,
-              transform: isHovered ? "translateY(0)" : "translateY(20px)",
-              pointerEvents: isHovered ? "auto" : "none",
+              display: isHovered ? "flex" : "none",
+              flexDirection: "column",
+              justifyContent: "flex-end",
+              opacity: !isInitialized ? 0 : 1,
             }}
           >
             <div className="space-y-1">
@@ -1079,12 +1071,10 @@ export const UnifiedCard = React.memo(
           {showTags && item.tags && item.tags.length > 0 && (
             <div
               ref={tagsRef}
-              className={`absolute bottom-1 left-3 right-3 transition-all duration-300 ease-[cubic-bezier(0,1,0.5,1)]`}
+              className={`absolute bottom-1 left-3 right-3`}
               style={{
-                visibility: isHovered ? "visible" : "hidden",
-                opacity: isHovered ? 1 : 0,
-                transform: isHovered ? "translateY(0)" : "translateY(10px)",
-                pointerEvents: isHovered ? "auto" : "none",
+                display: isHovered ? "block" : "none",
+                opacity: !isInitialized ? 0 : 1,
               }}
             >
               <div
