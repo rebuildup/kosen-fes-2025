@@ -412,33 +412,49 @@ export const UnifiedCard = React.memo(
             />
           </div>
 
+          {/* Static gradient overlay for better text visibility - must be before content */}
+          <div
+            className="pointer-events-none absolute inset-0"
+            style={{
+              background:
+                "linear-gradient(to top, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0) 50%, transparent 100%)",
+            }}
+          ></div>
+
+          {/* Type Badge - After gradient overlay to be visually on top */}
+          <div
+            className="absolute top-2.5 left-2.5 z-20"
+            style={{ mixBlendMode: "difference" }}
+          >
+            <span style={{ color: "#eeeeee" }}>
+              <ItemTypeIcon type={item.type} size="small" />
+            </span>
+          </div>
+
+          {/* Bookmark Button - After gradient overlay to be visually on top */}
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              handleBookmarkClick(e);
+            }}
+            className="pointer-events-auto absolute top-1.5 right-2.5 z-[100] transition-all duration-200"
+            style={{ mixBlendMode: "difference", color: "#eeeeee" }}
+            aria-label={
+              isBookmarked(item.id)
+                ? t("actions.removeBookmark")
+                : t("actions.bookmark")
+            }
+          >
+            <span className="text-base">
+              {isBookmarked(item.id) ? "★" : "☆"}
+            </span>
+          </button>
+
           {/* Content Overlay */}
-          <div className="relative flex h-full flex-col justify-between p-4 text-white">
-            {/* Type Badge and Bookmark - Top */}
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-2 text-white">
-                <ItemTypeIcon type={item.type} size="small" />
-                <span className="text-xs font-medium">{typeLabel}</span>
-              </div>
-
-              {/* Bookmark Button */}
-              <button
-                className="flex items-center text-white"
-                onClick={handleBookmarkClick}
-                aria-label={
-                  isBookmarked(item.id)
-                    ? t("actions.removeBookmark")
-                    : t("actions.bookmark")
-                }
-              >
-                <span className="text-base">
-                  {isBookmarked(item.id) ? "★" : "☆"}
-                </span>
-              </button>
-            </div>
-
+          <div className="relative z-20 flex h-full flex-col justify-between p-4 text-white">
             {/* Always visible basic content */}
-            <div className="space-y-2">
+            <div className="mt-6 space-y-2">
               <h2 className="line-clamp-2 text-xl leading-tight font-bold text-white">
                 {formatText(item.title)}
               </h2>
@@ -570,11 +586,47 @@ export const UnifiedCard = React.memo(
             loading="lazy"
           />
 
-          {/* Gradient overlay for better text visibility (vertical for timeline) */}
-          <div className="schedule-card-overlay-gradient"></div>
+          {/* Static gradient overlay - must be before content (horizontal for timeline) */}
+          <div
+            className="pointer-events-none absolute inset-0"
+            style={{
+              background:
+                "linear-gradient(50deg, rgba(0, 0, 0, 0.45) 0%, rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0) 80%, transparent 100%)",
+            }}
+          ></div>
+
+          {/* Type Badge - After gradient overlay to be visually on top */}
+          <div
+            className="absolute top-2.5 left-2.5 z-20"
+            style={{ mixBlendMode: "difference" }}
+          >
+            <span style={{ color: "#eeeeee" }}>
+              <ItemTypeIcon type={item.type} size="small" />
+            </span>
+          </div>
+
+          {/* Bookmark Button - After gradient overlay to be visually on top */}
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              handleBookmarkClick(e);
+            }}
+            className="pointer-events-auto absolute top-1.5 right-2.5 z-[100] transition-all duration-200"
+            style={{ mixBlendMode: "difference", color: "#eeeeee" }}
+            aria-label={
+              isBookmarked(item.id)
+                ? t("actions.removeBookmark")
+                : t("actions.bookmark")
+            }
+          >
+            <span className="text-base">
+              {isBookmarked(item.id) ? "★" : "☆"}
+            </span>
+          </button>
 
           {/* Content overlay */}
-          <div className="absolute inset-0">
+          <div className="absolute inset-0 z-20">
             {/* Basic content (hide via display when hovered to avoid overlap) */}
             <div
               className="absolute right-0 bottom-0 left-0 p-3"
@@ -584,13 +636,11 @@ export const UnifiedCard = React.memo(
                 transition: "opacity 120ms linear",
               }}
             >
-              <div className="schedule-card-time schedule-card-text-shadow text-white">
-                {item.time}
-              </div>
-              <h3 className="schedule-card-title schedule-card-text-shadow mb-1 text-white">
+              <div className="schedule-card-time text-white">{item.time}</div>
+              <h3 className="schedule-card-title mb-1 text-white">
                 {formatText(item.title)}
               </h3>
-              <div className="schedule-card-text-shadow flex items-center gap-1 text-xs text-white opacity-80">
+              <div className="flex items-center gap-1 text-xs text-white opacity-80">
                 <LocationIcon size={12} />
                 <span className="truncate">{formatText(item.location)}</span>
               </div>
@@ -611,17 +661,17 @@ export const UnifiedCard = React.memo(
               }}
             >
               <div className="scrollbar-thin max-h-full space-y-2 overflow-y-auto pr-2">
-                <h3 className="schedule-card-text-shadow text-lg font-semibold text-white">
+                <h3 className="text-lg font-semibold text-white">
                   {formatText(item.title)}
                 </h3>
 
                 {showDescription && item.description && (
-                  <p className="schedule-card-text-shadow line-clamp-3 text-sm leading-relaxed text-white opacity-90">
+                  <p className="line-clamp-3 text-sm leading-relaxed text-white opacity-90">
                     {formatText(item.description)}
                   </p>
                 )}
 
-                <div className="schedule-card-text-shadow space-y-2 text-sm text-white opacity-80">
+                <div className="space-y-2 text-sm text-white opacity-80">
                   <div className="flex items-center gap-2">
                     <TimeIcon size={16} />
                     <span className="text-white">{item.time}</span>
@@ -669,26 +719,6 @@ export const UnifiedCard = React.memo(
               </div>
             </div>
           </div>
-
-          {/* Type Badge */}
-          <div className="absolute top-2.5 left-2.5 flex items-center gap-1 text-white">
-            <ItemTypeIcon type={item.type} size="small" />
-          </div>
-
-          {/* Bookmark Button */}
-          <button
-            onClick={handleBookmarkClick}
-            className="absolute top-1.5 right-2.5 flex items-center text-white"
-            aria-label={
-              isBookmarked(item.id)
-                ? t("actions.removeBookmark")
-                : t("actions.bookmark")
-            }
-          >
-            <span className="text-base">
-              {isBookmarked(item.id) ? "★" : "☆"}
-            </span>
-          </button>
         </div>
       );
 
@@ -734,11 +764,47 @@ export const UnifiedCard = React.memo(
             loading="lazy"
           />
 
-          {/* Gradient overlay for better text visibility (horizontal for list) */}
-          <div className="schedule-card-overlay-gradient-horizontal"></div>
+          {/* Static gradient overlay - must be before content */}
+          <div
+            className="pointer-events-none absolute inset-0"
+            style={{
+              background:
+                "linear-gradient(50deg, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0) 50%, transparent 100%)",
+            }}
+          ></div>
+
+          {/* Type Badge - After gradient overlay to be visually on top */}
+          <div
+            className="absolute top-2.5 left-2.5 z-20"
+            style={{ mixBlendMode: "difference" }}
+          >
+            <span style={{ color: "#eeeeee" }}>
+              <ItemTypeIcon type={item.type} size="small" />
+            </span>
+          </div>
+
+          {/* Bookmark Button - After gradient overlay to be visually on top */}
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              handleBookmarkClick(e);
+            }}
+            className="pointer-events-auto absolute top-1.5 right-2.5 z-[100] transition-all duration-200"
+            style={{ mixBlendMode: "difference", color: "#eeeeee" }}
+            aria-label={
+              isBookmarked(item.id)
+                ? t("actions.removeBookmark")
+                : t("actions.bookmark")
+            }
+          >
+            <span className="text-base">
+              {isBookmarked(item.id) ? "★" : "☆"}
+            </span>
+          </button>
 
           {/* Content overlay */}
-          <div className="absolute inset-0">
+          <div className="absolute inset-0 z-20">
             {/* Basic content (hidden when hovered to avoid overlap) */}
             <div
               className={`absolute right-0 bottom-0 left-0 p-3`}
@@ -747,13 +813,11 @@ export const UnifiedCard = React.memo(
                 opacity: isInitialized ? 1 : 0,
               }}
             >
-              <div className="schedule-card-time schedule-card-text-shadow text-white">
-                {item.time}
-              </div>
-              <h3 className="schedule-card-title schedule-card-text-shadow mb-1 text-white">
+              <div className="schedule-card-time text-white">{item.time}</div>
+              <h3 className="schedule-card-title mb-1 text-white">
                 {formatText(item.title)}
               </h3>
-              <div className="schedule-card-text-shadow flex items-center gap-1 text-xs text-white opacity-80">
+              <div className="flex items-center gap-1 text-xs text-white opacity-80">
                 <LocationIcon size={12} />
                 <span className="truncate">{formatText(item.location)}</span>
               </div>
@@ -770,12 +834,12 @@ export const UnifiedCard = React.memo(
               }}
             >
               <div className="scrollbar-thin max-h-full space-y-2 overflow-y-auto pr-2">
-                <h3 className="schedule-card-text-shadow text-lg font-semibold text-white">
+                <h3 className="text-lg font-semibold text-white">
                   {formatText(item.title)}
                 </h3>
 
                 {showDescription && item.description && (
-                  <p className="schedule-card-text-shadow line-clamp-3 text-sm leading-relaxed text-white opacity-90">
+                  <p className="line-clamp-3 text-sm leading-relaxed text-white opacity-90">
                     {formatText(item.description)}
                   </p>
                 )}
@@ -823,26 +887,6 @@ export const UnifiedCard = React.memo(
               </div>
             </div>
           </div>
-
-          {/* Type Badge */}
-          <div className="absolute top-2.5 left-2.5 flex items-center gap-1 text-white">
-            <ItemTypeIcon type={item.type} size="small" />
-          </div>
-
-          {/* Bookmark Button */}
-          <button
-            onClick={handleBookmarkClick}
-            className="absolute top-1.5 right-2.5 flex items-center text-white"
-            aria-label={
-              isBookmarked(item.id)
-                ? t("actions.removeBookmark")
-                : t("actions.bookmark")
-            }
-          >
-            <span className="text-base">
-              {isBookmarked(item.id) ? "★" : "☆"}
-            </span>
-          </button>
         </div>
       );
 
@@ -897,31 +941,47 @@ export const UnifiedCard = React.memo(
             />
           </div>
 
-          {/* Gradient overlay for better text visibility */}
-          <div className="schedule-card-overlay-gradient"></div>
+          {/* Static gradient overlay - must be before content */}
+          <div
+            className="pointer-events-none absolute inset-0"
+            style={{
+              background:
+                "linear-gradient(15deg, rgba(0, 0, 0, 0.45) 0%, rgba(0, 0, 0, 0.1) 60%, rgba(0, 0, 0, 0) 80%, transparent 100%)",
+            }}
+          ></div>
+
+          {/* Type Badge - After gradient overlay to be visually on top */}
+          <div
+            className="absolute top-2.5 left-2.5 z-20"
+            style={{ mixBlendMode: "difference" }}
+          >
+            <span style={{ color: "#eeeeee" }}>
+              <ItemTypeIcon type={item.type} size="small" />
+            </span>
+          </div>
+
+          {/* Bookmark Button - After gradient overlay to be visually on top */}
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              handleBookmarkClick(e);
+            }}
+            className="pointer-events-auto absolute top-1.5 right-2.5 z-[100] transition-all duration-200"
+            style={{ mixBlendMode: "difference", color: "#eeeeee" }}
+            aria-label={
+              isBookmarked(item.id)
+                ? t("actions.removeBookmark")
+                : t("actions.bookmark")
+            }
+          >
+            <span className="text-base">
+              {isBookmarked(item.id) ? "★" : "☆"}
+            </span>
+          </button>
 
           {/* Content overlay */}
-          <div className="absolute inset-0 text-white">
-            {/* Type Badge - Top Left */}
-            <div className="absolute top-2.5 left-2.5 text-white">
-              <ItemTypeIcon type={item.type} size="small" />
-            </div>
-
-            {/* Bookmark Button - Top Right */}
-            <button
-              onClick={handleBookmarkClick}
-              className="pointer-events-auto absolute top-1.5 right-2.5 z-10 flex items-center text-white"
-              aria-label={
-                isBookmarked(item.id)
-                  ? t("actions.removeBookmark")
-                  : t("actions.bookmark")
-              }
-            >
-              <span className="text-base">
-                {isBookmarked(item.id) ? "★" : "☆"}
-              </span>
-            </button>
-
+          <div className="absolute inset-0 z-20 text-white">
             {/* Title Only - Always Visible (hide when hovered) */}
             <div
               className={`absolute right-0 bottom-0 left-0 p-3`}
@@ -1015,29 +1075,45 @@ export const UnifiedCard = React.memo(
           />
         </div>
 
-        {/* Gradient overlay for better text visibility (vertical for grid) */}
-        <div className="schedule-card-overlay-gradient"></div>
+        {/* Static gradient overlay - must be before content */}
+        <div
+          className="pointer-events-none absolute inset-0"
+          style={{
+            background:
+              "linear-gradient(20deg, rgba(0, 0, 0, 0.45) 0%, rgba(0, 0, 0, 0.1) 60%, rgba(0, 0, 0, 0) 80%, transparent 100%)",
+          }}
+        ></div>
+
+        {/* Type Badge - After gradient overlay to be visually on top */}
+        <div
+          className="absolute top-2.5 left-2.5 z-20"
+          style={{ mixBlendMode: "difference" }}
+        >
+          <span style={{ color: "#eeeeee" }}>
+            <ItemTypeIcon type={item.type} size="small" />
+          </span>
+        </div>
+
+        {/* Bookmark Button - After gradient overlay to be visually on top */}
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            handleBookmarkClick(e);
+          }}
+          className="pointer-events-auto absolute top-1.5 right-2.5 z-[100] transition-all duration-200"
+          style={{ mixBlendMode: "difference", color: "#eeeeee" }}
+          aria-label={
+            isBookmarked(item.id)
+              ? t("actions.removeBookmark")
+              : t("actions.bookmark")
+          }
+        >
+          <span className="text-base">{isBookmarked(item.id) ? "★" : "☆"}</span>
+        </button>
 
         {/* Content overlay */}
-        <div className="absolute inset-0 text-white">
-          {/* Type Badge - Top Left */}
-          <div className="absolute top-2.5 left-2.5 text-white">
-            <ItemTypeIcon type={item.type} size="small" />
-          </div>
-          {/* Bookmark Button - Top Right */}
-          <button
-            onClick={handleBookmarkClick}
-            className="pointer-events-auto absolute top-1.5 right-2.5 z-10 flex items-center text-white"
-            aria-label={
-              isBookmarked(item.id)
-                ? t("actions.removeBookmark")
-                : t("actions.bookmark")
-            }
-          >
-            <span className="text-base">
-              {isBookmarked(item.id) ? "★" : "☆"}
-            </span>
-          </button>{" "}
+        <div className="absolute inset-0 z-20 text-white">
           {/* Basic Info - Visible when not hovered (use visibility to fully hide on hover) */}
           <div
             className={`absolute right-0 bottom-0 left-0 space-y-1 p-3`}
@@ -1064,7 +1140,7 @@ export const UnifiedCard = React.memo(
           {/* Detailed overlay on hover */}
           <div
             ref={metaRef}
-            className="absolute inset-0 p-3 pb-8"
+            className="absolute inset-0 p-3 pb-10"
             style={{
               display: isHovered ? "flex" : "none",
               flexDirection: "column",
@@ -1073,7 +1149,7 @@ export const UnifiedCard = React.memo(
             }}
           >
             <div className="space-y-1">
-              <SmartScrollableText className="schedule-card-text-shadow text-lg font-semibold text-white">
+              <SmartScrollableText className="text-lg font-semibold text-white">
                 {formatText(item.title)}
               </SmartScrollableText>
 

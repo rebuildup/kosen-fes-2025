@@ -317,31 +317,28 @@ const Card = ({
         loading="lazy"
       />
 
+      {/* Type Badge - Top Left (outside overlay for mix-blend-mode) */}
+      <div className="absolute top-2 left-2 z-20">
+        <ItemTypeIcon type={item.type} size="small" />
+      </div>
+
+      {/* Bookmark Button - Top Right (outside overlay for mix-blend-mode) */}
+      <button
+        onClick={handleBookmarkToggle}
+        className="pointer-events-auto absolute top-2 right-2 z-20 transition-all duration-200"
+        aria-label={
+          isBookmarked(item.id)
+            ? t("actions.removeBookmark")
+            : t("actions.bookmark")
+        }
+      >
+        <span className="card-foreground text-sm">
+          {isBookmarked(item.id) ? "★" : "☆"}
+        </span>
+      </button>
+
       {/* Glassmorphism overlay (use shared .card-gradient-overlay for consistent theming) */}
       <div className="card-gradient-overlay text-white">
-        {/* Type Badge - Top Left */}
-        <div className="glass-subtle absolute top-2 left-2 rounded-full p-1.5">
-          <ItemTypeIcon type={item.type} size="small" />
-        </div>
-
-        {/* Bookmark Button - Top Right */}
-        <button
-          onClick={handleBookmarkToggle}
-          className={`glass-button glass-interactive pointer-events-auto absolute top-2 right-2 z-10 rounded-full p-1.5 transition-all duration-200 ${
-            isBookmarked(item.id) ? "bg-yellow-500/90 text-white" : "text-white"
-          }`}
-          aria-label={
-            isBookmarked(item.id)
-              ? t("actions.removeBookmark")
-              : t("actions.bookmark")
-          }
-        >
-          <span className="mix-diff text-sm">
-            {isBookmarked(item.id) ? "★" : "☆"}
-          </span>
-        </button>
-
-        {/* Basic Info - Visible when not hovered */}
         <div
           className={`absolute right-0 bottom-0 left-0 space-y-1 p-3 transition-opacity duration-300 ${
             isHovered ? "opacity-0" : "opacity-100"

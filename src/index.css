@@ -459,7 +459,7 @@
   }
 
   .schedule-card-text-shadow {
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+    /* text-shadow removed for better readability */
   }
 
   .schedule-card-content {
@@ -725,7 +725,7 @@
   .mobile-footer-label {
     @apply truncate text-xs font-medium;
     max-width: 60px;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    /* text-shadow removed for better readability */
   }
 
   /* モバイルメニュー */
@@ -1560,7 +1560,7 @@
     .map-text-ultra-quality {
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
-      text-shadow: 0 0 1px rgba(255, 255, 255, 0.8);
+      /* text-shadow removed for better readability */
     }
 
     /* mix-blend-mode utility for icons and text that should invert over varied backgrounds */
@@ -1641,9 +1641,7 @@
     color: white;
     /* Fallback outline for environments where mixing is blocked */
     -webkit-text-stroke: 1px rgba(0, 0, 0, 0.6);
-    text-shadow:
-      0 1px 0 rgba(0, 0, 0, 0.6),
-      0 -1px 0 rgba(0, 0, 0, 0.25);
+    /* text-shadow removed for better readability */
   }
 
   /* Diagnostic helper: enable this class on body to force a visible outline
@@ -1657,7 +1655,7 @@
     .map-text-ultra-quality {
       font-weight: 600;
       letter-spacing: -0.005em;
-      text-shadow: 0 0 0.5px rgba(255, 255, 255, 0.9);
+      /* text-shadow removed for better readability */
     }
   }
 
