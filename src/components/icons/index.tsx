@@ -48,6 +48,7 @@ export {
   Sun as SunIcon,
   Clock as TimeIcon,
   Trash2 as TrashIcon,
+  UtensilsCrossed as StallIcon,
   X as XIcon,
 } from "lucide-react";
 export { AlertTriangle as AlertIcon } from "lucide-react";

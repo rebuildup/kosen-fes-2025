@@ -8,6 +8,7 @@ import { highlightSearchQuery } from "../../shared/utils/highlight";
 import type { Item } from "../../types/common";
 import CardGrid from "../common/CardGrid";
 import CardListToggle from "../common/CardListToggle";
+import { EventIcon, ExhibitIcon, StallIcon } from "../icons";
 
 interface FilteredResults {
   events: Item[];
@@ -160,11 +161,18 @@ const SearchResults = () => {
       {/* Results Sections */}
       <div className="space-y-8">
         {filteredResults.events.length > 0 && (
-          <section className="space-y-4">
+          <section key="events-section" className="space-y-4">
             <div className="flex items-center gap-3">
-              <div className="h-8 w-1 rounded-full bg-gradient-to-b from-[var(--accent-purple)] to-[var(--accent-pink)]"></div>
+              <div
+                className="h-8 w-1 rounded-full"
+                style={{
+                  background:
+                    "linear-gradient(to bottom, var(--accent-purple), var(--accent-pink))",
+                }}
+              ></div>
+              <EventIcon size={24} style={{ color: "var(--accent-purple)" }} />
               <h3 className="text-xl font-semibold text-[var(--text-primary)]">
-                🎭 {t("navigation.events")}
+                {t("navigation.events")}
               </h3>
               <div className="h-px flex-1 bg-[var(--border-color)]"></div>
               <span className="rounded-full bg-[var(--bg-secondary)] px-3 py-1 text-sm text-[var(--text-secondary)]">
@@ -189,11 +197,18 @@ const SearchResults = () => {
         )}
 
         {filteredResults.exhibits.length > 0 && (
-          <section className="space-y-4">
+          <section key="exhibits-section" className="space-y-4">
             <div className="flex items-center gap-3">
-              <div className="h-8 w-1 rounded-full bg-gradient-to-b from-[var(--accent-blue)] to-[var(--accent-teal)]"></div>
+              <div
+                className="h-8 w-1 rounded-full"
+                style={{
+                  background:
+                    "linear-gradient(to bottom, var(--accent-blue), var(--accent-teal))",
+                }}
+              ></div>
+              <ExhibitIcon size={24} style={{ color: "var(--accent-blue)" }} />
               <h3 className="text-xl font-semibold text-[var(--text-primary)]">
-                🎨 {t("exhibits.filters.exhibits")}
+                {t("exhibits.filters.exhibits")}
               </h3>
               <div className="h-px flex-1 bg-[var(--border-color)]"></div>
               <span className="rounded-full bg-[var(--bg-secondary)] px-3 py-1 text-sm text-[var(--text-secondary)]">
@@ -218,11 +233,18 @@ const SearchResults = () => {
         )}
 
         {filteredResults.stalls.length > 0 && (
-          <section className="space-y-4">
+          <section key="stalls-section" className="space-y-4">
             <div className="flex items-center gap-3">
-              <div className="h-8 w-1 rounded-full bg-gradient-to-b from-[var(--accent-orange)] to-[var(--accent-red)]"></div>
+              <div
+                className="h-8 w-1 rounded-full"
+                style={{
+                  background:
+                    "linear-gradient(to bottom, var(--accent-orange), var(--accent-red))",
+                }}
+              ></div>
+              <StallIcon size={24} style={{ color: "var(--accent-orange)" }} />
               <h3 className="text-xl font-semibold text-[var(--text-primary)]">
-                🍜 {t("exhibits.filters.stalls")}
+                {t("exhibits.filters.stalls")}
               </h3>
               <div className="h-px flex-1 bg-[var(--border-color)]"></div>
               <span className="rounded-full bg-[var(--bg-secondary)] px-3 py-1 text-sm text-[var(--text-secondary)]">

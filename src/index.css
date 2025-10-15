@@ -11,6 +11,8 @@
     --accent-red: #e1306c;
     --accent-orange: #f56040;
     --accent-yellow: #fcaf45;
+    --accent-blue: #3897f0;
+    --accent-teal: #00c4cc;
 
     --bg-primary: #ffffff;
     --bg-secondary: #fafafa;
@@ -63,6 +65,8 @@
     --accent-red: #1da1f2;
     --accent-orange: #0084c7;
     --accent-yellow: #1da1f2;
+    --accent-blue: #1da1f2;
+    --accent-teal: #0084c7;
 
     --bg-primary: #000000;
     --bg-secondary: #0a0a0a;

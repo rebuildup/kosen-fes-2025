@@ -44,7 +44,7 @@ const TagFilter = ({ compact = false, onFilter }: TagFilterProps) => {
               placeholder={t("tags.searchTags")}
               value={searchValue}
               onChange={(e) => setSearchValue(e.target.value)}
-              className="w-full rounded-lg border border-[var(--border-color)] bg-[var(--bg-primary)] px-4 py-3 text-sm placeholder-[var(--text-secondary)] transition-all duration-200 focus:border-[var(--primary-color)] focus:ring-2 focus:ring-[var(--primary-color)]/20"
+              className="w-full rounded-lg border border-[var(--border-color)] bg-[var(--bg-primary)] px-4 py-3 text-sm placeholder-[var(--text-secondary)] transition-all duration-200 focus:outline-none"
             />
             <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
               <svg
