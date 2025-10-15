@@ -1076,7 +1076,7 @@ const ContentPreview = () => {
               {/* Map Coordinate Selection */}
               <div>
                 <label
-                  className="mb-3 block flex items-center gap-3 text-base font-semibold sm:mb-4 sm:text-lg"
+                  className="mb-3 flex items-center gap-3 text-base font-semibold sm:mb-4 sm:text-lg"
                   style={{ color: "var(--text-primary)" }}
                 >
                   <LocationIcon size={24} />
