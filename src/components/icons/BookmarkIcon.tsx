@@ -1,1 +1,0 @@
-export { BookmarkIcon } from "./index";

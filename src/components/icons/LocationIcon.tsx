@@ -1,1 +1,0 @@
-export { LocationIcon } from "./index";

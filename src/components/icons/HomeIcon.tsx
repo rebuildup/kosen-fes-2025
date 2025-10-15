@@ -1,1 +1,0 @@
-export { HomeIcon } from "./index";

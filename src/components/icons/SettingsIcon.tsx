@@ -1,1 +1,0 @@
-export { SettingsIcon } from "./index";

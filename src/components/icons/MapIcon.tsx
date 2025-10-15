@@ -1,1 +1,0 @@
-export { MapIcon } from "./index";

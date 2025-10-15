@@ -1,1 +1,0 @@
-export { SponsorIcon } from "./index";
