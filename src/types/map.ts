@@ -13,7 +13,7 @@ export interface MapViewState {
   viewportSize: { width: number; height: number };
 }
 
-export type MapMode = 'view' | 'select' | 'focus';
+export type MapMode = "view" | "select" | "focus";
 
 export interface LocationMarker {
   id: string;

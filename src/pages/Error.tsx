@@ -1,6 +1,7 @@
-import { useRouteError, isRouteErrorResponse, Link } from "react-router-dom";
-import { useLanguage } from "../context/LanguageContext";
 import { useEffect, useState } from "react";
+import { isRouteErrorResponse, Link, useRouteError } from "react-router-dom";
+
+import { useLanguage } from "../context/LanguageContext";
 
 interface ErrorWithMessage {
   message: string;
@@ -25,7 +26,11 @@ function isErrorWithStack(error: unknown): error is Error {
   );
 }
 
-const Error = () => {
+function handleReload() {
+  globalThis.location.reload();
+}
+
+const ErrorPage = () => {
   const error = useRouteError();
   const { t } = useLanguage();
   const [errorDetails, setErrorDetails] = useState<{
@@ -33,8 +38,8 @@ const Error = () => {
     message: string;
     status?: number;
   }>({
-    title: t("errors.genericError"),
     message: t("errors.genericErrorMessage"),
+    title: t("errors.genericError"),
   });
 
   useEffect(() => {
@@ -42,40 +47,40 @@ const Error = () => {
     if (isRouteErrorResponse(error)) {
       // Handle route errors from React Router
       switch (error.status) {
-        case 404:
+        case 404: {
           setErrorDetails({
-            title: `${error.status} - ${t("errors.pageNotFound")}`,
             message: t("errors.pageNotFoundMessage"),
             status: error.status,
+            title: `${error.status} - ${t("errors.pageNotFound")}`,
           });
           break;
-        case 500:
+        }
+        case 500: {
           setErrorDetails({
-            title: `${error.status} - ${t("errors.serverError")}`,
             message: t("errors.serverErrorMessage"),
             status: error.status,
+            title: `${error.status} - ${t("errors.serverError")}`,
           });
           break;
-        default:
+        }
+        default: {
           setErrorDetails({
-            title: `${error.status} - ${t("errors.genericError")}`,
             message: error.statusText || t("errors.genericErrorMessage"),
             status: error.status,
+            title: `${error.status} - ${t("errors.genericError")}`,
           });
+        }
       }
     } else if (isErrorWithMessage(error)) {
       // Handle JavaScript errors with message property
       setErrorDetails({
-        title: t("errors.applicationError"),
         message: error.message || t("errors.genericErrorMessage"),
+        title: t("errors.applicationError"),
       });
     }
   }, [error, t]);
 
   // Function to reload the page
-  const handleReload = () => {
-    window.location.reload();
-  };
 
   return (
     <div className="min-h-screen">
@@ -83,8 +88,8 @@ const Error = () => {
         className="section"
         style={{ backgroundColor: "var(--color-bg-primary)" }}
       >
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center py-12">
+        <div className="mx-auto max-w-7xl">
+          <div className="py-12 text-center">
             <div className="mb-8">
               <svg
                 width="80"
@@ -105,7 +110,7 @@ const Error = () => {
             <h1 className="section-title">{errorDetails.title}</h1>
             <p className="section-subtitle">{errorDetails.message}</p>
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
               <Link to="/" className="btn btn-primary">
                 {t("errors.backToHome")}
               </Link>
@@ -117,17 +122,17 @@ const Error = () => {
 
             {import.meta.env.DEV && isErrorWithStack(error) && (
               <div
-                className="mt-12 p-6 rounded-lg text-left"
+                className="mt-12 rounded-lg p-6 text-left"
                 style={{ backgroundColor: "var(--color-bg-secondary)" }}
               >
                 <h3
-                  className="text-lg font-semibold mb-4"
+                  className="mb-4 text-lg font-semibold"
                   style={{ color: "var(--color-text-primary)" }}
                 >
                   Debug Information
                 </h3>
                 <pre
-                  className="text-sm overflow-auto max-h-64 p-4 rounded"
+                  className="max-h-64 overflow-auto rounded p-4 text-sm"
                   style={{
                     backgroundColor: "var(--color-bg-tertiary)",
                     color: "var(--color-text-secondary)",
@@ -144,4 +149,4 @@ const Error = () => {
   );
 };
 
-export default Error;
+export default ErrorPage;

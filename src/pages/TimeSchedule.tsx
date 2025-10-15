@@ -1,13 +1,22 @@
-import { useState, useEffect, useMemo } from "react";
-import { useLanguage } from "../context/LanguageContext";
-import { useTag } from "../context/TagContext";
-import { events } from "../data/events";
-import { Item, Event } from "../types/common";
+import { useEffect, useMemo, useState } from "react";
+
 import SelectedTags from "../components/common/SelectedTags";
 import TagFilter from "../components/common/TagFilter";
 import TimelineDay from "../components/schedule/TimelineDay";
+import { useLanguage } from "../context/LanguageContext";
+import { useTag } from "../context/TagContext";
+import { events } from "../data/events";
+import type { Event, Item } from "../types/common";
 
 const isEventItem = (item: Item): item is Event => item.type === "event";
+
+function getStartMinutes(timeRange: string) {
+  const [start] = timeRange.split(" - ");
+  const [hours, minutes] = start
+    .split(":")
+    .map((value) => Number.parseInt(value, 10));
+  return hours * 60 + minutes;
+}
 
 const TimeSchedule = () => {
   const { t } = useLanguage();
@@ -48,18 +57,10 @@ const TimeSchedule = () => {
     setPrevTagsHash(currentTagsHash);
   }, [currentTagsHash, prevTagsHash]);
 
-  const getStartMinutes = (timeRange: string) => {
-    const [start] = timeRange.split(" - ");
-    const [hours, minutes] = start
-      .split(":")
-      .map((value) => Number.parseInt(value, 10));
-    return hours * 60 + minutes;
-  };
-
   // Get all events sorted by time for each day
   useEffect(() => {
     const scheduleEvents = events.filter(
-      (eventItem) => eventItem.showOnSchedule
+      (eventItem) => eventItem.showOnSchedule,
     );
 
     const day1Date = "2025-11-08";
@@ -85,13 +86,14 @@ const TimeSchedule = () => {
         .map((eventItem) =>
           eventItem.dayAvailability === "both"
             ? { ...eventItem, date: targetDate }
-            : eventItem
+            : eventItem,
         );
 
       const taggedEvents = filterByTags(eventsForDay);
 
-      return taggedEvents.sort(
-        (a, b) => getStartMinutes(a.time) - getStartMinutes(b.time)
+      return [...taggedEvents].sort(
+        (a: Event, b: Event) =>
+          getStartMinutes(a.time) - getStartMinutes(b.time),
       );
     };
 
@@ -105,7 +107,7 @@ const TimeSchedule = () => {
   const groupItemsByTimeSlot = (items: Event[]) => {
     const grouped: { [timeSlot: string]: Event[] } = {};
 
-    items.forEach((item) => {
+    for (const item of items) {
       const timeSlot = item.time.split(" - ")[0]; // Use start time as the time slot
 
       if (!grouped[timeSlot]) {
@@ -113,17 +115,19 @@ const TimeSchedule = () => {
       }
 
       grouped[timeSlot].push(item);
-    });
+    }
 
     return grouped;
   };
 
   // Get time slots in chronological order
   const getOrderedTimeSlots = (items: Event[]) => {
-    const timeSlots = Array.from(
-      new Set(items.map((item) => item.time.split(" - ")[0]))
+    const timeSlots = [
+      ...new Set(items.map((item) => item.time.split(" - ")[0])),
+    ];
+    return [...timeSlots].sort(
+      (a: string, b: string) => getStartMinutes(a) - getStartMinutes(b),
     );
-    return timeSlots.sort((a, b) => getStartMinutes(a) - getStartMinutes(b));
   };
 
   return (
@@ -132,15 +136,15 @@ const TimeSchedule = () => {
         className="section"
         style={{ backgroundColor: "var(--color-bg-primary)" }}
       >
-        <div className="max-w-7xl mx-auto">
+        <div className="mx-auto max-w-7xl">
           <h1 className="section-title">{t("schedule.title")}</h1>
 
           <div className="space-y-8">
             {/* Day selector */}
-            <div className="flex space-x-2  overflow-x-auto scrollbar-thin">
+            <div className="scrollbar-thin flex space-x-2 overflow-x-auto">
               <button
                 onClick={() => setSelectedDay("day1")}
-                className={`px-16 py-3 rounded-lg text-sm font-medium transition-all duration-200 text-nowrap ${
+                className={`rounded-lg px-16 py-3 text-sm font-medium text-nowrap transition-all duration-200 ${
                   selectedDay === "day1" ? "text-white" : ""
                 }`}
                 style={{
@@ -148,14 +152,14 @@ const TimeSchedule = () => {
                     selectedDay === "day1"
                       ? "var(--color-accent)"
                       : "var(--color-bg-secondary)",
-                  color:
-                    selectedDay === "day1"
-                      ? "white"
-                      : "var(--color-text-primary)",
                   borderColor:
                     selectedDay === "day1"
                       ? "var(--color-accent)"
                       : "var(--color-border-primary)",
+                  color:
+                    selectedDay === "day1"
+                      ? "white"
+                      : "var(--color-text-primary)",
                 }}
                 onMouseEnter={(e) => {
                   if (selectedDay !== "day1") {
@@ -174,7 +178,7 @@ const TimeSchedule = () => {
               </button>
               <button
                 onClick={() => setSelectedDay("day2")}
-                className={`px-16 py-3 rounded-lg font-medium transition-all duration-200 text-nowrap ${
+                className={`rounded-lg px-16 py-3 font-medium text-nowrap transition-all duration-200 ${
                   selectedDay === "day2" ? "text-white" : ""
                 }`}
                 style={{
@@ -182,14 +186,14 @@ const TimeSchedule = () => {
                     selectedDay === "day2"
                       ? "var(--color-accent)"
                       : "var(--color-bg-secondary)",
-                  color:
-                    selectedDay === "day2"
-                      ? "white"
-                      : "var(--color-text-primary)",
                   borderColor:
                     selectedDay === "day2"
                       ? "var(--color-accent)"
                       : "var(--color-border-primary)",
+                  color:
+                    selectedDay === "day2"
+                      ? "white"
+                      : "var(--color-text-primary)",
                 }}
                 onMouseEnter={(e) => {
                   if (selectedDay !== "day2") {
@@ -242,7 +246,7 @@ const TimeSchedule = () => {
 
               {selectedDay === "day1" && filteredItems.day1.length === 0 && (
                 <div
-                  className="text-center py-12 text-lg"
+                  className="py-12 text-center text-lg"
                   style={{ color: "var(--color-text-secondary)" }}
                 >
                   {t("schedule.noEvents")}
@@ -251,7 +255,7 @@ const TimeSchedule = () => {
 
               {selectedDay === "day2" && filteredItems.day2.length === 0 && (
                 <div
-                  className="text-center py-12 text-lg"
+                  className="py-12 text-center text-lg"
                   style={{ color: "var(--color-text-secondary)" }}
                 >
                   {t("schedule.noEvents")}

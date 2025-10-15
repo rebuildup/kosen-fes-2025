@@ -1,25 +1,27 @@
-import { useState, useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useLanguage } from "../context/LanguageContext";
-import { useData } from "../context/DataContext";
-import { ItemCore, EventCore, ExhibitCore } from "../types/data";
-import { Item } from "../types/common";
-import UnifiedCard from "../shared/components/ui/UnifiedCard";
-import TagCloud from "../components/common/TagCloud";
+
 import PillButton from "../components/common/PillButton";
+import TagCloud from "../components/common/TagCloud";
+import { useData } from "../context/DataContext";
+import { useLanguage } from "../context/LanguageContext";
 import { events } from "../data/events";
+import UnifiedCard from "../shared/components/ui/UnifiedCard";
+import { pickRandom } from "../shared/utils/random";
+import type { Item } from "../types/common";
+import type { EventCore, ExhibitCore, ItemCore } from "../types/data";
 
 // ItemCoreをItem型に変換するヘルパー関数
 const convertItemCoreToItem = (itemCore: ItemCore): Item => {
   const baseItem = {
-    id: itemCore.id,
-    title: itemCore.title,
-    description: "", // ItemCoreにはdescriptionがないので空にする
-    imageUrl: itemCore.imageUrl,
     date: itemCore.date || "",
-    time: itemCore.time || "",
+    description: "", // ItemCoreにはdescriptionがないので空にする
+    id: itemCore.id,
+    imageUrl: itemCore.imageUrl,
     location: itemCore.location,
     tags: itemCore.tags,
+    time: itemCore.time || "",
+    title: itemCore.title,
   };
 
   switch (itemCore.type) {
@@ -27,28 +29,28 @@ const convertItemCoreToItem = (itemCore: ItemCore): Item => {
       const eventCore = itemCore as EventCore;
       return {
         ...baseItem,
-        type: "event" as const,
-        organizer: eventCore.organizer,
+        dayAvailability: eventCore.dayAvailability,
         duration: eventCore.duration,
+        organizer: eventCore.organizer,
         showOnMap: eventCore.showOnMap,
         showOnSchedule: eventCore.showOnSchedule,
-        dayAvailability: eventCore.dayAvailability,
+        type: "event" as const,
       };
     }
     case "exhibit": {
       const exhibitCore = itemCore as ExhibitCore;
       return {
         ...baseItem,
-        type: "exhibit" as const,
         creator: exhibitCore.creator,
+        type: "exhibit" as const,
       };
     }
     case "stall": {
       return {
         ...baseItem,
-        type: "stall" as const,
         organizer: "",
         products: [],
+        type: "stall" as const,
       };
     }
     case "sponsor": {
@@ -58,17 +60,18 @@ const convertItemCoreToItem = (itemCore: ItemCore): Item => {
         website: "",
       };
     }
-    default:
+    default: {
       // デフォルトはeventとして扱う
       return {
         ...baseItem,
-        type: "event",
-        organizer: "",
+        dayAvailability: "day1",
         duration: 0,
+        organizer: "",
         showOnMap: true,
         showOnSchedule: true,
-        dayAvailability: "day1",
+        type: "event",
       };
+    }
   }
 };
 
@@ -81,12 +84,16 @@ const getRandomAnyImage = () => {
     .map((e) => e.imageUrl)
     .filter(Boolean)
     .map(toPublicImagePath);
-  return images[Math.floor(Math.random() * images.length)] || "";
+  return pickRandom(images) || "";
 };
+
+function calculateHomeDelay(index: number): number {
+  return index * 0.08;
+}
 
 const Home = () => {
   const { t } = useLanguage();
-  const { events, exhibits, stalls, getPopularTags } = useData();
+  const { events, exhibits, getPopularTags, stalls } = useData();
   const navigate = useNavigate();
   const [featuredEvents, setFeaturedEvents] = useState<Item[]>([]);
   const [featuredExhibits, setFeaturedExhibits] = useState<Item[]>([]);
@@ -104,19 +111,16 @@ const Home = () => {
   };
 
   // Calculate delay for home page cards
-  const calculateHomeDelay = (index: number): number => {
-    return index * 0.08;
-  };
 
   // Update dates when items change
   useEffect(() => {
     const dates = [
       ...new Set(
-        [...events, ...exhibits, ...stalls].map((item) => item.date || "")
+        [...events, ...exhibits, ...stalls].map((item) => item.date || ""),
       ),
     ]
-      .filter((date) => date !== "")
-      .sort();
+      .filter((date: string) => date !== "")
+      .sort((a: string, b: string) => a.localeCompare(b));
 
     setAllDates(dates);
   }, [events, exhibits, stalls]);
@@ -126,11 +130,11 @@ const Home = () => {
     const allItems = [...events, ...exhibits, ...stalls];
     const byDate: { [date: string]: Item[] } = {};
 
-    allDates.forEach((date) => {
+    for (const date of allDates) {
       byDate[date] = allItems
         .filter((item) => item.date === date)
         .map(convertItemCoreToItem);
-    });
+    }
 
     setTimelineItems(byDate);
   }, [events, exhibits, stalls, allDates]);
@@ -149,35 +153,35 @@ const Home = () => {
   const formatDate = (dateStr: string) => {
     const date = new Date(dateStr);
     return date.toLocaleDateString(t("language") === "ja" ? "ja-JP" : "en-US", {
+      day: "numeric",
+      month: "long",
       weekday: "long",
       year: "numeric",
-      month: "long",
-      day: "numeric",
     });
   };
 
   return (
-    <div className="min-h-screen bg-[var(--bg-primary)] scrollbar-thin">
+    <div className="scrollbar-thin min-h-screen bg-[var(--bg-primary)]">
       {/* Hero Section */}
       <section className="bg-[var(--bg-primary)] py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           {/* タイトルとサブタイトル */}
-          <div className="text-center mb-8">
-            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-[var(--text-primary)] mb-4">
+          <div className="mb-8 text-center">
+            <h1 className="mb-4 text-3xl font-bold text-[var(--text-primary)] md:text-4xl lg:text-5xl">
               {t("siteName")}
             </h1>
-            <p className="text-lg md:text-xl text-[var(--text-secondary)] mb-6 max-w-3xl mx-auto">
+            <p className="mx-auto mb-6 max-w-3xl text-lg text-[var(--text-secondary)] md:text-xl">
               {t("home.subtitle")}
             </p>
           </div>
 
           {/* チケット画像 - 横幅いっぱい */}
           <div className="ticket-preview mb-8">
-            <div className="max-w-5xl mx-auto">
+            <div className="mx-auto max-w-5xl">
               <img
                 src="./assets/ticket.png"
                 alt="高専祭2025 チケット"
-                className="w-full h-auto"
+                className="h-auto w-full"
               />
             </div>
           </div>
@@ -188,7 +192,7 @@ const Home = () => {
               to="/schedule"
               variant="secondary"
               size="lg"
-              className="bg-[var(--bg-secondary)] hover:bg-[var(--bg-tertiary)] text-[var(--text-primary)] border border-[var(--border-color)] "
+              className="border border-[var(--border-color)] bg-[var(--bg-secondary)] text-[var(--text-primary)] hover:bg-[var(--bg-tertiary)]"
             >
               {t("home.viewSchedule")}
             </PillButton>
@@ -198,8 +202,8 @@ const Home = () => {
 
       {/* Events Section */}
       <section className="section bg-[var(--bg-primary)]">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex items-center justify-between mb-8">
+        <div className="mx-auto max-w-7xl">
+          <div className="mb-8 flex items-center justify-between">
             <h2 className="section-title flex items-center gap-3 text-[var(--text-primary)]">
               {t("home.events")}
             </h2>
@@ -208,7 +212,7 @@ const Home = () => {
             </PillButton>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
+          <div className="mx-auto grid max-w-7xl grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
             {featuredEvents.map((event, index) => (
               <div
                 key={`home-events-${event.id}`}
@@ -231,9 +235,9 @@ const Home = () => {
       </section>
 
       {/* Exhibits Section */}
-      <section className="section bg-[var(--bg-secondary)] rounded-lg">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex items-center justify-between mb-8">
+      <section className="section rounded-lg bg-[var(--bg-secondary)]">
+        <div className="mx-auto max-w-7xl">
+          <div className="mb-8 flex items-center justify-between">
             <h2 className="section-title flex items-center gap-3 text-[var(--text-primary)]">
               {t("home.exhibits")}
             </h2>
@@ -242,7 +246,7 @@ const Home = () => {
             </PillButton>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
+          <div className="mx-auto grid max-w-7xl grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
             {featuredExhibits.map((exhibit, index) => (
               <div
                 key={`home-exhibits-${exhibit.id}`}
@@ -266,8 +270,8 @@ const Home = () => {
 
       {/* Stalls Section */}
       <section className="section bg-[var(--bg-primary)]">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex items-center justify-between mb-8">
+        <div className="mx-auto max-w-7xl">
+          <div className="mb-8 flex items-center justify-between">
             <h2 className="section-title flex items-center gap-3 text-[var(--text-primary)]">
               {t("home.stalls")}
             </h2>
@@ -276,7 +280,7 @@ const Home = () => {
             </PillButton>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
+          <div className="mx-auto grid max-w-7xl grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
             {featuredStalls.map((stall, index) => (
               <div
                 key={`home-stalls-${stall.id}`}
@@ -299,9 +303,9 @@ const Home = () => {
       </section>
 
       {/* Tags Section */}
-      <section className="section bg-[var(--bg-secondary)] rounded-lg">
-        <div className="max-w-7xl mx-auto">
-          <h2 className="section-title text-center mb-8 text-[var(--text-primary)]">
+      <section className="section rounded-lg bg-[var(--bg-secondary)]">
+        <div className="mx-auto max-w-7xl">
+          <h2 className="section-title mb-8 text-center text-[var(--text-primary)]">
             {t("home.popularTags")}
           </h2>
           <div className="w-full overflow-hidden">
@@ -316,8 +320,8 @@ const Home = () => {
 
       {/* Timeline Section */}
       <section className="section bg-[var(--bg-primary)]">
-        <div className="max-w-7xl mx-auto">
-          <h2 className="section-title text-center mb-12 text-[var(--text-primary)]">
+        <div className="mx-auto max-w-7xl">
+          <h2 className="section-title mb-12 text-center text-[var(--text-primary)]">
             {t("home.timeline")}
           </h2>
 
@@ -325,9 +329,9 @@ const Home = () => {
             {allDates.map((date) => (
               <div key={date} className="relative">
                 {/* 日付ヘッダー */}
-                <div className="flex items-center justify-center mb-8">
+                <div className="mb-8 flex items-center justify-center">
                   <div
-                    className="px-6 py-3 rounded-full text-white font-semibold text-base shadow-lg"
+                    className="rounded-full px-6 py-3 text-base font-semibold text-white shadow-lg"
                     style={{ background: "var(--instagram-gradient)" }}
                   >
                     {formatDate(date)}
@@ -335,11 +339,11 @@ const Home = () => {
                 </div>
 
                 {/* イベントカードグリッド → 横スクロールリスト */}
-                <div className="flex gap-6 overflow-x-auto pb-2 snap-x snap-mandatory">
+                <div className="flex snap-x snap-mandatory gap-6 overflow-x-auto pb-2">
                   {(timelineItems[date] || []).map((item, index) => (
                     <div
                       key={`home-timeline-${date}-${item.id}`}
-                      className="animate-card-enter snap-start flex-shrink-0 w-72"
+                      className="animate-card-enter w-72 flex-shrink-0 snap-start"
                       style={{
                         animationDelay: `${calculateHomeDelay(index)}s`,
                         animationFillMode: "both",
@@ -356,7 +360,7 @@ const Home = () => {
                 </div>
 
                 {(timelineItems[date] || []).length > 8 && (
-                  <div className="text-center mt-6">
+                  <div className="mt-6 text-center">
                     <PillButton
                       to="/schedule"
                       variant="secondary"
@@ -374,11 +378,11 @@ const Home = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="relative overflow-hidden rounded-tr-lg rounded-tl-lg">
+      <section className="relative overflow-hidden rounded-tl-lg rounded-tr-lg">
         {/* 透かし画像 */}
         <img
           src={randomCtaImage}
-          className="absolute inset-0 w-full h-full object-cover opacity-25 z-0 pointer-events-none"
+          className="pointer-events-none absolute inset-0 z-0 h-full w-full object-cover opacity-25"
           alt=""
           aria-hidden="true"
         />
@@ -388,22 +392,22 @@ const Home = () => {
           style={{ background: "var(--instagram-gradient)" }}
         ></div>
         {/* 黒半透明（さらに薄め） */}
-        <div className="absolute inset-0 bg-black/5 z-20"></div>
+        <div className="absolute inset-0 z-20 bg-black/5"></div>
         {/* テキスト・ボタン */}
-        <div className="relative z-30 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-          <div className="text-center text-white space-y-6">
-            <h2 className="text-3xl md:text-4xl font-bold">
+        <div className="relative z-30 mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+          <div className="space-y-6 text-center text-white">
+            <h2 className="text-3xl font-bold md:text-4xl">
               {t("home.ctaTitle")}
             </h2>
-            <p className="text-xl text-white/90 max-w-2xl mx-auto">
+            <p className="mx-auto max-w-2xl text-xl text-white/90">
               {t("home.ctaDescription")}
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center px-8">
+            <div className="flex flex-col justify-center gap-4 px-8 sm:flex-row">
               <PillButton
                 to="/map"
                 variant="secondary"
                 size="lg"
-                className="bg-white hover:bg-gray-50 text-gray-900 shadow-lg  font-semibold w-60 mx-auto sm:mx-0 truncate"
+                className="mx-auto w-60 truncate bg-white font-semibold text-gray-900 shadow-lg hover:bg-gray-50 sm:mx-0"
               >
                 {t("home.viewMap")}
               </PillButton>
@@ -411,7 +415,7 @@ const Home = () => {
                 to="/bookmarks"
                 variant="secondary"
                 size="lg"
-                className="bg-white/10 hover:bg-white/20 text-white border border-white/30 w-60 mx-auto sm:mx-0 truncate"
+                className="mx-auto w-60 truncate border border-white/30 bg-white/10 text-white hover:bg-white/20 sm:mx-0"
               >
                 {t("home.viewBookmarks")}
               </PillButton>

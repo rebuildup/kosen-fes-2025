@@ -1,13 +1,14 @@
-import React, { useState, useRef, useEffect } from "react";
-import { Link } from "react-router-dom";
-import { Item } from "../../types/common";
-import { useLanguage } from "../../context/LanguageContext";
-import { useBookmark } from "../../context/BookmarkContext";
-import Tag from "./Tag";
-import ItemTypeIcon from "./ItemTypeIcon";
 import { gsap } from "gsap";
+import React, { useEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
+
+import { useBookmark } from "../../context/BookmarkContext";
+import { useLanguage } from "../../context/LanguageContext";
+import type { Item } from "../../types/common";
 import { DURATION, EASE } from "../../utils/animations";
-import { TimeIcon, LocationIcon, PeopleIcon } from "../icons";
+import { LocationIcon, PeopleIcon, TimeIcon } from "../icons";
+import ItemTypeIcon from "./ItemTypeIcon";
+import Tag from "./Tag";
 
 interface CardProps {
   item: Item;
@@ -19,12 +20,12 @@ interface CardProps {
 }
 
 const Card = ({
-  item,
-  variant = "default",
-  showTags = false,
-  showDescription = false,
   highlightText,
+  item,
   onClick,
+  showDescription = false,
+  showTags = false,
+  variant = "default",
 }: CardProps) => {
   const { t } = useLanguage();
   const { isBookmarked, toggleBookmark } = useBookmark();
@@ -46,10 +47,10 @@ const Card = ({
 
     // Card scale and shadow animation
     hoverTimeline.to(card, {
-      y: -6,
       boxShadow: "0 8px 20px rgba(0, 0, 0, 0.15)",
       duration: DURATION.FAST,
       ease: EASE.SMOOTH,
+      y: -6,
     });
 
     // Image scale animation
@@ -57,11 +58,11 @@ const Card = ({
       hoverTimeline.to(
         imageRef.current,
         {
-          scale: 1.05,
           duration: DURATION.FAST,
           ease: EASE.SMOOTH,
+          scale: 1.05,
         },
-        0
+        0,
       );
     }
 
@@ -71,11 +72,11 @@ const Card = ({
         metaRef.current,
         {
           autoAlpha: 1,
-          y: 0,
           duration: DURATION.FAST,
           ease: EASE.SMOOTH,
+          y: 0,
         },
-        0
+        0,
       );
     }
 
@@ -85,11 +86,11 @@ const Card = ({
         tagsRef.current,
         {
           autoAlpha: 1,
-          y: 0,
           duration: DURATION.FAST,
           ease: EASE.SMOOTH,
+          y: 0,
         },
-        0
+        0,
       );
     }
 
@@ -117,16 +118,21 @@ const Card = ({
   // Get placeholder image based on item type
   const getPlaceholderImage = () => {
     switch (item.type) {
-      case "event":
+      case "event": {
         return "./images/events/placeholder-event.jpg";
-      case "exhibit":
+      }
+      case "exhibit": {
         return "./images/exhibits/placeholder-exhibit.jpg";
-      case "stall":
+      }
+      case "stall": {
         return "./images/stalls/placeholder-stall.jpg";
-      case "sponsor":
+      }
+      case "sponsor": {
         return "./images/sponsors/placeholder-sponsor.jpg";
-      default:
+      }
+      default: {
         return "./images/placeholder.jpg";
+      }
     }
   };
 
@@ -137,24 +143,34 @@ const Card = ({
 
   // Get organization name based on item type
   const getOrganization = () => {
-    if (item.type === "event") {
-      return item.organizer;
-    } else if (item.type === "exhibit") {
-      return item.creator;
-    } else if (item.type === "stall") {
-      return item.products?.length > 0 ? item.products.join(", ") : "";
+    switch (item.type) {
+      case "event": {
+        return item.organizer;
+      }
+      case "exhibit": {
+        return item.creator;
+      }
+      case "stall": {
+        return item.products?.length > 0 ? item.products.join(", ") : "";
+      }
+      // No default
     }
     return "";
   };
 
   // Get organization label based on item type
   const getOrganizationLabel = () => {
-    if (item.type === "event") {
-      return t("detail.organizer");
-    } else if (item.type === "exhibit") {
-      return t("detail.creator");
-    } else if (item.type === "stall") {
-      return t("detail.products");
+    switch (item.type) {
+      case "event": {
+        return t("detail.organizer");
+      }
+      case "exhibit": {
+        return t("detail.creator");
+      }
+      case "stall": {
+        return t("detail.products");
+      }
+      // No default
     }
     return "";
   };
@@ -190,32 +206,32 @@ const Card = ({
     if (isCurrentlyBookmarked) {
       // Removing bookmark animation
       gsap.to(target, {
-        scale: 0.8,
         duration: DURATION.FAST / 2,
         ease: EASE.SMOOTH,
         onComplete: () => {
           toggleBookmark(item.id);
           gsap.to(target, {
-            scale: 1,
             duration: DURATION.FAST / 2,
             ease: EASE.SMOOTH,
+            scale: 1,
           });
         },
+        scale: 0.8,
       });
     } else {
       // Adding bookmark animation
       gsap.to(target, {
-        scale: 1.2,
         duration: DURATION.FAST / 2,
         ease: EASE.SMOOTH,
         onComplete: () => {
           toggleBookmark(item.id);
           gsap.to(target, {
-            scale: 1,
             duration: DURATION.FAST / 2,
             ease: EASE.SMOOTH,
+            scale: 1,
           });
         },
+        scale: 1.2,
       });
     }
   };
@@ -239,18 +255,24 @@ const Card = ({
     }
 
     // Create path to the item image based on type and ID
-    if (item.type === "event") {
-      const eventNumber = item.id.split("-")[1];
-      return `./images/events/event-${eventNumber}.jpg`;
-    } else if (item.type === "exhibit") {
-      const exhibitNumber = item.id.split("-")[1];
-      return `./images/exhibits/exhibit-${exhibitNumber}.jpg`;
-    } else if (item.type === "stall") {
-      const stallNumber = item.id.split("-")[1];
-      return `./images/stalls/stall-${stallNumber}.jpg`;
-    } else if (item.type === "sponsor") {
-      const sponsorNumber = item.id.split("-")[1];
-      return `./images/sponsors/sponsor-${sponsorNumber}.jpg`;
+    switch (item.type) {
+      case "event": {
+        const eventNumber = item.id.split("-")[1];
+        return `./images/events/event-${eventNumber}.jpg`;
+      }
+      case "exhibit": {
+        const exhibitNumber = item.id.split("-")[1];
+        return `./images/exhibits/exhibit-${exhibitNumber}.jpg`;
+      }
+      case "stall": {
+        const stallNumber = item.id.split("-")[1];
+        return `./images/stalls/stall-${stallNumber}.jpg`;
+      }
+      case "sponsor": {
+        const sponsorNumber = item.id.split("-")[1];
+        return `./images/sponsors/sponsor-${sponsorNumber}.jpg`;
+      }
+      // No default
     }
 
     return getPlaceholderImage();
@@ -271,7 +293,7 @@ const Card = ({
     return (
       <div className={`overflow-hidden ${className}`}>
         {shouldMarquee && isHovered ? (
-          <div className="whitespace-nowrap animate-marquee">{children}</div>
+          <div className="animate-marquee whitespace-nowrap">{children}</div>
         ) : (
           <div className="truncate">{children}</div>
         )}
@@ -282,14 +304,14 @@ const Card = ({
   const cardContent = (
     <div
       ref={cardRef}
-      className="card relative group cursor-pointer rounded-lg overflow-hidden aspect-[4/3] glass-card glass-interactive"
+      className="card group glass-card glass-interactive relative aspect-[4/3] cursor-pointer overflow-hidden rounded-lg"
     >
       {/* Background Image */}
       <img
         ref={imageRef}
         src={determineImageSrc()}
         alt={item.title}
-        className="w-full h-full object-cover transition-transform duration-300 ease-out group-hover:scale-105"
+        className="h-full w-full object-cover transition-transform duration-300 ease-out group-hover:scale-105"
         onLoad={handleImageLoad}
         onError={handleImageError}
         loading="lazy"
@@ -298,14 +320,14 @@ const Card = ({
       {/* Glassmorphism overlay (use shared .card-gradient-overlay for consistent theming) */}
       <div className="card-gradient-overlay text-white">
         {/* Type Badge - Top Left */}
-        <div className="absolute top-2 left-2 glass-subtle rounded-full p-1.5">
+        <div className="glass-subtle absolute top-2 left-2 rounded-full p-1.5">
           <ItemTypeIcon type={item.type} size="small" />
         </div>
 
         {/* Bookmark Button - Top Right */}
         <button
           onClick={handleBookmarkToggle}
-          className={`absolute top-2 right-2 p-1.5 rounded-full transition-all duration-200 glass-button glass-interactive pointer-events-auto z-10 ${
+          className={`glass-button glass-interactive pointer-events-auto absolute top-2 right-2 z-10 rounded-full p-1.5 transition-all duration-200 ${
             isBookmarked(item.id) ? "bg-yellow-500/90 text-white" : "text-white"
           }`}
           aria-label={
@@ -314,18 +336,18 @@ const Card = ({
               : t("actions.bookmark")
           }
         >
-          <span className="text-sm mix-diff">
+          <span className="mix-diff text-sm">
             {isBookmarked(item.id) ? "★" : "☆"}
           </span>
         </button>
 
         {/* Basic Info - Visible when not hovered */}
         <div
-          className={`absolute bottom-0 left-0 right-0 p-3 space-y-1 transition-opacity duration-300 ${
+          className={`absolute right-0 bottom-0 left-0 space-y-1 p-3 transition-opacity duration-300 ${
             isHovered ? "opacity-0" : "opacity-100"
           }`}
         >
-          <SmartScrollableText className="font-semibold text-lg mix-diff">
+          <SmartScrollableText className="mix-diff text-lg font-semibold">
             {formatText(item.title)}
           </SmartScrollableText>
 
@@ -338,18 +360,18 @@ const Card = ({
         {/* Detailed overlay on hover */}
         <div
           ref={metaRef}
-          className={`absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent p-4 flex flex-col justify-center transition-all duration-300 pointer-events-none ${
-            isHovered ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+          className={`pointer-events-none absolute inset-0 flex flex-col justify-center bg-gradient-to-t from-black/70 via-black/30 to-transparent p-4 transition-all duration-300 ${
+            isHovered ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"
           }`}
           style={{ visibility: isHovered ? "visible" : "hidden" }}
         >
           <div className="space-y-3">
-            <SmartScrollableText className="text-lg font-semibold mix-diff">
+            <SmartScrollableText className="mix-diff text-lg font-semibold">
               {formatText(item.title)}
             </SmartScrollableText>
 
             {showDescription && item.description && (
-              <p className="text-sm opacity-90 line-clamp-3">
+              <p className="line-clamp-3 text-sm opacity-90">
                 {formatText(item.description)}
               </p>
             )}
@@ -379,10 +401,10 @@ const Card = ({
         {showTags && item.tags && item.tags.length > 0 && (
           <div
             ref={tagsRef}
-            className={`absolute bottom-3 left-3 right-3 transition-all duration-300 pointer-events-none ${
+            className={`pointer-events-none absolute right-3 bottom-3 left-3 transition-all duration-300 ${
               isHovered
-                ? "opacity-100 translate-y-0"
-                : "opacity-0 translate-y-4"
+                ? "translate-y-0 opacity-100"
+                : "translate-y-4 opacity-0"
             }`}
             style={{ visibility: isHovered ? "visible" : "hidden" }}
           >
@@ -396,7 +418,7 @@ const Card = ({
                 />
               ))}
               {item.tags.length > 3 && (
-                <span className="px-2 py-1 glass-subtle rounded-full text-xs">
+                <span className="glass-subtle rounded-full px-2 py-1 text-xs">
                   +{item.tags.length - 3}
                 </span>
               )}

@@ -1,13 +1,14 @@
+import type { MutableRefObject } from "react";
 import { NavLink } from "react-router-dom";
+
 import { useLanguage } from "../../context/LanguageContext";
-import { MutableRefObject } from "react";
 import {
-  HomeIcon,
   EventIcon,
   ExhibitIcon,
-  ScheduleIcon,
+  HomeIcon,
   MapIcon,
   MenuIcon,
+  ScheduleIcon,
 } from "../icons";
 
 interface FooterProps {
@@ -15,7 +16,7 @@ interface FooterProps {
   menuButtonRef?: MutableRefObject<HTMLButtonElement | null>;
 }
 
-const Footer = ({ setMenuOpen, menuButtonRef }: FooterProps) => {
+const Footer = ({ menuButtonRef, setMenuOpen }: FooterProps) => {
   const { t } = useLanguage();
 
   return (

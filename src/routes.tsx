@@ -1,15 +1,16 @@
 import { lazy, Suspense } from "react";
-import { RouteObject } from "react-router-dom";
-import Layout from "./components/layout/Layout";
-import Error from "./pages/Error";
-import LoadingIndicator from "./components/common/LoadingIndicator";
+import type { RouteObject } from "react-router-dom";
+
 import { AppProviders } from "./AppProviders";
+import LoadingIndicator from "./components/common/LoadingIndicator";
+import Layout from "./components/layout/Layout";
+import ErrorPage from "./pages/Error";
 
 const Home = lazy(() => import("./pages/Home"));
 const Events = lazy(() => import("./pages/Events"));
 const Exhibits = lazy(() => import("./pages/Exhibits"));
 const TimeSchedule = lazy(() => import("./pages/TimeSchedule"));
-const Map = lazy(() => import("./pages/Map"));
+const CampusMapPage = lazy(() => import("./pages/Map"));
 const Detail = lazy(() => import("./pages/Detail"));
 const Search = lazy(() => import("./pages/Search"));
 const Bookmarks = lazy(() => import("./pages/Bookmarks"));
@@ -25,31 +26,31 @@ const withSuspense = (Component: React.ComponentType) => (
 
 const routes: RouteObject[] = [
   {
-    path: "/",
+    children: [
+      { element: withSuspense(Home), index: true },
+      { element: withSuspense(Events), path: "events" },
+      { element: withSuspense(Exhibits), path: "exhibits" },
+      { element: withSuspense(TimeSchedule), path: "schedule" },
+      { element: withSuspense(CampusMapPage), path: "map" },
+      { element: withSuspense(Detail), path: "detail/:type/:id" },
+      { element: withSuspense(Search), path: "search" },
+      { element: withSuspense(Bookmarks), path: "bookmarks" },
+      { element: withSuspense(Sponsors), path: "sponsors" },
+      { element: withSuspense(NotFound), path: "*" },
+    ],
     element: (
       <AppProviders>
         <Layout />
       </AppProviders>
     ),
-    errorElement: <Error />,
-    children: [
-      { index: true, element: withSuspense(Home) },
-      { path: "events", element: withSuspense(Events) },
-      { path: "exhibits", element: withSuspense(Exhibits) },
-      { path: "schedule", element: withSuspense(TimeSchedule) },
-      { path: "map", element: withSuspense(Map) },
-      { path: "detail/:type/:id", element: withSuspense(Detail) },
-      { path: "search", element: withSuspense(Search) },
-      { path: "bookmarks", element: withSuspense(Bookmarks) },
-      { path: "sponsors", element: withSuspense(Sponsors) },
-      { path: "*", element: withSuspense(NotFound) },
-    ],
+    errorElement: <ErrorPage />,
+    path: "/",
   },
   // Content Submission route - separate from main layout
   {
-    path: "/content-submission",
     element: <AppProviders>{withSuspense(ContentPreview)}</AppProviders>,
-    errorElement: <Error />,
+    errorElement: <ErrorPage />,
+    path: "/content-submission",
   },
 ];
 

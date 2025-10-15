@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import type { ReactNode } from "react";
 import { Link } from "react-router-dom";
 
 interface SectionProps {
@@ -9,7 +9,7 @@ interface SectionProps {
   children: ReactNode;
 }
 
-const Section = ({ title, icon, linkTo, linkText, children }: SectionProps) => {
+const Section = ({ children, icon, linkText, linkTo, title }: SectionProps) => {
   return (
     <section>
       <div>

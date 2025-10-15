@@ -1,16 +1,16 @@
 // src/pages/Map.tsx
-import { useState, useMemo, useCallback } from "react";
+import { useCallback, useMemo, useState } from "react";
+
+import SelectedTags from "../components/common/SelectedTags";
+import TagFilter from "../components/common/TagFilter";
+import LocationList from "../components/map/LocationList";
+import VectorMap from "../components/map/VectorMap";
 import { useLanguage } from "../context/LanguageContext";
 import { useTag } from "../context/TagContext";
 import { events } from "../data/events";
 import { exhibits } from "../data/exhibits";
 import { stalls } from "../data/stalls";
-import { Item, Event, Exhibit, Stall } from "../types/common";
-import VectorMap from "../components/map/VectorMap";
-
-import LocationList from "../components/map/LocationList";
-import TagFilter from "../components/common/TagFilter";
-import SelectedTags from "../components/common/SelectedTags";
+import type { Event, Exhibit, Item, Stall } from "../types/common";
 // import { itemsToContentItems } from "../utils/itemHelpers";
 
 // Type for non-sponsor items
@@ -23,7 +23,7 @@ const isNonSponsorItem = (item: Item): item is NonSponsorItem => {
   );
 };
 
-const Map = () => {
+const CampusMapPage = () => {
   const { t } = useLanguage();
   const { filterItemsByTags, selectedTags } = useTag();
 
@@ -32,15 +32,15 @@ const Map = () => {
   const [selectedLocation, setSelectedLocation] = useState<string | null>(null);
   const mapEvents = useMemo(
     () => events.filter((event) => event.showOnMap),
-    []
+    [],
   );
   const baseItems = useMemo<NonSponsorItem[]>(
     () => [...mapEvents, ...exhibits, ...stalls],
-    [mapEvents]
+    [mapEvents],
   );
   const allLocations = useMemo(
     () => [...new Set(baseItems.map((item) => item.location))],
-    [baseItems]
+    [baseItems],
   );
   const filteredItems = useMemo(() => {
     if (selectedTags.length === 0) {
@@ -51,14 +51,14 @@ const Map = () => {
   const locationItems = useMemo(() => {
     const grouped: Record<string, NonSponsorItem[]> = {};
 
-    allLocations.forEach((location) => {
+    for (const location of allLocations) {
       const itemsAtLocation = filteredItems.filter(
-        (item) => item.location === location
+        (item) => item.location === location,
       );
       if (itemsAtLocation.length > 0) {
         grouped[location] = itemsAtLocation;
       }
-    });
+    }
 
     return grouped;
   }, [allLocations, filteredItems]);
@@ -78,13 +78,13 @@ const Map = () => {
     (location: string): NonSponsorItem[] => {
       return filteredItems.filter((item) => item.location === location);
     },
-    [filteredItems]
+    [filteredItems],
   );
 
   // Get all locations with items - メモ化
   const locationsWithItems = useMemo(
     () => Object.keys(locationItems),
-    [locationItems]
+    [locationItems],
   );
 
   // コンテンツアイテムのメモ化
@@ -99,7 +99,7 @@ const Map = () => {
         className="section py-8"
         style={{ backgroundColor: "var(--color-bg-primary)" }}
       >
-        <div className="max-w-7xl mx-auto">
+        <div className="mx-auto max-w-7xl">
           {/* Page Title */}
           <div className="mb-8">
             <h1
@@ -120,15 +120,15 @@ const Map = () => {
             {/* Full Width Map */}
             <div className="w-full">
               <div
-                className="rounded-lg overflow-hidden relative"
+                className="relative overflow-hidden rounded-lg"
                 style={{ backgroundColor: "var(--color-bg-secondary)" }}
               >
                 <div
-                  className="p-4 border-b"
+                  className="border-b p-4"
                   style={{ borderColor: "var(--color-border-primary)" }}
                 >
                   <h2
-                    className="text-xl font-semibold flex items-center gap-2"
+                    className="flex items-center gap-2 text-xl font-semibold"
                     style={{ color: "var(--color-text-primary)" }}
                   >
                     会場マップ
@@ -140,9 +140,9 @@ const Map = () => {
                   <div
                     className="map-container relative m-4"
                     style={{
-                      minHeight: mapHeight,
                       backgroundColor: "var(--color-bg-secondary)",
                       borderColor: "var(--color-border-primary)",
+                      minHeight: mapHeight,
                     }}
                   >
                     <VectorMap
@@ -150,19 +150,19 @@ const Map = () => {
                       points={filteredItems
                         .filter((item) => item.coordinates)
                         .map((item) => ({
-                          id: item.id,
+                          contentItem: item,
                           coordinates: item.coordinates!,
+                          id: item.id,
+                          isHovered: false,
+                          isSelected: false,
+                          onClick: () => {},
+                          onHover: () => {},
                           title: item.title,
                           type: item.type as
                             | "event"
                             | "exhibit"
                             | "stall"
                             | "location",
-                          isSelected: false,
-                          isHovered: false,
-                          contentItem: item,
-                          onClick: () => {},
-                          onHover: () => {},
                         }))}
                       height={mapHeight}
                       className="rounded-lg"
@@ -194,8 +194,4 @@ const Map = () => {
   );
 };
 
-export default Map;
-
-
-
-
+export default CampusMapPage;

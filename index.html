@@ -1,15 +1,20 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ja">
   <head>
     <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-447NV2DGDV"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-447NV2DGDV"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
 
-  gtag('config', 'G-447NV2DGDV');
-</script>
+      gtag("config", "G-447NV2DGDV");
+    </script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>宇部高専文化祭2025</title>
@@ -240,7 +245,7 @@
 
         // Update structured data URLs
         const scripts = document.querySelectorAll(
-          'script[type="application/ld+json"]'
+          'script[type="application/ld+json"]',
         );
         scripts.forEach((script) => {
           try {

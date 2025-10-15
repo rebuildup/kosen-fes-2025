@@ -1,13 +1,9 @@
 /* eslint-disable react-refresh/only-export-components */
-import {
-  createContext,
-  useContext,
-  useState,
-  useEffect,
-  ReactNode,
-} from "react";
-import { Item } from "../types/common";
+import type { ReactNode } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
+
 import dataManager from "../data/dataManager";
+import type { Item } from "../types/common";
 
 interface BookmarkContextType {
   bookmarks: string[];
@@ -22,15 +18,15 @@ interface BookmarkContextType {
 }
 
 const defaultContext: BookmarkContextType = {
-  bookmarks: [],
-  bookmarkedItems: [],
   addBookmark: () => {},
+  bookmarkedItems: [],
+  bookmarks: [],
+  clearAllBookmarks: () => {},
+  getBookmarkCount: () => 0,
+  getBookmarkedItemsByType: () => [],
+  isBookmarked: () => false,
   removeBookmark: () => {},
   toggleBookmark: () => {},
-  isBookmarked: () => false,
-  clearAllBookmarks: () => {},
-  getBookmarkedItemsByType: () => [],
-  getBookmarkCount: () => 0,
 };
 
 const BookmarkContext = createContext<BookmarkContextType>(defaultContext);
@@ -98,15 +94,15 @@ export const BookmarkProvider = ({ children }: BookmarkProviderProps) => {
   return (
     <BookmarkContext.Provider
       value={{
-        bookmarks,
-        bookmarkedItems,
         addBookmark,
+        bookmarkedItems,
+        bookmarks,
+        clearAllBookmarks,
+        getBookmarkCount,
+        getBookmarkedItemsByType,
+        isBookmarked,
         removeBookmark,
         toggleBookmark,
-        isBookmarked,
-        clearAllBookmarks,
-        getBookmarkedItemsByType,
-        getBookmarkCount,
       }}
     >
       {children}

@@ -1,6 +1,7 @@
-import React from "react";
-import { useLanguage } from "../../../context/LanguageContext";
 import { Loader2 } from "lucide-react";
+import React from "react";
+
+import { useLanguage } from "../../../context/LanguageContext";
 
 interface LoadingIndicatorProps {
   size?: "small" | "medium" | "large";
@@ -13,31 +14,34 @@ interface LoadingIndicatorProps {
  * Loading indicator component with accessibility support
  */
 export const LoadingIndicator: React.FC<LoadingIndicatorProps> = ({
-  size = "medium",
+  className = "",
   message,
   showSpinner = true,
-  className = "",
+  size = "medium",
 }) => {
   const { t } = useLanguage();
 
   // Get size classes
   const getSizeClasses = () => {
     switch (size) {
-      case "small":
+      case "small": {
         return {
           spinner: "w-4 h-4",
           text: "text-sm",
         };
-      case "large":
+      }
+      case "large": {
         return {
           spinner: "w-8 h-8",
           text: "text-lg",
         };
-      default:
+      }
+      default: {
         return {
           spinner: "w-6 h-6",
           text: "text-base",
         };
+      }
     }
   };
 
@@ -54,7 +58,7 @@ export const LoadingIndicator: React.FC<LoadingIndicatorProps> = ({
           aria-hidden="true"
           className={`${sizeClasses.spinner} text-blue-600 dark:text-blue-400`}
         >
-          <Loader2 className="w-full h-full animate-spin" />
+          <Loader2 className="h-full w-full animate-spin" />
         </div>
       )}
       <span className={`${sizeClasses.text} text-gray-600 dark:text-gray-400`}>

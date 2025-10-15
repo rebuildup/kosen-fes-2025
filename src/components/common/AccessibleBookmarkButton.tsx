@@ -1,4 +1,5 @@
 import React from "react";
+
 import { useBookmark } from "../../context/BookmarkContext";
 import { useLanguage } from "../../context/LanguageContext";
 
@@ -10,10 +11,10 @@ interface BookmarkButtonProps {
 }
 
 const BookmarkButton = ({
-  itemId,
-  size = "medium",
-  showText = false,
   className = "",
+  itemId,
+  showText = false,
+  size = "medium",
 }: BookmarkButtonProps) => {
   const { isBookmarked, toggleBookmark } = useBookmark();
   const { t } = useLanguage();

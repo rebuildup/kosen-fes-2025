@@ -1,7 +1,8 @@
-import { Link } from "react-router-dom";
-import { useLanguage } from "../../context/LanguageContext";
-import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
+import { useEffect, useRef } from "react";
+import { Link } from "react-router-dom";
+
+import { useLanguage } from "../../context/LanguageContext";
 import { DURATION, EASE } from "../../utils/animations";
 
 const HomeHero = () => {
@@ -27,21 +28,21 @@ const HomeHero = () => {
         autoAlpha: 1,
         duration: DURATION.NORMAL,
         ease: EASE.SMOOTH,
-      }
+      },
     );
 
     // Title animation
     if (titleRef.current) {
       tl.fromTo(
         titleRef.current,
-        { y: 30, autoAlpha: 0 },
+        { autoAlpha: 0, y: 30 },
         {
-          y: 0,
           autoAlpha: 1,
           duration: DURATION.NORMAL,
           ease: EASE.SMOOTH,
+          y: 0,
         },
-        "-=0.2"
+        "-=0.2",
       );
     }
 
@@ -49,14 +50,14 @@ const HomeHero = () => {
     if (subtitleRef.current) {
       tl.fromTo(
         subtitleRef.current,
-        { y: 20, autoAlpha: 0 },
+        { autoAlpha: 0, y: 20 },
         {
-          y: 0,
           autoAlpha: 1,
           duration: DURATION.NORMAL,
           ease: EASE.SMOOTH,
+          y: 0,
         },
-        "-=0.2"
+        "-=0.2",
       );
     }
 
@@ -64,14 +65,14 @@ const HomeHero = () => {
     if (datesRef.current) {
       tl.fromTo(
         datesRef.current,
-        { y: 20, autoAlpha: 0 },
+        { autoAlpha: 0, y: 20 },
         {
-          y: 0,
           autoAlpha: 1,
           duration: DURATION.NORMAL,
           ease: EASE.SMOOTH,
+          y: 0,
         },
-        "-=0.2"
+        "-=0.2",
       );
     }
 
@@ -79,24 +80,24 @@ const HomeHero = () => {
     if (ctaRef.current) {
       tl.fromTo(
         ctaRef.current,
-        { y: 20, autoAlpha: 0 },
+        { autoAlpha: 0, y: 20 },
         {
-          y: 0,
           autoAlpha: 1,
           duration: DURATION.NORMAL,
           ease: EASE.SMOOTH,
           onComplete: () => {
             // Add pulse animation to CTA
             gsap.to(ctaRef.current, {
-              scale: 1.05,
               duration: 1,
-              repeat: -1,
-              yoyo: true,
               ease: "power1.inOut",
+              repeat: -1,
+              scale: 1.05,
+              yoyo: true,
             });
           },
+          y: 0,
         },
-        "-=0.2"
+        "-=0.2",
       );
     }
 
@@ -107,21 +108,21 @@ const HomeHero = () => {
         { autoAlpha: 0, x: "10%" },
         {
           autoAlpha: 0.1,
-          x: "20%",
           duration: DURATION.SLOW,
           ease: EASE.SMOOTH,
           onComplete: () => {
             // Add floating animation to decoration
             gsap.to(decorationRef.current, {
-              y: 15,
               duration: 3,
-              repeat: -1,
-              yoyo: true,
               ease: "sine.inOut",
+              repeat: -1,
+              y: 15,
+              yoyo: true,
             });
           },
+          x: "20%",
         },
-        "-=0.4"
+        "-=0.4",
       );
     }
 

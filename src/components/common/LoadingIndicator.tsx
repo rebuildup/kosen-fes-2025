@@ -9,10 +9,10 @@ const LoadingIndicator = () => {
     <div
       role="status"
       aria-label="loading"
-      className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none"
+      className="pointer-events-none fixed inset-0 z-50 flex items-center justify-center"
     >
-      <div className="pointer-events-auto p-2 rounded-md bg-white/0 dark:bg-black/0">
-        <Loader2 className="w-6 h-6 animate-spin text-current" />
+      <div className="pointer-events-auto rounded-md bg-white/0 p-2 dark:bg-black/0">
+        <Loader2 className="h-6 w-6 animate-spin text-current" />
       </div>
     </div>
   );

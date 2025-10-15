@@ -1,8 +1,9 @@
-import { useRef, useEffect, useState, useCallback } from "react";
-import { useSimpleMapZoomPan } from "../../hooks/useMapZoomPan";
+import { useCallback, useEffect, useRef, useState } from "react";
+
 import { CAMPUS_MAP_BOUNDS } from "../../data/buildings";
-import ZoomControls from "./ZoomControls";
 import amenities from "../../data/mapAmenities";
+import { useSimpleMapZoomPan } from "../../hooks/useMapZoomPan";
+import ZoomControls from "./ZoomControls";
 
 interface Coordinate {
   x: number;
@@ -54,19 +55,19 @@ interface SimpleMapProps {
 }
 
 const SimpleMap = ({
-  mode = "display",
-  height = "400px",
-  className = "",
-  markers = [],
-  contentItems = [],
-  highlightCoordinate,
-  selectedCoordinate,
-  onCoordinateSelect,
-  showZoomControls = true,
   allowCoordinateSelection = false,
+  className = "",
+  contentItems = [],
+  height = "400px",
+  highlightCoordinate,
   initialZoom = 1,
+  markers = [],
   maxZoom = 10,
   minZoom = 0.1,
+  mode = "display",
+  onCoordinateSelect,
+  selectedCoordinate,
+  showZoomControls = true,
 }: SimpleMapProps) => {
   const svgRef = useRef<SVGSVGElement>(null);
   const [svgContent, setSvgContent] = useState<string>("");
@@ -76,21 +77,21 @@ const SimpleMap = ({
   const {
     containerRef,
     contentRef,
-    transform,
-    isDragging,
-    zoomIn,
-    zoomOut,
-    resetTransform,
-    zoomToPoint,
-    screenToSVG,
     handleMouseDown,
     handleTouchStart,
+    isDragging,
+    resetTransform,
+    screenToSVG,
+    transform,
+    zoomIn,
+    zoomOut,
+    zoomToPoint,
   } = useSimpleMapZoomPan({
-    width: CAMPUS_MAP_BOUNDS.width,
     height: CAMPUS_MAP_BOUNDS.height,
-    minScale: minZoom,
-    maxScale: maxZoom,
     initialScale: initialZoom,
+    maxScale: maxZoom,
+    minScale: minZoom,
+    width: CAMPUS_MAP_BOUNDS.width,
   });
 
   // SVG読み込み
@@ -132,7 +133,7 @@ const SimpleMap = ({
       allowCoordinateSelection,
       onCoordinateSelect,
       screenToSVG,
-    ]
+    ],
   );
 
   // 固定サイズ計算 - ズームに関係なく常に読みやすいサイズ
@@ -142,7 +143,7 @@ const SimpleMap = ({
       const scaledSize = baseSize / transform.scale;
       return Math.max(Math.min(scaledSize, baseSize * 3), baseSize * 0.3);
     },
-    [transform.scale]
+    [transform.scale],
   );
 
   const getFixedStrokeWidth = useCallback(
@@ -150,7 +151,7 @@ const SimpleMap = ({
       const scaledWidth = baseWidth / transform.scale;
       return Math.max(Math.min(scaledWidth, baseWidth * 2), 0.5);
     },
-    [transform.scale]
+    [transform.scale],
   );
 
   // 固定テキストサイズ - 常に読みやすい大きさ
@@ -181,10 +182,10 @@ const SimpleMap = ({
         style={{ height }}
       >
         <div className="text-center">
-          <p className="text-red-500 mb-2">{svgLoadError}</p>
+          <p className="mb-2 text-red-500">{svgLoadError}</p>
           <button
-            onClick={() => window.location.reload()}
-            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+            onClick={() => globalThis.location.reload()}
+            className="rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
           >
             再読み込み
           </button>
@@ -200,7 +201,7 @@ const SimpleMap = ({
         style={{ height }}
       >
         <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto mb-2"></div>
+          <div className="mx-auto mb-2 h-8 w-8 animate-spin rounded-full border-b-2 border-blue-500"></div>
           <p>マップを読み込み中...</p>
         </div>
       </div>
@@ -212,12 +213,12 @@ const SimpleMap = ({
       ref={containerRef}
       className={`relative overflow-hidden ${className}`}
       style={{
-        height,
         cursor: isDragging
           ? "grabbing"
           : allowCoordinateSelection || mode === "interactive"
-          ? "crosshair"
-          : "grab",
+            ? "crosshair"
+            : "grab",
+        height,
       }}
     >
       {/* ズームコントロール */}
@@ -236,13 +237,13 @@ const SimpleMap = ({
       <div
         ref={contentRef}
         style={{
+          backfaceVisibility: "hidden",
+          height: CAMPUS_MAP_BOUNDS.height,
+          imageRendering: "crisp-edges",
+          perspective: "1000px",
           transformOrigin: "0 0",
           width: CAMPUS_MAP_BOUNDS.width,
-          height: CAMPUS_MAP_BOUNDS.height,
           willChange: "transform",
-          backfaceVisibility: "hidden",
-          perspective: "1000px",
-          imageRendering: "crisp-edges",
         }}
         onMouseDown={handleMouseDown}
         onTouchStart={handleTouchStart}
@@ -256,9 +257,9 @@ const SimpleMap = ({
           onClick={handleSVGClick}
           style={{
             display: "block",
+            imageRendering: "crisp-edges",
             shapeRendering: "geometricPrecision",
             textRendering: "geometricPrecision",
-            imageRendering: "crisp-edges",
           }}
           dangerouslySetInnerHTML={{ __html: svgContent }}
         />
@@ -269,12 +270,12 @@ const SimpleMap = ({
           width={CAMPUS_MAP_BOUNDS.width}
           height={CAMPUS_MAP_BOUNDS.height}
           style={{
-            position: "absolute",
-            top: 0,
             left: 0,
             pointerEvents: "none",
+            position: "absolute",
             shapeRendering: "geometricPrecision",
             textRendering: "geometricPrecision",
+            top: 0,
           }}
         >
           {/* コンテンツアイテムマーカー */}
@@ -288,10 +289,10 @@ const SimpleMap = ({
                   item.type === "event"
                     ? "#405de6"
                     : item.type === "exhibit"
-                    ? "#8b5cf6"
-                    : item.type === "stall"
-                    ? "#fcaf45"
-                    : "#8e8e8e"
+                      ? "#8b5cf6"
+                      : item.type === "stall"
+                        ? "#fcaf45"
+                        : "#8e8e8e"
                 }
                 stroke="white"
                 strokeWidth={getFixedStrokeWidth(2)}
@@ -312,7 +313,7 @@ const SimpleMap = ({
                 }}
               >
                 {item.title.length > 8
-                  ? item.title.substring(0, 8) + "..."
+                  ? item.title.slice(0, 8) + "..."
                   : item.title}
               </text>
             </g>
@@ -344,7 +345,7 @@ const SimpleMap = ({
                 }}
               >
                 {marker.location.length > 6
-                  ? marker.location.substring(0, 6) + "..."
+                  ? marker.location.slice(0, 6) + "..."
                   : marker.location}
               </text>
             </g>
@@ -480,44 +481,44 @@ const SimpleMap = ({
       <div
         aria-hidden
         style={{
-          position: "absolute",
-          left: 12,
-          bottom: 12,
-          zIndex: 30,
           background: "rgba(255,255,255,0.95)",
-          padding: "8px 10px",
-          borderRadius: 8,
           border: "1px solid rgba(0,0,0,0.06)",
+          borderRadius: 8,
+          bottom: 12,
           fontSize: 12,
+          left: 12,
+          padding: "8px 10px",
+          position: "absolute",
+          zIndex: 30,
         }}
         className="map-legend glass-effect"
       >
-        <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-          <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+        <div style={{ alignItems: "center", display: "flex", gap: 8 }}>
+          <div style={{ alignItems: "center", display: "flex", gap: 8 }}>
             <span
               style={{
-                width: 12,
-                height: 12,
                 background: "#1da1f2",
                 borderRadius: 2,
+                height: 12,
+                width: 12,
               }}
             />
             <span>トイレ</span>
           </div>
           <div
             style={{
+              alignItems: "center",
               display: "flex",
               gap: 8,
-              alignItems: "center",
               marginLeft: 10,
             }}
           >
             <span
               style={{
-                width: 12,
-                height: 12,
                 background: "#10b981",
                 borderRadius: 2,
+                height: 12,
+                width: 12,
               }}
             />
             <span>ゴミ箱</span>

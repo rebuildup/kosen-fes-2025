@@ -21,7 +21,7 @@ function calculatePolygonCenter(points: string): { x: number; y: number } {
   let count = 0;
 
   for (let i = 0; i < coords.length; i += 2) {
-    if (!isNaN(coords[i]) && !isNaN(coords[i + 1])) {
+    if (!Number.isNaN(coords[i]) && !Number.isNaN(coords[i + 1])) {
       sumX += coords[i];
       sumY += coords[i + 1];
       count++;
@@ -199,10 +199,10 @@ const buildingPolygons = [
 export const buildings: Building[] = buildingPolygons.map((building) => {
   const center = calculatePolygonCenter(building.points);
   return {
-    id: building.id,
-    name: building.name,
     centerX: center.x,
     centerY: center.y,
+    id: building.id,
+    name: building.name,
     polygon: building.points,
     rooms: building.rooms,
   };
@@ -210,9 +210,9 @@ export const buildings: Building[] = buildingPolygons.map((building) => {
 
 // Campus map dimensions from updated SVG viewBox
 export const CAMPUS_MAP_BOUNDS = {
-  width: 1996.6306,
   height: 1343.0788,
   viewBox: "0 0 1996.6306 1343.0788",
+  width: 1996.6306,
 };
 
 // Helper function to get building by name or partial name match
@@ -221,18 +221,18 @@ export function getBuildingByName(locationName: string): Building | undefined {
     (building) =>
       locationName.includes(building.name) ||
       building.name.includes(locationName) ||
-      building.rooms?.some((room) => locationName.includes(room))
+      building.rooms?.some((room) => locationName.includes(room)),
   );
 }
 
 // Helper function to get building coordinates for a location string
 export function getBuildingCoordinates(
-  locationName: string
+  locationName: string,
 ): { x: number; y: number } | undefined {
   if (!locationName || typeof locationName !== "string") {
     console.warn(
       "Invalid location name provided to getBuildingCoordinates:",
-      locationName
+      locationName,
     );
     return undefined;
   }
@@ -246,60 +246,60 @@ export function getBuildingCoordinates(
     // Enhanced fallback system with more precise coordinates
     const fallbacks = [
       {
-        patterns: ["Main Stage", "メインステージ", "main-stage"],
         coords: { x: 1000, y: 800 },
+        patterns: ["Main Stage", "メインステージ", "main-stage"],
       },
       {
-        patterns: ["第二体育館", "second-gym"],
         coords: { x: 147.38, y: 188.82 },
+        patterns: ["第二体育館", "second-gym"],
       },
       {
-        patterns: ["F棟", "F-building"],
         coords: { x: 1649.86, y: 805.44 },
+        patterns: ["F棟", "F-building"],
       },
       {
-        patterns: ["経営情報学科棟", "management-building"],
         coords: { x: 883.39, y: 817.44 },
+        patterns: ["経営情報学科棟", "management-building"],
       },
       {
-        patterns: ["武道場", "martial-arts-hall"],
         coords: { x: 1160.24, y: 1087.2 },
+        patterns: ["武道場", "martial-arts-hall"],
       },
       {
-        patterns: ["課外活動棟", "activity-building"],
         coords: { x: 1716.82, y: 882.39 },
+        patterns: ["課外活動棟", "activity-building"],
       },
       {
-        patterns: ["学生会館", "student-hall"],
         coords: { x: 588.55, y: 733.5 },
+        patterns: ["学生会館", "student-hall"],
       },
       {
-        patterns: ["図書館棟", "library"],
         coords: { x: 579.6, y: 497.66 },
+        patterns: ["図書館棟", "library"],
       },
       {
-        patterns: ["第一体育館", "first-gym"],
         coords: { x: 1007.76, y: 1088.25 },
+        patterns: ["第一体育館", "first-gym"],
       },
       {
-        patterns: ["管理棟", "admin-building"],
         coords: { x: 248.83, y: 864.85 },
+        patterns: ["管理棟", "admin-building"],
       },
       {
-        patterns: ["機電棟", "engineering-building"],
         coords: { x: 254.83, y: 751.49 },
+        patterns: ["機電棟", "engineering-building"],
       },
       {
-        patterns: ["Central Plaza", "中央広場"],
         coords: { x: 700, y: 900 },
+        patterns: ["Central Plaza", "中央広場"],
       },
       {
-        patterns: ["Food Court", "フードコート", "フードコートエリア"],
         coords: { x: 600, y: 750 },
+        patterns: ["Food Court", "フードコート", "フードコートエリア"],
       },
       {
-        patterns: ["Main Entrance", "正門"],
         coords: { x: 500, y: 400 },
+        patterns: ["Main Entrance", "正門"],
       },
     ];
 
@@ -310,7 +310,7 @@ export function getBuildingCoordinates(
           (pattern) =>
             locationName.toLowerCase() === pattern.toLowerCase() ||
             locationName.includes(pattern) ||
-            pattern.includes(locationName)
+            pattern.includes(locationName),
         )
       ) {
         return fallback.coords;
@@ -331,7 +331,7 @@ export function getBuildingCoordinates(
         })
       ) {
         console.info(
-          `Using fallback coordinates for location: ${locationName}`
+          `Using fallback coordinates for location: ${locationName}`,
         );
         return fallback.coords;
       }
@@ -339,7 +339,7 @@ export function getBuildingCoordinates(
 
     // Final fallback - default central position
     console.warn(
-      `No coordinates found for location: ${locationName}, using default position`
+      `No coordinates found for location: ${locationName}, using default position`,
     );
     return { x: 1000, y: 700 }; // Central area of the map
   } catch (error) {
@@ -347,7 +347,7 @@ export function getBuildingCoordinates(
       "Error in getBuildingCoordinates:",
       error,
       "Location:",
-      locationName
+      locationName,
     );
     return { x: 1000, y: 700 }; // Fallback to center
   }

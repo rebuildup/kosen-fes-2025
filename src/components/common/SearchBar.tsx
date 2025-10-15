@@ -1,8 +1,9 @@
-import React, { useState, useRef, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { useSearch } from "../../context/SearchContext";
-import { useLanguage } from "../../context/LanguageContext";
 import { gsap } from "gsap";
+import React, { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
+
+import { useLanguage } from "../../context/LanguageContext";
+import { useSearch } from "../../context/SearchContext";
 import { DURATION, EASE } from "../../utils/animations";
 import { SearchIcon } from "../icons";
 
@@ -15,14 +16,14 @@ interface SearchBarProps {
 }
 
 const SearchBar = ({
-  variant = "default",
-  placeholder,
   autoFocus = false,
-  showSuggestions = false,
   className = "",
+  placeholder,
+  showSuggestions = false,
+  variant = "default",
 }: SearchBarProps) => {
   const { t } = useLanguage();
-  const { searchQuery, setSearchQuery, performSearch, recentSearches } =
+  const { performSearch, recentSearches, searchQuery, setSearchQuery } =
     useSearch();
   const navigate = useNavigate();
 
@@ -53,16 +54,16 @@ const SearchBar = ({
     if (showDropdown) {
       // Focus animation
       gsap.to(containerRef.current, {
-        boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
         borderColor: "var(--primary-color)",
+        boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
         duration: DURATION.FAST,
         ease: EASE.SMOOTH,
       });
     } else {
       // Blur animation
       gsap.to(containerRef.current, {
-        boxShadow: "0 2px 8px rgba(0, 0, 0, 0.05)",
         borderColor: "var(--border-color)",
+        boxShadow: "0 2px 8px rgba(0, 0, 0, 0.05)",
         duration: DURATION.FAST,
         ease: EASE.SMOOTH,
       });
@@ -78,23 +79,23 @@ const SearchBar = ({
       gsap.fromTo(
         suggestionsRef.current,
         {
-          y: -10,
           autoAlpha: 0,
+          y: -10,
         },
         {
-          y: 0,
           autoAlpha: 1,
           duration: DURATION.FAST,
           ease: EASE.SMOOTH,
-        }
+          y: 0,
+        },
       );
     } else {
       // Hide suggestions animation
       gsap.to(suggestionsRef.current, {
-        y: -10,
         autoAlpha: 0,
         duration: DURATION.FAST,
         ease: EASE.SMOOTH,
+        y: -10,
       });
     }
   }, [showDropdown]);
@@ -135,17 +136,19 @@ const SearchBar = ({
     const suggestions = recentSearches;
 
     switch (e.key) {
-      case "ArrowDown":
+      case "ArrowDown": {
         e.preventDefault();
         setHighlightedIndex((prev) =>
-          prev < suggestions.length - 1 ? prev + 1 : prev
+          prev < suggestions.length - 1 ? prev + 1 : prev,
         );
         break;
-      case "ArrowUp":
+      }
+      case "ArrowUp": {
         e.preventDefault();
         setHighlightedIndex((prev) => (prev > 0 ? prev - 1 : prev));
         break;
-      case "Enter":
+      }
+      case "Enter": {
         e.preventDefault();
         if (highlightedIndex >= 0 && suggestions[highlightedIndex]) {
           handleSuggestionClick(suggestions[highlightedIndex]);
@@ -153,10 +156,12 @@ const SearchBar = ({
           handleSubmit(e);
         }
         break;
-      case "Escape":
+      }
+      case "Escape": {
         setShowDropdown(false);
         setHighlightedIndex(-1);
         break;
+      }
     }
   };
 
@@ -202,23 +207,29 @@ const SearchBar = ({
     const rightPadding = localQuery.trim() ? "pr-32" : "pr-20";
 
     switch (variant) {
-      case "large":
+      case "large": {
         return `${baseClasses} ${rightPadding} py-4 text-lg rounded-full focus:ring-4`;
-      case "inline":
+      }
+      case "inline": {
         return `${baseClasses} ${rightPadding} py-2 text-sm rounded-full`;
-      default:
+      }
+      default: {
         return `${baseClasses} ${rightPadding} py-3 text-base rounded-full`;
+      }
     }
   };
 
   const getIconSize = () => {
     switch (variant) {
-      case "large":
+      case "large": {
         return 24;
-      case "inline":
+      }
+      case "inline": {
         return 16;
-      default:
+      }
+      default: {
         return 20;
+      }
     }
   };
 
@@ -233,7 +244,7 @@ const SearchBar = ({
       >
         <div className="relative">
           {/* Search Icon */}
-          <div className="absolute left-4 top-1/2 transform -translate-y-1/2 z-10">
+          <div className="absolute top-1/2 left-4 z-10 -translate-y-1/2 transform">
             <SearchIcon
               size={getIconSize()}
               className="text-[var(--text-secondary)]"
@@ -263,11 +274,11 @@ const SearchBar = ({
             <button
               type="button"
               onClick={handleClear}
-              className="absolute right-20 top-1/2 transform -translate-y-1/2 p-1 rounded-full transition-all duration-200 hover:bg-[var(--bg-secondary)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+              className="absolute top-1/2 right-20 -translate-y-1/2 transform rounded-full p-1 text-[var(--text-secondary)] transition-all duration-200 hover:bg-[var(--bg-secondary)] hover:text-[var(--text-primary)]"
               aria-label={t("actions.clear")}
             >
               <svg
-                className="w-4 h-4"
+                className="h-4 w-4"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -286,7 +297,7 @@ const SearchBar = ({
           {/* Submit Button */}
           <button
             type="submit"
-            className="absolute right-2 top-1/2 transform -translate-y-1/2 px-4 py-2 bg-[var(--primary-color)] text-white rounded-full font-medium transition-all duration-200 hover:shadow-lg hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)]/20 hover:bg-[var(--primary-color)]/90"
+            className="absolute top-1/2 right-2 -translate-y-1/2 transform rounded-full bg-[var(--primary-color)] px-4 py-2 font-medium text-white transition-all duration-200 hover:scale-105 hover:bg-[var(--primary-color)]/90 hover:shadow-lg focus:ring-2 focus:ring-[var(--primary-color)]/20 focus:outline-none active:scale-95"
             aria-label={t("actions.search")}
           >
             {variant === "large" ? t("actions.search") : t("actions.search")}
@@ -298,7 +309,7 @@ const SearchBar = ({
       {showDropdown && suggestions.length > 0 && (
         <div
           ref={dropdownRef}
-          className="absolute top-full left-0 right-0 mt-2 bg-[var(--bg-primary)] border border-[var(--border-color)] rounded-lg shadow-lg z-50 max-h-64 overflow-y-auto"
+          className="absolute top-full right-0 left-0 z-50 mt-2 max-h-64 overflow-y-auto rounded-lg border border-[var(--border-color)] bg-[var(--bg-primary)] shadow-lg"
         >
           <div
             ref={suggestionsRef}
@@ -310,7 +321,7 @@ const SearchBar = ({
               <button
                 key={index}
                 onClick={() => handleSuggestionClick(suggestion)}
-                className={`w-full text-left px-4 py-3 flex items-center gap-3 transition-all duration-200 ${
+                className={`flex w-full items-center gap-3 px-4 py-3 text-left transition-all duration-200 ${
                   highlightedIndex === index
                     ? "bg-[var(--bg-tertiary)] text-[var(--primary-color)]"
                     : "text-[var(--text-primary)] hover:bg-[var(--bg-secondary)]"

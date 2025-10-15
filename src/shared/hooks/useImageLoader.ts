@@ -1,4 +1,5 @@
-import { useState, useCallback } from "react";
+import { useCallback, useState } from "react";
+
 import { getPlaceholderImage } from "../utils/itemHelpers";
 
 interface UseImageLoaderOptions {
@@ -21,10 +22,10 @@ interface UseImageLoaderReturn {
  */
 export const useImageLoader = (
   imageUrl: string,
-  options: UseImageLoaderOptions = {}
+  options: UseImageLoaderOptions = {},
 ): UseImageLoaderReturn => {
-  const { itemType = "default", onLoad, onError } = options;
-  
+  const { itemType = "default", onError, onLoad } = options;
+
   const [isLoaded, setIsLoaded] = useState(false);
   const [hasError, setHasError] = useState(false);
 
@@ -44,16 +45,14 @@ export const useImageLoader = (
     setHasError(false);
   }, []);
 
-  const currentImageUrl = hasError 
-    ? getPlaceholderImage(itemType) 
-    : imageUrl;
+  const currentImageUrl = hasError ? getPlaceholderImage(itemType) : imageUrl;
 
   return {
-    isLoaded,
-    hasError,
     currentImageUrl,
-    handleImageLoad,
     handleImageError,
+    handleImageLoad,
+    hasError,
+    isLoaded,
     resetImageState,
   };
 };

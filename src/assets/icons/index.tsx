@@ -8,12 +8,12 @@ export interface IconProps {
 }
 
 export const Icon: React.FC<React.SVGProps<SVGSVGElement> & IconProps> = ({
-  size = 24,
+  "aria-hidden": ariaHidden,
+  "aria-label": ariaLabel,
+  className = "",
   color = "currentColor",
   fill = "none",
-  className = "",
-  "aria-label": ariaLabel,
-  "aria-hidden": ariaHidden,
+  size = 24,
   ...props
 }) => {
   return (
@@ -39,9 +39,12 @@ export const Icon: React.FC<React.SVGProps<SVGSVGElement> & IconProps> = ({
 export {
   AlertIcon,
   BookmarkIcon,
+  ENIcon,
   EventIcon,
   ExhibitIcon,
   HomeIcon,
+  InfoIcon,
+  JPIcon,
   LocationIcon,
   MapIcon,
   MenuIcon,
@@ -49,13 +52,10 @@ export {
   PeopleIcon,
   ScheduleIcon,
   SearchIcon,
+  SettingsIcon,
   SponsorIcon,
   SunIcon,
   TimeIcon,
-  XIcon,
-  SettingsIcon,
-  InfoIcon,
   TrashIcon,
-  JPIcon,
-  ENIcon,
+  XIcon,
 } from "../../components/icons";

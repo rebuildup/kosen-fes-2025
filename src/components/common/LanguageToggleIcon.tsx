@@ -1,5 +1,5 @@
 import { useLanguage } from "../../context/LanguageContext";
-import { JPIcon, ENIcon } from "../icons/LanguageIcon";
+import { ENIcon, JPIcon } from "../icons/LanguageIcon";
 
 const LanguageToggleIcon = () => {
   const { language, setLanguage, t } = useLanguage();
@@ -7,7 +7,7 @@ const LanguageToggleIcon = () => {
   return (
     <button
       onClick={() => setLanguage(language === "en" ? "ja" : "en")}
-      className="p-2 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)]/50"
+      className="rounded-lg p-2 transition-all duration-200 focus:ring-2 focus:ring-[var(--color-accent)]/50 focus:outline-none"
       style={{
         backgroundColor: "var(--color-bg-secondary)",
         color: "var(--color-text-primary)",

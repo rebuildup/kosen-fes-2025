@@ -1,13 +1,14 @@
-import { Outlet } from "react-router-dom";
-import { useState, useEffect, useRef } from "react";
-import Header from "./Header";
-import Sidebar from "./Sidebar";
-import Footer from "./Footer";
-import Menu from "./Menu";
-import { useTheme } from "../../context/ThemeContext";
-import PageTransition from "./PageTransition";
 import { gsap } from "gsap";
+import { useEffect, useRef, useState } from "react";
+import { Outlet } from "react-router-dom";
+
+import { useTheme } from "../../context/ThemeContext";
 import { DURATION, EASE } from "../../utils/animations";
+import Footer from "./Footer";
+import Header from "./Header";
+import Menu from "./Menu";
+import PageTransition from "./PageTransition";
+import Sidebar from "./Sidebar";
 
 const Layout = () => {
   const [isMobile, setIsMobile] = useState(false);
@@ -87,9 +88,9 @@ const Layout = () => {
         });
 
         tl.to(mobileMenu, {
-          x: "100%",
           duration: DURATION.NORMAL,
           ease: EASE.SMOOTH,
+          x: "100%",
         }).to(
           menuOverlay,
           {
@@ -98,7 +99,7 @@ const Layout = () => {
             duration: DURATION.FAST,
             ease: EASE.SMOOTH,
           },
-          "-=0.2"
+          "-=0.2",
         );
       }
     }
@@ -114,7 +115,7 @@ const Layout = () => {
   return (
     <div
       ref={layoutRef}
-      className="min-h-screen transition-all duration-300 bg-[var(--bg-primary)] text-[var(--text-primary)]"
+      className="min-h-screen bg-[var(--bg-primary)] text-[var(--text-primary)] transition-all duration-300"
     >
       {/* Header - only shown on desktop */}
       {!isMobile && <Header />}
@@ -123,7 +124,7 @@ const Layout = () => {
       <div className="w-full">
         {isMobile ? (
           /* Mobile Layout - Full width main content with bottom padding for footer */
-          <main className="px-4 sm:px-6 pb-20">
+          <main className="px-4 pb-20 sm:px-6">
             <div className="min-h-screen bg-[var(--bg-primary)] text-[var(--text-primary)]">
               <PageTransition>
                 <Outlet />
@@ -132,7 +133,7 @@ const Layout = () => {
           </main>
         ) : (
           /* Desktop Layout - Aligned with header content width */
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="flex gap-6">
               {/* Desktop Sidebar - Fixed width */}
               <div className="flex-shrink-0">
@@ -140,8 +141,8 @@ const Layout = () => {
               </div>
 
               {/* Main Content - Controlled width within header bounds */}
-              <main className="flex-1 min-w-0 pt-16">
-                <div className="min-h-screen max-w-full main-content bg-[var(--bg-primary)] text-[var(--text-primary)]">
+              <main className="min-w-0 flex-1 pt-16">
+                <div className="main-content min-h-screen max-w-full bg-[var(--bg-primary)] text-[var(--text-primary)]">
                   <PageTransition>
                     <Outlet />
                   </PageTransition>

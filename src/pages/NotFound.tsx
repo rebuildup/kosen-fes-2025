@@ -1,6 +1,7 @@
-import { Link } from "react-router-dom";
-import { useLanguage } from "../context/LanguageContext";
 import { useEffect } from "react";
+import { Link } from "react-router-dom";
+
+import { useLanguage } from "../context/LanguageContext";
 
 const NotFound = () => {
   const { t } = useLanguage();
@@ -21,10 +22,10 @@ const NotFound = () => {
         className="section"
         style={{ backgroundColor: "var(--color-bg-primary)" }}
       >
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center py-12">
+        <div className="mx-auto max-w-7xl">
+          <div className="py-12 text-center">
             <div
-              className="text-6xl font-bold mb-8"
+              className="mb-8 text-6xl font-bold"
               style={{ color: "var(--color-accent)" }}
             >
               404
@@ -35,7 +36,7 @@ const NotFound = () => {
               {t("errors.pageNotFoundMessage")}
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
               <Link to="/" className="btn btn-primary">
                 {t("navigation.home")}
               </Link>

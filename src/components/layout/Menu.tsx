@@ -1,19 +1,21 @@
-import { useRef, useEffect, useCallback, MutableRefObject } from "react";
-import { NavLink, Link } from "react-router-dom";
-import { createPortal } from "react-dom";
-import { useLanguage } from "../../context/LanguageContext";
-import { useBookmark } from "../../context/BookmarkContext";
-import ThemeToggleIcon from "../common/ThemeToggleIcon";
-import LanguageToggleIcon from "../common/LanguageToggleIcon";
 import { gsap } from "gsap";
+import type { MutableRefObject } from "react";
+import { useCallback, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
+import { Link, NavLink } from "react-router-dom";
+
+import { useBookmark } from "../../context/BookmarkContext";
+import { useLanguage } from "../../context/LanguageContext";
 import { DURATION, EASE } from "../../utils/animations";
+import LanguageToggleIcon from "../common/LanguageToggleIcon";
+import ThemeToggleIcon from "../common/ThemeToggleIcon";
 import {
-  HomeIcon,
+  BookmarkIcon,
   EventIcon,
   ExhibitIcon,
-  ScheduleIcon,
+  HomeIcon,
   MapIcon,
-  BookmarkIcon,
+  ScheduleIcon,
   SearchIcon,
   XIcon,
 } from "../icons";
@@ -37,7 +39,7 @@ interface MenuProps {
   closeButtonRef?: MutableRefObject<HTMLButtonElement | null>;
 }
 
-const Menu = ({ setMenuOpen, closeButtonRef }: MenuProps) => {
+const Menu = ({ closeButtonRef, setMenuOpen }: MenuProps) => {
   const { t } = useLanguage();
   const { bookmarks } = useBookmark();
   const menuRef = useRef<HTMLDivElement>(null);
@@ -65,11 +67,11 @@ const Menu = ({ setMenuOpen, closeButtonRef }: MenuProps) => {
         tl.to(
           menuRef.current,
           {
-            x: "0%",
             duration: DURATION.NORMAL,
             ease: EASE.SMOOTH,
+            x: "0%",
           },
-          "-=0.1"
+          "-=0.1",
         );
       }
     };
@@ -86,9 +88,9 @@ const Menu = ({ setMenuOpen, closeButtonRef }: MenuProps) => {
       });
 
       tl.to(menuRef.current, {
-        x: "100%",
         duration: DURATION.NORMAL,
         ease: EASE.SMOOTH,
+        x: "100%",
       });
 
       tl.to(
@@ -98,7 +100,7 @@ const Menu = ({ setMenuOpen, closeButtonRef }: MenuProps) => {
           duration: DURATION.FAST,
           ease: EASE.SMOOTH,
         },
-        "-=0.2"
+        "-=0.2",
       );
     } else {
       setMenuOpen(false);
@@ -310,17 +312,17 @@ const Menu = ({ setMenuOpen, closeButtonRef }: MenuProps) => {
           <div className="mobile-menu-section">
             <h3 className="mobile-menu-section-title">{t("info.title")}</h3>
             <div className="mobile-menu-info">
-              <p className="mobile-menu-info-item text-xs pl-4">
+              <p className="mobile-menu-info-item pl-4 text-xs">
                 <strong>{t("info.festivalDates")}:</strong>
                 <br />
                 2025/11/08 - 2025/11/09
               </p>
-              <p className="mobile-menu-info-item text-xs pl-4">
+              <p className="mobile-menu-info-item pl-4 text-xs">
                 <strong>{t("info.location")}:</strong>
                 <br />
                 {t("info.schoolName")}
               </p>
-              <p className="mobile-menu-info-item text-xs pl-4">
+              <p className="mobile-menu-info-item pl-4 text-xs">
                 <strong>{t("info.organizer")}:</strong>
                 <br />
                 宇部高専祭実行委員会
@@ -330,7 +332,7 @@ const Menu = ({ setMenuOpen, closeButtonRef }: MenuProps) => {
         </div>
       </div>
     </div>,
-    document.body
+    document.body,
   );
 };
 

@@ -13,34 +13,34 @@ export const DURATION = {
 
 // Common easings
 export const EASE = {
-  SMOOTH: "power2.out",
   BOUNCE: "back.out(1.4)",
   ELASTIC: "elastic.out(0.5, 0.3)",
   SLOW_MO: "slow(0.7, 0.7, false)",
+  SMOOTH: "power2.out",
 };
 
 // Opacity animations
 export const fadeIn = (
   element: HTMLElement | string,
   duration = DURATION.NORMAL,
-  delay = 0
+  delay = 0,
 ) => {
   return gsap.fromTo(
     element,
     { autoAlpha: 0 },
     {
       autoAlpha: 1,
-      duration,
-      delay,
-      ease: EASE.SMOOTH,
       clearProps: "all",
-    }
+      delay,
+      duration,
+      ease: EASE.SMOOTH,
+    },
   );
 };
 
 export const fadeOut = (
   element: HTMLElement | string,
-  duration = DURATION.NORMAL
+  duration = DURATION.NORMAL,
 ) => {
   return gsap.to(element, {
     autoAlpha: 0,
@@ -53,38 +53,38 @@ export const fadeOut = (
 export const slideInUp = (
   element: HTMLElement | string,
   duration = DURATION.NORMAL,
-  delay = 0
+  delay = 0,
 ) => {
   return gsap.fromTo(
     element,
-    { y: 30, autoAlpha: 0 },
+    { autoAlpha: 0, y: 30 },
     {
-      y: 0,
       autoAlpha: 1,
-      duration,
-      delay,
-      ease: EASE.SMOOTH,
       clearProps: "all",
-    }
+      delay,
+      duration,
+      ease: EASE.SMOOTH,
+      y: 0,
+    },
   );
 };
 
 export const slideInRight = (
   element: HTMLElement | string,
   duration = DURATION.NORMAL,
-  delay = 0
+  delay = 0,
 ) => {
   return gsap.fromTo(
     element,
-    { x: -30, autoAlpha: 0 },
+    { autoAlpha: 0, x: -30 },
     {
-      x: 0,
       autoAlpha: 1,
-      duration,
-      delay,
-      ease: EASE.SMOOTH,
       clearProps: "all",
-    }
+      delay,
+      duration,
+      ease: EASE.SMOOTH,
+      x: 0,
+    },
   );
 };
 
@@ -92,19 +92,19 @@ export const slideInRight = (
 export const staggerFadeIn = (
   elements: HTMLElement[] | string,
   stagger = 0.1,
-  duration = DURATION.NORMAL
+  duration = DURATION.NORMAL,
 ) => {
   return gsap.fromTo(
     elements,
     { autoAlpha: 0, y: 15 },
     {
       autoAlpha: 1,
-      y: 0,
-      duration,
-      stagger,
-      ease: EASE.SMOOTH,
       clearProps: "all",
-    }
+      duration,
+      ease: EASE.SMOOTH,
+      stagger,
+      y: 0,
+    },
   );
 };
 
@@ -112,10 +112,10 @@ export const staggerFadeIn = (
 export const cardHoverEffect = (element: HTMLElement, scale = 1.03) => {
   const tl = gsap.timeline({ paused: true });
   tl.to(element, {
-    scale,
     boxShadow: "0 8px 20px rgba(0, 0, 0, 0.15)",
     duration: DURATION.FAST,
     ease: EASE.SMOOTH,
+    scale,
   });
   return tl;
 };
@@ -126,7 +126,7 @@ export const pageTransitionIn = () => {
   tl.to("body", { duration: 0, overflow: "hidden" }).fromTo(
     ".page-transition-wrapper",
     { opacity: 0 },
-    { opacity: 1, duration: DURATION.FAST }
+    { duration: DURATION.FAST, opacity: 1 },
   );
   return tl;
 };
@@ -134,11 +134,11 @@ export const pageTransitionIn = () => {
 export const pageTransitionOut = () => {
   const tl = gsap.timeline();
   tl.to(".page-transition-wrapper", {
-    opacity: 0,
     duration: DURATION.FAST,
     onComplete: () => {
       gsap.to("body", { duration: 0, overflow: "auto" });
     },
+    opacity: 0,
   });
   return tl;
 };
@@ -147,42 +147,38 @@ export const pageTransitionOut = () => {
 export const createScrollTriggerAnimation = (
   element: string,
   animationType: "fadeIn" | "slideUp" | "slideRight" = "fadeIn",
-  settings = {}
+  settings = {},
 ) => {
-  let animation;
+  let animation: gsap.core.Tween;
 
   const defaultSettings = {
-    trigger: element,
-    start: "top 80%",
     end: "bottom 20%",
-    toggleActions: "play none none reverse",
     markers: false,
+    start: "top 80%",
+    toggleActions: "play none none reverse",
+    trigger: element,
   };
 
   const finalSettings = { ...defaultSettings, ...settings };
 
-  switch (animationType) {
-    case "slideUp":
-      animation = gsap.fromTo(
-        element,
-        { y: 50, autoAlpha: 0 },
-        { y: 0, autoAlpha: 1, duration: DURATION.NORMAL, ease: EASE.SMOOTH }
-      );
-      break;
-    case "slideRight":
-      animation = gsap.fromTo(
-        element,
-        { x: -50, autoAlpha: 0 },
-        { x: 0, autoAlpha: 1, duration: DURATION.NORMAL, ease: EASE.SMOOTH }
-      );
-      break;
-    case "fadeIn":
-    default:
-      animation = gsap.fromTo(
-        element,
-        { autoAlpha: 0 },
-        { autoAlpha: 1, duration: DURATION.NORMAL, ease: EASE.SMOOTH }
-      );
+  if (animationType === "slideUp") {
+    animation = gsap.fromTo(
+      element,
+      { autoAlpha: 0, y: 50 },
+      { autoAlpha: 1, duration: DURATION.NORMAL, ease: EASE.SMOOTH, y: 0 },
+    );
+  } else if (animationType === "slideRight") {
+    animation = gsap.fromTo(
+      element,
+      { autoAlpha: 0, x: -50 },
+      { autoAlpha: 1, duration: DURATION.NORMAL, ease: EASE.SMOOTH, x: 0 },
+    );
+  } else {
+    animation = gsap.fromTo(
+      element,
+      { autoAlpha: 0 },
+      { autoAlpha: 1, duration: DURATION.NORMAL, ease: EASE.SMOOTH },
+    );
   }
 
   ScrollTrigger.create({

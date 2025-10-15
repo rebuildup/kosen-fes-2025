@@ -1,15 +1,16 @@
 /* eslint-disable react-refresh/only-export-components */
+import type { ReactNode } from "react";
 import {
   createContext,
-  useContext,
-  useState,
-  useEffect,
-  ReactNode,
   useCallback,
+  useContext,
+  useEffect,
+  useState,
 } from "react";
 import { useNavigate } from "react-router-dom";
-import type { Item } from "../types/common";
+
 import { dataManager } from "../data/dataManager";
+import type { Item } from "../types/common";
 
 interface SearchContextType {
   searchQuery: string;
@@ -23,14 +24,14 @@ interface SearchContextType {
 }
 
 const defaultContext: SearchContextType = {
-  searchQuery: "",
-  setSearchQuery: () => {},
-  searchResults: [],
-  performSearch: () => {},
-  isSearching: false,
   clearSearch: () => {},
-  searchHistory: [],
+  isSearching: false,
+  performSearch: () => {},
   recentSearches: [],
+  searchHistory: [],
+  searchQuery: "",
+  searchResults: [],
+  setSearchQuery: () => {},
 };
 
 const SearchContext = createContext<SearchContextType>(defaultContext);
@@ -88,11 +89,11 @@ export const SearchProvider = ({ children }: SearchProviderProps) => {
       setIsSearching(false);
 
       // Navigate to search results page if not already there
-      if (window.location.pathname !== "/search") {
+      if (globalThis.location.pathname !== "/search") {
         navigate(`/search?q=${encodeURIComponent(query)}`);
       }
     },
-    [navigate, performSearchQuery]
+    [navigate, performSearchQuery],
   );
 
   // Function to clear search
@@ -104,14 +105,14 @@ export const SearchProvider = ({ children }: SearchProviderProps) => {
   return (
     <SearchContext.Provider
       value={{
-        searchQuery,
-        setSearchQuery,
-        searchResults,
-        performSearch,
-        isSearching,
         clearSearch,
-        searchHistory,
+        isSearching,
+        performSearch,
         recentSearches,
+        searchHistory,
+        searchQuery,
+        searchResults,
+        setSearchQuery,
       }}
     >
       {children}

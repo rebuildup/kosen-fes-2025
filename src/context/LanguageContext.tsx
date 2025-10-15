@@ -1,15 +1,9 @@
 /* eslint-disable react-refresh/only-export-components */
+import type { ComponentType, ReactNode } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
+
+import type { Language, Translations } from "../utils/translations";
 import {
-  createContext,
-  useContext,
-  useState,
-  useEffect,
-  ReactNode,
-  ComponentType,
-} from "react";
-import {
-  Language,
-  Translations,
   getTranslationsForLanguage,
   getTranslationValue,
 } from "../utils/translations";
@@ -24,8 +18,8 @@ interface LanguageContextType {
 const defaultContext: LanguageContextType = {
   language: "ja", // Default to Japanese
   setLanguage: () => {},
-  translations: {},
   t: (key) => key,
+  translations: {},
 };
 
 const LanguageContext = createContext<LanguageContextType>(defaultContext);
@@ -34,7 +28,7 @@ export const useLanguage = () => useContext(LanguageContext);
 
 // HOC to inject language props into class components
 export function withLanguage<P extends object>(
-  Component: ComponentType<P & { t: (key: string) => string }>
+  Component: ComponentType<P & { t: (key: string) => string }>,
 ): React.FC<P> {
   return (props: P) => {
     const { t } = useLanguage();
@@ -55,7 +49,7 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
     }
 
     // Try to detect browser language
-    const browserLang = navigator.language.substring(0, 2);
+    const browserLang = navigator.language.slice(0, 2);
     return browserLang === "ja" ? "ja" : "en";
   });
 
@@ -81,7 +75,7 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
 
   return (
     <LanguageContext.Provider
-      value={{ language, setLanguage, translations, t }}
+      value={{ language, setLanguage, t, translations }}
     >
       {children}
     </LanguageContext.Provider>

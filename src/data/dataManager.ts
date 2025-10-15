@@ -1,19 +1,19 @@
-import {
+import type { Event, Exhibit, Item, Sponsor, Stall } from "../types/common";
+import type {
+  DataState,
   DataStore,
-  ItemCore,
   EventCore,
   ExhibitCore,
-  StallCore,
-  SponsorCore,
-  MapData,
-  DataState,
+  ItemCore,
   ItemDetails,
+  MapData,
+  SponsorCore,
+  StallCore,
 } from "../types/data";
-import type { Item, Event, Exhibit, Stall, Sponsor } from "../types/common";
 import { events } from "./events";
 import { exhibits } from "./exhibits";
-import { stalls } from "./stalls";
 import { sponsors } from "./sponsors";
+import { stalls } from "./stalls";
 
 type StallDetails = ItemDetails & { products: string[] };
 type SponsorDetails = ItemDetails & { website?: string; contactEmail?: string };
@@ -22,38 +22,40 @@ type CachedDetails = ItemDetails | StallDetails | SponsorDetails;
 // Helper to create data state
 const createDataState = <T>(data: T): DataState<T> => ({
   data,
-  loading: false,
   error: null,
   lastUpdated: Date.now(),
+  loading: false,
 });
 
 // Helper to create loading state
 const createLoadingState = <T>(): DataState<T> => ({
   data: null,
-  loading: true,
   error: null,
   lastUpdated: Date.now(),
+  loading: true,
 });
 
 // Helper to split data into core and details
-const splitEventData = (event: Event): {
+const splitEventData = (
+  event: Event,
+): {
   core: EventCore;
   details: ItemDetails;
 } => ({
   core: {
-    id: event.id,
-    type: event.type,
-    title: event.title,
     date: event.date,
-    time: event.time,
-    location: event.location,
-    tags: event.tags,
-    imageUrl: event.imageUrl,
-    organizer: event.organizer,
+    dayAvailability: event.dayAvailability,
     duration: event.duration,
+    id: event.id,
+    imageUrl: event.imageUrl,
+    location: event.location,
+    organizer: event.organizer,
     showOnMap: event.showOnMap,
     showOnSchedule: event.showOnSchedule,
-    dayAvailability: event.dayAvailability,
+    tags: event.tags,
+    time: event.time,
+    title: event.title,
+    type: event.type,
   },
   details: {
     description: event.description,
@@ -61,18 +63,18 @@ const splitEventData = (event: Event): {
 });
 
 const splitExhibitData = (
-  exhibit: Exhibit
+  exhibit: Exhibit,
 ): { core: ExhibitCore; details: ItemDetails } => ({
   core: {
-    id: exhibit.id,
-    type: exhibit.type,
-    title: exhibit.title,
+    creator: exhibit.creator,
     date: exhibit.date,
-    time: exhibit.time,
+    id: exhibit.id,
+    imageUrl: exhibit.imageUrl,
     location: exhibit.location,
     tags: exhibit.tags,
-    imageUrl: exhibit.imageUrl,
-    creator: exhibit.creator,
+    time: exhibit.time,
+    title: exhibit.title,
+    type: exhibit.type,
   },
   details: {
     description: exhibit.description,
@@ -80,17 +82,17 @@ const splitExhibitData = (
 });
 
 const splitStallData = (
-  stall: Stall
+  stall: Stall,
 ): { core: StallCore; details: StallDetails } => ({
   core: {
-    id: stall.id,
-    type: stall.type,
-    title: stall.title,
     date: stall.date,
-    time: stall.time,
+    id: stall.id,
+    imageUrl: stall.imageUrl,
     location: stall.location,
     tags: stall.tags,
-    imageUrl: stall.imageUrl,
+    time: stall.time,
+    title: stall.title,
+    type: stall.type,
   },
   details: {
     description: stall.description,
@@ -99,22 +101,22 @@ const splitStallData = (
 });
 
 const splitSponsorData = (
-  sponsor: Sponsor
+  sponsor: Sponsor,
 ): { core: SponsorCore; details: SponsorDetails } => ({
   core: {
-    id: sponsor.id,
-    type: sponsor.type,
-    title: sponsor.title,
     date: sponsor.date,
-    time: sponsor.time,
+    id: sponsor.id,
+    imageUrl: sponsor.imageUrl,
     location: sponsor.location,
     tags: sponsor.tags,
-    imageUrl: sponsor.imageUrl,
+    time: sponsor.time,
+    title: sponsor.title,
+    type: sponsor.type,
   },
   details: {
+    contactEmail: sponsor.contactEmail,
     description: sponsor.description,
     website: sponsor.website,
-    contactEmail: sponsor.contactEmail,
   },
 });
 
@@ -125,57 +127,57 @@ class DataManager {
 
   constructor() {
     // Initialize core data immediately
-    const eventData = events.map(splitEventData);
-    const exhibitData = exhibits.map(splitExhibitData);
-    const stallData = stalls.map(splitStallData);
-    const sponsorData = sponsors.map(splitSponsorData);
+    const eventData = events.map((e) => splitEventData(e));
+    const exhibitData = exhibits.map((e) => splitExhibitData(e));
+    const stallData = stalls.map((s) => splitStallData(s));
+    const sponsorData = sponsors.map((s) => splitSponsorData(s));
 
     // Store details for later use
-    eventData.forEach(({ details }, index) => {
+    for (const [index, { details }] of eventData.entries()) {
       this.detailsCache.set(`event-${events[index].id}`, details);
-    });
-    exhibitData.forEach(({ details }, index) => {
+    }
+    for (const [index, { details }] of exhibitData.entries()) {
       this.detailsCache.set(`exhibit-${exhibits[index].id}`, details);
-    });
-    stallData.forEach(({ details }, index) => {
+    }
+    for (const [index, { details }] of stallData.entries()) {
       this.detailsCache.set(`stall-${stalls[index].id}`, details);
-    });
-    sponsorData.forEach(({ details }, index) => {
+    }
+    for (const [index, { details }] of sponsorData.entries()) {
       this.detailsCache.set(`sponsor-${sponsors[index].id}`, details);
-    });
-    events.forEach((event) => {
+    }
+    for (const event of events) {
       this.fullItemIndex.set(event.id, event);
-    });
-    exhibits.forEach((exhibit) => {
+    }
+    for (const exhibit of exhibits) {
       this.fullItemIndex.set(exhibit.id, exhibit);
-    });
-    stalls.forEach((stall) => {
+    }
+    for (const stall of stalls) {
       this.fullItemIndex.set(stall.id, stall);
-    });
-    sponsors.forEach((sponsor) => {
+    }
+    for (const sponsor of sponsors) {
       this.fullItemIndex.set(sponsor.id, sponsor);
-    });
+    }
 
     this.store = {
-      // Core data (loaded immediately)
-      events: createDataState(eventData.map((d) => d.core)),
-      exhibits: createDataState(exhibitData.map((d) => d.core)),
-      stalls: createDataState(stallData.map((d) => d.core)),
-      sponsors: createDataState(sponsorData.map((d) => d.core)),
-
-      // Detailed data (loaded on-demand)
-      eventDetails: {},
-      exhibitDetails: {},
-      stallDetails: {},
-      sponsorDetails: {},
-
-      // Map data
-      mapData: createDataState<MapData | null>(null),
-
       // User data (loaded from localStorage)
       bookmarks: this.loadBookmarks(),
-      searchHistory: this.loadSearchHistory(),
+      // Detailed data (loaded on-demand)
+      eventDetails: {},
+      // Core data (loaded immediately)
+      events: createDataState(eventData.map((d) => d.core)),
+      exhibitDetails: {},
+
+      exhibits: createDataState(exhibitData.map((d) => d.core)),
+      // Map data
+      mapData: createDataState<MapData | null>(null),
       preferences: this.loadPreferences(),
+      searchHistory: this.loadSearchHistory(),
+
+      sponsorDetails: {},
+
+      sponsors: createDataState(sponsorData.map((d) => d.core)),
+      stallDetails: {},
+      stalls: createDataState(stallData.map((d) => d.core)),
     };
   }
 
@@ -224,8 +226,7 @@ class DataManager {
         ? { description: details.description }
         : { description: "" };
 
-    this.store.eventDetails[id] =
-      createDataState<ItemDetails>(eventDetails);
+    this.store.eventDetails[id] = createDataState<ItemDetails>(eventDetails);
 
     return eventDetails;
   }
@@ -278,8 +279,7 @@ class DataManager {
       products,
     };
 
-    this.store.stallDetails[id] =
-      createDataState<ItemDetails>(stallDetails);
+    this.store.stallDetails[id] = createDataState<ItemDetails>(stallDetails);
 
     return stallDetails;
   }
@@ -290,9 +290,9 @@ class DataManager {
     if (cachedState) {
       const cachedDetails = cachedState as Partial<SponsorDetails>;
       return {
+        contactEmail: cachedDetails.contactEmail,
         description: cachedState.description,
         website: cachedDetails.website,
-        contactEmail: cachedDetails.contactEmail,
       };
     }
 
@@ -303,9 +303,9 @@ class DataManager {
       | Partial<SponsorDetails>
       | undefined;
     const sponsorDetails: SponsorDetails = {
+      contactEmail: details?.contactEmail,
       description: details?.description ?? "",
       website: details?.website,
-      contactEmail: details?.contactEmail,
     };
 
     this.store.sponsorDetails[id] =
@@ -330,15 +330,16 @@ class DataManager {
       return (
         item.title.toLowerCase().includes(normalizedQuery) ||
         item.tags.some((tag: string) =>
-          tag.toLowerCase().includes(normalizedQuery)
+          tag.toLowerCase().includes(normalizedQuery),
         ) ||
         item.location.toLowerCase().includes(normalizedQuery)
       );
     });
 
-    return matchedCores
+    const full = matchedCores
       .map((core) => this.fullItemIndex.get(core.id))
-      .filter((item): item is Item => Boolean(item));
+      .filter((item): item is Item => item !== undefined);
+    return full;
   }
 
   filterByTags(tags: string[]): ItemCore[] {
@@ -346,7 +347,7 @@ class DataManager {
 
     const allItems = this.getAllCoreItems();
     return allItems.filter((item) =>
-      tags.every((tag) => item.tags.includes(tag))
+      tags.every((tag) => item.tags.includes(tag)),
     );
   }
 
@@ -369,7 +370,7 @@ class DataManager {
 
   removeBookmark(id: string): void {
     this.store.bookmarks = this.store.bookmarks.filter(
-      (bookmarkId: string) => bookmarkId !== id
+      (bookmarkId: string) => bookmarkId !== id,
     );
     this.saveBookmarks();
   }
@@ -396,7 +397,7 @@ class DataManager {
       ].slice(0, 10); // Keep only last 10
       localStorage.setItem(
         "searchHistory",
-        JSON.stringify(this.store.searchHistory)
+        JSON.stringify(this.store.searchHistory),
       );
     }
   }
@@ -444,35 +445,36 @@ class DataManager {
   getAllTags(): string[] {
     const allItems = this.getAllCoreItems();
     const tagSet = new Set<string>();
-    allItems.forEach((item) => {
-      item.tags.forEach((tag) => tagSet.add(tag));
-    });
-    return Array.from(tagSet);
+    for (const item of allItems) {
+      for (const tag of item.tags) tagSet.add(tag);
+    }
+    return [...tagSet];
   }
 
   getTagCounts(): Record<string, number> {
     const allItems = this.getAllCoreItems();
     const counts: Record<string, number> = {};
-    allItems.forEach((item) => {
-      item.tags.forEach((tag) => {
+    for (const item of allItems) {
+      for (const tag of item.tags) {
         counts[tag] = (counts[tag] || 0) + 1;
-      });
-    });
+      }
+    }
     return counts;
   }
 
   getPopularTags(limit: number): string[] {
     const counts = this.getTagCounts();
     return Object.entries(counts)
-      .sort(([, a], [, b]) => b - a)
+      .sort(([, a], [, b]) => (b as number) - (a as number))
       .slice(0, limit)
       .map(([tag]) => tag);
   }
 
   getFullItemsByIds(ids: string[]): Item[] {
-    return ids
+    const items = ids
       .map((id) => this.fullItemIndex.get(id))
-      .filter((item): item is Item => Boolean(item));
+      .filter((item): item is Item => item !== undefined);
+    return items;
   }
 
   getItemsByIds(ids: string[]): ItemCore[] {

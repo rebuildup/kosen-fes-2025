@@ -13,10 +13,10 @@ interface VerticalButtonsProps {
 }
 
 const VerticalButtons = ({
-  options,
   activeValue,
-  onChange,
   className = "",
+  onChange,
+  options,
 }: VerticalButtonsProps) => {
   return (
     <div className={`flex flex-col gap-1 ${className}`}>
@@ -24,30 +24,25 @@ const VerticalButtons = ({
         <button
           key={option.value}
           onClick={() => onChange(option.value)}
-          className={`
-            group relative px-3 py-2 rounded-lg font-medium 
-            transition-all duration-200 flex items-center justify-center gap-2
-            overflow-hidden
-            ${
-              activeValue === option.value
-                ? "text-white shadow-md"
-                : "hover:shadow-sm"
-            }
-          `}
+          className={`group relative flex items-center justify-center gap-2 overflow-hidden rounded-lg px-3 py-2 font-medium transition-all duration-200 ${
+            activeValue === option.value
+              ? "text-white shadow-md"
+              : "hover:shadow-sm"
+          } `}
           style={{
             backgroundColor:
               activeValue === option.value
                 ? "var(--color-accent)"
                 : "var(--color-bg-secondary)",
-            color:
-              activeValue === option.value
-                ? "white"
-                : "var(--color-text-primary)",
             border: `1px solid ${
               activeValue === option.value
                 ? "var(--color-accent)"
                 : "var(--color-border-primary)"
             }`,
+            color:
+              activeValue === option.value
+                ? "white"
+                : "var(--color-text-primary)",
           }}
           aria-label={option.ariaLabel || option.label}
           title={option.ariaLabel || option.label}
@@ -55,7 +50,7 @@ const VerticalButtons = ({
           {/* Animated underline for non-active buttons */}
           {activeValue !== option.value && (
             <div
-              className="absolute bottom-0 left-0 h-0.5 w-0 group-hover:w-full transition-all duration-300 ease-out"
+              className="absolute bottom-0 left-0 h-0.5 w-0 transition-all duration-300 ease-out group-hover:w-full"
               style={{ backgroundColor: "var(--color-accent)" }}
             />
           )}

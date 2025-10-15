@@ -1,9 +1,10 @@
-import { useMemo, useState, useEffect } from "react";
 import { MonitorX } from "lucide-react";
-import { Item } from "../../types/common";
-import UnifiedCard from "../../shared/components/ui/UnifiedCard";
+import { useEffect, useMemo, useState } from "react";
+
 import { useLanguage } from "../../context/LanguageContext";
 import LoadingIndicator from "../../shared/components/feedback/LoadingIndicator";
+import UnifiedCard from "../../shared/components/ui/UnifiedCard";
+import type { Item } from "../../types/common";
 
 // Update the filterType prop type
 interface CardGridProps {
@@ -21,17 +22,17 @@ interface CardGridProps {
 }
 
 const CardGrid = ({
-  items,
-  variant = "default",
-  showTags = false,
-  showDescription = false,
-  emptyMessage,
-  onCardClick,
-  highlightText,
   className = "",
   columns,
+  emptyMessage,
   filterType = "all",
+  highlightText,
   isLoading = false,
+  items,
+  onCardClick,
+  showDescription = false,
+  showTags = false,
+  variant = "default",
 }: CardGridProps) => {
   const { t } = useLanguage();
 
@@ -39,7 +40,7 @@ const CardGrid = ({
   const [animationKey, setAnimationKey] = useState(0);
   const [prevItemsHash, setPrevItemsHash] = useState<string>("");
   const [animationType, setAnimationType] = useState<"variant" | "content">(
-    "variant"
+    "variant",
   );
 
   // Filter items by type if specified
@@ -77,14 +78,18 @@ const CardGrid = ({
   // Get default empty message based on filter type
   const getDefaultEmptyMessage = () => {
     switch (filterType) {
-      case "event":
+      case "event": {
         return t("events.noEvents");
-      case "exhibit":
+      }
+      case "exhibit": {
         return t("exhibits.noExhibits");
-      case "stall":
+      }
+      case "stall": {
         return t("exhibits.noStalls");
-      default:
+      }
+      default: {
         return t("common.noItems");
+      }
     }
   };
 
@@ -98,14 +103,18 @@ const CardGrid = ({
   // Get grid classes based on variant
   const getGridClasses = () => {
     switch (variant) {
-      case "compact":
+      case "compact": {
         return "grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3";
-      case "list":
+      }
+      case "list": {
         return "space-y-4";
-      case "grid":
+      }
+      case "grid": {
         return "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6";
-      default:
+      }
+      default: {
         return "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6";
+      }
     }
   };
 
@@ -122,8 +131,8 @@ const CardGrid = ({
   if (filteredItems.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-16 text-center">
-        <div className="text-gray-400 dark:text-gray-500 mb-4">
-          <MonitorX className="w-16 h-16 mx-auto" />
+        <div className="mb-4 text-gray-400 dark:text-gray-500">
+          <MonitorX className="mx-auto h-16 w-16" />
         </div>
         <p className="text-lg text-gray-600 dark:text-gray-400">
           {emptyMessage || getDefaultEmptyMessage()}

@@ -1,4 +1,4 @@
-import { useRef, useState, useCallback, useEffect } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 interface Point {
   x: number;
@@ -21,12 +21,12 @@ interface UseSimpleMapZoomPanOptions {
 }
 
 export const useSimpleMapZoomPan = ({
-  width,
   height,
-  minScale = 0.1,
-  maxScale = 10,
   initialScale = 1,
+  maxScale = 10,
+  minScale = 0.1,
   onTransformChange,
+  width,
 }: UseSimpleMapZoomPanOptions) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
@@ -81,11 +81,11 @@ export const useSimpleMapZoomPan = ({
 
       constrainedTransform.translateX = Math.max(
         minTranslateX,
-        Math.min(maxTranslateX, constrainedTransform.translateX)
+        Math.min(maxTranslateX, constrainedTransform.translateX),
       );
       constrainedTransform.translateY = Math.max(
         minTranslateY,
-        Math.min(maxTranslateY, constrainedTransform.translateY)
+        Math.min(maxTranslateY, constrainedTransform.translateY),
       );
 
       const transformString = `translate(${constrainedTransform.translateX}px, ${constrainedTransform.translateY}px) scale(${constrainedTransform.scale})`;
@@ -100,7 +100,7 @@ export const useSimpleMapZoomPan = ({
       setTransform(constrainedTransform);
       onTransformChange?.(constrainedTransform);
     },
-    [minScale, maxScale, onTransformChange, width, height]
+    [minScale, maxScale, onTransformChange, width, height],
   );
 
   // ズームイン
@@ -155,7 +155,7 @@ export const useSimpleMapZoomPan = ({
         translateY: centerY - point.y * targetScale,
       });
     },
-    [minScale, maxScale, applyTransform]
+    [minScale, maxScale, applyTransform],
   );
 
   // 画面座標からSVG座標への変換
@@ -174,7 +174,7 @@ export const useSimpleMapZoomPan = ({
         y: Math.max(0, Math.min(height, y)),
       };
     },
-    [transform, width, height]
+    [transform, width, height],
   );
 
   // タッチポイント間の距離を計算
@@ -182,7 +182,7 @@ export const useSimpleMapZoomPan = ({
     if (touches.length < 2) return 0;
     const dx = touches[0].clientX - touches[1].clientX;
     const dy = touches[0].clientY - touches[1].clientY;
-    return Math.sqrt(dx * dx + dy * dy);
+    return Math.hypot(dx, dy);
   }, []);
 
   // タッチポイントの中心点を計算
@@ -220,7 +220,7 @@ export const useSimpleMapZoomPan = ({
 
       setLastMousePos({ x: e.clientX, y: e.clientY });
     },
-    [isDragging, lastMousePos, transform, applyTransform]
+    [isDragging, lastMousePos, transform, applyTransform],
   );
 
   const handleMouseUp = useCallback(() => {
@@ -253,7 +253,7 @@ export const useSimpleMapZoomPan = ({
         setLastTouchCenter(center);
       }
     },
-    [getTouchDistance, getTouchCenter]
+    [getTouchDistance, getTouchCenter],
   );
 
   const handleTouchMove = useCallback(
@@ -307,7 +307,7 @@ export const useSimpleMapZoomPan = ({
       } else if (e.touches.length === 2) {
         // マルチタッチ：ピンチズーム
         const distance = getTouchDistance(
-          e.touches as unknown as React.TouchList
+          e.touches as unknown as React.TouchList,
         );
         const center = getTouchCenter(e.touches as unknown as React.TouchList);
 
@@ -315,7 +315,7 @@ export const useSimpleMapZoomPan = ({
           const scaleFactor = distance / lastTouchDistance;
           const newScale = Math.max(
             minScale,
-            Math.min(maxScale, transform.scale * scaleFactor)
+            Math.min(maxScale, transform.scale * scaleFactor),
           );
 
           if (newScale !== transform.scale && containerRef.current) {
@@ -349,7 +349,7 @@ export const useSimpleMapZoomPan = ({
       getTouchCenter,
       minScale,
       maxScale,
-    ]
+    ],
   );
 
   const handleTouchEnd = useCallback((e: TouchEvent) => {
@@ -436,7 +436,7 @@ export const useSimpleMapZoomPan = ({
       const scaleFactor = e.deltaY > 0 ? 0.9 : 1.1;
       const newScale = Math.max(
         minScale,
-        Math.min(maxScale, transform.scale * scaleFactor)
+        Math.min(maxScale, transform.scale * scaleFactor),
       );
 
       if (newScale === transform.scale) return;
@@ -449,7 +449,7 @@ export const useSimpleMapZoomPan = ({
         translateY: mouseY - (mouseY - transform.translateY) * scaleRatio,
       });
     },
-    [transform, minScale, maxScale, applyTransform]
+    [transform, minScale, maxScale, applyTransform],
   );
 
   // イベントリスナーの設定
@@ -462,7 +462,9 @@ export const useSimpleMapZoomPan = ({
     document.addEventListener("mouseup", handleMouseUp);
 
     // タッチイベント (attach to container only to prevent interference)
-    container.addEventListener("touchmove", handleTouchMove, { passive: false });
+    container.addEventListener("touchmove", handleTouchMove, {
+      passive: false,
+    });
     container.addEventListener("touchend", handleTouchEnd, { passive: false });
 
     // ホイールイベント
@@ -494,14 +496,14 @@ export const useSimpleMapZoomPan = ({
   return {
     containerRef,
     contentRef,
-    transform,
-    isDragging,
-    zoomIn,
-    zoomOut,
-    resetTransform,
-    zoomToPoint,
-    screenToSVG,
     handleMouseDown,
     handleTouchStart,
+    isDragging,
+    resetTransform,
+    screenToSVG,
+    transform,
+    zoomIn,
+    zoomOut,
+    zoomToPoint,
   };
 };

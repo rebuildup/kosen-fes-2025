@@ -4,7 +4,7 @@ interface LanguageIconProps {
 }
 
 // JP (Japanese) text icon
-export const JPIcon = ({ size = 16, className }: LanguageIconProps) => (
+export const JPIcon = ({ className, size = 16 }: LanguageIconProps) => (
   <svg
     width={size}
     height={size}
@@ -27,7 +27,7 @@ export const JPIcon = ({ size = 16, className }: LanguageIconProps) => (
 );
 
 // EN (English) text icon
-export const ENIcon = ({ size = 16, className }: LanguageIconProps) => (
+export const ENIcon = ({ className, size = 16 }: LanguageIconProps) => (
   <svg
     width={size}
     height={size}

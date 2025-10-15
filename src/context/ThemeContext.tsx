@@ -1,11 +1,6 @@
 /* eslint-disable react-refresh/only-export-components */
-import {
-  createContext,
-  useContext,
-  useState,
-  useEffect,
-  ReactNode,
-} from "react";
+import type { ReactNode } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 
 type Theme = "light" | "dark";
 
@@ -16,9 +11,9 @@ interface ThemeContextType {
 }
 
 const ThemeContext = createContext<ThemeContextType>({
+  isDark: false,
   theme: "light",
   toggleTheme: () => {},
-  isDark: false,
 });
 
 export const useTheme = () => useContext(ThemeContext);
@@ -37,7 +32,7 @@ export const ThemeProvider = ({ children }: ThemeProviderProps) => {
     }
 
     // システム設定を確認
-    if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+    if (globalThis.matchMedia("(prefers-color-scheme: dark)").matches) {
       return "dark";
     }
 
@@ -61,14 +56,10 @@ export const ThemeProvider = ({ children }: ThemeProviderProps) => {
     console.log(`Applying theme: ${theme}`);
 
     // data-theme属性を設定
-    root.setAttribute("data-theme", theme);
+    root.dataset.theme = theme;
 
     // Tailwind CSS v4のdarkクラスも設定
-    if (theme === "dark") {
-      root.classList.add("dark");
-    } else {
-      root.classList.remove("dark");
-    }
+    root.classList.toggle("dark", theme === "dark");
 
     // color-schemeプロパティを設定（スクロールバーなどのブラウザコンポーネント用）
     root.style.colorScheme = theme;
@@ -77,15 +68,15 @@ export const ThemeProvider = ({ children }: ThemeProviderProps) => {
     const computedStyles = getComputedStyle(root);
     console.log("Current CSS variables:", {
       bgColor: computedStyles.getPropertyValue("--color-bg"),
+      bgPrimary: computedStyles.getPropertyValue("--color-bg-primary"),
       mainColor: computedStyles.getPropertyValue("--color-main"),
       textPrimary: computedStyles.getPropertyValue("--color-text-primary"),
-      bgPrimary: computedStyles.getPropertyValue("--color-bg-primary"),
     });
   }, [theme]);
 
   // システム設定の変更を監視
   useEffect(() => {
-    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    const mediaQuery = globalThis.matchMedia("(prefers-color-scheme: dark)");
 
     const handleChange = (event: MediaQueryListEvent) => {
       // ローカルストレージに保存されたテーマがない場合のみシステム設定に従う
@@ -100,7 +91,7 @@ export const ThemeProvider = ({ children }: ThemeProviderProps) => {
   }, []);
 
   return (
-    <ThemeContext.Provider value={{ theme, toggleTheme, isDark }}>
+    <ThemeContext.Provider value={{ isDark, theme, toggleTheme }}>
       {children}
     </ThemeContext.Provider>
   );

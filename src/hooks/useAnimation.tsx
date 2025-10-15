@@ -1,16 +1,17 @@
-import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
+import { useEffect, useRef } from "react";
+
 import {
+  cardHoverEffect,
   DURATION,
   EASE,
-  cardHoverEffect,
   staggerFadeIn,
 } from "../utils/animations";
 
 // Hook for applying animation to an element on mount
 export const useAnimateOnMount = (
   animation: "fadeIn" | "slideUp" | "slideRight" = "fadeIn",
-  delay = 0
+  delay = 0,
 ) => {
   const elementRef = useRef<HTMLDivElement>(null);
 
@@ -20,48 +21,44 @@ export const useAnimateOnMount = (
     const element = elementRef.current;
     let tl: gsap.core.Timeline;
 
-    switch (animation) {
-      case "slideUp":
-        tl = gsap.timeline();
-        tl.fromTo(
-          element,
-          { y: 30, autoAlpha: 0 },
-          {
-            y: 0,
-            autoAlpha: 1,
-            duration: DURATION.NORMAL,
-            delay,
-            ease: EASE.SMOOTH,
-          }
-        );
-        break;
-      case "slideRight":
-        tl = gsap.timeline();
-        tl.fromTo(
-          element,
-          { x: -30, autoAlpha: 0 },
-          {
-            x: 0,
-            autoAlpha: 1,
-            duration: DURATION.NORMAL,
-            delay,
-            ease: EASE.SMOOTH,
-          }
-        );
-        break;
-      case "fadeIn":
-      default:
-        tl = gsap.timeline();
-        tl.fromTo(
-          element,
-          { autoAlpha: 0 },
-          {
-            autoAlpha: 1,
-            duration: DURATION.NORMAL,
-            delay,
-            ease: EASE.SMOOTH,
-          }
-        );
+    if (animation === "slideUp") {
+      tl = gsap.timeline();
+      tl.fromTo(
+        element,
+        { autoAlpha: 0, y: 30 },
+        {
+          autoAlpha: 1,
+          delay,
+          duration: DURATION.NORMAL,
+          ease: EASE.SMOOTH,
+          y: 0,
+        },
+      );
+    } else if (animation === "slideRight") {
+      tl = gsap.timeline();
+      tl.fromTo(
+        element,
+        { autoAlpha: 0, x: -30 },
+        {
+          autoAlpha: 1,
+          delay,
+          duration: DURATION.NORMAL,
+          ease: EASE.SMOOTH,
+          x: 0,
+        },
+      );
+    } else {
+      tl = gsap.timeline();
+      tl.fromTo(
+        element,
+        { autoAlpha: 0 },
+        {
+          autoAlpha: 1,
+          delay,
+          duration: DURATION.NORMAL,
+          ease: EASE.SMOOTH,
+        },
+      );
     }
 
     return () => {
@@ -82,9 +79,9 @@ export const useStaggerAnimation = (shouldAnimate = true) => {
     const container = containerRef.current;
     const items = container.children;
     const animation = staggerFadeIn(
-      Array.from(items) as HTMLElement[],
+      [...items] as HTMLElement[],
       0.1,
-      DURATION.NORMAL
+      DURATION.NORMAL,
     );
 
     return () => {
@@ -139,21 +136,21 @@ export const useHeaderAnimation = (threshold = 50) => {
 
       if (scrollY > threshold) {
         gsap.to(header, {
-          boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
-          background: "var(--header-bg)",
           backdropFilter: "blur(10px)",
-          height: "55px",
+          background: "var(--header-bg)",
+          boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
           duration: DURATION.FAST,
           ease: EASE.SMOOTH,
+          height: "55px",
         });
       } else {
         gsap.to(header, {
-          boxShadow: "none",
-          background: "var(--header-bg)",
           backdropFilter: "blur(0px)",
-          height: "60px",
+          background: "var(--header-bg)",
+          boxShadow: "none",
           duration: DURATION.FAST,
           ease: EASE.SMOOTH,
+          height: "60px",
         });
       }
     };

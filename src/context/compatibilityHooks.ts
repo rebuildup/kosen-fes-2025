@@ -3,40 +3,48 @@ import { useData } from "./DataContext";
 
 // Adapter for useSearch hook
 export const useSearchCompat = () => {
-  const { searchItems, addToSearchHistory, searchHistory } = useData();
+  const { addToSearchHistory, searchHistory, searchItems } = useData();
 
   type SearchResults = ReturnType<typeof searchItems>;
   const emptyResults: SearchResults = [];
 
   return {
-    searchQuery: "",
-    setSearchQuery: () => {},
-    searchResults: emptyResults,
+    clearSearch: () => {},
+    isSearching: false,
     performSearch: (query: string): SearchResults => {
       addToSearchHistory(query);
       return searchItems(query);
     },
-    isSearching: false,
-    clearSearch: () => {},
-    searchHistory,
     recentSearches: searchHistory.slice(0, 5),
+    searchHistory,
+    searchQuery: "",
+    searchResults: emptyResults,
+    setSearchQuery: () => {},
   };
 };
 
 // Adapter for useBookmark hook
 export const useBookmarkCompat = () => {
   const {
-    bookmarks,
     addBookmark,
-    removeBookmark,
-    isBookmarked,
+    bookmarks,
     getBookmarkedItems,
+    isBookmarked,
+    removeBookmark,
   } = useData();
 
   return {
-    bookmarks,
-    bookmarkedItems: getBookmarkedItems(),
     addBookmark,
+    bookmarkedItems: getBookmarkedItems(),
+    bookmarks,
+    clearAllBookmarks: () => {
+      for (const id of bookmarks) removeBookmark(id);
+    },
+    getBookmarkCount: () => bookmarks.length,
+    getBookmarkedItemsByType: (type: string) => {
+      return getBookmarkedItems().filter((item) => item.type === type);
+    },
+    isBookmarked,
     removeBookmark,
     toggleBookmark: (id: string) => {
       if (isBookmarked(id)) {
@@ -45,14 +53,6 @@ export const useBookmarkCompat = () => {
         addBookmark(id);
       }
     },
-    isBookmarked,
-    clearAllBookmarks: () => {
-      bookmarks.forEach((id) => removeBookmark(id));
-    },
-    getBookmarkedItemsByType: (type: string) => {
-      return getBookmarkedItems().filter((item) => item.type === type);
-    },
-    getBookmarkCount: () => bookmarks.length,
   };
 };
 
@@ -64,29 +64,27 @@ export const useTagCompat = () => {
   let selectedTags: string[] = [];
 
   return {
-    tags: getAllTags(),
-    popularTags: getPopularTags(),
-    selectedTags,
-    tagCounts: getTagCounts(),
-    toggleTag: (tag: string) => {
-      if (selectedTags.includes(tag)) {
-        selectedTags = selectedTags.filter((t) => t !== tag);
-      } else {
-        selectedTags = [...selectedTags, tag];
-      }
-    },
-    selectTag: (tag: string) => {
-      selectedTags = [tag];
-    },
     clearTags: () => {
       selectedTags = [];
     },
-    isTagSelected: (tag: string) => selectedTags.includes(tag),
     filterItemsByTags: <T extends { tags: string[] }>(items: T[]): T[] => {
       if (selectedTags.length === 0) return items;
       return items.filter((item) =>
-        selectedTags.some((tag) => item.tags.includes(tag))
+        selectedTags.some((tag) => item.tags.includes(tag)),
       );
+    },
+    isTagSelected: (tag: string) => selectedTags.includes(tag),
+    popularTags: getPopularTags(),
+    selectedTags,
+    selectTag: (tag: string) => {
+      selectedTags = [tag];
+    },
+    tagCounts: getTagCounts(),
+    tags: getAllTags(),
+    toggleTag: (tag: string) => {
+      selectedTags = selectedTags.includes(tag)
+        ? selectedTags.filter((t) => t !== tag)
+        : [...selectedTags, tag];
     },
   };
 };

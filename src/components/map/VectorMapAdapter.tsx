@@ -1,9 +1,10 @@
 import React, { useMemo } from "react";
-import VectorMap from "./VectorMap";
+
 import { events } from "../../data/events";
-import { stalls } from "../../data/stalls";
 import { exhibits } from "../../data/exhibits";
-import { Item } from "../../types/common";
+import { stalls } from "../../data/stalls";
+import type { Item } from "../../types/common";
+import VectorMap from "./VectorMap";
 
 interface Coordinate {
   x: number;
@@ -18,10 +19,12 @@ interface LocationMarker {
   isHovered?: boolean;
 }
 
+type PointType = "event" | "exhibit" | "stall" | "location";
+
 interface ContentItem {
   id: string;
   title: string;
-  type: string;
+  type: PointType;
   coordinates: Coordinate;
   isSelected?: boolean;
   isHovered?: boolean;
@@ -55,21 +58,23 @@ interface VectorMapAdapterProps {
   minZoom?: number;
 }
 
+const NOOP = () => {};
+
 const VectorMapAdapter: React.FC<VectorMapAdapterProps> = ({
-  mode = "display",
-  height = "400px",
+  allowCoordinateSelection = false,
   className = "",
-  markers = [],
   contentItems = [],
+  height = "400px",
   highlightCoordinate,
+  markers = [],
+  // initialZoom = 1,
+  maxZoom = 10,
+  minZoom = 0.1,
+  mode = "display",
   onCoordinateSelect,
   onLocationHover,
   onLocationSelect,
   showZoomControls = true,
-  allowCoordinateSelection = false,
-  // initialZoom = 1,
-  maxZoom = 10,
-  minZoom = 0.1,
 }) => {
   // 全てのコンテンツデータを取得
   const allContentData = useMemo(() => {
@@ -83,7 +88,7 @@ const VectorMapAdapter: React.FC<VectorMapAdapterProps> = ({
       id: string;
       coordinates: Coordinate;
       title: string;
-      type: "event" | "exhibit" | "stall" | "location";
+      type: PointType;
       isSelected?: boolean;
       isHovered?: boolean;
       contentItem?: Item;
@@ -94,20 +99,18 @@ const VectorMapAdapter: React.FC<VectorMapAdapterProps> = ({
     }> = [];
 
     // 従来のcontentItemsを変換（互換性のため）
-    contentItems.forEach((item) => {
+    for (const item of contentItems) {
       // 実際のコンテンツデータを検索
-      const actualContentItem = allContentData.find(
-        (content) => content.id === item.id
-      );
+      const actualContentItem = allContentData.find((content) => {
+        return content.id === item.id;
+      });
 
       points.push({
-        id: item.id,
-        coordinates: item.coordinates,
-        title: item.title,
-        type: item.type as "event" | "exhibit" | "stall" | "location",
-        isSelected: item.isSelected,
-        isHovered: item.isHovered,
         contentItem: actualContentItem || item.contentItem,
+        coordinates: item.coordinates,
+        id: item.id,
+        isHovered: item.isHovered,
+        isSelected: item.isSelected,
         onClick: () => {
           if (onCoordinateSelect) {
             onCoordinateSelect(item.coordinates);
@@ -116,21 +119,21 @@ const VectorMapAdapter: React.FC<VectorMapAdapterProps> = ({
         onHover: () => {
           // ホバー処理（将来の拡張用）
         },
+        title: item.title,
+        type: item.type,
       });
-    });
+    }
 
     // データから直接すべてのコンテンツポイントを作成（座標がある場合）
-    allContentData.forEach((contentItem) => {
-      if (
-        contentItem.coordinates &&
-        !contentItems.find((item) => item.id === contentItem.id)
-      ) {
+    for (const contentItem of allContentData) {
+      const alreadyIncluded = contentItems.some(
+        (ci) => ci.id === contentItem.id,
+      );
+      if (contentItem.coordinates && !alreadyIncluded) {
         points.push({
-          id: contentItem.id,
-          coordinates: contentItem.coordinates,
-          title: contentItem.title,
-          type: contentItem.type as "event" | "exhibit" | "stall" | "location",
           contentItem: contentItem,
+          coordinates: contentItem.coordinates,
+          id: contentItem.id,
           onClick: () => {
             if (onCoordinateSelect && contentItem.coordinates) {
               onCoordinateSelect(contentItem.coordinates);
@@ -139,21 +142,20 @@ const VectorMapAdapter: React.FC<VectorMapAdapterProps> = ({
           onHover: () => {
             // ホバー処理（将来の拡張用）
           },
+          title: contentItem.title,
+          type: contentItem.type as PointType,
         });
       }
-    });
+    }
 
     // 位置マーカーを変換
-    markers.forEach((marker) => {
+    for (const marker of markers) {
       points.push({
-        id: marker.id,
-        coordinates: marker.coordinates,
-        title: marker.location,
-        type: "location" as const,
-        isSelected: marker.isSelected,
-        isHovered: marker.isHovered,
         color: marker.isSelected ? "#405de6" : "#0066cc",
-        size: 12,
+        coordinates: marker.coordinates,
+        id: marker.id,
+        isHovered: marker.isHovered,
+        isSelected: marker.isSelected,
         onClick: () => {
           if (onLocationSelect) {
             onLocationSelect(marker.location);
@@ -164,8 +166,11 @@ const VectorMapAdapter: React.FC<VectorMapAdapterProps> = ({
             onLocationHover(hovered ? marker.location : null);
           }
         },
+        size: 12,
+        title: marker.location,
+        type: "location",
       });
-    });
+    }
 
     return points;
   };
@@ -176,14 +181,6 @@ const VectorMapAdapter: React.FC<VectorMapAdapterProps> = ({
     }
   };
 
-  const handlePointClick = () => {
-    // ポイントクリック処理は個別のonClick関数で処理される
-  };
-
-  const handlePointHover = () => {
-    // ポイントホバー処理は個別のonHover関数で処理される
-  };
-
   return (
     <VectorMap
       mode={mode}
@@ -191,8 +188,8 @@ const VectorMapAdapter: React.FC<VectorMapAdapterProps> = ({
       className={className}
       points={convertToInteractivePoints()}
       highlightPoint={highlightCoordinate}
-      onPointClick={handlePointClick}
-      onPointHover={handlePointHover}
+      onPointClick={NOOP}
+      onPointHover={NOOP}
       onMapClick={handleMapClick}
       showControls={showZoomControls}
       maxZoom={maxZoom}

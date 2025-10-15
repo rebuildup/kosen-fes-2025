@@ -1,8 +1,9 @@
 import { useEffect } from "react";
-import { useLanguage } from "../context/LanguageContext";
-import { useBookmark } from "../context/BookmarkContext";
-import BookmarksList from "../components/bookmarks/BookmarksList";
 import { Link } from "react-router-dom";
+
+import BookmarksList from "../components/bookmarks/BookmarksList";
+import { useBookmark } from "../context/BookmarkContext";
+import { useLanguage } from "../context/LanguageContext";
 
 const Bookmarks = () => {
   const { t } = useLanguage();
@@ -11,7 +12,7 @@ const Bookmarks = () => {
   // Set page title
   useEffect(() => {
     document.title = `${t("bookmarks.title")} (${getBookmarkCount()}) | ${t(
-      "siteName"
+      "siteName",
     )}`;
 
     // Restore original title when component unmounts
@@ -26,14 +27,14 @@ const Bookmarks = () => {
         className="section"
         style={{ backgroundColor: "var(--color-bg-primary)" }}
       >
-        <div className="max-w-7xl mx-auto">
+        <div className="mx-auto max-w-7xl">
           <h1 className="section-title">{t("bookmarks.title")}</h1>
           <p className="section-subtitle">{t("bookmarks.description")}</p>
 
           {getBookmarkCount() === 0 ? (
-            <div className="text-center py-12">
+            <div className="py-12 text-center">
               <p
-                className="text-lg mb-6"
+                className="mb-6 text-lg"
                 style={{ color: "var(--color-text-secondary)" }}
               >
                 {t("bookmarks.empty")}

@@ -151,27 +151,47 @@
   }
 
   body {
-    font-family: "adobe-garamond-pro", "noto-sans-cjk-jp",
-      "Hiragino Kaku Gothic ProN", "Hiragino Sans", -apple-system,
-      BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell",
-      "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+    font-family:
+      "adobe-garamond-pro",
+      "noto-sans-cjk-jp",
+      "Hiragino Kaku Gothic ProN",
+      "Hiragino Sans",
+      -apple-system,
+      BlinkMacSystemFont,
+      "Segoe UI",
+      "Roboto",
+      "Oxygen",
+      "Ubuntu",
+      "Cantarell",
+      "Fira Sans",
+      "Droid Sans",
+      "Helvetica Neue",
+      sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     line-height: 1.6;
     background-color: var(--bg-primary);
     color: var(--text-primary);
-    transition: background-color 0.3s ease, color 0.3s ease;
+    transition:
+      background-color 0.3s ease,
+      color 0.3s ease;
   }
 
   /* Adobeフォント追加設定 */
   .font-serif {
-    font-family: "adobe-garamond-pro", "Hiragino Mincho ProN",
-      "Hiragino Mincho Pro", serif;
+    font-family:
+      "adobe-garamond-pro", "Hiragino Mincho ProN", "Hiragino Mincho Pro", serif;
   }
 
   .font-sans {
-    font-family: "noto-sans-cjk-jp", "Hiragino Kaku Gothic ProN",
-      "Hiragino Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-family:
+      "noto-sans-cjk-jp",
+      "Hiragino Kaku Gothic ProN",
+      "Hiragino Sans",
+      -apple-system,
+      BlinkMacSystemFont,
+      "Segoe UI",
+      sans-serif;
   }
 
   h1,
@@ -180,8 +200,9 @@
   h4,
   h5,
   h6 {
-    font-family: "adobe-garamond-pro", "noto-sans-cjk-jp",
-      "Hiragino Kaku Gothic ProN", "Hiragino Sans", sans-serif;
+    font-family:
+      "adobe-garamond-pro", "noto-sans-cjk-jp", "Hiragino Kaku Gothic ProN",
+      "Hiragino Sans", sans-serif;
     font-weight: 500;
     letter-spacing: -0.025em;
   }
@@ -204,8 +225,12 @@
   .wf-loading h4,
   .wf-loading h5,
   .wf-loading h6 {
-    font-family: "Hiragino Kaku Gothic ProN", "Hiragino Sans", -apple-system,
-      BlinkMacSystemFont, sans-serif;
+    font-family:
+      "Hiragino Kaku Gothic ProN",
+      "Hiragino Sans",
+      -apple-system,
+      BlinkMacSystemFont,
+      sans-serif;
   }
 
   /* フォーカス管理（アクセシビリティ対応） */
@@ -227,7 +252,7 @@
 /* カスタムコンポーネントクラス */
 @layer components {
   .card {
-    @apply border rounded-lg shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden relative;
+    @apply relative overflow-hidden rounded-lg border shadow-sm transition-all duration-200 hover:shadow-md;
     background-color: var(--bg-primary);
     color: var(--text-primary);
     border-color: var(--border-color);
@@ -235,18 +260,21 @@
 
   .card:hover {
     border-color: var(--primary-color);
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    box-shadow:
+      0 4px 6px -1px rgba(0, 0, 0, 0.1),
       0 2px 4px -1px rgba(0, 0, 0, 0.06);
   }
 
   :root[data-theme="dark"] .card:hover {
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3),
+    box-shadow:
+      0 4px 6px -1px rgba(0, 0, 0, 0.3),
       0 2px 4px -1px rgba(0, 0, 0, 0.2);
   }
 
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme]) .card:hover {
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3),
+      box-shadow:
+        0 4px 6px -1px rgba(0, 0, 0, 0.3),
         0 2px 4px -1px rgba(0, 0, 0, 0.2);
     }
   }
@@ -279,7 +307,7 @@
   }
 
   .card-text-overlay {
-    @apply absolute bottom-0 left-0 right-0 p-4 text-white opacity-0 transition-all duration-300;
+    @apply absolute right-0 bottom-0 left-0 p-4 text-white opacity-0 transition-all duration-300;
     transform: translateY(10px);
   }
 
@@ -293,32 +321,32 @@
   }
 
   .card-title {
-    @apply text-lg font-semibold mb-2 line-clamp-2;
+    @apply mb-2 line-clamp-2 text-lg font-semibold;
     color: var(--text-primary);
   }
 
   .card-description {
-    @apply text-sm mb-3 line-clamp-3;
+    @apply mb-3 line-clamp-3 text-sm;
     color: var(--text-secondary);
   }
 
   .card-meta {
-    @apply flex items-center gap-2 text-sm mb-2;
+    @apply mb-2 flex items-center gap-2 text-sm;
     color: var(--text-secondary);
   }
 
   .card-meta-icon {
-    @apply w-4 h-4 flex-shrink-0;
+    @apply h-4 w-4 flex-shrink-0;
   }
 
   .card-type-badge {
-    @apply absolute top-3 left-3 px-2 py-1 rounded-full text-xs font-medium z-10 transition-all duration-200;
+    @apply absolute top-3 left-3 z-10 rounded-full px-2 py-1 text-xs font-medium transition-all duration-200;
     background: var(--instagram-gradient);
     color: white;
   }
 
   .card-bookmark-button {
-    @apply absolute top-3 right-3 w-8 h-8 rounded-full flex items-center justify-center text-lg transition-all duration-200 z-10;
+    @apply absolute top-3 right-3 z-10 flex h-8 w-8 items-center justify-center rounded-full text-lg transition-all duration-200;
     background-color: rgba(0, 0, 0, 0.5);
     color: white;
   }
@@ -335,13 +363,13 @@
 
   /* ボタンスタイル */
   .btn {
-    @apply inline-flex items-center justify-center rounded-lg px-4 py-2 text-sm font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2;
+    @apply inline-flex items-center justify-center rounded-lg px-4 py-2 text-sm font-medium transition-all duration-200 focus:ring-2 focus:ring-offset-2 focus:outline-none;
   }
 
   .btn-primary {
     background: var(--instagram-gradient);
     color: white;
-    @apply hover:opacity-90 focus:ring-2 shadow-sm hover:shadow-md;
+    @apply shadow-sm hover:opacity-90 hover:shadow-md focus:ring-2;
     border: none;
   }
 
@@ -359,7 +387,7 @@
 
   /* タグスタイル */
   .tag {
-    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium transition-colors;
+    @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium transition-colors;
   }
 
   .tag-default {
@@ -378,31 +406,31 @@
 
   /* セクションスタイル */
   .section {
-    @apply py-12 px-4 sm:px-6 lg:px-8;
+    @apply px-4 py-12 sm:px-6 lg:px-8;
     background-color: var(--bg-primary);
   }
 
   .section-title {
-    @apply text-2xl font-bold mb-4;
+    @apply mb-4 text-2xl font-bold;
     color: var(--text-primary);
   }
 
   .section-subtitle {
-    @apply text-lg mb-6;
+    @apply mb-6 text-lg;
     color: var(--text-secondary);
   }
 
   /* レイアウト */
   .main-content-container {
-    @apply max-w-7xl mx-auto;
+    @apply mx-auto max-w-7xl;
   }
 
   .balanced-layout {
-    @apply grid grid-cols-1 lg:grid-cols-4 gap-8;
+    @apply grid grid-cols-1 gap-8 lg:grid-cols-4;
   }
 
   .content-area {
-    @apply lg:col-span-3 space-y-8;
+    @apply space-y-8 lg:col-span-3;
     background-color: var(--bg-primary);
   }
 
@@ -423,19 +451,23 @@
   }
 
   .schedule-card-image {
-    @apply w-full h-48 object-cover;
+    @apply h-48 w-full object-cover;
   }
 
   .schedule-card-overlay {
-    @apply absolute inset-0 bg-gradient-to-t from-black to-transparent opacity-60;
+    @apply absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent;
+  }
+
+  .schedule-card-text-shadow {
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
   }
 
   .schedule-card-content {
-    @apply absolute bottom-0 left-0 right-0 p-4 text-white;
+    @apply absolute right-0 bottom-0 left-0 p-4 text-white;
   }
 
   .schedule-card-time {
-    @apply text-sm font-medium mb-1;
+    @apply mb-1 text-sm font-medium;
   }
 
   .schedule-card-title {
@@ -444,7 +476,7 @@
 
   /* サイドバー */
   .sidebar {
-    @apply lg:col-span-1 space-y-6;
+    @apply space-y-6 lg:col-span-1;
     background-color: var(--bg-secondary);
     border: 1px solid var(--border-color);
     border-radius: 12px;
@@ -452,7 +484,7 @@
   }
 
   .sidebar-heading {
-    @apply text-lg font-semibold mb-3;
+    @apply mb-3 text-lg font-semibold;
     color: var(--text-primary);
   }
 
@@ -462,7 +494,7 @@
   }
 
   .sidebar-link {
-    @apply block py-2 px-3 rounded-lg text-sm transition-colors;
+    @apply block rounded-lg px-3 py-2 text-sm transition-colors;
     color: var(--text-primary);
   }
 
@@ -472,13 +504,13 @@
   }
 
   .sidebar-button {
-    @apply w-full py-2 px-4 rounded-lg text-sm font-medium transition-all duration-200;
+    @apply w-full rounded-lg px-4 py-2 text-sm font-medium transition-all duration-200;
     background: var(--instagram-gradient);
     color: white;
   }
 
   .sidebar-button:hover {
-    @apply opacity-90 transform scale-105;
+    @apply scale-105 transform opacity-90;
   }
 
   /* ヘッダー */
@@ -497,7 +529,7 @@
 
   .nav-link::after {
     content: "";
-    @apply absolute bottom-0 left-0 w-0 h-0.5 transition-all duration-200;
+    @apply absolute bottom-0 left-0 h-0.5 w-0 transition-all duration-200;
     background: var(--instagram-gradient);
   }
 
@@ -564,7 +596,10 @@
     font-smooth: auto;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
+    font-feature-settings:
+      "kern" 1,
+      "liga" 1,
+      "calt" 1;
     font-variant-numeric: lining-nums;
     font-optical-sizing: auto;
 
@@ -622,7 +657,7 @@
 
   /* モバイルフッター */
   .mobile-footer {
-    @apply fixed bottom-0 left-0 right-0 z-50 border-t;
+    @apply fixed right-0 bottom-0 left-0 z-50 border-t;
     background: rgba(255, 255, 255, 0.85);
     border-color: var(--border-color);
     backdrop-filter: blur(16px) saturate(180%) brightness(105%);
@@ -647,7 +682,7 @@
   }
 
   .mobile-footer-item {
-    @apply flex flex-col items-center justify-center p-2 rounded-lg transition-all duration-200 min-w-0 flex-1;
+    @apply flex min-w-0 flex-1 flex-col items-center justify-center rounded-lg p-2 transition-all duration-200;
     color: var(--text-primary);
     opacity: 0.7;
   }
@@ -678,17 +713,17 @@
   }
 
   .mobile-footer-icon {
-    @apply w-6 h-6 mb-1 transition-all duration-200;
+    @apply mb-1 h-6 w-6 transition-all duration-200;
     filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
   }
 
   .mobile-footer-item:hover .mobile-footer-icon {
-    @apply transform scale-110;
+    @apply scale-110 transform;
     filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.15));
   }
 
   .mobile-footer-label {
-    @apply text-xs font-medium truncate;
+    @apply truncate text-xs font-medium;
     max-width: 60px;
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
   }
@@ -1200,7 +1235,8 @@
     backdrop-filter: blur(12px) saturate(150%);
     -webkit-backdrop-filter: blur(12px) saturate(150%);
     border: 1px solid rgba(255, 255, 255, 0.15);
-    box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.04),
+    box-shadow:
+      0 4px 16px 0 rgba(0, 0, 0, 0.04),
       inset 0 1px 0 rgba(255, 255, 255, 0.15);
   }
 
@@ -1208,7 +1244,8 @@
   :root[data-theme="dark"] .glass-effect {
     background: rgba(0, 0, 0, 0.2);
     border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.18),
+    box-shadow:
+      0 4px 16px 0 rgba(0, 0, 0, 0.18),
       inset 0 1px 0 rgba(255, 255, 255, 0.1);
   }
 
@@ -1217,7 +1254,8 @@
     :root:not([data-theme]) .glass-effect {
       background: rgba(0, 0, 0, 0.2);
       border: 1px solid rgba(255, 255, 255, 0.1);
-      box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.18),
+      box-shadow:
+        0 4px 16px 0 rgba(0, 0, 0, 0.18),
         inset 0 1px 0 rgba(255, 255, 255, 0.1);
     }
   }
@@ -1228,7 +1266,8 @@
     backdrop-filter: blur(6px) saturate(130%);
     -webkit-backdrop-filter: blur(6px) saturate(130%);
     border: 1px solid rgba(255, 255, 255, 0.08);
-    box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.02),
+    box-shadow:
+      0 2px 8px 0 rgba(0, 0, 0, 0.02),
       inset 0 1px 0 rgba(255, 255, 255, 0.08);
   }
 
@@ -1237,7 +1276,8 @@
     backdrop-filter: blur(18px) saturate(170%) brightness(105%);
     -webkit-backdrop-filter: blur(18px) saturate(170%) brightness(105%);
     border: 1px solid rgba(255, 255, 255, 0.2);
-    box-shadow: 0 6px 20px 0 rgba(0, 0, 0, 0.06),
+    box-shadow:
+      0 6px 20px 0 rgba(0, 0, 0, 0.06),
       inset 0 2px 0 rgba(255, 255, 255, 0.2);
   }
 
@@ -1245,14 +1285,16 @@
   :root[data-theme="dark"] .glass-subtle {
     background: rgba(0, 0, 0, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.05);
-    box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.12),
+    box-shadow:
+      0 2px 8px 0 rgba(0, 0, 0, 0.12),
       inset 0 1px 0 rgba(255, 255, 255, 0.05);
   }
 
   :root[data-theme="dark"] .glass-bold {
     background: rgba(0, 0, 0, 0.3);
     border: 1px solid rgba(255, 255, 255, 0.2);
-    box-shadow: 0 6px 20px 0 rgba(0, 0, 0, 0.25),
+    box-shadow:
+      0 6px 20px 0 rgba(0, 0, 0, 0.25),
       inset 0 2px 0 rgba(255, 255, 255, 0.15);
   }
 
@@ -1260,14 +1302,16 @@
     :root:not([data-theme]) .glass-subtle {
       background: rgba(0, 0, 0, 0.1);
       border: 1px solid rgba(255, 255, 255, 0.05);
-      box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.12),
+      box-shadow:
+        0 2px 8px 0 rgba(0, 0, 0, 0.12),
         inset 0 1px 0 rgba(255, 255, 255, 0.05);
     }
 
     :root:not([data-theme]) .glass-bold {
       background: rgba(0, 0, 0, 0.3);
       border: 1px solid rgba(255, 255, 255, 0.2);
-      box-shadow: 0 6px 20px 0 rgba(0, 0, 0, 0.25),
+      box-shadow:
+        0 6px 20px 0 rgba(0, 0, 0, 0.25),
         inset 0 2px 0 rgba(255, 255, 255, 0.15);
     }
   }
@@ -1282,7 +1326,8 @@
     backdrop-filter: blur(20px) saturate(200%) brightness(115%);
     -webkit-backdrop-filter: blur(20px) saturate(200%) brightness(115%);
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px 0 rgba(0, 0, 0, 0.08),
+    box-shadow:
+      0 6px 20px 0 rgba(0, 0, 0, 0.08),
       inset 0 2px 0 rgba(255, 255, 255, 0.3);
   }
 
@@ -1292,7 +1337,8 @@
     backdrop-filter: blur(8px) saturate(120%);
     -webkit-backdrop-filter: blur(8px) saturate(120%);
     border: 1px solid rgba(255, 255, 255, 0.08);
-    box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.01),
+    box-shadow:
+      0 1px 4px 0 rgba(0, 0, 0, 0.01),
       inset 0 1px 0 rgba(255, 255, 255, 0.05);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
@@ -1301,7 +1347,8 @@
     backdrop-filter: blur(12px) saturate(140%) brightness(105%);
     -webkit-backdrop-filter: blur(12px) saturate(140%) brightness(105%);
     transform: translateY(-1px);
-    box-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.02),
+    box-shadow:
+      0 2px 6px 0 rgba(0, 0, 0, 0.02),
       inset 0 1px 0 rgba(255, 255, 255, 0.08);
   }
 
@@ -1309,12 +1356,14 @@
   :root[data-theme="dark"] .glass-button {
     background: rgba(0, 0, 0, 0.08);
     border: 1px solid rgba(255, 255, 255, 0.05);
-    box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.05),
+    box-shadow:
+      0 1px 4px 0 rgba(0, 0, 0, 0.05),
       inset 0 1px 0 rgba(255, 255, 255, 0.03);
   }
 
   :root[data-theme="dark"] .glass-button:hover {
-    box-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.08),
+    box-shadow:
+      0 2px 6px 0 rgba(0, 0, 0, 0.08),
       inset 0 1px 0 rgba(255, 255, 255, 0.05);
   }
 
@@ -1322,12 +1371,14 @@
     :root:not([data-theme]) .glass-button {
       background: rgba(0, 0, 0, 0.08);
       border: 1px solid rgba(255, 255, 255, 0.05);
-      box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.05),
+      box-shadow:
+        0 1px 4px 0 rgba(0, 0, 0, 0.05),
         inset 0 1px 0 rgba(255, 255, 255, 0.03);
     }
 
     :root:not([data-theme]) .glass-button:hover {
-      box-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.08),
+      box-shadow:
+        0 2px 6px 0 rgba(0, 0, 0, 0.08),
         inset 0 1px 0 rgba(255, 255, 255, 0.05);
     }
   }
@@ -1338,7 +1389,8 @@
     backdrop-filter: blur(20px) saturate(150%);
     -webkit-backdrop-filter: blur(20px) saturate(150%);
     border: 1px solid rgba(255, 255, 255, 0.12);
-    box-shadow: 0 5px 18px 0 rgba(0, 0, 0, 0.05),
+    box-shadow:
+      0 5px 18px 0 rgba(0, 0, 0, 0.05),
       inset 0 1px 0 rgba(255, 255, 255, 0.15);
   }
 
@@ -1468,8 +1520,13 @@
 @layer utilities {
   /* マップテキスト専用最適化 */
   .map-text-ultra-quality {
-    font-family: "SF Pro Display", "Segoe UI Variable Text", "Inter Variable",
-      system-ui, -apple-system, sans-serif;
+    font-family:
+      "SF Pro Display",
+      "Segoe UI Variable Text",
+      "Inter Variable",
+      system-ui,
+      -apple-system,
+      sans-serif;
     font-weight: 700;
     font-stretch: 100%;
     font-style: normal;
@@ -1477,7 +1534,11 @@
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    font-feature-settings: "kern" 1, "liga" 1, "calt" 1, "ss01" 1;
+    font-feature-settings:
+      "kern" 1,
+      "liga" 1,
+      "calt" 1,
+      "ss01" 1;
     font-variant-numeric: lining-nums;
     font-optical-sizing: auto;
     paint-order: stroke fill;
@@ -1580,7 +1641,9 @@
     color: white;
     /* Fallback outline for environments where mixing is blocked */
     -webkit-text-stroke: 1px rgba(0, 0, 0, 0.6);
-    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.6), 0 -1px 0 rgba(0, 0, 0, 0.25);
+    text-shadow:
+      0 1px 0 rgba(0, 0, 0, 0.6),
+      0 -1px 0 rgba(0, 0, 0, 0.25);
   }
 
   /* Diagnostic helper: enable this class on body to force a visible outline
@@ -1721,7 +1784,10 @@
   .card,
   .mobile-footer,
   .sidebar {
-    transition: background-color 260ms ease, color 260ms ease,
-      border-color 260ms ease, box-shadow 260ms ease;
+    transition:
+      background-color 260ms ease,
+      color 260ms ease,
+      border-color 260ms ease,
+      box-shadow 260ms ease;
   }
 }

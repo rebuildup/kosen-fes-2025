@@ -1,13 +1,14 @@
 /* eslint-disable react-refresh/only-export-components */
+import type { ReactNode } from "react";
 import {
   createContext,
-  useContext,
-  useState,
-  ReactNode,
-  useEffect,
   useCallback,
+  useContext,
+  useEffect,
+  useState,
 } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+
 import { useData } from "./DataContext";
 
 interface TagContextType {
@@ -23,15 +24,15 @@ interface TagContextType {
 }
 
 const TagContext = createContext<TagContextType>({
-  tags: [],
+  clearTags: () => {},
+  filterItemsByTags: (items) => items,
+  isTagSelected: () => false,
   popularTags: [],
   selectedTags: [],
-  tagCounts: {},
-  toggleTag: () => {},
   selectTag: () => {},
-  clearTags: () => {},
-  isTagSelected: () => false,
-  filterItemsByTags: (items) => items,
+  tagCounts: {},
+  tags: [],
+  toggleTag: () => {},
 });
 
 export const useTag = () => useContext(TagContext);
@@ -54,7 +55,7 @@ export const TagProvider = ({ children }: TagProviderProps) => {
   const popularTags = getPopularTags(10);
 
   // Sort all tags by popularity (count), then alphabetically
-  const tags = [...allTags].sort((a, b) => {
+  const tags = [...allTags].sort((a: string, b: string) => {
     const countA = tagCounts[a] || 0;
     const countB = tagCounts[b] || 0;
 
@@ -89,7 +90,7 @@ export const TagProvider = ({ children }: TagProviderProps) => {
 
       navigate(target, { replace: options?.replace ?? true });
     },
-    [location.hash, location.pathname, location.search, navigate]
+    [location.hash, location.pathname, location.search, navigate],
   );
 
   // Extract tags from URL when location changes
@@ -138,7 +139,7 @@ export const TagProvider = ({ children }: TagProviderProps) => {
         return next;
       });
     },
-    [syncTagsWithUrl]
+    [syncTagsWithUrl],
   );
 
   // Select a single tag (replace current selection)
@@ -154,7 +155,7 @@ export const TagProvider = ({ children }: TagProviderProps) => {
         return next;
       });
     },
-    [syncTagsWithUrl]
+    [syncTagsWithUrl],
   );
 
   // Clear all selected tags
@@ -168,7 +169,7 @@ export const TagProvider = ({ children }: TagProviderProps) => {
     (tag: string) => {
       return selectedTags.includes(tag);
     },
-    [selectedTags]
+    [selectedTags],
   );
 
   // Filter items by selected tags
@@ -176,24 +177,24 @@ export const TagProvider = ({ children }: TagProviderProps) => {
     <T extends { tags?: string[] }>(items: T[]): T[] => {
       if (selectedTags.length === 0) return items;
       return items.filter((item) =>
-        selectedTags.every((tag) => item.tags?.includes(tag))
+        selectedTags.every((tag) => item.tags?.includes(tag)),
       );
     },
-    [selectedTags]
+    [selectedTags],
   );
 
   return (
     <TagContext.Provider
       value={{
-        tags,
+        clearTags,
+        filterItemsByTags,
+        isTagSelected,
         popularTags,
         selectedTags,
-        tagCounts,
-        toggleTag,
         selectTag,
-        clearTags,
-        isTagSelected,
-        filterItemsByTags,
+        tagCounts,
+        tags,
+        toggleTag,
       }}
     >
       {children}

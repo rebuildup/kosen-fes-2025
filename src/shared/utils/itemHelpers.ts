@@ -1,18 +1,22 @@
-import { Item } from "../../types/common";
+import type { Item } from "../../types/common";
 
 /**
  * Get organization information based on item type
  */
 export const getItemOrganization = (item: Item): string => {
   switch (item.type) {
-    case "event":
+    case "event": {
       return item.organizer || "";
-    case "exhibit":
+    }
+    case "exhibit": {
       return item.creator || "";
-    case "stall":
+    }
+    case "stall": {
       return item.organizer || "";
-    default:
+    }
+    default: {
       return "";
+    }
   }
 };
 
@@ -21,17 +25,21 @@ export const getItemOrganization = (item: Item): string => {
  */
 export const getItemOrganizationLabel = (
   itemType: string,
-  t: (key: string) => string
+  t: (key: string) => string,
 ): string => {
   switch (itemType) {
-    case "event":
+    case "event": {
       return t("detail.organizer");
-    case "exhibit":
+    }
+    case "exhibit": {
       return t("detail.creator");
-    case "stall":
+    }
+    case "stall": {
       return t("detail.organizer");
-    default:
+    }
+    default: {
       return "";
+    }
   }
 };
 
@@ -40,14 +48,18 @@ export const getItemOrganizationLabel = (
  */
 export const getPlaceholderImage = (itemType: string): string => {
   switch (itemType) {
-    case "event":
+    case "event": {
       return "./images/placeholder-event.jpg";
-    case "exhibit":
+    }
+    case "exhibit": {
       return "./images/placeholder-exhibit.jpg";
-    case "stall":
+    }
+    case "stall": {
       return "./images/placeholder-stall.jpg";
-    default:
+    }
+    default: {
       return "./images/placeholder.jpg";
+    }
   }
 };
 
@@ -81,7 +93,7 @@ export const itemMatchesSearch = (item: Item, query: string): boolean => {
   ];
 
   return searchableFields.some((field) =>
-    field?.toLowerCase().includes(searchQuery)
+    field?.toLowerCase().includes(searchQuery),
   );
 };
 
@@ -90,9 +102,9 @@ export const itemMatchesSearch = (item: Item, query: string): boolean => {
  */
 export const itemMatchesTags = (
   item: Item,
-  selectedTags: string[]
+  selectedTags: string[],
 ): boolean => {
-  if (!selectedTags.length) return true;
+  if (selectedTags.length === 0) return true;
   return selectedTags.every((tag) => item.tags?.includes(tag));
 };
 
@@ -102,12 +114,12 @@ export const itemMatchesTags = (
 export const filterItems = (
   items: Item[],
   searchQuery: string = "",
-  selectedTags: string[] = []
+  selectedTags: string[] = [],
 ): Item[] => {
   return items.filter(
     (item) =>
       itemMatchesSearch(item, searchQuery) &&
-      itemMatchesTags(item, selectedTags)
+      itemMatchesTags(item, selectedTags),
   );
 };
 
@@ -115,7 +127,7 @@ export const filterItems = (
  * Sort items by date and time
  */
 export const sortItemsByDateTime = (items: Item[]): Item[] => {
-  return [...items].sort((a, b) => {
+  return [...items].sort((a: Item, b: Item) => {
     // First sort by date
     const dateComparison =
       new Date(a.date).getTime() - new Date(b.date).getTime();
@@ -132,14 +144,17 @@ export const sortItemsByDateTime = (items: Item[]): Item[] => {
  * Group items by date
  */
 export const groupItemsByDate = (items: Item[]): Record<string, Item[]> => {
-  return items.reduce((groups, item) => {
-    const date = item.date;
-    if (!groups[date]) {
-      groups[date] = [];
-    }
-    groups[date].push(item);
-    return groups;
-  }, {} as Record<string, Item[]>);
+  return items.reduce(
+    (groups, item) => {
+      const date = item.date;
+      if (!groups[date]) {
+        groups[date] = [];
+      }
+      groups[date].push(item);
+      return groups;
+    },
+    {} as Record<string, Item[]>,
+  );
 };
 
 /**
@@ -147,10 +162,10 @@ export const groupItemsByDate = (items: Item[]): Record<string, Item[]> => {
  */
 export const getUniqueTagsFromItems = (items: Item[]): string[] => {
   const tagSet = new Set<string>();
-  items.forEach((item) => {
-    item.tags?.forEach((tag) => tagSet.add(tag));
-  });
-  return Array.from(tagSet).sort();
+  for (const item of items) {
+    if (item.tags) for (const tag of item.tags) tagSet.add(tag);
+  }
+  return [...tagSet].sort((a: string, b: string) => a.localeCompare(b));
 };
 
 /**

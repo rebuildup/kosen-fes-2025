@@ -1,25 +1,4 @@
 import React from "react";
-import {
-  AlertTriangle,
-  Bookmark,
-  Calendar,
-  Image,
-  Home,
-  MapPin,
-  Map,
-  Menu,
-  Moon,
-  Users,
-  Search,
-  Speaker,
-  Ribbon,
-  Sun,
-  Clock,
-  X,
-  Settings,
-  Info,
-  Trash2,
-} from "lucide-react";
 
 export interface IconProps extends React.SVGProps<SVGSVGElement> {
   size?: number;
@@ -27,10 +6,10 @@ export interface IconProps extends React.SVGProps<SVGSVGElement> {
 }
 
 export const Icon: React.FC<IconProps & { children?: React.ReactNode }> = ({
-  size = 24,
-  color = "currentColor",
-  className = "",
   children,
+  className = "",
+  color = "currentColor",
+  size = 24,
   ...rest
 }) => (
   <svg
@@ -50,24 +29,26 @@ export const Icon: React.FC<IconProps & { children?: React.ReactNode }> = ({
 );
 
 // Re-export lucide icons with the project's previous names so existing imports keep working.
-export { AlertTriangle as AlertIcon };
-export { Bookmark as BookmarkIcon };
-export { Speaker as EventIcon };
-export { Image as ExhibitIcon };
-export { Home as HomeIcon };
-export { MapPin as LocationIcon };
-export { Map as MapIcon };
-export { Menu as MenuIcon };
-export { Moon as MoonIcon };
-export { Users as PeopleIcon };
-export { Calendar as ScheduleIcon };
-export { Search as SearchIcon };
-export { Ribbon as SponsorIcon };
-export { Sun as SunIcon };
-export { Clock as TimeIcon };
-export { X as XIcon };
-export { Settings as SettingsIcon };
-export { Info as InfoIcon };
-export { Trash2 as TrashIcon };
 
-export { JPIcon, ENIcon } from "./LanguageIcon";
+export { ENIcon, JPIcon } from "./LanguageIcon";
+export {
+  Speaker as EventIcon,
+  Image as ExhibitIcon,
+  Home as HomeIcon,
+  Info as InfoIcon,
+  MapPin as LocationIcon,
+  Map as MapIcon,
+  Menu as MenuIcon,
+  Moon as MoonIcon,
+  Users as PeopleIcon,
+  Calendar as ScheduleIcon,
+  Search as SearchIcon,
+  Settings as SettingsIcon,
+  Ribbon as SponsorIcon,
+  Sun as SunIcon,
+  Clock as TimeIcon,
+  Trash2 as TrashIcon,
+  X as XIcon,
+} from "lucide-react";
+export { AlertTriangle as AlertIcon } from "lucide-react";
+export { Bookmark as BookmarkIcon } from "lucide-react";

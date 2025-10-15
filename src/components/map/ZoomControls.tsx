@@ -1,4 +1,3 @@
-import { useEffect, useMemo } from "react";
 import {
   Maximize2,
   Minimize2,
@@ -6,6 +5,7 @@ import {
   ZoomIn as ZoomInIcon,
   ZoomOut as ZoomOutIcon,
 } from "lucide-react";
+import { useEffect, useMemo } from "react";
 
 interface ZoomControlsProps {
   onZoomIn: () => void;
@@ -20,15 +20,15 @@ interface ZoomControlsProps {
 }
 
 const ZoomControls = ({
-  onZoomIn,
-  onZoomOut,
+  fullscreenLabel,
+  isFullscreen = false,
+  maxScale,
+  minScale,
   onReset,
   onToggleFullscreen,
-  isFullscreen = false,
-  fullscreenLabel,
+  onZoomIn,
+  onZoomOut,
   scale,
-  minScale,
-  maxScale,
 }: ZoomControlsProps) => {
   const zoomInDisabled = useMemo(() => scale >= maxScale, [scale, maxScale]);
   const zoomOutDisabled = useMemo(() => scale <= minScale, [scale, minScale]);
@@ -76,10 +76,10 @@ const ZoomControls = ({
 
   return (
     <div
-      className="absolute bottom-4 right-4 z-20 flex w-auto flex-col items-end gap-2"
+      className="absolute right-4 bottom-4 z-20 flex w-auto flex-col items-end gap-2"
       style={{
-        WebkitFontSmoothing: "antialiased",
         MozOsxFontSmoothing: "grayscale",
+        WebkitFontSmoothing: "antialiased",
       }}
     >
       {/* Zoom controls */}

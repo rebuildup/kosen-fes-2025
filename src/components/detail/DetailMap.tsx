@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+
 import { useLanguage } from "../../context/LanguageContext";
 import { getBuildingCoordinates } from "../../data/buildings";
 import VectorMap from "../map/VectorMap";

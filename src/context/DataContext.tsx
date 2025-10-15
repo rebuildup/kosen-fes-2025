@@ -1,13 +1,9 @@
 /* eslint-disable react-refresh/only-export-components */
-import {
-  createContext,
-  useContext,
-  useState,
-  useEffect,
-  ReactNode,
-} from "react";
-import { ItemCore, ItemDetails, MapData } from "../types/data";
+import type { ReactNode } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
+
 import dataManager from "../data/dataManager";
+import type { ItemCore, ItemDetails, MapData } from "../types/data";
 
 interface DataContextType {
   // Core data (always available)
@@ -45,7 +41,7 @@ interface DataContextType {
     theme: "light" | "dark";
   };
   updatePreferences: (
-    prefs: Partial<{ language: string; theme: "light" | "dark" }>
+    prefs: Partial<{ language: string; theme: "light" | "dark" }>,
   ) => void;
 
   // Tags
@@ -68,6 +64,10 @@ interface DataProviderProps {
   children: ReactNode;
 }
 
+function isBookmarkedInternal(id: string): boolean {
+  return dataManager.isBookmarked(id);
+}
+
 export const DataProvider = ({ children }: DataProviderProps) => {
   // Core data
   const [events] = useState<ItemCore[]>(() => dataManager.getCoreEvents());
@@ -81,18 +81,18 @@ export const DataProvider = ({ children }: DataProviderProps) => {
 
   // User data
   const [bookmarks, setBookmarks] = useState<string[]>(() =>
-    dataManager.getBookmarks()
+    dataManager.getBookmarks(),
   );
   const [searchHistory, setSearchHistory] = useState<string[]>(() =>
-    dataManager.getSearchHistory()
+    dataManager.getSearchHistory(),
   );
   const [preferences, setPreferences] = useState(() =>
-    dataManager.getPreferences()
+    dataManager.getPreferences(),
   );
 
   // Loading states for details
   const [detailsLoading, setDetailsLoading] = useState<Record<string, boolean>>(
-    {}
+    {},
   );
 
   // Tags computation
@@ -102,22 +102,22 @@ export const DataProvider = ({ children }: DataProviderProps) => {
 
   // Initialize tags
   useEffect(() => {
-    const tags: string[] = [];
+    let tags: string[] = [];
     const counts: Record<string, number> = {};
 
-    allItems.forEach((item) => {
-      item.tags.forEach((tag) => {
+    for (const item of allItems) {
+      for (const tag of item.tags) {
         if (!counts[tag]) {
           counts[tag] = 0;
           tags.push(tag);
         }
         counts[tag]++;
-      });
-    });
+      }
+    }
 
-    tags.sort();
+    tags = [...tags].sort();
     const popular = [...tags]
-      .sort((a, b) => counts[b] - counts[a])
+      .sort((a: string, b: string) => counts[b] - counts[a])
       .slice(0, 10);
 
     setAllTags(tags);
@@ -138,7 +138,7 @@ export const DataProvider = ({ children }: DataProviderProps) => {
   // Get item details
   const getItemDetails = async (
     id: string,
-    type: string
+    type: string,
   ): Promise<ItemDetails | null> => {
     const loadingKey = `${type}-${id}`;
     setDetailsLoading((prev) => ({ ...prev, [loadingKey]: true }));
@@ -147,20 +147,25 @@ export const DataProvider = ({ children }: DataProviderProps) => {
       let details: ItemDetails | null = null;
 
       switch (type) {
-        case "event":
+        case "event": {
           details = await dataManager.getEventDetails(id);
           break;
-        case "exhibit":
+        }
+        case "exhibit": {
           details = await dataManager.getExhibitDetails(id);
           break;
-        case "stall":
+        }
+        case "stall": {
           details = await dataManager.getStallDetails(id);
           break;
-        case "sponsor":
+        }
+        case "sponsor": {
           details = await dataManager.getSponsorDetails(id);
           break;
-        default:
+        }
+        default: {
           throw new Error(`Unknown item type: ${type}`);
+        }
       }
 
       return details;
@@ -183,9 +188,7 @@ export const DataProvider = ({ children }: DataProviderProps) => {
     setBookmarks(dataManager.getBookmarks());
   };
 
-  const isBookmarked = (id: string): boolean => {
-    return dataManager.isBookmarked(id);
-  };
+  const isBookmarked = isBookmarkedInternal;
 
   const getBookmarkedItems = (): ItemCore[] => {
     return allItems.filter((item) => bookmarks.includes(item.id));
@@ -199,7 +202,7 @@ export const DataProvider = ({ children }: DataProviderProps) => {
 
   // Preferences
   const updatePreferences = (
-    prefs: Partial<{ language: string; theme: "light" | "dark" }>
+    prefs: Partial<{ language: string; theme: "light" | "dark" }>,
   ) => {
     dataManager.updatePreferences(prefs);
     setPreferences(dataManager.getPreferences());
@@ -215,43 +218,43 @@ export const DataProvider = ({ children }: DataProviderProps) => {
   const getTagCounts = (): Record<string, number> => tagCounts;
 
   const contextValue: DataContextType = {
+    addBookmark,
+    addToSearchHistory,
+    allItems,
+    // Bookmarks
+    bookmarks,
+    detailsLoading,
+
     // Core data
     events,
     exhibits,
-    stalls,
-    sponsors,
-    allItems,
 
-    // Search and filter
-    searchItems,
     filterByTags,
+    // Tags
+    getAllTags,
+
+    getBookmarkedItems,
 
     // Detailed data
     getItemDetails,
-    detailsLoading,
-
+    getPopularTags,
+    getTagCounts,
+    isBookmarked,
     // Map data
     mapData,
 
-    // Bookmarks
-    bookmarks,
-    addBookmark,
+    // Preferences
+    preferences,
     removeBookmark,
-    isBookmarked,
-    getBookmarkedItems,
 
     // Search history
     searchHistory,
-    addToSearchHistory,
+    // Search and filter
+    searchItems,
 
-    // Preferences
-    preferences,
+    sponsors,
+    stalls,
     updatePreferences,
-
-    // Tags
-    getAllTags,
-    getPopularTags,
-    getTagCounts,
   };
 
   return (

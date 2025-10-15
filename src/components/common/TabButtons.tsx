@@ -1,4 +1,5 @@
-import { useState, useEffect, useRef, ReactNode } from "react";
+import type { ReactNode } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export interface TabOption {
   value: string;
@@ -13,14 +14,14 @@ interface TabButtonsProps {
 }
 
 const TabButtons = ({
-  options,
   activeValue,
-  onChange,
   className = "",
+  onChange,
+  options,
 }: TabButtonsProps) => {
   const [indicatorStyle, setIndicatorStyle] = useState({
-    width: 0,
     transform: "translateX(0px)",
+    width: 0,
   });
   const containerRef = useRef<HTMLDivElement>(null);
   const buttonsRef = useRef<(HTMLButtonElement | null)[]>([]);
@@ -28,7 +29,7 @@ const TabButtons = ({
   // Update indicator position when active value changes
   useEffect(() => {
     const activeIndex = options.findIndex(
-      (option) => option.value === activeValue
+      (option) => option.value === activeValue,
     );
     const activeButton = buttonsRef.current[activeIndex];
 
@@ -38,8 +39,8 @@ const TabButtons = ({
       const offsetLeft = buttonRect.left - containerRect.left;
 
       setIndicatorStyle({
-        width: buttonRect.width,
         transform: `translateX(${offsetLeft}px)`,
+        width: buttonRect.width,
       });
     }
   }, [activeValue, options]);
@@ -47,7 +48,7 @@ const TabButtons = ({
   return (
     <div
       ref={containerRef}
-      className={`relative flex gap-0 rounded-lg overflow-hidden ${className}`}
+      className={`relative flex gap-0 overflow-hidden rounded-lg ${className}`}
       style={{ backgroundColor: "var(--color-bg-secondary)" }}
     >
       {/* Sliding indicator */}
@@ -55,8 +56,8 @@ const TabButtons = ({
         className="absolute bottom-0 h-0.5 transition-all duration-300 ease-out"
         style={{
           backgroundColor: "var(--color-accent)",
-          width: `${indicatorStyle.width}px`,
           transform: indicatorStyle.transform,
+          width: `${indicatorStyle.width}px`,
         }}
       />
 
@@ -66,14 +67,9 @@ const TabButtons = ({
           key={option.value}
           ref={(el) => (buttonsRef.current[index] = el)}
           onClick={() => onChange(option.value)}
-          className={`
-            px-4 py-3 font-medium transition-all duration-200 
-            relative overflow-hidden group text-sm
-            ${index === 0 ? "rounded-l-lg" : ""} ${
+          className={`group relative overflow-hidden px-4 py-3 text-sm font-medium transition-all duration-200 ${index === 0 ? "rounded-l-lg" : ""} ${
             index === options.length - 1 ? "rounded-r-lg" : ""
-          }
-            ${activeValue === option.value ? "text-white" : "hover:bg-white/5"}
-          `}
+          } ${activeValue === option.value ? "text-white" : "hover:bg-white/5"} `}
           style={{
             backgroundColor:
               activeValue === option.value

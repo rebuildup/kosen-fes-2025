@@ -1,4 +1,5 @@
-import { ReactNode } from "react";
+import type { ReactNode } from "react";
+
 import type { Language } from "./translations";
 
 /**
@@ -8,13 +9,13 @@ export const formatDate = (dateStr: string, language: Language): string => {
   try {
     const date = new Date(dateStr);
     return date.toLocaleDateString(language === "ja" ? "ja-JP" : "en-US", {
+      day: "numeric",
+      month: "long",
       weekday: "long",
       year: "numeric",
-      month: "long",
-      day: "numeric",
     });
-  } catch (e) {
-    console.error("Error formatting date:", e);
+  } catch (error) {
+    console.error("Error formatting date:", error);
     return dateStr;
   }
 };
@@ -50,19 +51,25 @@ export const formatDuration = (minutes: number, language: Language): string => {
  */
 export const getTypeLabel = (
   type: "event" | "exhibit" | "stall" | "sponsor", // Add "sponsor" here
-  translations: Record<string, string | undefined>
+  translations: Record<string, string | undefined>,
 ): string => {
   switch (type) {
-    case "event":
+    case "event": {
       return translations["detail.event"] || "Event";
-    case "exhibit":
+    }
+    case "exhibit": {
       return translations["detail.exhibit"] || "Exhibit";
-    case "stall":
+    }
+    case "stall": {
       return translations["detail.stall"] || "Stall";
-    case "sponsor": // Add this case
+    }
+    case "sponsor": {
+      // Add this case
       return translations["detail.sponsor"] || "Sponsor";
-    default:
+    }
+    default: {
       return type;
+    }
   }
 };
 
@@ -71,7 +78,7 @@ export const getTypeLabel = (
  */
 export const highlightSearchQuery = (
   text: string,
-  query: string
+  query: string,
 ): ReactNode => {
   if (!query.trim() || !text) return <>{text}</>;
 
@@ -84,12 +91,12 @@ export const highlightSearchQuery = (
             <mark key={i}>{part}</mark>
           ) : (
             part
-          )
+          ),
         )}
       </>
     );
-  } catch (e) {
-    console.error("Error highlighting text:", e);
+  } catch (error) {
+    console.error("Error highlighting text:", error);
     return <>{text}</>;
   }
 };

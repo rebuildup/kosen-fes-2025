@@ -1,9 +1,9 @@
-import { useTag } from "../../context/TagContext";
 import { useLanguage } from "../../context/LanguageContext";
+import { useTag } from "../../context/TagContext";
 import Tag from "./Tag";
 
 const SelectedTags = () => {
-  const { selectedTags, toggleTag, clearTags } = useTag();
+  const { clearTags, selectedTags, toggleTag } = useTag();
   const { t } = useLanguage();
 
   if (selectedTags.length === 0) {
@@ -12,13 +12,13 @@ const SelectedTags = () => {
 
   return (
     <div
-      className="p-4 rounded-lg border"
+      className="rounded-lg border p-4"
       style={{
         backgroundColor: "var(--color-bg-secondary)",
         borderColor: "var(--color-border-primary)",
       }}
     >
-      <div className="flex items-center justify-between mb-3">
+      <div className="mb-3 flex items-center justify-between">
         <span
           className="text-sm font-medium"
           style={{ color: "var(--color-text-primary)" }}
@@ -26,7 +26,7 @@ const SelectedTags = () => {
           {t("tags.activeFilters")}:
         </span>
         <button
-          className="text-xs font-medium cursor-pointer transition-colors hover:underline"
+          className="cursor-pointer text-xs font-medium transition-colors hover:underline"
           style={{ color: "var(--color-accent)" }}
           onClick={clearTags}
         >

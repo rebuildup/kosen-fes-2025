@@ -1,5 +1,7 @@
 import React from "react";
-import { Icon, IconProps } from "./index";
+
+import type { IconProps } from "./index";
+import { Icon } from "./index";
 
 export const TimeIcon: React.FC<IconProps> = (props) => (
   <Icon {...props}>

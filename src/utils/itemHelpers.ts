@@ -1,16 +1,16 @@
-import { Item } from "../types/common";
+import type { Item } from "../types/common";
 
 // Convert Item to ContentItem for map display
 export const itemToContentItem = (item: Item) => {
   if (!item.coordinates) return null;
 
   return {
+    coordinates: item.coordinates,
     id: item.id,
+    isHovered: false,
+    isSelected: false,
     title: item.title,
     type: item.type,
-    coordinates: item.coordinates,
-    isSelected: false,
-    isHovered: false,
   };
 };
 

@@ -10,7 +10,7 @@
  * 許可なく使用することはできません。
  */
 
-import { Point } from "../types/map";
+import type { Point } from "../types/map";
 
 export interface LocationCoordinate {
   id: string;
@@ -31,108 +31,108 @@ export interface LocationCoordinate {
  * Core location coordinates extracted and consolidated from buildings.ts and mapData.ts
  */
 export const locationCoordinates: Record<string, LocationCoordinate> = {
-  // Buildings from buildings.ts
-  第二体育館: {
-    id: "_第二体育館",
-    name: "第二体育館",
-    coordinates: { x: 147.38, y: 188.82 },
-    type: "building",
-    aliases: ["second-gym", "武道場"],
-    category: "recreation",
-  },
-
-  経営情報学科棟: {
-    id: "_経営情報学科棟",
-    name: "経営情報学科棟",
-    coordinates: { x: 883.39, y: 817.44 },
-    type: "building",
-    aliases: ["management-building"],
-    category: "academic",
-  },
-  武道場: {
-    id: "_武道場",
-    name: "武道場",
-    coordinates: { x: 1160.24, y: 1087.2 },
-    type: "building",
-    aliases: ["martial-arts-hall"],
-    category: "recreation",
-  },
-
-  学生会館: {
-    id: "_学生会館",
-    name: "学生会館",
-    coordinates: { x: 588.55, y: 733.5 },
-    type: "building",
-    aliases: ["student-hall"],
+  フードコートエリア: {
+    aliases: ["Food Court", "フードコート"],
     category: "dining",
-  },
-  図書館棟: {
-    id: "_図書館棟",
-    name: "図書館棟",
-    coordinates: { x: 579.6, y: 497.66 },
-    type: "building",
-    aliases: ["library"],
-    category: "academic",
-  },
-  第一体育館: {
-    id: "_第一体育館",
-    name: "第一体育館",
-    coordinates: { x: 1007.76, y: 1088.25 },
-    type: "building",
-    aliases: ["first-gym"],
-    category: "recreation",
-  },
-  管理棟: {
-    id: "_管理棟",
-    name: "管理棟",
-    coordinates: { x: 248.83, y: 864.85 },
-    type: "building",
-    aliases: ["admin-building"],
-    category: "administrative",
-  },
-  機電棟: {
-    id: "_機電棟",
-    name: "機電棟",
-    coordinates: { x: 254.83, y: 751.49 },
-    type: "building",
-    aliases: ["engineering-building"],
-    category: "academic",
+    coordinates: { x: 600, y: 750 },
+    id: "food-court",
+    name: "フードコートエリア",
+    type: "area",
   },
 
   // Landmarks and special areas from mapData.ts
   メインステージ: {
-    id: "main-stage",
-    name: "メインステージ",
-    coordinates: { x: 1000, y: 800 },
-    type: "landmark",
     aliases: ["Main Stage", "main-stage"],
     category: "recreation",
+    coordinates: { x: 1000, y: 800 },
+    id: "main-stage",
+    name: "メインステージ",
+    type: "landmark",
   },
-  フードコートエリア: {
-    id: "food-court",
-    name: "フードコートエリア",
-    coordinates: { x: 600, y: 750 },
-    type: "area",
-    aliases: ["Food Court", "フードコート"],
-    category: "dining",
-  },
-  正門: {
-    id: "main-entrance",
-    name: "正門",
-    coordinates: { x: 500, y: 400 },
-    type: "entrance",
-    aliases: ["Main Entrance"],
-    category: "general",
-  },
-
   // Additional common locations for better coverage
   中央広場: {
-    id: "central-plaza",
-    name: "中央広場",
-    coordinates: { x: 700, y: 900 },
-    type: "area",
     aliases: ["Central Plaza"],
     category: "general",
+    coordinates: { x: 700, y: 900 },
+    id: "central-plaza",
+    name: "中央広場",
+    type: "area",
+  },
+
+  図書館棟: {
+    aliases: ["library"],
+    category: "academic",
+    coordinates: { x: 579.6, y: 497.66 },
+    id: "_図書館棟",
+    name: "図書館棟",
+    type: "building",
+  },
+  学生会館: {
+    aliases: ["student-hall"],
+    category: "dining",
+    coordinates: { x: 588.55, y: 733.5 },
+    id: "_学生会館",
+    name: "学生会館",
+    type: "building",
+  },
+  機電棟: {
+    aliases: ["engineering-building"],
+    category: "academic",
+    coordinates: { x: 254.83, y: 751.49 },
+    id: "_機電棟",
+    name: "機電棟",
+    type: "building",
+  },
+  正門: {
+    aliases: ["Main Entrance"],
+    category: "general",
+    coordinates: { x: 500, y: 400 },
+    id: "main-entrance",
+    name: "正門",
+    type: "entrance",
+  },
+  武道場: {
+    aliases: ["martial-arts-hall"],
+    category: "recreation",
+    coordinates: { x: 1160.24, y: 1087.2 },
+    id: "_武道場",
+    name: "武道場",
+    type: "building",
+  },
+
+  第一体育館: {
+    aliases: ["first-gym"],
+    category: "recreation",
+    coordinates: { x: 1007.76, y: 1088.25 },
+    id: "_第一体育館",
+    name: "第一体育館",
+    type: "building",
+  },
+  // Buildings from buildings.ts
+  第二体育館: {
+    aliases: ["second-gym", "武道場"],
+    category: "recreation",
+    coordinates: { x: 147.38, y: 188.82 },
+    id: "_第二体育館",
+    name: "第二体育館",
+    type: "building",
+  },
+  管理棟: {
+    aliases: ["admin-building"],
+    category: "administrative",
+    coordinates: { x: 248.83, y: 864.85 },
+    id: "_管理棟",
+    name: "管理棟",
+    type: "building",
+  },
+
+  経営情報学科棟: {
+    aliases: ["management-building"],
+    category: "academic",
+    coordinates: { x: 883.39, y: 817.44 },
+    id: "_経営情報学科棟",
+    name: "経営情報学科棟",
+    type: "building",
   },
 };
 
@@ -140,7 +140,7 @@ export const locationCoordinates: Record<string, LocationCoordinate> = {
  * Get coordinates for a location by name or alias
  */
 export function getLocationCoordinates(
-  locationName: string
+  locationName: string,
 ): Point | undefined {
   // Direct lookup first
   const direct = locationCoordinates[locationName];
@@ -154,7 +154,7 @@ export function getLocationCoordinates(
       location.aliases?.some(
         (alias) =>
           locationName.toLowerCase().includes(alias.toLowerCase()) ||
-          alias.toLowerCase().includes(locationName.toLowerCase())
+          alias.toLowerCase().includes(locationName.toLowerCase()),
       )
     ) {
       return location.coordinates;
@@ -178,7 +178,7 @@ export function getLocationCoordinates(
  * Get location information by name or alias
  */
 export function getLocationInfo(
-  locationName: string
+  locationName: string,
 ): LocationCoordinate | undefined {
   // Direct lookup first
   const direct = locationCoordinates[locationName];
@@ -192,7 +192,7 @@ export function getLocationInfo(
       location.aliases?.some(
         (alias) =>
           locationName.toLowerCase().includes(alias.toLowerCase()) ||
-          alias.toLowerCase().includes(locationName.toLowerCase())
+          alias.toLowerCase().includes(locationName.toLowerCase()),
       )
     ) {
       return location;
@@ -216,10 +216,10 @@ export function getLocationInfo(
  * Get all locations by category
  */
 export function getLocationsByCategory(
-  category: LocationCoordinate["category"]
+  category: LocationCoordinate["category"],
 ): LocationCoordinate[] {
   return Object.values(locationCoordinates).filter(
-    (location) => location.category === category
+    (location) => location.category === category,
   );
 }
 
@@ -227,10 +227,10 @@ export function getLocationsByCategory(
  * Get all locations by type
  */
 export function getLocationsByType(
-  type: LocationCoordinate["type"]
+  type: LocationCoordinate["type"],
 ): LocationCoordinate[] {
   return Object.values(locationCoordinates).filter(
-    (location) => location.type === type
+    (location) => location.type === type,
   );
 }
 
@@ -243,8 +243,8 @@ export function searchLocations(query: string): LocationCoordinate[] {
     (location) =>
       location.name.toLowerCase().includes(lowerQuery) ||
       location.aliases?.some((alias) =>
-        alias.toLowerCase().includes(lowerQuery)
-      )
+        alias.toLowerCase().includes(lowerQuery),
+      ),
   );
 }
 
@@ -257,11 +257,11 @@ export function getAllLocationNames(): string[] {
   for (const location of Object.values(locationCoordinates)) {
     names.add(location.name);
     if (location.aliases) {
-      location.aliases.forEach((alias) => names.add(alias));
+      for (const alias of location.aliases) names.add(alias);
     }
   }
 
-  return Array.from(names).sort();
+  return [...names].sort((a: string, b: string) => a.localeCompare(b));
 }
 
 /**
@@ -275,7 +275,7 @@ export function isValidLocation(locationName: string): boolean {
  * Get the nearest location to a given coordinate
  */
 export function getNearestLocation(
-  targetCoord: Point
+  targetCoord: Point,
 ): LocationCoordinate | null {
   let nearestLocation: LocationCoordinate | null = null;
   let shortestDistance = Infinity;
@@ -283,7 +283,7 @@ export function getNearestLocation(
   for (const location of Object.values(locationCoordinates)) {
     const dx = location.coordinates.x - targetCoord.x;
     const dy = location.coordinates.y - targetCoord.y;
-    const distance = Math.sqrt(dx * dx + dy * dy);
+    const distance = Math.hypot(dx, dy);
 
     if (distance < shortestDistance) {
       shortestDistance = distance;

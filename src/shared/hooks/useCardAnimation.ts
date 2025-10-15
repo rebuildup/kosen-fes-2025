@@ -1,5 +1,6 @@
-import { useRef, useEffect, useCallback } from "react";
 import { gsap } from "gsap";
+import { useCallback, useEffect, useRef } from "react";
+
 import { DURATION, EASE } from "../../utils/animations";
 
 interface UseCardAnimationOptions {
@@ -24,13 +25,13 @@ interface UseCardAnimationReturn {
  * Custom hook for card hover animations
  */
 export const useCardAnimation = (
-  options: UseCardAnimationOptions = {}
+  options: UseCardAnimationOptions = {},
 ): UseCardAnimationReturn => {
   const {
-    variant = "default",
-    showAnimation = true,
     hasMetaSection = true,
     hasTagsSection = false,
+    showAnimation = true,
+    variant = "default",
   } = options;
 
   const cardRef = useRef<HTMLDivElement>(null);
@@ -38,7 +39,7 @@ export const useCardAnimation = (
   const metaRef = useRef<HTMLDivElement>(null);
   const tagsRef = useRef<HTMLDivElement>(null);
   const hoverTimelineRef = useRef<gsap.core.Timeline | null>(null);
-  
+
   const isHoveredRef = useRef(false);
 
   // Set up hover animations
@@ -51,46 +52,55 @@ export const useCardAnimation = (
     // Calculate animation values based on variant
     const getYOffset = () => {
       switch (variant) {
-        case "featured":
+        case "featured": {
           return -8;
+        }
         case "compact":
-        case "list":
+        case "list": {
           return -2;
-        default:
+        }
+        default: {
           return -6;
+        }
       }
     };
 
     const getBoxShadow = () => {
       switch (variant) {
-        case "featured":
+        case "featured": {
           return "0 12px 24px rgba(0, 0, 0, 0.2)";
+        }
         case "compact":
-        case "list":
+        case "list": {
           return "0 4px 12px rgba(0, 0, 0, 0.1)";
-        default:
+        }
+        default: {
           return "0 8px 20px rgba(0, 0, 0, 0.15)";
+        }
       }
     };
 
     const getImageScale = () => {
       switch (variant) {
-        case "featured":
+        case "featured": {
           return 1.08;
+        }
         case "compact":
-        case "list":
+        case "list": {
           return 1.02;
-        default:
+        }
+        default: {
           return 1.05;
+        }
       }
     };
 
     // Card lift animation
     hoverTimeline.to(card, {
-      y: getYOffset(),
       boxShadow: getBoxShadow(),
       duration: DURATION.FAST,
       ease: EASE.SMOOTH,
+      y: getYOffset(),
     });
 
     // Image scale animation
@@ -98,11 +108,11 @@ export const useCardAnimation = (
       hoverTimeline.to(
         imageRef.current,
         {
-          scale: getImageScale(),
           duration: DURATION.FAST,
           ease: EASE.SMOOTH,
+          scale: getImageScale(),
         },
-        0
+        0,
       );
     }
 
@@ -112,11 +122,11 @@ export const useCardAnimation = (
         metaRef.current,
         {
           autoAlpha: 1,
-          y: 0,
           duration: DURATION.FAST,
           ease: EASE.SMOOTH,
+          y: 0,
         },
-        0
+        0,
       );
     }
 
@@ -126,11 +136,11 @@ export const useCardAnimation = (
         tagsRef.current,
         {
           autoAlpha: 1,
-          y: 0,
           duration: DURATION.FAST,
           ease: EASE.SMOOTH,
+          y: 0,
         },
-        0
+        0,
       );
     }
 
@@ -146,7 +156,7 @@ export const useCardAnimation = (
   // Handle mouse events
   const handleMouseEnter = useCallback(() => {
     if (!showAnimation) return;
-    
+
     isHoveredRef.current = true;
     const timeline = hoverTimelineRef.current;
     if (timeline) {
@@ -156,7 +166,7 @@ export const useCardAnimation = (
 
   const handleMouseLeave = useCallback(() => {
     if (!showAnimation) return;
-    
+
     isHoveredRef.current = false;
     const timeline = hoverTimelineRef.current;
     if (timeline) {
@@ -170,12 +180,12 @@ export const useCardAnimation = (
 
   return {
     cardRef,
-    imageRef,
-    metaRef,
-    tagsRef,
     handleMouseEnter,
     handleMouseLeave,
+    imageRef,
     isHovered: isHoveredRef.current,
+    metaRef,
     setIsHovered,
+    tagsRef,
   };
 };

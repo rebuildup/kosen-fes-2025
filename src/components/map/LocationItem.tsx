@@ -1,8 +1,9 @@
 // src/components/map/LocationItem.tsx
 import { useState } from "react";
 import { Link } from "react-router-dom";
+
 import { useLanguage } from "../../context/LanguageContext";
-import { Event, Exhibit, Stall } from "../../types/common";
+import type { Event, Exhibit, Stall } from "../../types/common";
 import ItemTypeIcon from "../common/ItemTypeIcon";
 
 // Type for non-sponsor items
@@ -18,10 +19,10 @@ interface LocationItemProps {
 }
 
 const LocationItem = ({
-  location,
-  items,
   isHovered,
   isSelected,
+  items,
+  location,
   onHover,
   onSelect,
 }: LocationItemProps) => {
@@ -30,7 +31,9 @@ const LocationItem = ({
 
   // Group items by type
   const eventItems = items.filter((item) => item.type === "event") as Event[];
-  const exhibitItems = items.filter((item) => item.type === "exhibit") as Exhibit[];
+  const exhibitItems = items.filter(
+    (item) => item.type === "exhibit",
+  ) as Exhibit[];
   const stallItems = items.filter((item) => item.type === "stall") as Stall[];
 
   // Handle item hover
@@ -66,9 +69,7 @@ const LocationItem = ({
                     onMouseEnter={() => handleItemHover(item.id)}
                     onMouseLeave={() => handleItemHover(null)}
                   >
-                    <Link
-                      to={`/detail/${item.type}/${item.id}`}
-                    >
+                    <Link to={`/detail/${item.type}/${item.id}`}>
                       <span>{item.title}</span>
                       <span>{item.time}</span>
                     </Link>
@@ -80,9 +81,7 @@ const LocationItem = ({
                             <img src={item.imageUrl} alt={item.title} />
                           </div>
                         )}
-                        <p>
-                          {item.description}
-                        </p>
+                        <p>{item.description}</p>
                       </div>
                     )}
                   </li>
@@ -104,9 +103,7 @@ const LocationItem = ({
                     onMouseEnter={() => handleItemHover(item.id)}
                     onMouseLeave={() => handleItemHover(null)}
                   >
-                    <Link
-                      to={`/detail/${item.type}/${item.id}`}
-                    >
+                    <Link to={`/detail/${item.type}/${item.id}`}>
                       <span>{item.title}</span>
                       <span>{item.time}</span>
                     </Link>
@@ -118,9 +115,7 @@ const LocationItem = ({
                             <img src={item.imageUrl} alt={item.title} />
                           </div>
                         )}
-                        <p>
-                          {item.description}
-                        </p>
+                        <p>{item.description}</p>
                       </div>
                     )}
                   </li>
@@ -142,9 +137,7 @@ const LocationItem = ({
                     onMouseEnter={() => handleItemHover(item.id)}
                     onMouseLeave={() => handleItemHover(null)}
                   >
-                    <Link
-                      to={`/detail/${item.type}/${item.id}`}
-                    >
+                    <Link to={`/detail/${item.type}/${item.id}`}>
                       <span>{item.title}</span>
                       <span>{item.time}</span>
                     </Link>
@@ -156,9 +149,7 @@ const LocationItem = ({
                             <img src={item.imageUrl} alt={item.title} />
                           </div>
                         )}
-                        <p>
-                          {item.description}
-                        </p>
+                        <p>{item.description}</p>
                       </div>
                     )}
                   </li>

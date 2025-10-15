@@ -1,98 +1,33 @@
 /// <reference types='node' />
 
 export const APP_CONFIG = {
-  site: {
-    title: "宇部高専文化祭 2025",
-    titleEn: "Ube Kosen Festival 2025",
-    description: "宇部高専文化祭 2025 の公式ウェブサイト",
-    descriptionEn: "Official website for Ube Kosen Festival 2025",
-    url: "https://festival.ube-k.ac.jp/2025/",
-    author: "Ube Kosen",
-    keywords: ["宇部高専", "文化祭", "イベント", "展示", "屋台"],
-  },
-
-  festival: {
-    name: "宇部高専文化祭 2025",
-    nameEn: "Ube Kosen Festival 2025",
-    year: 2025,
-    dates: {
-      start: "2025-06-14",
-      end: "2025-11-08",
-    },
-    hours: {
-      start: "09:00",
-      end: "18:00",
-    },
-    location: "宇部高等専門学校",
-    locationEn: "Ube National College of Technology",
-  },
-
-  features: {
-    darkMode: true,
-    bookmarks: true,
-    search: true,
-    map: true,
-    animations: true,
-    analytics: false,
-    pwa: false,
-    notifications: false,
-  },
-
-  performance: {
-    enableLazyLoading: true,
-    enableImageOptimization: true,
-    enableCodeSplitting: true,
-    maxBundleSize: 500, // KB
-    imageQuality: 85,
-    cacheTimeout: 300000, // 5 minutes
-  },
-
-  ui: {
-    defaultTheme: "light" as const,
-    defaultLanguage: "ja" as const,
-    enableTransitions: true,
-    cardAnimationDuration: 0.3,
-    pageTransitionDuration: 0.2,
-    maxCardGridColumns: 4,
-    mobileBreakpoint: 768,
-  },
-
-  limits: {
-    maxBookmarks: 100,
-    maxSearchHistory: 10,
-    maxTagsPerItem: 5,
-    cardTitleMaxLength: 50,
-    cardDescriptionMaxLength: 150,
-    searchQueryMaxLength: 100,
+  analytics: {
+    enabled: false,
+    enableErrors: true,
+    enableEvents: true,
+    enablePageViews: true,
+    trackingId: "",
   },
 
   api: {
     baseUrl: "",
-    timeout: 10000,
     retryAttempts: 3,
     retryDelay: 1000,
-  },
-
-  analytics: {
-    enabled: false,
-    trackingId: "",
-    enablePageViews: true,
-    enableEvents: true,
-    enableErrors: true,
+    timeout: 10_000,
   },
 
   contact: {
-    email: "festival@ube-k.ac.jp",
-    phone: "+81-836-35-4951",
     address: "宇部市常盤台2-14-1",
     addressEn: "2-14-1 Tokiwadai, Ube, Yamaguchi 755-8555, Japan",
+    email: "festival@ube-k.ac.jp",
+    phone: "+81-836-35-4951",
   },
 
-  social: {
-    twitter: "",
-    instagram: "",
-    facebook: "",
-    youtube: "",
+  development: {
+    enableDebugMode: process.env.NODE_ENV === "development",
+    enableErrorReporting: false,
+    enablePerformanceMonitoring: false,
+    logLevel: "info" as const,
   },
 
   errors: {
@@ -104,18 +39,83 @@ export const APP_CONFIG = {
     notFoundEn: "Page not found",
   },
 
-  development: {
-    enableDebugMode: process.env.NODE_ENV === "development",
-    enablePerformanceMonitoring: false,
-    enableErrorReporting: false,
-    logLevel: "info" as const,
+  features: {
+    analytics: false,
+    animations: true,
+    bookmarks: true,
+    darkMode: true,
+    map: true,
+    notifications: false,
+    pwa: false,
+    search: true,
+  },
+
+  festival: {
+    dates: {
+      end: "2025-11-08",
+      start: "2025-06-14",
+    },
+    hours: {
+      end: "18:00",
+      start: "09:00",
+    },
+    location: "宇部高等専門学校",
+    locationEn: "Ube National College of Technology",
+    name: "宇部高専文化祭 2025",
+    nameEn: "Ube Kosen Festival 2025",
+    year: 2025,
+  },
+
+  limits: {
+    cardDescriptionMaxLength: 150,
+    cardTitleMaxLength: 50,
+    maxBookmarks: 100,
+    maxSearchHistory: 10,
+    maxTagsPerItem: 5,
+    searchQueryMaxLength: 100,
+  },
+
+  performance: {
+    cacheTimeout: 300_000, // 5 minutes
+    enableCodeSplitting: true,
+    enableImageOptimization: true,
+    enableLazyLoading: true,
+    imageQuality: 85,
+    maxBundleSize: 500, // KB
+  },
+
+  site: {
+    author: "Ube Kosen",
+    description: "宇部高専文化祭 2025 の公式ウェブサイト",
+    descriptionEn: "Official website for Ube Kosen Festival 2025",
+    keywords: ["宇部高専", "文化祭", "イベント", "展示", "屋台"],
+    title: "宇部高専文化祭 2025",
+    titleEn: "Ube Kosen Festival 2025",
+    url: "https://festival.ube-k.ac.jp/2025/",
+  },
+
+  social: {
+    facebook: "",
+    instagram: "",
+    twitter: "",
+    youtube: "",
+  },
+
+  ui: {
+    cardAnimationDuration: 0.3,
+    defaultLanguage: "ja" as const,
+    defaultTheme: "light" as const,
+    enableTransitions: true,
+    maxCardGridColumns: 4,
+    mobileBreakpoint: 768,
+    pageTransitionDuration: 0.2,
   },
 } as const;
 
 export type AppConfig = typeof APP_CONFIG;
 
 export const isFeatureEnabled = (
-  feature: keyof typeof APP_CONFIG.features
+  feature: keyof typeof APP_CONFIG.features,
 ): boolean => {
   return APP_CONFIG.features[feature];
 };

@@ -1,21 +1,22 @@
-import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
-import { useLanguage } from "../context/LanguageContext";
-import { useBookmark } from "../context/BookmarkContext";
-import { events } from "../data/events";
-import { exhibits } from "../data/exhibits";
-import { stalls } from "../data/stalls";
-import { sponsors } from "../data/sponsors";
-import { Item, Event, Exhibit, Stall, Sponsor } from "../types/common";
-import Tag from "../components/common/Tag";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+
 import ItemTypeIcon from "../components/common/ItemTypeIcon";
 import PillButton from "../components/common/PillButton";
-import UnifiedCard from "../shared/components/ui/UnifiedCard";
+import Tag from "../components/common/Tag";
 import VectorMap from "../components/map/VectorMap";
+import { useBookmark } from "../context/BookmarkContext";
+import { useLanguage } from "../context/LanguageContext";
+import { events } from "../data/events";
+import { exhibits } from "../data/exhibits";
+import { sponsors } from "../data/sponsors";
+import { stalls } from "../data/stalls";
+import UnifiedCard from "../shared/components/ui/UnifiedCard";
+import type { Event, Exhibit, Item, Sponsor, Stall } from "../types/common";
 
 const Detail = () => {
-  const { type, id } = useParams<{ type: string; id: string }>();
+  const { id, type } = useParams<{ type: string; id: string }>();
   const { t } = useLanguage();
   const { isBookmarked, toggleBookmark } = useBookmark();
   const navigate = useNavigate();
@@ -39,22 +40,27 @@ const Detail = () => {
     let foundItem: Item | undefined;
 
     switch (type) {
-      case "event":
+      case "event": {
         foundItem = events.find((event) => event.id === id);
         break;
-      case "exhibit":
+      }
+      case "exhibit": {
         foundItem = exhibits.find((exhibit) => exhibit.id === id);
         break;
-      case "stall":
+      }
+      case "stall": {
         foundItem = stalls.find((stall) => stall.id === id);
         break;
-      case "sponsor":
+      }
+      case "sponsor": {
         foundItem = sponsors.find((sponsor) => sponsor.id === id);
         break;
-      default:
+      }
+      default: {
         setError(`Invalid type: ${type}`);
         setLoading(false);
         return;
+      }
     }
 
     if (foundItem) {
@@ -68,7 +74,7 @@ const Detail = () => {
             (otherItem) =>
               otherItem.id !== foundItem!.id &&
               otherItem.tags &&
-              otherItem.tags.some((tag) => foundItem!.tags?.includes(tag))
+              otherItem.tags.some((tag) => foundItem!.tags?.includes(tag)),
           )
           .slice(0, 6); // Limit to 6 items
         setRelatedItems(related);
@@ -99,8 +105,8 @@ const Detail = () => {
         className="min-h-screen"
         style={{ backgroundColor: "var(--color-bg-primary)" }}
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="text-center py-12">
+        <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+          <div className="py-12 text-center">
             <p
               className="text-lg"
               style={{ color: "var(--color-text-primary)" }}
@@ -120,17 +126,17 @@ const Detail = () => {
         className="min-h-screen"
         style={{ backgroundColor: "var(--color-bg-primary)" }}
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="text-center py-12">
+        <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+          <div className="py-12 text-center">
             <p
-              className="text-lg mb-6"
+              className="mb-6 text-lg"
               style={{ color: "var(--color-text-primary)" }}
             >
               {t("errors.itemNotFound")}
             </p>
             <button
               onClick={handleBack}
-              className="px-6 py-3 rounded-lg font-medium transition-all duration-200 hover:scale-105"
+              className="rounded-lg px-6 py-3 font-medium transition-all duration-200 hover:scale-105"
               style={{
                 backgroundColor: "var(--color-accent)",
                 color: "white",
@@ -151,11 +157,11 @@ const Detail = () => {
         const eventItem = item as Event;
         return (
           <div
-            className="p-6 rounded-lg"
+            className="rounded-lg p-6"
             style={{ backgroundColor: "var(--color-bg-secondary)" }}
           >
             <h3
-              className="text-xl font-semibold mb-4"
+              className="mb-4 text-xl font-semibold"
               style={{ color: "var(--color-text-primary)" }}
             >
               {t("detail.eventDetails")}
@@ -192,11 +198,11 @@ const Detail = () => {
         const exhibitItem = item as Exhibit;
         return (
           <div
-            className="p-6 rounded-lg"
+            className="rounded-lg p-6"
             style={{ backgroundColor: "var(--color-bg-secondary)" }}
           >
             <h3
-              className="text-xl font-semibold mb-4"
+              className="mb-4 text-xl font-semibold"
               style={{ color: "var(--color-text-primary)" }}
             >
               {t("detail.exhibitDetails")}
@@ -221,11 +227,11 @@ const Detail = () => {
         const stallItem = item as Stall;
         return (
           <div
-            className="p-6 rounded-lg"
+            className="rounded-lg p-6"
             style={{ backgroundColor: "var(--color-bg-secondary)" }}
           >
             <h3
-              className="text-xl font-semibold mb-4"
+              className="mb-4 text-xl font-semibold"
               style={{ color: "var(--color-text-primary)" }}
             >
               {t("detail.stallDetails")}
@@ -238,11 +244,11 @@ const Detail = () => {
                 >
                   {t("detail.products")}:
                 </span>
-                <div className="flex flex-wrap gap-2 mt-2">
+                <div className="mt-2 flex flex-wrap gap-2">
                   {stallItem.products.map((product, index) => (
                     <span
                       key={index}
-                      className="px-2 py-1 rounded text-sm"
+                      className="rounded px-2 py-1 text-sm"
                       style={{
                         backgroundColor: "var(--color-bg-tertiary)",
                         color: "var(--color-text-secondary)",
@@ -261,11 +267,11 @@ const Detail = () => {
         const sponsorItem = item as Sponsor;
         return (
           <div
-            className="p-6 rounded-lg"
+            className="rounded-lg p-6"
             style={{ backgroundColor: "var(--color-bg-secondary)" }}
           >
             <h3
-              className="text-xl font-semibold mb-4"
+              className="mb-4 text-xl font-semibold"
               style={{ color: "var(--color-text-primary)" }}
             >
               {t("detail.sponsorDetails")}
@@ -292,23 +298,29 @@ const Detail = () => {
           </div>
         );
       }
-      default:
+      default: {
         return null;
+      }
     }
   };
 
   const getTypeLabel = () => {
     switch (item.type) {
-      case "event":
+      case "event": {
         return t("detail.event");
-      case "exhibit":
+      }
+      case "exhibit": {
         return t("detail.exhibit");
-      case "stall":
+      }
+      case "stall": {
         return t("detail.stall");
-      case "sponsor":
+      }
+      case "sponsor": {
         return t("detail.sponsor");
-      default:
+      }
+      default: {
         return "";
+      }
     }
   };
 
@@ -318,21 +330,21 @@ const Detail = () => {
         className="section"
         style={{ backgroundColor: "var(--color-bg-primary)" }}
       >
-        <div className="max-w-7xl mx-auto">
-          <div className="flex justify-between items-center mb-8">
+        <div className="mx-auto max-w-7xl">
+          <div className="mb-8 flex items-center justify-between">
             <PillButton onClick={handleBack} variant="secondary">
               <span className="inline-flex items-center gap-2 whitespace-nowrap">
-                <ArrowLeft className="w-4 h-4" />
+                <ArrowLeft className="h-4 w-4" />
                 <span>{t("detail.back")}</span>
               </span>
             </PillButton>
 
             <button
               onClick={handleBookmarkToggle}
-              className={`w-12 h-12 flex items-center justify-center rounded-full transition-all duration-200 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-offset-2 ${
+              className={`flex h-12 w-12 items-center justify-center rounded-full transition-all duration-200 hover:scale-110 focus:ring-2 focus:ring-offset-2 focus:outline-none ${
                 isBookmarked(item.id)
                   ? "bg-yellow-500 text-white hover:bg-yellow-600 focus:ring-yellow-500"
-                  : "bg-[var(--bg-secondary)] text-[var(--text-secondary)] hover:bg-[var(--bg-tertiary)] hover:text-[var(--text-primary)] border border-[var(--border-color)] focus:ring-[var(--primary-color)]"
+                  : "border border-[var(--border-color)] bg-[var(--bg-secondary)] text-[var(--text-secondary)] hover:bg-[var(--bg-tertiary)] hover:text-[var(--text-primary)] focus:ring-[var(--primary-color)]"
               }`}
               aria-label={
                 isBookmarked(item.id)
@@ -352,10 +364,10 @@ const Detail = () => {
           </div>
 
           <div className="space-y-8">
-            <div className="flex items-center gap-4 mb-6">
+            <div className="mb-6 flex items-center gap-4">
               <ItemTypeIcon type={item.type} size="large" />
               <span
-                className="px-3 py-1 rounded-full text-sm font-medium"
+                className="rounded-full px-3 py-1 text-sm font-medium"
                 style={{
                   backgroundColor: "var(--color-accent)",
                   color: "white",
@@ -366,14 +378,14 @@ const Detail = () => {
             </div>
 
             <h1
-              className="text-3xl font-bold mb-6"
+              className="mb-6 text-3xl font-bold"
               style={{ color: "var(--color-text-primary)" }}
             >
               {item.title}
             </h1>
 
             <div
-              className="grid grid-cols-1 md:grid-cols-3 gap-4 p-6 rounded-lg"
+              className="grid grid-cols-1 gap-4 rounded-lg p-6 md:grid-cols-3"
               style={{ backgroundColor: "var(--color-bg-secondary)" }}
             >
               <div className="flex items-center gap-2">
@@ -414,11 +426,11 @@ const Detail = () => {
             </div>
 
             {item.imageUrl && (
-              <div className="rounded-lg overflow-hidden bg-white/5 border border-white/10">
+              <div className="overflow-hidden rounded-lg border border-white/10 bg-white/5">
                 <img
                   src={item.imageUrl}
                   alt={item.title}
-                  className="w-full h-auto object-cover"
+                  className="h-auto w-full object-cover"
                   style={{ backgroundColor: "var(--color-bg-secondary)" }}
                 />
               </div>
@@ -426,11 +438,11 @@ const Detail = () => {
 
             {/* Location Information */}
             <div
-              className="p-6 rounded-lg"
+              className="rounded-lg p-6"
               style={{ backgroundColor: "var(--color-bg-secondary)" }}
             >
               <h3
-                className="text-xl font-semibold mb-4 flex items-center gap-2"
+                className="mb-4 flex items-center gap-2 text-xl font-semibold"
                 style={{ color: "var(--color-text-primary)" }}
               >
                 {t("detail.location")}
@@ -455,7 +467,7 @@ const Detail = () => {
             </div>
 
             <div
-              className="p-6 rounded-lg"
+              className="rounded-lg p-6"
               style={{ backgroundColor: "var(--color-bg-secondary)" }}
             >
               <p
@@ -471,7 +483,7 @@ const Detail = () => {
             {item.tags && item.tags.length > 0 && (
               <div>
                 <h3
-                  className="text-xl font-semibold mb-4"
+                  className="mb-4 text-xl font-semibold"
                   style={{ color: "var(--color-text-primary)" }}
                 >
                   {t("detail.tags")}
@@ -487,16 +499,16 @@ const Detail = () => {
             {/* Campus Map */}
             {(item.location || item.coordinates) && item.type !== "sponsor" && (
               <div
-                className="rounded-lg p-6 bg-white/10 border border-white/20"
+                className="rounded-lg border border-white/20 bg-white/10 p-6"
                 style={{ backgroundColor: "var(--color-bg-secondary)" }}
               >
                 <h3
-                  className="text-xl font-semibold mb-4 flex items-center gap-2"
+                  className="mb-4 flex items-center gap-2 text-xl font-semibold"
                   style={{ color: "var(--color-text-primary)" }}
                 >
                   {t("map.title")}
                 </h3>
-                <div className="map-container h-64 rounded-lg overflow-hidden">
+                <div className="map-container h-64 overflow-hidden rounded-lg">
                   <VectorMap
                     key={`detail-map-${item.id}`}
                     mode="detail"
@@ -505,19 +517,19 @@ const Detail = () => {
                       item.coordinates
                         ? [
                             {
-                              id: item.id,
+                              contentItem: item,
                               coordinates: item.coordinates,
+                              id: item.id,
+                              isHovered: false,
+                              isSelected: true,
+                              onClick: () => {},
+                              onHover: () => {},
                               title: item.title,
                               type: item.type as
                                 | "event"
                                 | "exhibit"
                                 | "stall"
                                 | "location",
-                              isSelected: true,
-                              isHovered: false,
-                              contentItem: item,
-                              onClick: () => {},
-                              onHover: () => {},
                             },
                           ]
                         : []
@@ -534,11 +546,11 @@ const Detail = () => {
             {/* Related Items */}
             {relatedItems.length > 0 && (
               <div
-                className="p-6 rounded-lg  bg-white/10 border border-white/20"
+                className="rounded-lg border border-white/20 bg-white/10 p-6"
                 style={{ backgroundColor: "var(--color-bg-secondary)" }}
               >
                 <h3
-                  className="text-xl font-semibold mb-4"
+                  className="mb-4 text-xl font-semibold"
                   style={{ color: "var(--color-text-primary)" }}
                 >
                   {t("detail.related")}

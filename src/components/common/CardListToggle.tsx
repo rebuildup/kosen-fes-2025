@@ -1,6 +1,8 @@
-import { useLanguage } from "../../context/LanguageContext";
-import TabButtons, { TabOption } from "./TabButtons";
 import { Grip, LayoutGrid, Menu } from "lucide-react";
+
+import { useLanguage } from "../../context/LanguageContext";
+import type { TabOption } from "./TabButtons";
+import TabButtons from "./TabButtons";
 
 interface CardListToggleProps {
   viewMode: "default" | "compact" | "grid" | "list";
@@ -9,29 +11,29 @@ interface CardListToggleProps {
 }
 
 const CardListToggle = ({
-  viewMode,
-  setViewMode,
   className = "",
+  setViewMode,
+  viewMode,
 }: CardListToggleProps) => {
   const { t } = useLanguage();
 
   const viewOptions: TabOption[] = [
     {
-      value: "default",
       label: <LayoutGrid size={16} />,
+      value: "default",
     },
     {
-      value: "compact",
       label: <Grip size={16} />,
+      value: "compact",
     },
     {
-      value: "list",
       label: <Menu size={16} />,
+      value: "list",
     },
   ];
 
   return (
-    <div className={`flex items-center gap-2 flex-shrink-0 ${className}`}>
+    <div className={`flex flex-shrink-0 items-center gap-2 ${className}`}>
       <span
         className="text-sm font-medium whitespace-nowrap"
         style={{ color: "var(--color-text-secondary)" }}

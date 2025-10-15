@@ -1,5 +1,5 @@
+import type { ReactNode } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { ReactNode } from "react";
 
 interface SidebarLinkProps {
   to: string;
@@ -11,12 +11,12 @@ interface SidebarLinkProps {
 }
 
 const SidebarLink = ({
-  to,
+  badge,
+  compact = false,
   icon,
   label,
-  badge,
   onClick,
-  compact = false,
+  to,
 }: SidebarLinkProps) => {
   const location = useLocation();
   const isActive =
@@ -26,29 +26,22 @@ const SidebarLink = ({
   return (
     <Link
       to={to}
-      className={`
-        flex items-center justify-between w-full p-3 text-sm rounded-lg 
-        transition-all duration-200 group relative
-        ${
-          isActive
-            ? "bg-[var(--instagram-gradient-subtle)] text-[var(--primary-color)] shadow-sm"
-            : "text-[var(--text-secondary)] hover:bg-[var(--bg-tertiary)] hover:text-[var(--primary-color)]"
-        }
-      `}
+      className={`group relative flex w-full items-center justify-between rounded-lg p-3 text-sm transition-all duration-200 ${
+        isActive
+          ? "bg-[var(--instagram-gradient-subtle)] text-[var(--primary-color)] shadow-sm"
+          : "text-[var(--text-secondary)] hover:bg-[var(--bg-tertiary)] hover:text-[var(--primary-color)]"
+      } `}
       onClick={onClick}
       title={compact ? label : undefined}
     >
       <div className="flex items-center gap-3">
         {icon && (
           <span
-            className={`
-              flex-shrink-0 transition-all duration-200
-              ${
-                isActive
-                  ? "text-[var(--primary-color)] scale-110"
-                  : "group-hover:text-[var(--primary-color)] group-hover:scale-110"
-              }
-            `}
+            className={`flex-shrink-0 transition-all duration-200 ${
+              isActive
+                ? "scale-110 text-[var(--primary-color)]"
+                : "group-hover:scale-110 group-hover:text-[var(--primary-color)]"
+            } `}
           >
             {icon}
           </span>
@@ -60,11 +53,7 @@ const SidebarLink = ({
 
       {badge !== undefined && (
         <span
-          className={`
-            inline-flex items-center justify-center px-2 py-1 text-xs font-bold 
-            leading-none text-white rounded-full shadow-sm
-            ${compact ? "lg:hidden xl:flex" : ""}
-          `}
+          className={`inline-flex items-center justify-center rounded-full px-2 py-1 text-xs leading-none font-bold text-white shadow-sm ${compact ? "lg:hidden xl:flex" : ""} `}
           style={{
             background: isActive
               ? "var(--instagram-gradient)"
@@ -78,7 +67,7 @@ const SidebarLink = ({
       {/* Active indicator line */}
       {isActive && (
         <div
-          className="absolute left-0 top-1/2 transform -translate-y-1/2 w-1 h-8 rounded-r-full"
+          className="absolute top-1/2 left-0 h-8 w-1 -translate-y-1/2 transform rounded-r-full"
           style={{ background: "var(--instagram-gradient)" }}
         />
       )}

@@ -1,15 +1,25 @@
-import { useState, useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
+
+import CardGrid from "../components/common/CardGrid";
+import CardListToggle from "../components/common/CardListToggle";
+import SelectedTags from "../components/common/SelectedTags";
+import TabButtons from "../components/common/TabButtons";
+import TagFilter from "../components/common/TagFilter";
 import { useLanguage } from "../context/LanguageContext";
 import { useTag } from "../context/TagContext";
 import { dataManager } from "../data/dataManager";
-import { Item } from "../types/common";
-import CardGrid from "../components/common/CardGrid";
-import CardListToggle from "../components/common/CardListToggle";
-import TagFilter from "../components/common/TagFilter";
-import SelectedTags from "../components/common/SelectedTags";
-import TabButtons from "../components/common/TabButtons";
 import { exhibits } from "../data/exhibits";
 import { stalls } from "../data/stalls";
+import { pickRandom } from "../shared/utils/random";
+import type { Item } from "../types/common";
+
+function getRandomExhibitOrStallImage() {
+  const images = [
+    ...exhibits.map((e) => e.imageUrl),
+    ...stalls.map((s) => s.imageUrl),
+  ].filter(Boolean);
+  return pickRandom(images) || "";
+}
 
 const Exhibits = () => {
   const { t } = useLanguage();
@@ -23,15 +33,7 @@ const Exhibits = () => {
   const [categoryFilter, setCategoryFilter] = useState<
     "all" | "exhibits" | "stalls"
   >("all");
-  // Choose a random hero image from exhibits or stalls. Define the function
-  // before it's used to avoid TDZ (temporal dead zone) errors.
-  function getRandomExhibitOrStallImage() {
-    const images = [
-      ...exhibits.map((e) => e.imageUrl),
-      ...stalls.map((s) => s.imageUrl),
-    ].filter((url): url is string => Boolean(url));
-    return images[Math.floor(Math.random() * images.length)] || "";
-  }
+  // Choose a random hero image from exhibits or stalls
 
   const heroImage = useMemo(() => getRandomExhibitOrStallImage(), []);
 
@@ -70,9 +72,9 @@ const Exhibits = () => {
 
   // Tab options for category filter
   const categoryOptions = [
-    { value: "all", label: t("exhibits.filters.all") },
-    { value: "exhibits", label: t("exhibits.filters.exhibits") },
-    { value: "stalls", label: t("exhibits.filters.stalls") },
+    { label: t("exhibits.filters.all"), value: "all" },
+    { label: t("exhibits.filters.exhibits"), value: "exhibits" },
+    { label: t("exhibits.filters.stalls"), value: "stalls" },
   ];
 
   // Get appropriate empty message based on filter
@@ -90,11 +92,11 @@ const Exhibits = () => {
   return (
     <div className="min-h-screen bg-[var(--bg-primary)]">
       {/* Hero Section */}
-      <section className="relative overflow-hidden py-16 rounded-lg">
+      <section className="relative overflow-hidden rounded-lg py-16">
         {/* 透かし画像 */}
         <img
           src={heroImage}
-          className="absolute inset-0 w-full h-full object-cover opacity-20 z-0 pointer-events-none"
+          className="pointer-events-none absolute inset-0 z-0 h-full w-full object-cover opacity-20"
           alt=""
           aria-hidden="true"
         />
@@ -102,12 +104,12 @@ const Exhibits = () => {
           className="absolute inset-0 opacity-10"
           style={{ background: "var(--instagram-gradient)" }}
         ></div>
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <h1 className="text-4xl md:text-5xl font-bold text-[var(--text-primary)] mb-4">
+            <h1 className="mb-4 text-4xl font-bold text-[var(--text-primary)] md:text-5xl">
               {t("exhibits.title")}
             </h1>
-            <p className="text-xl text-[var(--text-secondary)] max-w-2xl mx-auto">
+            <p className="mx-auto max-w-2xl text-xl text-[var(--text-secondary)]">
               {t("exhibits.description")}
             </p>
           </div>
@@ -116,10 +118,10 @@ const Exhibits = () => {
 
       {/* Main Content */}
       <section className="section bg-[var(--bg-primary)]">
-        <div className="max-w-7xl mx-auto">
+        <div className="mx-auto max-w-7xl">
           <div className="space-y-6">
             {/* Filter Controls - Category selection and View mode */}
-            <div className="flex flex-row items-center sm:justify-between gap-3 overflow-x-auto pb-2 scrollbar-thin mobile-scroll">
+            <div className="scrollbar-thin mobile-scroll flex flex-row items-center gap-3 overflow-x-auto pb-2 sm:justify-between">
               {/* Category filter tabs - Left aligned on wide screens */}
               <div className="flex-shrink-0">
                 <TabButtons
@@ -128,12 +130,12 @@ const Exhibits = () => {
                   onChange={(value) =>
                     setCategoryFilter(value as typeof categoryFilter)
                   }
-                  className="rounded-lg overflow-hidden shadow-sm"
+                  className="overflow-hidden rounded-lg shadow-sm"
                 />
               </div>
 
               {/* View mode toggle - Right aligned on wide screens */}
-              <div className="flex items-center justify-end flex-shrink-0">
+              <div className="flex flex-shrink-0 items-center justify-end">
                 <CardListToggle viewMode={viewMode} setViewMode={setViewMode} />
               </div>
             </div>
@@ -143,7 +145,7 @@ const Exhibits = () => {
             <SelectedTags />
 
             {/* Exhibits Grid */}
-            <div className="bg-[var(--bg-primary)] rounded-xl">
+            <div className="rounded-xl bg-[var(--bg-primary)]">
               <CardGrid
                 items={filteredItems}
                 variant={viewMode}

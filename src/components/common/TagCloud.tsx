@@ -1,6 +1,6 @@
-import Tag from "./Tag";
-import { useTag } from "../../context/TagContext";
 import { useLanguage } from "../../context/LanguageContext";
+import { useTag } from "../../context/TagContext";
+import Tag from "./Tag";
 
 interface TagCloudProps {
   tags?: string[];
@@ -12,12 +12,12 @@ interface TagCloudProps {
 }
 
 const TagCloud = ({
-  tags,
-  showCount = false,
   maxTags,
-  title,
-  size = "medium",
   onTagClick,
+  showCount = false,
+  size = "medium",
+  tags,
+  title,
 }: TagCloudProps) => {
   const { popularTags, tagCounts } = useTag();
   const { t } = useLanguage();
@@ -30,7 +30,7 @@ const TagCloud = ({
 
   if (limitedTags.length === 0) {
     return (
-      <div className="text-center py-8">
+      <div className="py-8 text-center">
         <p className="text-[var(--text-secondary)]">タグがありません</p>
       </div>
     );
@@ -39,12 +39,12 @@ const TagCloud = ({
   return (
     <div className="mb-5">
       {title && (
-        <h3 className="text-lg font-semibold mb-4 text-[var(--text-primary)] flex items-center gap-2">
+        <h3 className="mb-4 flex items-center gap-2 text-lg font-semibold text-[var(--text-primary)]">
           {title}
         </h3>
       )}
       <div className="overflow-x-auto">
-        <div className="flex gap-2 pb-2 min-w-max">
+        <div className="flex min-w-max gap-2 pb-2">
           {limitedTags.map((tag) => (
             <Tag
               key={tag}
@@ -56,7 +56,7 @@ const TagCloud = ({
           ))}
 
           {maxTags && displayTags.length > maxTags && (
-            <button className="text-xs px-3 py-2 rounded-full border border-[var(--border-color)] text-[var(--text-secondary)] hover:text-[var(--primary-color)] hover:border-[var(--primary-color)] bg-[var(--bg-secondary)] hover:bg-[var(--bg-tertiary)] transition-all duration-200">
+            <button className="rounded-full border border-[var(--border-color)] bg-[var(--bg-secondary)] px-3 py-2 text-xs text-[var(--text-secondary)] transition-all duration-200 hover:border-[var(--primary-color)] hover:bg-[var(--bg-tertiary)] hover:text-[var(--primary-color)]">
               {t("tags.showMore")} ({displayTags.length - maxTags}+)
             </button>
           )}

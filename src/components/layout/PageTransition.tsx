@@ -1,6 +1,8 @@
-import { ReactNode, useRef, useEffect } from "react";
-import { useLocation } from "react-router-dom";
 import { gsap } from "gsap";
+import type { ReactNode } from "react";
+import { useEffect, useRef } from "react";
+import { useLocation } from "react-router-dom";
+
 import { DURATION, EASE } from "../../utils/animations";
 
 interface PageTransitionProps {
@@ -22,11 +24,11 @@ const PageTransition = ({ children }: PageTransitionProps) => {
     const tl = gsap.timeline();
 
     tl.set(element, { opacity: 0, y: 20 }).to(element, {
-      opacity: 1,
-      y: 0,
+      clearProps: "all",
       duration: DURATION.NORMAL,
       ease: EASE.SMOOTH,
-      clearProps: "all",
+      opacity: 1,
+      y: 0,
     });
 
     return () => {
@@ -34,11 +36,7 @@ const PageTransition = ({ children }: PageTransitionProps) => {
     };
   }, [pathname]);
 
-  return (
-    <div ref={pageRef}>
-      {children}
-    </div>
-  );
+  return <div ref={pageRef}>{children}</div>;
 };
 
 export default PageTransition;

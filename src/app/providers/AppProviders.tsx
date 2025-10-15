@@ -1,10 +1,11 @@
-import { ReactNode } from "react";
-import { ThemeProvider } from "../../context/ThemeContext";
-import { LanguageProvider } from "../../context/LanguageContext";
-import { DataProvider } from "../../context/DataContext";
-import { SearchProvider } from "../../context/SearchContext";
+import type { ReactNode } from "react";
+
 import { BookmarkProvider } from "../../context/BookmarkContext";
+import { DataProvider } from "../../context/DataContext";
+import { LanguageProvider } from "../../context/LanguageContext";
+import { SearchProvider } from "../../context/SearchContext";
 import { TagProvider } from "../../context/TagContext";
+import { ThemeProvider } from "../../context/ThemeContext";
 
 interface AppProvidersProps {
   children: ReactNode;

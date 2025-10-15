@@ -6,8 +6,8 @@ interface StallProductsListProps {
 }
 
 const StallProductsList = ({
-  products,
   compact = false,
+  products,
 }: StallProductsListProps) => {
   const { t } = useLanguage();
 

@@ -1,22 +1,23 @@
-import { useState, useRef } from "react";
-import Tag from "./Tag";
-import { useTag } from "../../context/TagContext";
+import { useRef, useState } from "react";
+
 import { useLanguage } from "../../context/LanguageContext";
+import { useTag } from "../../context/TagContext";
+import Tag from "./Tag";
 
 interface TagFilterProps {
   onFilter?: (tag: string) => void;
   compact?: boolean;
 }
 
-const TagFilter = ({ onFilter, compact = false }: TagFilterProps) => {
-  const { tags, tagCounts, toggleTag, isTagSelected } = useTag();
+const TagFilter = ({ compact = false, onFilter }: TagFilterProps) => {
+  const { isTagSelected, tagCounts, tags, toggleTag } = useTag();
   const { t } = useLanguage();
   const [searchValue, setSearchValue] = useState("");
   const tagContainerRef = useRef<HTMLDivElement>(null);
 
   // Filter tags by search input
   const filteredTags = tags.filter((tag) =>
-    tag.toLowerCase().includes(searchValue.toLowerCase())
+    tag.toLowerCase().includes(searchValue.toLowerCase()),
   );
 
   // タグをクリックした時に検索を実行
@@ -29,8 +30,8 @@ const TagFilter = ({ onFilter, compact = false }: TagFilterProps) => {
 
   return (
     <div className={`${compact ? "p-3" : "p-0"}`}>
-      <div className="flex justify-between items-center mb-3">
-        <h3 className="text-sm font-semibold text-[var(--text-primary)] m-0 flex items-center gap-2">
+      <div className="mb-3 flex items-center justify-between">
+        <h3 className="m-0 flex items-center gap-2 text-sm font-semibold text-[var(--text-primary)]">
           {t("tags.searchByTag")}
         </h3>
       </div>
@@ -43,9 +44,9 @@ const TagFilter = ({ onFilter, compact = false }: TagFilterProps) => {
               placeholder={t("tags.searchTags")}
               value={searchValue}
               onChange={(e) => setSearchValue(e.target.value)}
-              className="w-full px-4 py-3 border rounded-lg text-sm transition-all duration-200 focus:ring-2 bg-[var(--bg-primary)] border-[var(--border-color)] placeholder-[var(--text-secondary)] focus:border-[var(--primary-color)] focus:ring-[var(--primary-color)]/20"
+              className="w-full rounded-lg border border-[var(--border-color)] bg-[var(--bg-primary)] px-4 py-3 text-sm placeholder-[var(--text-secondary)] transition-all duration-200 focus:border-[var(--primary-color)] focus:ring-2 focus:ring-[var(--primary-color)]/20"
             />
-            <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
               <svg
                 className="h-4 w-4 text-[var(--text-secondary)]"
                 fill="none"
@@ -64,10 +65,10 @@ const TagFilter = ({ onFilter, compact = false }: TagFilterProps) => {
         </div>
       )}
 
-      <div className="overflow-x-auto scrollbar-thin" ref={tagContainerRef}>
-        <div className="flex gap-2 pb-2 min-w-max items-center">
+      <div className="scrollbar-thin overflow-x-auto" ref={tagContainerRef}>
+        <div className="flex min-w-max items-center gap-2 pb-2">
           {filteredTags.length === 0 ? (
-            <div className="text-sm py-4 italic text-[var(--text-secondary)] flex items-center gap-2">
+            <div className="flex items-center gap-2 py-4 text-sm text-[var(--text-secondary)] italic">
               {searchValue ? t("tags.noTagsFound") : t("tags.searchByTag")}
             </div>
           ) : (

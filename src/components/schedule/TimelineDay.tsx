@@ -1,7 +1,7 @@
 // src/components/schedule/TimelineDay.tsx
 import { useLanguage } from "../../context/LanguageContext";
-import { Event, Exhibit, Stall } from "../../types/common";
 import UnifiedCard from "../../shared/components/ui/UnifiedCard";
+import type { Event, Exhibit, Stall } from "../../types/common";
 
 // Type for non-sponsor items
 type NonSponsorItem = Event | Exhibit | Stall;
@@ -17,13 +17,13 @@ interface TimelineDayProps {
 }
 
 const TimelineDay = ({
-  date,
-  items,
-  timeSlots,
-  groupedItems,
-  dayName,
   animationKey,
+  date,
+  dayName,
+  groupedItems,
+  items,
   onItemClick,
+  timeSlots,
 }: TimelineDayProps) => {
   const { t } = useLanguage();
 
@@ -55,17 +55,17 @@ const TimelineDay = ({
   const formatDate = (dateStr: string) => {
     const date = new Date(dateStr);
     return date.toLocaleDateString(t("language") === "ja" ? "ja-JP" : "en-US", {
+      day: "numeric",
+      month: "long",
       weekday: "long",
       year: "numeric",
-      month: "long",
-      day: "numeric",
     });
   };
 
   if (items.length === 0) {
     return (
       <div
-        className="text-center py-12 text-lg"
+        className="py-12 text-center text-lg"
         style={{ color: "var(--color-text-secondary)" }}
       >
         {t("schedule.noEvents")}
@@ -77,14 +77,14 @@ const TimelineDay = ({
     <div className="space-y-6">
       {/* Desktop: Show date header / Mobile: Hidden */}
       <div
-        className="hidden md:block rounded-lg p-6 shadow-sm border"
+        className="hidden rounded-lg border p-6 shadow-sm md:block"
         style={{
           backgroundColor: "var(--color-bg-primary)",
           borderColor: "var(--color-border-primary)",
         }}
       >
         <h2
-          className="text-xl font-semibold mb-2"
+          className="mb-2 text-xl font-semibold"
           style={{ color: "var(--color-text-primary)" }}
         >
           {formatDate(date)}
@@ -103,16 +103,16 @@ const TimelineDay = ({
           <div key={timeSlot}>
             {/* Mobile: Date header between time slots */}
             {timeSlotIndex === 0 && (
-              <div className="md:hidden mb-6">
+              <div className="mb-6 md:hidden">
                 <div
-                  className="text-center py-4 px-6 rounded-lg border"
+                  className="rounded-lg border px-6 py-4 text-center"
                   style={{
                     backgroundColor: "var(--color-bg-primary)",
                     borderColor: "var(--color-border-primary)",
                   }}
                 >
                   <h2
-                    className="text-lg font-semibold mb-1"
+                    className="mb-1 text-lg font-semibold"
                     style={{ color: "var(--color-text-primary)" }}
                   >
                     {formatDate(date)}
@@ -129,10 +129,10 @@ const TimelineDay = ({
 
             <div className="relative">
               {/* Desktop Layout: Side timeline */}
-              <div className="hidden md:flex items-start gap-6">
-                <div className="flex items-center space-x-3 w-24 flex-shrink-0">
+              <div className="hidden items-start gap-6 md:flex">
+                <div className="flex w-24 flex-shrink-0 items-center space-x-3">
                   <div
-                    className="w-3 h-3 rounded-full"
+                    className="h-3 w-3 rounded-full"
                     style={{ backgroundColor: "var(--color-accent)" }}
                   ></div>
                   <div
@@ -151,7 +151,7 @@ const TimelineDay = ({
                       style={{
                         animationDelay: `${calculateDelay(
                           timeSlotIndex,
-                          itemIndex
+                          itemIndex,
                         )}s`,
                         animationFillMode: "both",
                       }}
@@ -171,11 +171,11 @@ const TimelineDay = ({
               </div>
 
               {/* Mobile Layout: Full-width cards with time header */}
-              <div className="md:hidden space-y-6">
+              <div className="space-y-6 md:hidden">
                 {/* Time header for mobile */}
                 <div className="flex items-center justify-center">
                   <div
-                    className="px-4 py-2 rounded-full text-white font-semibold text-sm shadow-md"
+                    className="rounded-full px-4 py-2 text-sm font-semibold text-white shadow-md"
                     style={{ background: "var(--color-accent)" }}
                   >
                     {timeSlot}
@@ -191,7 +191,7 @@ const TimelineDay = ({
                       style={{
                         animationDelay: `${calculateDelay(
                           timeSlotIndex,
-                          itemIndex
+                          itemIndex,
                         )}s`,
                         animationFillMode: "both",
                       }}
@@ -211,9 +211,9 @@ const TimelineDay = ({
               </div>
 
               {/* Desktop: Connection line to next time slot */}
-              {timeSlot !== timeSlots[timeSlots.length - 1] && (
+              {timeSlot !== timeSlots.at(-1) && (
                 <div
-                  className="hidden md:block absolute left-1.5 top-8 bottom-0 w-0.5"
+                  className="absolute top-8 bottom-0 left-1.5 hidden w-0.5 md:block"
                   style={{ backgroundColor: "var(--color-border-secondary)" }}
                 ></div>
               )}

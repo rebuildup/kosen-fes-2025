@@ -1,5 +1,7 @@
-import { Component, ErrorInfo, ReactNode } from "react";
+import type { ErrorInfo, ReactNode } from "react";
+import { Component } from "react";
 import { Link } from "react-router-dom";
+
 import { withLanguage } from "../../context/LanguageContext";
 
 interface Props {
@@ -15,12 +17,12 @@ interface State {
 
 class ErrorBoundary extends Component<Props, State> {
   public state: State = {
-    hasError: false,
     error: null,
+    hasError: false,
   };
 
   public static getDerivedStateFromError(error: Error): State {
-    return { hasError: true, error };
+    return { error, hasError: true };
   }
 
   public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
@@ -28,11 +30,11 @@ class ErrorBoundary extends Component<Props, State> {
   }
 
   private handleReset = () => {
-    this.setState({ hasError: false, error: null });
+    this.setState({ error: null, hasError: false });
   };
 
   public render() {
-    const { hasError, error } = this.state;
+    const { error, hasError } = this.state;
     const { children, fallback, t } = this.props;
 
     if (hasError) {

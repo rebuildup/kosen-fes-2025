@@ -1,15 +1,17 @@
 import { useEffect, useMemo } from "react";
 import { useLocation } from "react-router-dom";
+
+import SearchBar from "../components/common/SearchBar";
+import TagFilter from "../components/common/TagFilter";
+import SearchResults from "../components/search/SearchResults";
+import { useLanguage } from "../context/LanguageContext";
 import { useSearch } from "../context/SearchContext";
 import { useTag } from "../context/TagContext";
-import { useLanguage } from "../context/LanguageContext";
-import SearchBar from "../components/common/SearchBar";
-import SearchResults from "../components/search/SearchResults";
-import TagFilter from "../components/common/TagFilter";
 import { events } from "../data/events";
 import { exhibits } from "../data/exhibits";
-import { stalls } from "../data/stalls";
 import { sponsors } from "../data/sponsors";
+import { stalls } from "../data/stalls";
+import { pickRandom } from "../shared/utils/random";
 
 // 画像パスをpublicルート基準に変換
 const toPublicImagePath = (url: string) =>
@@ -25,11 +27,11 @@ function getRandomAnyContentImage() {
   ]
     .filter(Boolean)
     .map(toPublicImagePath);
-  return images[Math.floor(Math.random() * images.length)] || "";
+  return pickRandom(images) || "";
 }
 
 const Search = () => {
-  const { searchQuery, setSearchQuery, performSearch, searchResults } =
+  const { performSearch, searchQuery, searchResults, setSearchQuery } =
     useSearch();
   const { selectedTags } = useTag();
   const { t } = useLanguage();
@@ -60,7 +62,7 @@ const Search = () => {
         {/* 透かし画像 */}
         <img
           src={heroImage}
-          className="absolute inset-0 w-full h-full object-cover opacity-20 z-0 pointer-events-none"
+          className="pointer-events-none absolute inset-0 z-0 h-full w-full object-cover opacity-20"
           alt=""
           aria-hidden="true"
         />
@@ -68,30 +70,30 @@ const Search = () => {
           className="absolute inset-0 opacity-10"
           style={{ background: "var(--instagram-gradient)" }}
         ></div>
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             {/* Title and subtitle - only show when no active search */}
             {!hasActiveSearch && (
               <>
-                <h1 className="text-4xl md:text-5xl font-bold text-[var(--text-primary)] mb-4">
+                <h1 className="mb-4 text-4xl font-bold text-[var(--text-primary)] md:text-5xl">
                   {t("search.title")}
                 </h1>
-                <p className="text-xl text-[var(--text-secondary)] max-w-2xl mx-auto mb-8">
+                <p className="mx-auto mb-8 max-w-2xl text-xl text-[var(--text-secondary)]">
                   {t("search.subtitle")}
                 </p>
               </>
             )}
 
             {/* Search Bar - Full width and prominent */}
-            <div className="max-w-3xl mx-auto">
+            <div className="mx-auto max-w-3xl">
               <SearchBar variant="large" autoFocus showSuggestions />
             </div>
 
             {/* Search Tips - Only show when no active search */}
             {!hasActiveSearch && (
-              <div className="max-w-2xl mx-auto mt-6">
-                <div className="bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-xl p-4">
-                  <h3 className="text-sm font-semibold mb-3 text-[var(--text-primary)] flex items-center justify-center gap-2">
+              <div className="mx-auto mt-6 max-w-2xl">
+                <div className="rounded-xl border border-[var(--border-color)] bg-[var(--bg-secondary)] p-4">
+                  <h3 className="mb-3 flex items-center justify-center gap-2 text-sm font-semibold text-[var(--text-primary)]">
                     <span>💡</span>
                     {t("search.searchTips")}
                   </h3>
@@ -114,7 +116,7 @@ const Search = () => {
             )}
 
             {/* Tag Filter - Width matches search bar */}
-            <div className="max-w-3xl mx-auto mt-6">
+            <div className="mx-auto mt-6 max-w-3xl">
               <TagFilter compact={false} />
             </div>
           </div>
@@ -123,10 +125,10 @@ const Search = () => {
 
       {/* Main Content */}
       <section className="section bg-[var(--bg-primary)]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="space-y-8">
             {/* Search Results */}
-            <div className="bg-[var(--bg-primary)] rounded-xl">
+            <div className="rounded-xl bg-[var(--bg-primary)]">
               <SearchResults />
             </div>
           </div>
