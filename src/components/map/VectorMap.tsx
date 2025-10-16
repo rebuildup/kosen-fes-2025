@@ -31,7 +31,7 @@ interface InteractivePoint {
   id: string;
   coordinates: Coordinate;
   title: string;
-  type: "event" | "exhibit" | "stall" | "location";
+  type: "event" | "exhibit" | "stall" | "location" | "toilet" | "trash";
   size?: number;
   color?: string;
   isSelected?: boolean;

@@ -9,11 +9,13 @@ import { useLanguage } from "../context/LanguageContext";
 import { useTag } from "../context/TagContext";
 import eventsJson from "../data/events.json";
 import exhibitsJson from "../data/exhibits.json";
+import mapAmenities from "../data/mapAmenities";
 import stallsJson from "../data/stalls.json";
 import type { Event, Exhibit, Item, Stall } from "../types/common";
 const events = eventsJson as Event[];
 const exhibits = exhibitsJson as Exhibit[];
 const stalls = stallsJson as Stall[];
+const amenities = mapAmenities;
 // import { itemsToContentItems } from "../utils/itemHelpers";
 
 // Type for non-sponsor items
@@ -150,23 +152,37 @@ const CampusMapPage = () => {
                   >
                     <VectorMap
                       mode="display"
-                      points={filteredItems
-                        .filter((item) => item.coordinates)
-                        .map((item) => ({
-                          contentItem: item,
-                          coordinates: item.coordinates!,
-                          id: item.id,
+                      points={[
+                        // フィルタリングされたイベント・展示・露店
+                        ...filteredItems
+                          .filter((item) => item.coordinates)
+                          .map((item) => ({
+                            contentItem: item,
+                            coordinates: item.coordinates!,
+                            id: item.id,
+                            isHovered: false,
+                            isSelected: false,
+                            onClick: () => {},
+                            onHover: () => {},
+                            title: item.title,
+                            type: item.type as
+                              | "event"
+                              | "exhibit"
+                              | "stall"
+                              | "location",
+                          })),
+                        // トイレとゴミ箱
+                        ...amenities.map((amenity) => ({
+                          coordinates: { x: amenity.x, y: amenity.y },
+                          id: amenity.id,
                           isHovered: false,
                           isSelected: false,
                           onClick: () => {},
                           onHover: () => {},
-                          title: item.title,
-                          type: item.type as
-                            | "event"
-                            | "exhibit"
-                            | "stall"
-                            | "location",
-                        }))}
+                          title: "", // アメニティはラベル非表示
+                          type: amenity.type as "toilet" | "trash",
+                        })),
+                      ]}
                       height={mapHeight}
                       className="rounded-lg"
                       maxZoom={8}

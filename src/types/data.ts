@@ -62,11 +62,20 @@ export interface MapData {
   buildings?: Building[];
   paths?: Path[];
   locations: MapLocation[];
+  amenities?: Amenity[];
   bounds?: {
     width: number;
     height: number;
     viewBox: string;
   };
+}
+
+export interface Amenity {
+  id: string;
+  type: "toilet" | "trash" | "water" | "info";
+  name?: string;
+  x: number;
+  y: number;
 }
 
 export interface Path {

@@ -6,7 +6,7 @@
  */
 
 import type { LucideIcon } from "lucide-react";
-import { Image, Speaker, Trash2, UtensilsCrossed } from "lucide-react";
+import { Image, Speaker, Toilet, Trash2, UtensilsCrossed } from "lucide-react";
 import React from "react";
 
 import type { Coordinate } from "../../types/map";
@@ -31,7 +31,7 @@ const POINT_TYPE_ICONS: Record<string, LucideIcon> = {
   event: Speaker,
   exhibit: Image,
   stall: UtensilsCrossed,
-  toilet: Speaker, // 仮
+  toilet: Toilet,
   trash: Trash2,
 };
 
