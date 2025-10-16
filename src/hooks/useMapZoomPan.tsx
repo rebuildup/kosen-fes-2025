@@ -64,9 +64,22 @@ export const useSimpleMapZoomPan = ({
       const scaledMapWidth = width * constrainedTransform.scale;
       const scaledMapHeight = height * constrainedTransform.scale;
 
-      // 上下左右にマップ1枚分の余白を設ける
-      const paddingX = scaledMapWidth; // マップ1枚分の余白（横）
-      const paddingY = scaledMapHeight; // マップ1枚分の余白（縦）
+      // 余白を設定 - スケールに応じて動的に調整
+      // ズームイン時(scale > 1)は大きめの余白、ズームアウト時(scale < 1)は広範囲の移動を許可
+      let paddingX: number;
+      let paddingY: number;
+
+      if (constrainedTransform.scale >= 1) {
+        // ズームイン時: マップサイズに比例した余白
+        paddingX = scaledMapWidth * 0.3;
+        paddingY = scaledMapHeight * 0.3;
+      } else {
+        // ズームアウト時: コンテナサイズに比例した広い余白
+        // スケールが小さいほど広範囲の移動を許可
+        const zoomOutFactor = 2 / constrainedTransform.scale; // scale=0.5なら4倍、scale=0.25なら8倍
+        paddingX = containerWidth * zoomOutFactor;
+        paddingY = containerHeight * zoomOutFactor;
+      }
 
       // パン制限の計算
       // マップの左上角が右下に移動できる最大値（右・下方向の制限）
@@ -77,8 +90,7 @@ export const useSimpleMapZoomPan = ({
       const minTranslateX = containerWidth - scaledMapWidth - paddingX;
       const minTranslateY = containerHeight - scaledMapHeight - paddingY;
 
-      // パン範囲を制限
-
+      // パン範囲を制限（ズームアウト時は常に制限が緩い）
       constrainedTransform.translateX = Math.max(
         minTranslateX,
         Math.min(maxTranslateX, constrainedTransform.translateX),

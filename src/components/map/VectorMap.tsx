@@ -1,4 +1,3 @@
-import type { LucideIcon } from "lucide-react";
 import type { CSSProperties } from "react";
 import React, {
   useCallback,
@@ -8,11 +7,12 @@ import React, {
   useState,
 } from "react";
 
+import ItemTypeIcon from "../../components/common/ItemTypeIcon";
 import { useLanguage } from "../../context/LanguageContext";
 import { CAMPUS_MAP_BOUNDS } from "../../data/buildings";
 import { UnifiedCard } from "../../shared/components/ui/UnifiedCard";
 import type { Item } from "../../types/common";
-import { EventIcon, ExhibitIcon, MapIcon } from "../icons";
+import { MapPin, ClusterPin, HighlightPin } from "./MapPin";
 import ZoomControls from "./ZoomControls";
 
 const ADJUSTED_MAP_BOUNDS = {
@@ -36,7 +36,7 @@ interface InteractivePoint {
   color?: string;
   isSelected?: boolean;
   isHovered?: boolean;
-  contentItem?: Item; // コンテンツカード表示用
+  contentItem?: Item;
   onClick?: () => void;
   onHover?: (hovered: boolean) => void;
 }
@@ -47,15 +47,6 @@ interface PointCluster {
   points: InteractivePoint[];
   count: number;
 }
-
-const POINT_TYPE_ICONS: Record<InteractivePoint["type"], LucideIcon> = {
-  event: EventIcon,
-  exhibit: ExhibitIcon,
-  location: MapIcon,
-  stall: MapIcon,
-};
-
-const LABEL_MAX_LENGTH = 18;
 
 interface VectorMapProps {
   // 基本設定
@@ -184,6 +175,11 @@ const VectorMap: React.FC<VectorMapProps> = ({
   const [dragStart, setDragStart] = useState<Coordinate>({ x: 0, y: 0 });
   const [dragStartViewBox, setDragStartViewBox] = useState<ViewBox>(viewBox);
   const [hoveredPoint, setHoveredPoint] = useState<string | null>(null);
+
+  // マップ操作中の状態管理（ピン非表示用） - 機能を無効化
+  // const [isInteracting, setIsInteracting] = useState(false);
+  const interactionTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const rafIdRef = useRef<number | null>(null); // requestAnimationFrame ID
 
   // Touch state for mobile
   const [lastTapTime, setLastTapTime] = useState<number>(0);
@@ -334,93 +330,145 @@ const VectorMap: React.FC<VectorMapProps> = ({
     [viewBox, getSVGContentRect],
   );
 
+  // SVG座標からコンテナ相対座標への変換（ピン配置用）
+  const svgToScreen = useCallback(
+    (svgX: number, svgY: number): { x: number; y: number } | null => {
+      if (!svgRef.current || !containerRef.current) return null;
+
+      const svgRect = svgRef.current.getBoundingClientRect();
+      const containerRect = containerRef.current.getBoundingClientRect();
+      const contentRect = getSVGContentRect(svgRect);
+
+      // SVG座標からViewBox内の相対位置を計算
+      const relativeX = (svgX - viewBox.x) / viewBox.width;
+      const relativeY = (svgY - viewBox.y) / viewBox.height;
+
+      // ViewBox相対位置からコンテンツ領域内の位置を計算
+      const contentX = contentRect.offsetX + relativeX * contentRect.width;
+      const contentY = contentRect.offsetY + relativeY * contentRect.height;
+
+      // SVG要素内の位置を計算
+      const svgAbsoluteX = svgRect.left + contentX;
+      const svgAbsoluteY = svgRect.top + contentY;
+
+      // コンテナ相対座標に変換（ピンはコンテナ内でposition: absolute）
+      const containerRelativeX = svgAbsoluteX - containerRect.left;
+      const containerRelativeY = svgAbsoluteY - containerRect.top;
+
+      return { x: containerRelativeX, y: containerRelativeY };
+    },
+    [viewBox, getSVGContentRect],
+  );
+
+  // マップ操作の開始/終了を管理 - 機能を無効化
+  const startInteraction = useCallback(() => {
+    // ピン非表示機能を無効化したため、何もしない
+  }, []);
+
+  const endInteraction = useCallback(() => {
+    // ピン非表示機能を無効化したため、何もしない
+  }, []);
+
   // Zoom functions with viewBox precision
   const zoomIn = useCallback(() => {
+    startInteraction();
     setViewBox((prev) => {
       const scale = 0.8; // 20% zoom in
       const newWidth = prev.width * scale;
       const newHeight = prev.height * scale;
+
+      // 実際に適用される幅と高さを先に計算（maxZoomによる制限を考慮）
+      const actualWidth = Math.max(
+        newWidth,
+        (ADJUSTED_MAP_BOUNDS.width + ADJUSTED_MAP_BOUNDS.marginX * 2) / maxZoom,
+      );
+      const actualHeight = Math.max(
+        newHeight,
+        (ADJUSTED_MAP_BOUNDS.height + ADJUSTED_MAP_BOUNDS.marginY * 2) /
+          maxZoom,
+      );
+
+      // 現在の中心点を計算
       const centerX = prev.x + prev.width / 2;
       const centerY = prev.y + prev.height / 2;
 
-      // パン制限をズームイン操作にも適用
-      const mapWidth = CAMPUS_MAP_BOUNDS.width;
-      const mapHeight = CAMPUS_MAP_BOUNDS.height;
+      // 中心点を保持したまま新しいサイズに調整
+      const newX = centerX - actualWidth / 2;
+      const newY = centerY - actualHeight / 2;
 
-      // 方向別の余白設定（左・上をより広く）
-      const paddingLeft = mapWidth * 0.3; // 左方向：30%
-      const paddingRight = mapWidth * 0.1; // 右方向：10%
-      const paddingTop = mapHeight * 0.3; // 上方向：30%
-      const paddingBottom = mapHeight * 0.1; // 下方向：10%
-
-      const maxX = mapWidth + paddingRight - newWidth;
-      const minX = -paddingLeft;
-      const maxY = mapHeight + paddingBottom - newHeight;
-      const minY = -paddingTop;
+      console.log("[ZOOM IN]", {
+        prev: { x: prev.x, y: prev.y, width: prev.width, height: prev.height },
+        center: { centerX, centerY },
+        newSize: { newWidth, newHeight },
+        actualSize: { actualWidth, actualHeight },
+        newPos: { newX, newY },
+        wasLimited: newWidth !== actualWidth || newHeight !== actualHeight,
+      });
 
       return {
-        height: Math.max(
-          newHeight,
-          (ADJUSTED_MAP_BOUNDS.height + ADJUSTED_MAP_BOUNDS.marginY * 2) /
-            maxZoom,
-        ),
-        width: Math.max(
-          newWidth,
-          (ADJUSTED_MAP_BOUNDS.width + ADJUSTED_MAP_BOUNDS.marginX * 2) /
-            maxZoom,
-        ),
-        x: Math.max(minX, Math.min(maxX, centerX - newWidth / 2)),
-        y: Math.max(minY, Math.min(maxY, centerY - newHeight / 2)),
+        height: actualHeight,
+        width: actualWidth,
+        x: newX,
+        y: newY,
       };
     });
-  }, [maxZoom]);
+    endInteraction();
+  }, [maxZoom, startInteraction, endInteraction]);
 
   const zoomOut = useCallback(() => {
+    startInteraction();
     setViewBox((prev) => {
       const scale = 1.25; // 25% zoom out
       const newWidth = prev.width * scale;
       const newHeight = prev.height * scale;
+
+      // 実際に適用される幅と高さを先に計算（minZoomによる制限を考慮）
+      const actualWidth = Math.min(
+        newWidth,
+        (ADJUSTED_MAP_BOUNDS.width + ADJUSTED_MAP_BOUNDS.marginX * 2) / minZoom,
+      );
+      const actualHeight = Math.min(
+        newHeight,
+        (ADJUSTED_MAP_BOUNDS.height + ADJUSTED_MAP_BOUNDS.marginY * 2) /
+          minZoom,
+      );
+
+      // 現在の中心点を計算
       const centerX = prev.x + prev.width / 2;
       const centerY = prev.y + prev.height / 2;
 
-      // パン制限をズームアウト操作にも適用
-      const mapWidth = CAMPUS_MAP_BOUNDS.width;
-      const mapHeight = CAMPUS_MAP_BOUNDS.height;
+      // 中心点を保持したまま新しいサイズに調整
+      const newX = centerX - actualWidth / 2;
+      const newY = centerY - actualHeight / 2;
 
-      // 方向別の余白設定（左・上をより広く）
-      const paddingLeft = mapWidth * 0.3; // 左方向：30%
-      const paddingRight = mapWidth * 0.1; // 右方向：10%
-      const paddingTop = mapHeight * 0.3; // 上方向：30%
-      const paddingBottom = mapHeight * 0.1; // 下方向：10%
-
-      const maxX = mapWidth + paddingRight - newWidth;
-      const minX = -paddingLeft;
-      const maxY = mapHeight + paddingBottom - newHeight;
-      const minY = -paddingTop;
+      console.log("[ZOOM OUT]", {
+        prev: { x: prev.x, y: prev.y, width: prev.width, height: prev.height },
+        center: { centerX, centerY },
+        newSize: { newWidth, newHeight },
+        actualSize: { actualWidth, actualHeight },
+        newPos: { newX, newY },
+        wasLimited: newWidth !== actualWidth || newHeight !== actualHeight,
+      });
 
       return {
-        height: Math.min(
-          newHeight,
-          (ADJUSTED_MAP_BOUNDS.height + ADJUSTED_MAP_BOUNDS.marginY * 2) /
-            minZoom,
-        ),
-        width: Math.min(
-          newWidth,
-          (ADJUSTED_MAP_BOUNDS.width + ADJUSTED_MAP_BOUNDS.marginX * 2) /
-            minZoom,
-        ),
-        x: Math.max(minX, Math.min(maxX, centerX - newWidth / 2)),
-        y: Math.max(minY, Math.min(maxY, centerY - newHeight / 2)),
+        height: actualHeight,
+        width: actualWidth,
+        x: newX,
+        y: newY,
       };
     });
-  }, [minZoom]);
+    endInteraction();
+  }, [minZoom, startInteraction, endInteraction]);
 
   const resetView = useCallback(() => {
+    startInteraction();
     setViewBox(resolveInitialViewBox(points, mode, initialZoom));
-  }, [points, mode, initialZoom]);
+    endInteraction();
+  }, [points, mode, initialZoom, startInteraction, endInteraction]);
 
   const zoomToPoint = useCallback(
     (point: Coordinate, zoomLevel: number = 2) => {
+      startInteraction();
       const targetWidth = CAMPUS_MAP_BOUNDS.width / zoomLevel;
       const targetHeight = CAMPUS_MAP_BOUNDS.height / zoomLevel;
 
@@ -449,8 +497,9 @@ const VectorMap: React.FC<VectorMapProps> = ({
         x: Math.max(minX, Math.min(maxX, centerX)),
         y: Math.max(minY, Math.min(maxY, centerY)),
       });
+      endInteraction();
     },
-    [],
+    [startInteraction, endInteraction],
   );
 
   // Hide mouse cursor when leaving the map
@@ -465,6 +514,8 @@ const VectorMap: React.FC<VectorMapProps> = ({
     (e: React.MouseEvent) => {
       if (e.button !== 0) return;
 
+      // マップ操作開始
+      startInteraction();
       // マップ操作開始時にカードを閉じる
       closeCard();
 
@@ -482,62 +533,60 @@ const VectorMap: React.FC<VectorMapProps> = ({
       }
       e.preventDefault();
     },
-    [viewBox, closeCard, isShiftPressed],
+    [viewBox, closeCard, isShiftPressed, startInteraction],
   );
 
   const handleMouseMove = useCallback(
     (e: MouseEvent) => {
       if (!isDragging || !containerRef.current) return;
 
-      const containerRect = containerRef.current.getBoundingClientRect();
-      const deltaX = e.clientX - dragStart.x;
-      const deltaY = e.clientY - dragStart.y;
-
-      // Shift+ドラッグの場合はズーム操作
-      if (isShiftPressed) {
-        const distance = Math.hypot(deltaX, deltaY);
-        const zoomFactor =
-          distance > 0 ? Math.max(0.5, Math.min(2, 1 + deltaY / 100)) : 1;
-
-        const centerSVG = screenToSVG(dragStart.x, dragStart.y);
-        const targetWidth = dragStartViewBox.width * zoomFactor;
-        const targetHeight = dragStartViewBox.height * zoomFactor;
-
-        setViewBox({
-          height: targetHeight,
-          width: targetWidth,
-          x: centerSVG.x - targetWidth / 2,
-          y: centerSVG.y - targetHeight / 2,
-        });
-        return;
+      // requestAnimationFrameで既存のリクエストをキャンセル
+      if (rafIdRef.current !== null) {
+        cancelAnimationFrame(rafIdRef.current);
       }
 
-      const scaleX = viewBox.width / containerRect.width;
-      const scaleY = viewBox.height / containerRect.height;
+      // 次のフレームで実行
+      rafIdRef.current = requestAnimationFrame(() => {
+        if (!containerRef.current || !svgRef.current) return;
 
-      const newX = dragStartViewBox.x - deltaX * scaleX;
-      const newY = dragStartViewBox.y - deltaY * scaleY;
+        const svgRect = svgRef.current.getBoundingClientRect();
+        const contentRect = getSVGContentRect(svgRect);
+        const deltaX = e.clientX - dragStart.x;
+        const deltaY = e.clientY - dragStart.y;
 
-      // パン範囲制限：マップの表示可能範囲を定義
-      const mapWidth = CAMPUS_MAP_BOUNDS.width;
-      const mapHeight = CAMPUS_MAP_BOUNDS.height;
+        // Shift+ドラッグの場合はズーム操作
+        if (isShiftPressed) {
+          const distance = Math.hypot(deltaX, deltaY);
+          const zoomFactor =
+            distance > 0 ? Math.max(0.5, Math.min(2, 1 + deltaY / 100)) : 1;
 
-      // 方向別の余白設定（左・上をより広く）
-      const paddingLeft = mapWidth * 0.3; // 左方向：30%
-      const paddingRight = mapWidth * 0.1; // 右方向：10%
-      const paddingTop = mapHeight * 0.3; // 上方向：30%
-      const paddingBottom = mapHeight * 0.1; // 下方向：10%
+          const centerSVG = screenToSVG(dragStart.x, dragStart.y);
+          const targetWidth = dragStartViewBox.width * zoomFactor;
+          const targetHeight = dragStartViewBox.height * zoomFactor;
 
-      const maxX = mapWidth + paddingRight - viewBox.width; // 右方向の制限
-      const minX = -paddingLeft; // 左方向の制限
-      const maxY = mapHeight + paddingBottom - viewBox.height; // 下方向の制限
-      const minY = -paddingTop; // 上方向の制限
+          setViewBox({
+            height: targetHeight,
+            width: targetWidth,
+            x: centerSVG.x - targetWidth / 2,
+            y: centerSVG.y - targetHeight / 2,
+          });
+          return;
+        }
 
-      setViewBox({
-        height: dragStartViewBox.height,
-        width: dragStartViewBox.width,
-        x: Math.max(minX, Math.min(maxX, newX)),
-        y: Math.max(minY, Math.min(maxY, newY)),
+        // SVGコンテンツ領域のサイズを使用してスケールを計算
+        const scaleX = viewBox.width / contentRect.width;
+        const scaleY = viewBox.height / contentRect.height;
+
+        const newX = dragStartViewBox.x - deltaX * scaleX;
+        const newY = dragStartViewBox.y - deltaY * scaleY;
+
+        // パン制限を完全に無効化 - 自由に移動可能
+        setViewBox({
+          height: dragStartViewBox.height,
+          width: dragStartViewBox.width,
+          x: newX,
+          y: newY,
+        });
       });
     },
     [
@@ -553,7 +602,8 @@ const VectorMap: React.FC<VectorMapProps> = ({
 
   const handleMouseUp = useCallback(() => {
     setIsDragging(false);
-  }, []);
+    endInteraction();
+  }, [endInteraction]);
 
   // SVGの実際の描画領域を計算する関数
   // 注意：Content Areaは元のviewBoxサイズ（2000x1343）に基づいて計算する必要がある
@@ -591,6 +641,9 @@ const VectorMap: React.FC<VectorMapProps> = ({
       setTouchStartPos({ x: e.touches[0].clientX, y: e.touches[0].clientY });
       setIsTouchGesture(false);
 
+      // マップ操作開始
+      startInteraction();
+
       if (e.touches.length === 1) {
         // Single touch - prepare for drag but don't close card yet
         setIsDragging(true);
@@ -604,7 +657,7 @@ const VectorMap: React.FC<VectorMapProps> = ({
         setIsTouchGesture(true);
       }
     },
-    [viewBox, closeCard, getTouchDistance],
+    [viewBox, closeCard, getTouchDistance, startInteraction],
   );
 
   const handleTouchMove = useCallback(
@@ -662,36 +715,35 @@ const VectorMap: React.FC<VectorMapProps> = ({
         containerRef.current &&
         (isTouchGesture || distance > 5)
       ) {
-        const deltaX = e.touches[0].clientX - dragStart.x;
-        const deltaY = e.touches[0].clientY - dragStart.y;
+        // requestAnimationFrameで既存のリクエストをキャンセル
+        if (rafIdRef.current !== null) {
+          cancelAnimationFrame(rafIdRef.current);
+        }
 
-        const containerRect = containerRef.current.getBoundingClientRect();
-        const scaleX = viewBox.width / containerRect.width;
-        const scaleY = viewBox.height / containerRect.height;
+        // 次のフレームで実行
+        rafIdRef.current = requestAnimationFrame(() => {
+          if (!containerRef.current || !svgRef.current) return;
 
-        const newX = dragStartViewBox.x - deltaX * scaleX;
-        const newY = dragStartViewBox.y - deltaY * scaleY;
+          const deltaX = e.touches[0].clientX - dragStart.x;
+          const deltaY = e.touches[0].clientY - dragStart.y;
 
-        // パン範囲制限：マップの表示可能範囲を定義
-        const mapWidth = CAMPUS_MAP_BOUNDS.width;
-        const mapHeight = CAMPUS_MAP_BOUNDS.height;
+          const svgRect = svgRef.current.getBoundingClientRect();
+          const contentRect = getSVGContentRect(svgRect);
 
-        // 方向別の余白設定（左・上をより広く）
-        const paddingLeft = mapWidth * 0.3; // 左方向：30%
-        const paddingRight = mapWidth * 0.1; // 右方向：10%
-        const paddingTop = mapHeight * 0.3; // 上方向：30%
-        const paddingBottom = mapHeight * 0.1; // 下方向：10%
+          // SVGコンテンツ領域のサイズを使用してスケールを計算
+          const scaleX = viewBox.width / contentRect.width;
+          const scaleY = viewBox.height / contentRect.height;
 
-        const maxX = mapWidth + paddingRight - viewBox.width; // 右方向の制限
-        const minX = -paddingLeft; // 左方向の制限
-        const maxY = mapHeight + paddingBottom - viewBox.height; // 下方向の制限
-        const minY = -paddingTop; // 上方向の制限
+          const newX = dragStartViewBox.x - deltaX * scaleX;
+          const newY = dragStartViewBox.y - deltaY * scaleY;
 
-        setViewBox({
-          height: dragStartViewBox.height,
-          width: dragStartViewBox.width,
-          x: Math.max(minX, Math.min(maxX, newX)),
-          y: Math.max(minY, Math.min(maxY, newY)),
+          // パン制限を完全に無効化 - 自由に移動可能
+          setViewBox({
+            height: dragStartViewBox.height,
+            width: dragStartViewBox.width,
+            x: newX,
+            y: newY,
+          });
         });
       } else if (e.touches.length === 2 && touchDistance > 0) {
         const newDistance = getTouchDistance(e.touches);
@@ -720,38 +772,17 @@ const VectorMap: React.FC<VectorMapProps> = ({
               maxZoom,
           );
 
-          // パン範囲制限をズーム操作にも適用
-          const mapWidth = CAMPUS_MAP_BOUNDS.width;
-          const mapHeight = CAMPUS_MAP_BOUNDS.height;
-
-          const paddingLeft = mapWidth * 0.3;
-          const paddingRight = mapWidth * 0.1;
-          const paddingTop = mapHeight * 0.3;
-          const paddingBottom = mapHeight * 0.1;
-
-          const maxX = mapWidth + paddingRight - newWidth;
-          const minX = -paddingLeft;
-          const maxY = mapHeight + paddingBottom - newHeight;
-          const minY = -paddingTop;
+          // タッチの中心位置を保ったままズーム（パン制限なし）
+          const newX =
+            centerSVG.x - (centerSVG.x - prev.x) * (newWidth / prev.width);
+          const newY =
+            centerSVG.y - (centerSVG.y - prev.y) * (newHeight / prev.height);
 
           return {
             height: newHeight,
             width: newWidth,
-            x: Math.max(
-              minX,
-              Math.min(
-                maxX,
-                centerSVG.x - (centerSVG.x - prev.x) * (newWidth / prev.width),
-              ),
-            ),
-            y: Math.max(
-              minY,
-              Math.min(
-                maxY,
-                centerSVG.y -
-                  (centerSVG.y - prev.y) * (newHeight / prev.height),
-              ),
-            ),
+            x: newX,
+            y: newY,
           };
         });
 
@@ -908,6 +939,7 @@ const VectorMap: React.FC<VectorMapProps> = ({
         setIsDragging(false);
         setTouchDistance(0);
         setIsTouchGesture(false);
+        endInteraction();
       }
     },
     [
@@ -920,6 +952,7 @@ const VectorMap: React.FC<VectorMapProps> = ({
       isTouchGesture,
       mode,
       onMapClick,
+      endInteraction,
       getSVGContentRect,
       viewBox,
     ],
@@ -954,6 +987,8 @@ const VectorMap: React.FC<VectorMapProps> = ({
 
       e.preventDefault();
 
+      // ズーム操作開始
+      startInteraction();
       // ズーム操作時にカードを閉じる
       closeCard();
 
@@ -981,42 +1016,29 @@ const VectorMap: React.FC<VectorMapProps> = ({
             maxZoom,
         );
 
-        // パン制限をホイールズーム操作にも適用
-        const mapWidth = CAMPUS_MAP_BOUNDS.width;
-        const mapHeight = CAMPUS_MAP_BOUNDS.height;
-
-        // 方向別の余白設定（左・上をより広く）
-        const paddingLeft = mapWidth * 0.3; // 左方向：30%
-        const paddingRight = mapWidth * 0.1; // 右方向：10%
-        const paddingTop = mapHeight * 0.3; // 上方向：30%
-        const paddingBottom = mapHeight * 0.1; // 下方向：10%
-
-        const maxX = mapWidth + paddingRight - newWidth;
-        const minX = -paddingLeft;
-        const maxY = mapHeight + paddingBottom - newHeight;
-        const minY = -paddingTop;
+        // ポインター位置を中心にズーム（パン制限なし）
+        const newX =
+          mouseSVG.x - (mouseSVG.x - prev.x) * (newWidth / prev.width);
+        const newY =
+          mouseSVG.y - (mouseSVG.y - prev.y) * (newHeight / prev.height);
 
         return {
           height: newHeight,
           width: newWidth,
-          x: Math.max(
-            minX,
-            Math.min(
-              maxX,
-              mouseSVG.x - (mouseSVG.x - prev.x) * (newWidth / prev.width),
-            ),
-          ),
-          y: Math.max(
-            minY,
-            Math.min(
-              maxY,
-              mouseSVG.y - (mouseSVG.y - prev.y) * (newHeight / prev.height),
-            ),
-          ),
+          x: newX,
+          y: newY,
         };
       });
+      endInteraction();
     },
-    [screenToSVG, minZoom, maxZoom, closeCard],
+    [
+      screenToSVG,
+      minZoom,
+      maxZoom,
+      closeCard,
+      startInteraction,
+      endInteraction,
+    ],
   );
 
   // カードの最適な表示位置を計算する関数
@@ -1366,8 +1388,9 @@ const VectorMap: React.FC<VectorMapProps> = ({
     if (!container) return;
 
     // Mouse events (keep document level for drag continuation)
-    document.addEventListener("mousemove", handleMouseMove);
-    document.addEventListener("mouseup", handleMouseUp);
+    // mousemoveはpassiveにしてパフォーマンス向上
+    document.addEventListener("mousemove", handleMouseMove, { passive: true });
+    document.addEventListener("mouseup", handleMouseUp, { passive: true });
 
     // Touch events (attach to container only to prevent interference)
     container.addEventListener("touchmove", handleTouchMove, {
@@ -1433,46 +1456,10 @@ const VectorMap: React.FC<VectorMapProps> = ({
     setHasAutoZoomed(false);
   }, [highlightPoint]);
 
-  // Calculate dynamic point sizes based on zoom level
-  const getPointSize = useCallback(
-    (baseSize: number = 8) => {
-      const zoomLevel =
-        (ADJUSTED_MAP_BOUNDS.width + ADJUSTED_MAP_BOUNDS.marginX * 2) /
-        viewBox.width;
-      return Math.max(baseSize / Math.sqrt(zoomLevel), 4);
-    },
-    [viewBox.width],
-  );
-
-  const getTextSize = useCallback(() => {
-    const zoomLevel =
-      (ADJUSTED_MAP_BOUNDS.width + ADJUSTED_MAP_BOUNDS.marginX * 2) /
-      viewBox.width;
-    return Math.max(12 / Math.sqrt(zoomLevel), 8);
-  }, [viewBox.width]);
-
-  // テキスト表示のズームレベル制御
-  const shouldShowText = useCallback(() => {
-    // 詳細ページではテキストを表示しない
-    if (mode === "detail") return false;
-
-    const zoomLevel =
-      (ADJUSTED_MAP_BOUNDS.width + ADJUSTED_MAP_BOUNDS.marginX * 2) /
-      viewBox.width;
-    // ズームレベルが1.5以上の時のみテキストを表示
-    return zoomLevel >= 1.5;
-  }, [viewBox.width, mode]);
-
-  const getLabelDirection = useCallback(
-    (x: number): "left" | "right" => {
-      const viewCenterX = viewBox.x + viewBox.width / 2;
-      return x > viewCenterX ? "left" : "right";
-    },
-    [viewBox.x, viewBox.width],
-  );
-
   // クラスタリング機能
-  const CLUSTER_DISTANCE_THRESHOLD = 35; // ピクセル単位（50→35にさらに減少でクラスタリングを積極化）
+  const CLUSTER_DISTANCE_THRESHOLD = 25; // ピクセル単位（35→25にさらに減少でクラスタリングを積極化）
+  const LABEL_WIDTH = 200; // ラベルの幅（ピクセル）
+  const LABEL_HEIGHT = 40; // ラベルの高さ（ピクセル、2行分）
 
   const createClusters = useCallback((): PointCluster[] => {
     if (points.length === 0) return [];
@@ -1538,6 +1525,307 @@ const VectorMap: React.FC<VectorMapProps> = ({
 
   const clusters = useMemo(() => createClusters(), [createClusters]);
 
+  // ピンのスクリーン座標を計算（ズーム/パンに追従）
+  const pinsScreenPositions = useMemo(() => {
+    const positions = clusters.map((cluster) => {
+      const screenPos = svgToScreen(
+        cluster.coordinates.x,
+        cluster.coordinates.y,
+      );
+      return {
+        cluster,
+        screenPosition: screenPos || { x: 0, y: 0 },
+      };
+    });
+
+    // クラスター同士の重複チェックと非表示判定
+    const visiblePositions = positions.map((pos) => {
+      // クラスターは常に表示する（非表示判定を無効化）
+      return { ...pos, visible: true, showLabel: false };
+    });
+
+    // ラベル表示の条件をチェック（連鎖的な左右反転で最大化）
+
+    // ラベル矩形を計算する関数
+    const calculateLabelRect = (
+      pos: (typeof visiblePositions)[0],
+      direction: "left" | "right",
+    ) => {
+      return {
+        x:
+          direction === "right"
+            ? pos.screenPosition.x + 32
+            : pos.screenPosition.x - 32 - LABEL_WIDTH,
+        y: pos.screenPosition.y - LABEL_HEIGHT / 2,
+        width: LABEL_WIDTH,
+        height: LABEL_HEIGHT,
+      };
+    };
+
+    // 矩形が重なっているかチェックする関数
+    const rectanglesOverlap = (
+      rect1: { x: number; y: number; width: number; height: number },
+      rect2: { x: number; y: number; width: number; height: number },
+      margin = 5,
+    ) => {
+      return (
+        rect1.x < rect2.x + rect2.width + margin &&
+        rect1.x + rect1.width > rect2.x - margin &&
+        rect1.y < rect2.y + rect2.height + margin &&
+        rect1.y + rect1.height > rect2.y - margin
+      );
+    };
+
+    // 配置が有効かチェックする関数
+    const isValidPlacement = (
+      rect: { x: number; y: number; width: number; height: number },
+      selfIndex: number,
+      labels: Array<{
+        index: number;
+        direction: "left" | "right";
+        rect: { x: number; y: number; width: number; height: number };
+      }>,
+    ) => {
+      // ピンとの重なりチェック
+      for (let j = 0; j < visiblePositions.length; j++) {
+        if (selfIndex === j || !visiblePositions[j].visible) continue;
+        const otherPos = visiblePositions[j];
+        const pinRect = {
+          x: otherPos.screenPosition.x - 12,
+          y: otherPos.screenPosition.y - 16,
+          width: 24,
+          height: 32,
+        };
+        if (rectanglesOverlap(rect, pinRect, 2)) {
+          return false;
+        }
+      }
+
+      // 他のラベルとの重なりチェック
+      for (const other of labels) {
+        if (other.index === selfIndex) continue;
+        if (rectanglesOverlap(rect, other.rect)) {
+          return false;
+        }
+      }
+
+      return true;
+    };
+
+    // 連鎖的に反転を試みる関数（バックトラッキング）
+    const tryFlipChain = (
+      targetIndex: number,
+      targetDirection: "left" | "right",
+      labels: Array<{
+        index: number;
+        direction: "left" | "right";
+        rect: { x: number; y: number; width: number; height: number };
+      }>,
+      visited: Set<number>,
+      maxDepth: number,
+    ): Array<{
+      index: number;
+      direction: "left" | "right";
+      rect: { x: number; y: number; width: number; height: number };
+    }> | null => {
+      // 深さ制限（無限ループ防止）
+      if (visited.size >= maxDepth) return null;
+      if (visited.has(targetIndex)) return null;
+
+      const targetPos = visiblePositions[targetIndex];
+      const targetRect = calculateLabelRect(targetPos, targetDirection);
+
+      // この配置が有効かチェック
+      if (isValidPlacement(targetRect, targetIndex, labels)) {
+        return [
+          { index: targetIndex, direction: targetDirection, rect: targetRect },
+        ];
+      }
+
+      // 重なっているラベルを見つけて反転を試みる
+      const conflicts = labels.filter((label) =>
+        rectanglesOverlap(targetRect, label.rect),
+      );
+
+      visited.add(targetIndex);
+
+      // 各衝突について、相手を反転して解決できるか試す
+      for (const conflict of conflicts) {
+        const newDirection = conflict.direction === "left" ? "right" : "left";
+        const labelsWithoutConflict = labels.filter(
+          (l) => l.index !== conflict.index,
+        );
+
+        // 相手を反転して連鎖的に試行
+        const chainResult = tryFlipChain(
+          conflict.index,
+          newDirection,
+          labelsWithoutConflict,
+          new Set(visited),
+          maxDepth,
+        );
+
+        if (chainResult) {
+          // 成功：相手の反転 + 自分の配置
+          return [
+            ...chainResult,
+            {
+              index: targetIndex,
+              direction: targetDirection,
+              rect: targetRect,
+            },
+          ];
+        }
+      }
+
+      visited.delete(targetIndex);
+      return null;
+    };
+
+    // 確定したラベルの情報を保存
+    const confirmedLabels: Array<{
+      index: number;
+      direction: "left" | "right";
+      rect: { x: number; y: number; width: number; height: number };
+    }> = [];
+
+    // ビューポートの中心座標を計算
+    const viewportCenterX = viewBox.width / 2;
+    const viewportCenterY = viewBox.height / 2;
+
+    // ビューポート中心からの距離でソート（中心に近いものから処理）
+    const sortedIndices = visiblePositions
+      .map((pos, index) => {
+        const dx = pos.screenPosition.x - viewportCenterX;
+        const dy = pos.screenPosition.y - viewportCenterY;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        return { index, distance };
+      })
+      .sort((a, b) => a.distance - b.distance)
+      .map((item) => item.index);
+
+    // 中心から近い順に処理
+    for (const i of sortedIndices) {
+      const pos = visiblePositions[i];
+
+      // クラスターは常に表示
+      if (pos.cluster.count !== 1) {
+        const defaultDirection =
+          pos.screenPosition.x > viewBox.width / 2 ? "left" : "right";
+        confirmedLabels.push({
+          index: i,
+          direction: defaultDirection,
+          rect: calculateLabelRect(pos, defaultDirection),
+        });
+        continue;
+      }
+
+      // デフォルトの方向
+      const defaultDirection =
+        pos.screenPosition.x > viewBox.width / 2 ? "left" : "right";
+      const oppositeDirection = defaultDirection === "left" ? "right" : "left";
+
+      // 1. デフォルト方向で試行
+      let labelRect = calculateLabelRect(pos, defaultDirection);
+      if (isValidPlacement(labelRect, i, confirmedLabels)) {
+        confirmedLabels.push({
+          index: i,
+          direction: defaultDirection,
+          rect: labelRect,
+        });
+        continue;
+      }
+
+      // 2. 自分を反転して試行
+      labelRect = calculateLabelRect(pos, oppositeDirection);
+      if (isValidPlacement(labelRect, i, confirmedLabels)) {
+        confirmedLabels.push({
+          index: i,
+          direction: oppositeDirection,
+          rect: labelRect,
+        });
+        continue;
+      }
+
+      // 3. デフォルト方向で連鎖的な反転を試行（最大3段階まで）
+      labelRect = calculateLabelRect(pos, defaultDirection);
+      let chainResult = tryFlipChain(
+        i,
+        defaultDirection,
+        confirmedLabels,
+        new Set(),
+        3,
+      );
+
+      if (chainResult) {
+        // 連鎖反転に成功：影響を受けたラベルを更新
+        const newLabel = chainResult[chainResult.length - 1];
+        const updates = chainResult.slice(0, -1);
+
+        // 既存のラベルを更新
+        for (const update of updates) {
+          const existingIndex = confirmedLabels.findIndex(
+            (l) => l.index === update.index,
+          );
+          if (existingIndex !== -1) {
+            confirmedLabels[existingIndex] = update;
+          }
+        }
+
+        // 新しいラベルを追加
+        confirmedLabels.push(newLabel);
+        continue;
+      }
+
+      // 4. 反対方向で連鎖的な反転を試行
+      chainResult = tryFlipChain(
+        i,
+        oppositeDirection,
+        confirmedLabels,
+        new Set(),
+        3,
+      );
+
+      if (chainResult) {
+        // 連鎖反転に成功
+        const newLabel = chainResult[chainResult.length - 1];
+        const updates = chainResult.slice(0, -1);
+
+        for (const update of updates) {
+          const existingIndex = confirmedLabels.findIndex(
+            (l) => l.index === update.index,
+          );
+          if (existingIndex !== -1) {
+            confirmedLabels[existingIndex] = update;
+          }
+        }
+
+        confirmedLabels.push(newLabel);
+        continue;
+      }
+
+      // 5. どうしても配置できない場合は非表示
+      // confirmedLabelsに追加しないため、showLabelがfalseになる
+    }
+
+    // 結果を返す（確定したラベルのマップを作成）
+    const labelMap = new Map(
+      confirmedLabels.map((label) => [label.index, label.direction]),
+    );
+
+    return visiblePositions.map((pos, index) => {
+      const direction = labelMap.get(index);
+      const showLabel = direction !== undefined;
+      return { ...pos, showLabel, labelPosition: direction };
+    });
+  }, [clusters, svgToScreen, viewBox.width]);
+
+  // ハイライトポイントのスクリーン座標
+  const highlightScreenPosition = useMemo(() => {
+    if (!highlightPoint) return null;
+    return svgToScreen(highlightPoint.x, highlightPoint.y);
+  }, [highlightPoint, svgToScreen]);
+
   useEffect(() => {
     if (!fullscreenEnabled || !resolvedFullscreen) {
       return;
@@ -1568,6 +1856,16 @@ const VectorMap: React.FC<VectorMapProps> = ({
   useEffect(() => {
     // コンポーネントアンマウント時のクリーンアップ
     return () => {
+      // インタラクションタイムアウトをクリア
+      if (interactionTimeoutRef.current) {
+        clearTimeout(interactionTimeoutRef.current);
+        interactionTimeoutRef.current = null;
+      }
+      // requestAnimationFrameをキャンセル
+      if (rafIdRef.current !== null) {
+        cancelAnimationFrame(rafIdRef.current);
+        rafIdRef.current = null;
+      }
       setSelectedPoint(null);
       setSelectedCluster(null);
       setHoveredPoint(null);
@@ -1963,214 +2261,118 @@ const VectorMap: React.FC<VectorMapProps> = ({
             />
           </g>
 
-          {/* Interactive Points/Clusters Layer */}
-          <g id="points">
-            {clusters.map((cluster) => {
+          {/* ピンはSVG外部にレンダリング - SVG内には何も表示しない */}
+        </svg>
+
+        {/* 独立したピンレイヤー（SVG外部、固定サイズ） */}
+        <div
+          className="map-pins-layer"
+          style={{
+            position: "absolute",
+            inset: 0,
+            pointerEvents: "none",
+            opacity: 1, // 常に表示（非表示機能を無効化）
+            transform: "translateZ(0)", // GPU加速を有効化
+            backfaceVisibility: "hidden", // GPU加速の最適化
+          }}
+        >
+          {pinsScreenPositions.map(
+            ({
+              cluster,
+              screenPosition,
+              visible,
+              showLabel,
+              labelPosition,
+            }) => {
+              // クラスターが非表示の場合はスキップ
+              if (!visible) return null;
+
               if (cluster.count === 1) {
                 const point = cluster.points[0];
-                const baseColor = point.color || getPointColor(point.type);
-                const radius = Math.max(getPointSize(point.size || 8), 6);
-                const pointerHeight = radius * 1.6;
-                const pointerWidth = radius * 0.95;
-                const pointerControlY = -pointerHeight - radius * 0.3;
-                const circleCenterY = -(pointerHeight + radius);
-                const innerCircleRadius = radius * 0.55;
-                const iconSize = radius * 1.25;
-                const labelDirection = getLabelDirection(cluster.coordinates.x);
-                const labelPadding = Math.max(14, radius * 1.2);
-                const labelX =
-                  labelDirection === "right"
-                    ? radius + labelPadding
-                    : -(radius + labelPadding);
-                const labelAnchor =
-                  labelDirection === "right" ? "start" : "end";
-                const labelFontSize = getTextSize();
-                const trimmedTitle =
-                  point.title.length > LABEL_MAX_LENGTH
-                    ? `${point.title.slice(0, Math.max(0, LABEL_MAX_LENGTH))}...`
-                    : point.title;
-                const isActive =
-                  point.isHovered ||
-                  hoveredPoint === point.id ||
-                  mobileHoveredPoint === point.id;
-                const markerOpacity = isActive ? 1 : 0.92;
-                const IconComponent = POINT_TYPE_ICONS[point.type] ?? MapIcon;
-                const strokeWidth = Math.max(1.5, radius * 0.22);
-                const pointerPath = `M 0 0 L ${pointerWidth} ${-pointerHeight} Q 0 ${pointerControlY} ${-pointerWidth} ${-pointerHeight} Z`;
+                const isHovered = hoveredPoint === point.id;
+                const isMobileHovered = mobileHoveredPoint === point.id;
+
+                // location タイプはピンとして表示しない
+                if (point.type === "location") return null;
 
                 return (
-                  <g
+                  <MapPin
                     key={cluster.id}
-                    className="map-cluster"
-                    transform={`translate(${cluster.coordinates.x}, ${cluster.coordinates.y})`}
-                    opacity={markerOpacity}
-                    style={{
-                      cursor: "pointer",
-                      transition: "opacity 0.2s ease",
+                    id={point.id}
+                    position={screenPosition}
+                    svgCoordinate={cluster.coordinates}
+                    type={
+                      point.type as
+                        | "event"
+                        | "exhibit"
+                        | "stall"
+                        | "toilet"
+                        | "trash"
+                    }
+                    color={point.color}
+                    label={showLabel ? point.title : undefined}
+                    labelPosition={
+                      labelPosition ||
+                      (screenPosition.x > viewBox.width / 2 ? "left" : "right")
+                    }
+                    isHovered={isHovered}
+                    isMobileHovered={isMobileHovered}
+                    onClick={(e) => {
+                      if (e.type === "touchend") {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        handlePointClick(point, undefined, true);
+                      } else {
+                        handlePointClick(point, e as React.MouseEvent);
+                      }
                     }}
-                    onClick={(e) => handlePointClick(point, e)}
                     onMouseEnter={() => handlePointHover(point)}
                     onMouseLeave={() => handlePointHover(null)}
-                    onTouchEnd={(e) => {
-                      e.stopPropagation();
-                      e.preventDefault();
-                      handlePointClick(point, undefined, true);
-                    }}
-                  >
-                    <path
-                      d={pointerPath}
-                      fill={baseColor}
-                      stroke="white"
-                      strokeWidth={strokeWidth}
-                      strokeLinejoin="round"
-                    />
-                    <circle
-                      cx={0}
-                      cy={circleCenterY}
-                      r={radius}
-                      fill={baseColor}
-                      stroke="white"
-                      strokeWidth={strokeWidth}
-                    />
-                    <circle
-                      cx={0}
-                      cy={circleCenterY}
-                      r={innerCircleRadius}
-                      fill="white"
-                      opacity={0.95}
-                    />
-                    <g
-                      transform={`translate(${-iconSize / 2}, ${circleCenterY - iconSize / 2})`}
-                      style={{ pointerEvents: "none" }}
-                    >
-                      <IconComponent
-                        size={iconSize}
-                        color={baseColor}
-                        strokeWidth={2}
-                      />
-                    </g>
-                    {shouldShowText() && (
-                      <text
-                        x={labelX}
-                        y={circleCenterY}
-                        className="map-text"
-                        fontSize={labelFontSize}
-                        fill="#1f2937"
-                        textAnchor={labelAnchor}
-                        dominantBaseline="middle"
-                        style={{
-                          cursor: "pointer",
-                          fontWeight: 600,
-                          paintOrder: "stroke",
-                          stroke: "white",
-                          strokeWidth: 0.8,
-                        }}
-                      >
-                        {trimmedTitle}
-                      </text>
-                    )}
-                  </g>
+                  />
                 );
               }
 
+              // クラスター表示
+              const clusterType = cluster.points[0]?.type || "event";
+              const typeLabel =
+                clusterType === "event"
+                  ? "イベント"
+                  : clusterType === "exhibit"
+                    ? "展示"
+                    : "露店";
+
               return (
-                <g key={cluster.id} className="map-cluster">
-                  <circle
-                    cx={cluster.coordinates.x}
-                    cy={cluster.coordinates.y}
-                    r={getPointSize(12)}
-                    fill="#6366f1"
-                    stroke="white"
-                    strokeWidth={3}
-                    opacity={0.9}
-                    style={{
-                      cursor: "pointer",
-                      transition: "opacity 0.2s ease",
-                    }}
-                    onClick={(e) => handleClusterClick(cluster, e)}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.opacity = "1";
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.opacity = "0.9";
-                    }}
-                    onTouchEnd={(e) => {
+                <ClusterPin
+                  key={cluster.id}
+                  id={cluster.id}
+                  position={screenPosition}
+                  count={cluster.count}
+                  label={
+                    showLabel ? `${cluster.count}件の${typeLabel}` : undefined
+                  }
+                  labelPosition={
+                    screenPosition.x > viewBox.width / 2 ? "left" : "right"
+                  }
+                  isHovered={false}
+                  onClick={(e) => {
+                    if (e.type === "touchend") {
                       e.stopPropagation();
                       e.preventDefault();
                       handleClusterClick(cluster);
-                    }}
-                  />
-                  {shouldShowText() && (
-                    <text
-                      x={cluster.coordinates.x}
-                      y={cluster.coordinates.y}
-                      className="map-cluster-text"
-                      fontSize={getTextSize() * 0.8}
-                      fill="white"
-                      textAnchor="middle"
-                      dominantBaseline="central"
-                      fontWeight="bold"
-                      onClick={(e) => handleClusterClick(cluster, e)}
-                      onTouchEnd={(e) => {
-                        e.stopPropagation();
-                        e.preventDefault();
-                        handleClusterClick(cluster);
-                      }}
-                      style={{ cursor: "pointer", pointerEvents: "auto" }}
-                    >
-                      {cluster.count}
-                    </text>
-                  )}
-                </g>
+                    } else {
+                      handleClusterClick(cluster, e as React.MouseEvent);
+                    }
+                  }}
+                />
               );
-            })}
-          </g>
-
-          {/* Highlight Point */}
-          {highlightPoint && (
-            <g>
-              {/* Pulsing outer ring */}
-              <circle
-                cx={highlightPoint.x}
-                cy={highlightPoint.y}
-                r={getPointSize(25)}
-                fill="#8b5cf6"
-                opacity="0.3"
-              >
-                <animate
-                  attributeName="r"
-                  values={`${getPointSize(20)};${getPointSize(35)};${getPointSize(20)}`}
-                  dur="2s"
-                  repeatCount="indefinite"
-                />
-                <animate
-                  attributeName="opacity"
-                  values="0.3;0.1;0.3"
-                  dur="2s"
-                  repeatCount="indefinite"
-                />
-              </circle>
-              {/* Main point */}
-              <circle
-                cx={highlightPoint.x}
-                cy={highlightPoint.y}
-                r={getPointSize(16)}
-                fill="#8b5cf6"
-                stroke="white"
-                strokeWidth={4}
-                opacity="1"
-              />
-              {/* Inner white dot */}
-              <circle
-                cx={highlightPoint.x}
-                cy={highlightPoint.y}
-                r={getPointSize(8)}
-                fill="white"
-                opacity="0.9"
-              />
-            </g>
+            },
           )}
-        </svg>
+
+          {/* ハイライトピン */}
+          {highlightScreenPosition && (
+            <HighlightPin position={highlightScreenPosition} />
+          )}
+        </div>
 
         {/* Single Content Card Overlay */}
         {selectedPoint && selectedPoint.contentItem && (
@@ -2180,7 +2382,7 @@ const VectorMap: React.FC<VectorMapProps> = ({
               left: `${cardPosition.x}px`,
               top: `${cardPosition.y}px`,
               transform: cardPosition.transform || "translate(-50%, -50%)",
-              width: "300px",
+              width: "240px", // 300px → 240px に縮小
             }}
           >
             {/* Mobile hover indicator */}
@@ -2195,19 +2397,72 @@ const VectorMap: React.FC<VectorMapProps> = ({
 
             {/* Content Card */}
             <div
-              className={`overflow-hidden rounded-lg shadow-xl ${
-                mobileHoveredPoint === selectedPoint.id
-                  ? "ring-opacity-50 ring-2 ring-blue-500"
-                  : ""
-              }`}
-              style={{ minHeight: "200px", width: "100%" }}
+              style={{
+                width: "240px",
+                position: "relative",
+              }}
             >
-              <UnifiedCard
-                item={selectedPoint.contentItem}
-                variant="compact"
-                showTags={true}
-                showDescription={true}
-              />
+              {/* カードと背景を重ねる領域 */}
+              <div
+                style={{
+                  position: "relative",
+                }}
+              >
+                {/* 背景フレーム */}
+                <div
+                  className="card-background pointer-events-none absolute rounded-lg shadow-xl transition-all duration-200"
+                  style={{
+                    border: "2px solid white",
+                    padding: "2px",
+                    background:
+                      selectedPoint.contentItem.type === "event"
+                        ? "#EA4335"
+                        : selectedPoint.contentItem.type === "exhibit"
+                          ? "#4285F4"
+                          : "#FF6B35",
+                    transform: "translateY(0)",
+                    zIndex: 0,
+                    top: "-6px",
+                    left: "-6px",
+                    right: "-6px",
+                    bottom: "-6px",
+                  }}
+                />
+                {/* カードコンテンツ - カード自体がホバーを検知 */}
+                <div
+                  className="card-content"
+                  style={{
+                    display: "contents",
+                  }}
+                  onMouseEnter={(e) => {
+                    // カード内のホバーで背景を動かす
+                    const bg = e.currentTarget.parentElement?.querySelector(
+                      ".card-background",
+                    ) as HTMLElement;
+                    if (bg) {
+                      bg.style.transform = "translateY(-4px)";
+                      bg.style.boxShadow = "0 12px 24px rgba(0, 0, 0, 0.3)";
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    const bg = e.currentTarget.parentElement?.querySelector(
+                      ".card-background",
+                    ) as HTMLElement;
+                    if (bg) {
+                      bg.style.transform = "translateY(0)";
+                      bg.style.boxShadow = "0 8px 16px rgba(0, 0, 0, 0.2)";
+                    }
+                  }}
+                >
+                  <UnifiedCard
+                    item={selectedPoint.contentItem}
+                    variant="compact"
+                    showTags={true}
+                    showDescription={true}
+                    showAnimation={false}
+                  />
+                </div>
+              </div>
             </div>
           </div>
         )}
@@ -2218,42 +2473,165 @@ const VectorMap: React.FC<VectorMapProps> = ({
             className="map-card-overlay pointer-events-auto absolute z-30"
             style={{
               left: `${cardPosition.x}px`,
-              maxHeight: "500px",
+              maxHeight: "360px", // さらに縮小
               top: `${cardPosition.y}px`,
               transform: cardPosition.transform || "translate(-50%, -50%)",
-              width: "400px",
+              width: "280px", // 320px → 280px にさらに縮小
             }}
           >
-            {/* Cluster Cards Container */}
+            {/* Cluster Cards Container - シンプルでモダンなデザイン */}
             <div
-              className="overflow-hidden rounded-lg bg-white/90 shadow-xl"
-              style={{ width: "100%" }}
+              className="overflow-hidden rounded-xl bg-white/50 shadow-2xl backdrop-blur-sm"
+              style={{
+                width: "100%",
+                border: "1px solid rgba(255, 255, 255, 0.5)",
+              }}
             >
-              {/* Header */}
-              <div className="bg-gradient-to-r from-indigo-500 to-purple-600 p-3 text-white">
-                <h3 className="text-sm font-semibold">
-                  {selectedCluster.length}件のコンテンツ
-                </h3>
+              {/* Header - アイコン別の件数表示 */}
+              <div
+                className="flex items-center gap-3 border-b border-gray-100/30 px-4 py-3"
+                style={{
+                  background: "transparent",
+                }}
+              >
+                {(() => {
+                  // 各タイプの件数をカウント
+                  const counts = selectedCluster.reduce(
+                    (acc, point) => {
+                      if (point.contentItem) {
+                        const type = point.contentItem.type;
+                        acc[type] = (acc[type] || 0) + 1;
+                      }
+                      return acc;
+                    },
+                    {} as Record<string, number>,
+                  );
+
+                  return (
+                    <>
+                      {counts.event && counts.event > 0 && (
+                        <div className="flex items-center gap-1.5">
+                          <ItemTypeIcon type="event" size="small" />
+                          <span className="text-sm font-semibold text-gray-700">
+                            {counts.event}
+                          </span>
+                        </div>
+                      )}
+                      {counts.exhibit && counts.exhibit > 0 && (
+                        <div className="flex items-center gap-1.5">
+                          <ItemTypeIcon type="exhibit" size="small" />
+                          <span className="text-sm font-semibold text-gray-700">
+                            {counts.exhibit}
+                          </span>
+                        </div>
+                      )}
+                      {counts.stall && counts.stall > 0 && (
+                        <div className="flex items-center gap-1.5">
+                          <ItemTypeIcon type="stall" size="small" />
+                          <span className="text-sm font-semibold text-gray-700">
+                            {counts.stall}
+                          </span>
+                        </div>
+                      )}
+                    </>
+                  );
+                })()}
               </div>
 
-              {/* Cards List */}
-              <div className="max-h-96 space-y-2 overflow-y-auto p-2">
-                {selectedCluster
-                  .filter((point) => point.contentItem)
-                  .map((point, index) => (
-                    <div
-                      key={`${point.id}-${index}`}
-                      className="overflow-hidden rounded-lg border border-gray-100"
-                    >
-                      <UnifiedCard
-                        item={point.contentItem!}
-                        variant="compact"
-                        showTags={false}
-                        showDescription={false}
-                        className="border-0"
-                      />
-                    </div>
-                  ))}
+              {/* Cards List - コンパクトな表示 */}
+              <div
+                className="overflow-visible p-2" // overflow-y-auto → overflow-visible に変更
+                style={{
+                  maxHeight: "300px",
+                  overflowY: "auto", // スタイルでスクロールを制御
+                  scrollbarWidth: "thin",
+                  scrollbarColor: "rgba(0, 0, 0, 0.2) transparent",
+                }}
+              >
+                <div className="space-y-1.5">
+                  {selectedCluster
+                    .filter((point) => point.contentItem)
+                    .map((point, index) => {
+                      // ピンと同じアクセントカラーを取得
+                      const accentColor =
+                        point.contentItem!.type === "event"
+                          ? "#EA4335" // ピンと同じ赤
+                          : point.contentItem!.type === "exhibit"
+                            ? "#4285F4" // ピンと同じ青
+                            : "#FF6B35"; // ピンと同じオレンジ (stall)
+
+                      return (
+                        <div
+                          key={`${point.id}-${index}`}
+                          style={{
+                            position: "relative",
+                          }}
+                        >
+                          {/* カードと背景を重ねる領域 */}
+                          <div
+                            style={{
+                              position: "relative",
+                            }}
+                          >
+                            {/* 背景フレーム */}
+                            <div
+                              className="cluster-card-background pointer-events-none absolute rounded-lg transition-all duration-200"
+                              style={{
+                                border: "2px solid white",
+                                padding: "2px",
+                                background: accentColor,
+                                transform: "translateY(0)",
+                                boxShadow: "0 2px 8px rgba(0, 0, 0, 0.15)",
+                                zIndex: 0,
+                                top: "-8px",
+                                left: "-8px",
+                                right: "-8px",
+                                bottom: "-8px",
+                              }}
+                            />
+                            {/* カードコンテンツ - カード自体がホバーを検知 */}
+                            <div
+                              className="cluster-card-content"
+                              style={{
+                                display: "contents",
+                              }}
+                              onMouseEnter={(e) => {
+                                const bg =
+                                  e.currentTarget.parentElement?.querySelector(
+                                    ".cluster-card-background",
+                                  ) as HTMLElement;
+                                if (bg) {
+                                  bg.style.transform = "translateY(-4px)";
+                                  bg.style.boxShadow =
+                                    "0 8px 16px rgba(0, 0, 0, 0.25)";
+                                }
+                              }}
+                              onMouseLeave={(e) => {
+                                const bg =
+                                  e.currentTarget.parentElement?.querySelector(
+                                    ".cluster-card-background",
+                                  ) as HTMLElement;
+                                if (bg) {
+                                  bg.style.transform = "translateY(0)";
+                                  bg.style.boxShadow =
+                                    "0 2px 8px rgba(0, 0, 0, 0.15)";
+                                }
+                              }}
+                            >
+                              <UnifiedCard
+                                item={point.contentItem!}
+                                variant="compact"
+                                showTags={false}
+                                showDescription={false}
+                                showAnimation={false}
+                                className="border-0"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                </div>
               </div>
             </div>
           </div>
@@ -2262,23 +2640,5 @@ const VectorMap: React.FC<VectorMapProps> = ({
     </>
   );
 };
-
-// Helper function to get point color based on type
-function getPointColor(type: string): string {
-  switch (type) {
-    case "event": {
-      return "#405de6";
-    }
-    case "exhibit": {
-      return "#8b5cf6";
-    }
-    case "stall": {
-      return "#fcaf45";
-    }
-    default: {
-      return "#6b7280";
-    }
-  }
-}
 
 export default VectorMap;

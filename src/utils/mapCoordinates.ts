@@ -7,8 +7,19 @@
  * Coordinate Systems:
  * - World Coordinates: The actual SVG coordinate system (0,0 to mapWidth,mapHeight)
  * - Viewport Coordinates: Screen pixel coordinates relative to the map container
+ * - ViewBox: SVG viewBox for zoom/pan (x, y, width, height)
  */
 
+import type {
+  Coordinate,
+  ViewBox,
+  MapBounds,
+  ContentRect,
+  CoordinateValidation,
+  PanConstraints,
+} from "../types/map";
+
+// Legacy type aliases for backward compatibility
 export interface Point {
   x: number;
   y: number;
@@ -25,12 +36,304 @@ export interface ViewportBounds {
   height: number;
 }
 
+// ============================================================================
+// Core Utilities
+// ============================================================================
+
+/**
+ * Clamp a value between min and max
+ */
+export const clamp = (value: number, min: number, max: number): number =>
+  Math.max(min, Math.min(max, value));
+
+/**
+ * Calculate distance between two points
+ */
+export function calculateDistance(
+  point1: Coordinate,
+  point2: Coordinate,
+): number {
+  const dx = point1.x - point2.x;
+  const dy = point1.y - point2.y;
+  return Math.hypot(dx, dy);
+}
+
+/**
+ * Linear interpolation
+ */
+export function lerp(start: number, end: number, t: number): number {
+  return start + (end - start) * t;
+}
+
+/**
+ * Linear interpolation between two points
+ */
+export function lerpPoint(
+  start: Coordinate,
+  end: Coordinate,
+  t: number,
+): Coordinate {
+  return {
+    x: lerp(start.x, end.x, t),
+    y: lerp(start.y, end.y, t),
+  };
+}
+
+// ============================================================================
+// ViewBox Utilities
+// ============================================================================
+
+/**
+ * Calculate ViewBox from zoom level and center point
+ */
+export function createViewBox(
+  centerX: number,
+  centerY: number,
+  zoom: number,
+  mapBounds: MapBounds,
+): ViewBox {
+  const width = mapBounds.width / zoom;
+  const height = mapBounds.height / zoom;
+
+  return {
+    x: centerX - width / 2,
+    y: centerY - height / 2,
+    width,
+    height,
+  };
+}
+
+/**
+ * Calculate ViewBox string for SVG
+ */
+export function viewBoxToString(viewBox: ViewBox): string {
+  return `${viewBox.x} ${viewBox.y} ${viewBox.width} ${viewBox.height}`;
+}
+
+/**
+ * Parse ViewBox string to ViewBox object
+ */
+export function parseViewBox(viewBoxStr: string): ViewBox | null {
+  const parts = viewBoxStr.trim().split(/\s+/).map(Number);
+  if (parts.length !== 4 || parts.some(isNaN)) {
+    return null;
+  }
+  return {
+    x: parts[0],
+    y: parts[1],
+    width: parts[2],
+    height: parts[3],
+  };
+}
+
+/**
+ * Get zoom level from ViewBox
+ */
+export function getZoomFromViewBox(
+  viewBox: ViewBox,
+  mapBounds: MapBounds,
+): number {
+  return mapBounds.width / viewBox.width;
+}
+
+/**
+ * Get center point from ViewBox
+ */
+export function getCenterFromViewBox(viewBox: ViewBox): Coordinate {
+  return {
+    x: viewBox.x + viewBox.width / 2,
+    y: viewBox.y + viewBox.height / 2,
+  };
+}
+
+// ============================================================================
+// Pan Constraints
+// ============================================================================
+
+/**
+ * Calculate pan constraints based on map bounds and current zoom
+ */
+export function calculatePanConstraints(
+  mapBounds: MapBounds,
+  viewBox: ViewBox,
+  padding: { left: number; right: number; top: number; bottom: number } = {
+    left: 0.3,
+    right: 0.1,
+    top: 0.3,
+    bottom: 0.1,
+  },
+): PanConstraints {
+  const { width: mapWidth, height: mapHeight } = mapBounds;
+
+  // Calculate padding in absolute units
+  const paddingLeft = mapWidth * padding.left;
+  const paddingRight = mapWidth * padding.right;
+  const paddingTop = mapHeight * padding.top;
+  const paddingBottom = mapHeight * padding.bottom;
+
+  return {
+    left: -paddingLeft,
+    right: mapWidth + paddingRight - viewBox.width,
+    top: -paddingTop,
+    bottom: mapHeight + paddingBottom - viewBox.height,
+  };
+}
+
+/**
+ * Apply pan constraints to ViewBox
+ */
+export function constrainViewBox(
+  viewBox: ViewBox,
+  constraints: PanConstraints,
+): ViewBox {
+  return {
+    ...viewBox,
+    x: clamp(viewBox.x, constraints.left, constraints.right),
+    y: clamp(viewBox.y, constraints.top, constraints.bottom),
+  };
+}
+
+// ============================================================================
+// SVG Content Rect Calculation
+// ============================================================================
+
+/**
+ * Calculate the actual SVG content rendering area
+ * Accounts for preserveAspectRatio="xMidYMid meet" behavior
+ */
+export function getSVGContentRect(
+  svgRect: DOMRect,
+  originalViewBox: ViewBox,
+): ContentRect {
+  const originalRatio = originalViewBox.width / originalViewBox.height;
+  const svgRatio = svgRect.width / svgRect.height;
+
+  let contentWidth: number;
+  let contentHeight: number;
+  let offsetX: number;
+  let offsetY: number;
+
+  if (originalRatio > svgRatio) {
+    // Width-constrained
+    contentWidth = svgRect.width;
+    contentHeight = svgRect.width / originalRatio;
+    offsetX = 0;
+    offsetY = (svgRect.height - contentHeight) / 2;
+  } else {
+    // Height-constrained
+    contentWidth = svgRect.height * originalRatio;
+    contentHeight = svgRect.height;
+    offsetX = (svgRect.width - contentWidth) / 2;
+    offsetY = 0;
+  }
+
+  return {
+    x: svgRect.left + offsetX,
+    y: svgRect.top + offsetY,
+    width: contentWidth,
+    height: contentHeight,
+    offsetX,
+    offsetY,
+  };
+}
+
+// ============================================================================
+// Coordinate Transformations
+// ============================================================================
+
+/**
+ * Transform screen coordinates to SVG coordinates
+ * Accounts for ViewBox and preserveAspectRatio
+ */
+export function screenToSVG(
+  screenX: number,
+  screenY: number,
+  svgRect: DOMRect,
+  viewBox: ViewBox,
+  contentRect: ContentRect,
+): Coordinate {
+  // Convert to relative coordinates within SVG element
+  const relativeX = screenX - svgRect.left;
+  const relativeY = screenY - svgRect.top;
+
+  // Adjust for letterboxing/pillarboxing
+  const adjustedX = relativeX - contentRect.offsetX;
+  const adjustedY = relativeY - contentRect.offsetY;
+
+  // Transform to SVG coordinates
+  const svgX = viewBox.x + (adjustedX / contentRect.width) * viewBox.width;
+  const svgY = viewBox.y + (adjustedY / contentRect.height) * viewBox.height;
+
+  return { x: svgX, y: svgY };
+}
+
+/**
+ * Transform SVG coordinates to screen coordinates
+ */
+export function svgToScreen(
+  svgX: number,
+  svgY: number,
+  svgRect: DOMRect,
+  viewBox: ViewBox,
+  contentRect: ContentRect,
+): Coordinate {
+  // Transform from SVG coordinates to relative position in viewBox
+  const relativeX = (svgX - viewBox.x) / viewBox.width;
+  const relativeY = (svgY - viewBox.y) / viewBox.height;
+
+  // Convert to screen coordinates
+  const screenX =
+    svgRect.left + contentRect.offsetX + relativeX * contentRect.width;
+  const screenY =
+    svgRect.top + contentRect.offsetY + relativeY * contentRect.height;
+
+  return { x: screenX, y: screenY };
+}
+
+/**
+ * Validate and clamp coordinates to map bounds
+ */
+export function validateCoordinate(
+  coord: Coordinate,
+  mapBounds: MapBounds,
+  margin: number = 2,
+): CoordinateValidation {
+  const marginX = mapBounds.width * margin;
+  const marginY = mapBounds.height * margin;
+
+  const minX = -marginX;
+  const maxX = mapBounds.width + marginX;
+  const minY = -marginY;
+  const maxY = mapBounds.height + marginY;
+
+  const isInBounds =
+    coord.x >= 0 &&
+    coord.x <= mapBounds.width &&
+    coord.y >= 0 &&
+    coord.y <= mapBounds.height;
+
+  const clamped = {
+    x: clamp(coord.x, minX, maxX),
+    y: clamp(coord.y, minY, maxY),
+  };
+
+  return {
+    isValid:
+      !isNaN(coord.x) &&
+      !isNaN(coord.y) &&
+      isFinite(coord.x) &&
+      isFinite(coord.y),
+    clamped,
+    outOfBounds: !isInBounds,
+  };
+}
+
+// ============================================================================
+// Legacy Transform Functions (for backward compatibility)
+// ============================================================================
+
 /**
  * Transform world coordinates to viewport coordinates
- *
- * Formula:
- * viewportX = (worldX - viewCenterX) * zoom + viewportWidth / 2
- * viewportY = (worldY - viewCenterY) * zoom + viewportHeight / 2
  */
 export function worldToViewport(
   worldPoint: Point,
@@ -46,10 +349,6 @@ export function worldToViewport(
 
 /**
  * Transform viewport coordinates to world coordinates
- *
- * Formula:
- * worldX = (viewportX - viewportWidth / 2) / zoom + viewCenterX
- * worldY = (viewportY - viewportHeight / 2) / zoom + viewCenterY
  */
 export function viewportToWorld(
   viewportPoint: Point,
@@ -65,9 +364,6 @@ export function viewportToWorld(
 
 /**
  * Calculate the new view center when zooming while keeping a specific point fixed
- *
- * This ensures that when zooming in/out, the point under the mouse cursor
- * remains at the same screen position.
  */
 export function calculateZoomCenter(
   fixedWorldPoint: Point,
@@ -75,8 +371,6 @@ export function calculateZoomCenter(
   newZoom: number,
   viewportBounds: ViewportBounds,
 ): Point {
-  // Calculate what the new view center should be to keep the fixed point
-  // at the same viewport position
   const newViewCenterX =
     fixedWorldPoint.x -
     (fixedViewportPoint.x - viewportBounds.width / 2) / newZoom;
@@ -124,7 +418,7 @@ export function getVisibleWorldBounds(
 }
 
 /**
- * Calculate SVG viewBox string for a given view state
+ * Calculate SVG viewBox string for a given view state (legacy)
  */
 export function calculateViewBox(
   viewCenter: Point,
@@ -161,7 +455,6 @@ export function constrainZoom(
 
 /**
  * Calculate the transform parameters for CSS/GSAP transforms
- * This converts from the mathematical coordinate system to the transform system
  */
 export function calculateTransformParams(
   viewCenter: Point,
@@ -173,25 +466,20 @@ export function calculateTransformParams(
   translateX: number;
   translateY: number;
 } {
-  // Calculate the uniform scale factor for the map to fit the viewport
   const baseScaleX = viewportBounds.width / mapBounds.width;
   const baseScaleY = viewportBounds.height / mapBounds.height;
   const baseScale = Math.min(baseScaleX, baseScaleY);
 
-  // Calculate the center offset for the base map
   const baseCenterX = (viewportBounds.width - mapBounds.width * baseScale) / 2;
   const baseCenterY =
     (viewportBounds.height - mapBounds.height * baseScale) / 2;
 
-  // Calculate where the view center should appear on screen
   const targetScreenX = viewportBounds.width / 2;
   const targetScreenY = viewportBounds.height / 2;
 
-  // Calculate where the view center currently appears with the current zoom
   const currentScreenX = viewCenter.x * baseScale * zoom;
   const currentScreenY = viewCenter.y * baseScale * zoom;
 
-  // Calculate translation needed to center the view
   const translateX = targetScreenX - currentScreenX - baseCenterX;
   const translateY = targetScreenY - currentScreenY - baseCenterY;
 
@@ -199,32 +487,6 @@ export function calculateTransformParams(
     scale: zoom,
     translateX,
     translateY,
-  };
-}
-
-/**
- * Calculate distance between two points
- */
-export function calculateDistance(point1: Point, point2: Point): number {
-  const dx = point1.x - point2.x;
-  const dy = point1.y - point2.y;
-  return Math.hypot(dx, dy);
-}
-
-/**
- * Linear interpolation between two points
- */
-export function lerp(start: number, end: number, t: number): number {
-  return start + (end - start) * t;
-}
-
-/**
- * Linear interpolation between two points
- */
-export function lerpPoint(start: Point, end: Point, t: number): Point {
-  return {
-    x: lerp(start.x, end.x, t),
-    y: lerp(start.y, end.y, t),
   };
 }
 
@@ -246,7 +508,6 @@ export function calculateSmoothZoom(
     let viewCenter = currentViewState.viewCenter;
 
     if (fixedPoint) {
-      // If we have a fixed point, calculate the new view center to keep it fixed
       const viewportCenter = {
         x: currentViewState.viewportSize.width / 2,
         y: currentViewState.viewportSize.height / 2,
