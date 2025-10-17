@@ -18,6 +18,7 @@ const exhibits = exhibitsJson as Exhibit[];
 const sponsors = sponsorsJson as Sponsor[];
 const stalls = stallsJson as Stall[];
 import UnifiedCard from "../shared/components/ui/UnifiedCard";
+import { formatDuration } from "../utils/formatters";
 
 const Detail = () => {
   const { id, type } = useParams<{ type: string; id: string }>();
@@ -100,6 +101,11 @@ const Detail = () => {
     if (item) {
       toggleBookmark(item.id);
     }
+  };
+
+  // Handle tag click - navigate to search page with tag filter
+  const handleTagClick = (tag: string) => {
+    navigate(`/search?tag=${encodeURIComponent(tag)}`);
   };
 
   // Loading state
@@ -190,8 +196,10 @@ const Detail = () => {
                   {t("detail.duration")}:
                 </span>
                 <span style={{ color: "var(--color-text-secondary)" }}>
-                  {Math.floor(eventItem.duration / 60)} hr{" "}
-                  {eventItem.duration % 60} min
+                  {formatDuration(
+                    eventItem.duration,
+                    t("language") as "ja" | "en",
+                  )}
                 </span>
               </div>
             </div>
@@ -494,7 +502,7 @@ const Detail = () => {
                 </h3>
                 <div className="flex flex-wrap gap-2">
                   {item.tags.map((tag, idx) => (
-                    <Tag key={idx} tag={tag} />
+                    <Tag key={idx} tag={tag} onClick={handleTagClick} />
                   ))}
                 </div>
               </div>

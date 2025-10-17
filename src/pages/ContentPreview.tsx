@@ -1137,6 +1137,20 @@ const ContentPreview = () => {
                     mode="interactive"
                     onMapClick={handleCoordinateSelect}
                     highlightPoint={formData.coordinates || undefined}
+                    points={
+                      formData.coordinates
+                        ? [
+                            {
+                              id: "selected-coordinate",
+                              coordinates: formData.coordinates,
+                              title: "選択された位置",
+                              type: "event" as const,
+                              onClick: () => {},
+                              onHover: () => {},
+                            },
+                          ]
+                        : []
+                    }
                     height="320px"
                     className="h-80"
                     maxZoom={8}

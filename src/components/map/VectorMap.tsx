@@ -2368,10 +2368,12 @@ const VectorMap: React.FC<VectorMapProps> = ({
             },
           )}
 
-          {/* ハイライトピン */}
-          {highlightScreenPosition && (
-            <HighlightPin position={highlightScreenPosition} />
-          )}
+          {/* ハイライトピン - 詳細ページとインタラクティブページでは非表示 */}
+          {highlightScreenPosition &&
+            mode !== "detail" &&
+            mode !== "interactive" && (
+              <HighlightPin position={highlightScreenPosition} />
+            )}
         </div>
 
         {/* Single Content Card Overlay */}
