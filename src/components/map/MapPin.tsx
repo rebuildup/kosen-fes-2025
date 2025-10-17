@@ -75,6 +75,8 @@ export const MapPin: React.FC<MapPinProps> = ({
   // Google Maps standard pin size - shorter pointer
   const PIN_WIDTH = 24;
   const PIN_HEIGHT = 32;
+  // ピンの先端（下端中央）を基準に座標を合わせる
+  // transform: translate(-50%, -100%) で下端中央がpositionに来る
 
   // Google Maps shadow values - enhanced for better visibility
   const SHADOW =
@@ -89,16 +91,14 @@ export const MapPin: React.FC<MapPinProps> = ({
         position: "absolute",
         left: `${position.x}px`,
         top: `${position.y}px`,
-        width: 0,
-        height: 0,
+        width: `${PIN_WIDTH}px`,
+        height: `${PIN_HEIGHT}px`,
         pointerEvents: "auto",
         cursor: "pointer",
-        // Position at bottom center - no scale animation
+        // ピンの下端中央が座標に来るように調整
         transform: `translate(-50%, -100%)`,
         transformOrigin: `${PIN_WIDTH / 2}px ${PIN_HEIGHT}px`,
-        // ラベル付きピンは常に高いz-index、ホバー時はさらに上
         zIndex: isHovered || isMobileHovered ? 2000 : label ? 500 : 100,
-        // Add drop shadow to the container
         filter: `drop-shadow(${SHADOW})`,
       }}
       onClick={onClick}
@@ -170,7 +170,7 @@ export const MapPin: React.FC<MapPinProps> = ({
             top: `${PIN_WIDTH / 2 + 1}px`,
             ...(labelPosition === "right"
               ? { left: "32px" }
-              : { right: "8px" }),
+              : { right: "32px" }),
             transform: "translateY(-50%)",
             pointerEvents: "auto", // クリック可能に変更
             maxWidth: "200px",
@@ -258,8 +258,8 @@ export const ClusterPin: React.FC<ClusterPinProps> = ({
         position: "absolute",
         left: `${position.x}px`,
         top: `${position.y}px`,
-        width: 0,
-        height: 0,
+        width: `${PIN_WIDTH}px`,
+        height: `${PIN_HEIGHT}px`,
         pointerEvents: "auto",
         cursor: "pointer",
         // Position at bottom center - same as regular pin
@@ -344,7 +344,7 @@ export const ClusterPin: React.FC<ClusterPinProps> = ({
             top: `${PIN_WIDTH / 2 + 1}px`,
             ...(labelPosition === "right"
               ? { left: "32px" }
-              : { right: "8px" }),
+              : { right: "32px" }),
             transform: "translateY(-50%)",
             pointerEvents: "auto", // クリック可能に変更
             maxWidth: "200px",

@@ -276,30 +276,35 @@ const VectorMap: React.FC<VectorMapProps> = ({
 
   // Convert screen coordinates to SVG coordinates with accurate aspect ratio handling
   // SVGの実際の描画領域を計算するヘルパー（viewBox比率と描画領域のズレを調整）
-  const getSVGContentRect = useCallback((svgRect: DOMRect) => {
-    const originalViewBoxRatio =
-      CAMPUS_MAP_BOUNDS.width / CAMPUS_MAP_BOUNDS.height;
-    const svgRatio = svgRect.width / svgRect.height;
+  const getSVGContentRect = useCallback(
+    (svgRect: DOMRect) => {
+      const inferredRatio =
+        viewBox.height === 0
+          ? CAMPUS_MAP_BOUNDS.width / CAMPUS_MAP_BOUNDS.height
+          : viewBox.width / viewBox.height;
+      const svgRatio = svgRect.width / svgRect.height;
 
-    let contentWidth: number;
-    let contentHeight: number;
-    let offsetX: number;
-    let offsetY: number;
+      let contentWidth: number;
+      let contentHeight: number;
+      let offsetX: number;
+      let offsetY: number;
 
-    if (originalViewBoxRatio > svgRatio) {
-      contentWidth = svgRect.width;
-      contentHeight = svgRect.width / originalViewBoxRatio;
-      offsetX = 0;
-      offsetY = (svgRect.height - contentHeight) / 2;
-    } else {
-      contentWidth = svgRect.height * originalViewBoxRatio;
-      contentHeight = svgRect.height;
-      offsetX = (svgRect.width - contentWidth) / 2;
-      offsetY = 0;
-    }
+      if (inferredRatio > svgRatio) {
+        contentWidth = svgRect.width;
+        contentHeight = svgRect.width / inferredRatio;
+        offsetX = 0;
+        offsetY = (svgRect.height - contentHeight) / 2;
+      } else {
+        contentWidth = svgRect.height * inferredRatio;
+        contentHeight = svgRect.height;
+        offsetX = (svgRect.width - contentWidth) / 2;
+        offsetY = 0;
+      }
 
-    return { height: contentHeight, offsetX, offsetY, width: contentWidth };
-  }, []);
+      return { height: contentHeight, offsetX, offsetY, width: contentWidth };
+    },
+    [viewBox.height, viewBox.width],
+  );
 
   const screenToSVG = useCallback(
     (screenX: number, screenY: number): Coordinate => {
@@ -1708,19 +1713,7 @@ const VectorMap: React.FC<VectorMapProps> = ({
     for (const i of sortedIndices) {
       const pos = visiblePositions[i];
 
-      // クラスターは常に表示
-      if (pos.cluster.count !== 1) {
-        const defaultDirection =
-          pos.screenPosition.x > viewBox.width / 2 ? "left" : "right";
-        confirmedLabels.push({
-          index: i,
-          direction: defaultDirection,
-          rect: calculateLabelRect(pos, defaultDirection),
-        });
-        continue;
-      }
-
-      // デフォルトの方向
+      // 全ピン（通常・クラスターピン）でラベル重なり判定を実施
       const defaultDirection =
         pos.screenPosition.x > viewBox.width / 2 ? "left" : "right";
       const oppositeDirection = defaultDirection === "left" ? "right" : "left";
@@ -2333,13 +2326,30 @@ const VectorMap: React.FC<VectorMapProps> = ({
               }
 
               // クラスター表示
-              const clusterType = cluster.points[0]?.type || "event";
-              const typeLabel =
-                clusterType === "event"
-                  ? "イベント"
-                  : clusterType === "exhibit"
-                    ? "展示"
-                    : "露店";
+              // クラスターピンの種類ごと件数集計
+              const typeCounts: Record<string, number> = {};
+              cluster.points.forEach((p) => {
+                typeCounts[p.type] = (typeCounts[p.type] || 0) + 1;
+              });
+              // 表示順と日本語ラベル
+              const typeOrder = [
+                "exhibit",
+                "stall",
+                "event",
+                "toilet",
+                "trash",
+              ];
+              const typeLabels: Record<string, string> = {
+                exhibit: "展示",
+                stall: "露店",
+                event: "イベント",
+                toilet: "トイレ",
+                trash: "ゴミ箱",
+              };
+              const labelText = typeOrder
+                .filter((type) => typeCounts[type])
+                .map((type) => `${typeCounts[type]}件の${typeLabels[type]}`)
+                .join("・");
 
               return (
                 <ClusterPin
@@ -2347,9 +2357,7 @@ const VectorMap: React.FC<VectorMapProps> = ({
                   id={cluster.id}
                   position={screenPosition}
                   count={cluster.count}
-                  label={
-                    showLabel ? `${cluster.count}件の${typeLabel}` : undefined
-                  }
+                  label={showLabel ? labelText : undefined}
                   labelPosition={
                     screenPosition.x > viewBox.width / 2 ? "left" : "right"
                   }

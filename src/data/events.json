@@ -500,26 +500,6 @@
     "dayAvailability": "day1"
   },
   {
-    "id": "event-14",
-    "type": "event",
-    "title": "吹奏楽部",
-    "description": "吹奏楽部の発表です",
-    "imageUrl": "./images/events/event-14.jpg",
-    "date": "2025-11-08",
-    "time": "16:10 - 16:40",
-    "location": "第一体育館",
-    "coordinates": {
-      "x": 115.3,
-      "y": 189.2
-    },
-    "tags": ["ステージ", "バンド"],
-    "organizer": "吹奏楽部",
-    "duration": 30,
-    "showOnMap": true,
-    "showOnSchedule": true,
-    "dayAvailability": "day1"
-  },
-  {
     "id": "event-15",
     "type": "event",
     "title": "ダンス",
