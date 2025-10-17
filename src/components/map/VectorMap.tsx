@@ -12,7 +12,7 @@ import { useLanguage } from "../../context/LanguageContext";
 import { CAMPUS_MAP_BOUNDS } from "../../data/buildings";
 import { UnifiedCard } from "../../shared/components/ui/UnifiedCard";
 import type { Item } from "../../types/common";
-import { MapPin, ClusterPin, HighlightPin } from "./MapPin";
+import { MapPin, ClusterPin, HighlightPin, getPointColor } from "./MapPin";
 import ZoomControls from "./ZoomControls";
 
 const ADJUSTED_MAP_BOUNDS = {
@@ -2327,9 +2327,17 @@ const VectorMap: React.FC<VectorMapProps> = ({
 
               // クラスター表示
               // クラスターピンの種類ごと件数集計
-              const typeCounts: Record<string, number> = {};
+              const typeCounts: Record<
+                string,
+                { count: number; color: string }
+              > = {};
               cluster.points.forEach((p) => {
-                typeCounts[p.type] = (typeCounts[p.type] || 0) + 1;
+                if (p.type === "location") return;
+                const baseColor = p.color || getPointColor(p.type);
+                if (!typeCounts[p.type]) {
+                  typeCounts[p.type] = { count: 0, color: baseColor };
+                }
+                typeCounts[p.type].count += 1;
               });
               // 表示順と日本語ラベル
               const typeOrder = [
@@ -2346,10 +2354,40 @@ const VectorMap: React.FC<VectorMapProps> = ({
                 toilet: "トイレ",
                 trash: "ゴミ箱",
               };
-              const labelText = typeOrder
-                .filter((type) => typeCounts[type])
-                .map((type) => `${typeCounts[type]}件の${typeLabels[type]}`)
-                .join("・");
+              const orderedTypes = typeOrder.filter(
+                (type) => typeCounts[type]?.count,
+              );
+              const extraTypes = Object.keys(typeCounts).filter(
+                (type) => !typeOrder.includes(type) && typeCounts[type]?.count,
+              );
+              const segmentSources = [...orderedTypes, ...extraTypes];
+              const typeSegments = segmentSources.map((type) => ({
+                count: typeCounts[type].count,
+                color: typeCounts[type].color,
+              }));
+              const labelContent =
+                segmentSources.length > 0
+                  ? segmentSources.flatMap((type, index) => {
+                      const label = typeLabels[type] ?? type;
+                      const element = (
+                        <span
+                          key={`${cluster.id}-${type}`}
+                          style={{
+                            color: typeCounts[type].color,
+                            display: "inline",
+                            whiteSpace: "nowrap",
+                            marginRight:
+                              index === segmentSources.length - 1 ? 0 : 8,
+                          }}
+                        >
+                          {`${typeCounts[type].count}件の${label}`}
+                        </span>
+                      );
+                      return index === segmentSources.length - 1
+                        ? [element]
+                        : [element, " "];
+                    })
+                  : undefined;
 
               return (
                 <ClusterPin
@@ -2357,11 +2395,14 @@ const VectorMap: React.FC<VectorMapProps> = ({
                   id={cluster.id}
                   position={screenPosition}
                   count={cluster.count}
-                  label={showLabel ? labelText : undefined}
+                  label={
+                    showLabel && labelContent ? labelContent : undefined
+                  }
                   labelPosition={
                     screenPosition.x > viewBox.width / 2 ? "left" : "right"
                   }
                   isHovered={false}
+                  typeSegments={typeSegments}
                   onClick={(e) => {
                     if (e.type === "touchend") {
                       e.stopPropagation();
@@ -2652,3 +2693,4 @@ const VectorMap: React.FC<VectorMapProps> = ({
 };
 
 export default VectorMap;
+

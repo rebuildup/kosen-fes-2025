@@ -35,7 +35,7 @@ const POINT_TYPE_ICONS: Record<string, LucideIcon> = {
   trash: Trash2,
 };
 
-function getPointColor(type: string): string {
+export function getPointColor(type: string): string {
   switch (type) {
     case "event":
       return "#EA4335"; // Google Maps red
@@ -202,6 +202,7 @@ export const MapPin: React.FC<MapPinProps> = ({
               WebkitLineClamp: 2,
               WebkitBoxOrient: "vertical",
               overflow: "hidden",
+              whiteSpace: "normal",
               wordBreak: "keep-all",
               overflowWrap: "break-word",
             }}
@@ -222,9 +223,10 @@ interface ClusterPinProps {
   id: string;
   position: { x: number; y: number };
   count: number;
-  label?: string;
+  label?: React.ReactNode;
   labelPosition?: "left" | "right";
   isHovered?: boolean;
+  typeSegments?: Array<{ count: number; color: string }>;
   onClick?: (e: React.MouseEvent | React.TouchEvent) => void;
   onMouseEnter?: () => void;
   onMouseLeave?: () => void;
@@ -239,15 +241,44 @@ export const ClusterPin: React.FC<ClusterPinProps> = ({
   onMouseEnter,
   onMouseLeave,
   position,
+  typeSegments,
 }) => {
   // Slightly larger than regular pins
   const PIN_WIDTH = 28;
   const PIN_HEIGHT = 38;
+  const CIRCLE_DIAMETER = 24;
 
   // Google Maps cluster color
   const CLUSTER_COLOR = "#4285F4"; // Google blue
   const SHADOW =
     "0 2px 4px 0 rgba(0, 0, 0, 0.3), 0 4px 8px 2px rgba(0, 0, 0, 0.2)";
+
+  const normalizedSegments =
+    typeSegments?.filter((segment) => segment.count > 0) ?? [];
+
+  let pieBackground = CLUSTER_COLOR;
+  if (normalizedSegments.length > 0 && count > 0) {
+    const stops: string[] = [];
+    let currentAngle = 0;
+
+    normalizedSegments.forEach((segment) => {
+      const portion = Math.max(0, Math.min(1, segment.count / count));
+      if (portion === 0) {
+        return;
+      }
+      const nextAngle = Math.min(360, currentAngle + portion * 360);
+      stops.push(`${segment.color} ${currentAngle}deg ${nextAngle}deg`);
+      currentAngle = nextAngle;
+    });
+
+    if (currentAngle < 360) {
+      stops.push(`${CLUSTER_COLOR} ${currentAngle}deg 360deg`);
+    }
+
+    if (stops.length > 0) {
+      pieBackground = `conic-gradient(${stops.join(", ")})`;
+    }
+  }
 
   return (
     <div
@@ -305,16 +336,23 @@ export const ClusterPin: React.FC<ClusterPinProps> = ({
           strokeLinecap="round"
           strokeLinejoin="round"
         />
-        {/* Blue circle for cluster - larger */}
-        <circle
-          cx={PIN_WIDTH / 2}
-          cy={PIN_WIDTH / 2}
-          r="12"
-          fill={CLUSTER_COLOR}
-          stroke="white"
-          strokeWidth="2"
-        />
       </svg>
+      {/* Pie chart circle */}
+      <div
+        style={{
+          position: "absolute",
+          left: `${PIN_WIDTH / 2}px`,
+          top: `${PIN_WIDTH / 2}px`,
+          width: `${CIRCLE_DIAMETER}px`,
+          height: `${CIRCLE_DIAMETER}px`,
+          transform: "translate(-50%, -50%)",
+          borderRadius: "50%",
+          background: pieBackground,
+          border: "2px solid white",
+          pointerEvents: "none",
+          zIndex: 1,
+        }}
+      />
       {/* Count display - positioned at circle center */}
       <div
         style={{
@@ -331,6 +369,7 @@ export const ClusterPin: React.FC<ClusterPinProps> = ({
           fontWeight: 700,
           fontFamily: "system-ui, -apple-system, sans-serif",
           userSelect: "none",
+          zIndex: 2,
         }}
       >
         {count}
@@ -358,7 +397,6 @@ export const ClusterPin: React.FC<ClusterPinProps> = ({
         >
           <div
             style={{
-              color: CLUSTER_COLOR,
               fontSize: "14px",
               fontWeight: 700,
               fontFamily: "system-ui, -apple-system, sans-serif",
@@ -375,6 +413,7 @@ export const ClusterPin: React.FC<ClusterPinProps> = ({
               WebkitLineClamp: 2,
               WebkitBoxOrient: "vertical",
               overflow: "hidden",
+              whiteSpace: "normal",
               wordBreak: "keep-all",
               overflowWrap: "break-word",
             }}

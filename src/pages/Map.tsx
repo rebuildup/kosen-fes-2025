@@ -9,13 +9,19 @@ import { useLanguage } from "../context/LanguageContext";
 import { useTag } from "../context/TagContext";
 import eventsJson from "../data/events.json";
 import exhibitsJson from "../data/exhibits.json";
-import mapAmenities from "../data/mapAmenities";
+import amenitiesJson from "../data/mapAmenities.json";
 import stallsJson from "../data/stalls.json";
 import type { Event, Exhibit, Item, Stall } from "../types/common";
 const events = eventsJson as Event[];
 const exhibits = exhibitsJson as Exhibit[];
 const stalls = stallsJson as Stall[];
-const amenities = mapAmenities;
+const amenities = amenitiesJson as Array<{
+  id: string;
+  type: "toilet" | "trash" | "water" | "info";
+  name?: string;
+  x: number;
+  y: number;
+}>;
 // import { itemsToContentItems } from "../utils/itemHelpers";
 
 // Type for non-sponsor items

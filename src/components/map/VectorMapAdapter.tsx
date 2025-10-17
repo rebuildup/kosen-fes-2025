@@ -1,8 +1,9 @@
 import React, { useMemo } from "react";
 
-import { events } from "../../data/events";
-import { exhibits } from "../../data/exhibits";
-import { stalls } from "../../data/stalls";
+import eventsJson from "../../data/events.json";
+import exhibitsJson from "../../data/exhibits.json";
+import stallsJson from "../../data/stalls.json";
+import type { Event, Exhibit, Stall } from "../../types/common";
 import type { Item } from "../../types/common";
 import VectorMap from "./VectorMap";
 
@@ -78,6 +79,9 @@ const VectorMapAdapter: React.FC<VectorMapAdapterProps> = ({
 }) => {
   // 全てのコンテンツデータを取得
   const allContentData = useMemo(() => {
+    const events = eventsJson as Event[];
+    const exhibits = exhibitsJson as Exhibit[];
+    const stalls = stallsJson as Stall[];
     const mapEvents = events.filter((event) => event.showOnMap);
     return [...mapEvents, ...stalls, ...exhibits];
   }, []);
