@@ -1,1 +1,0 @@
-function a(n,r){const o=Math.random,t=typeof o=="function"?o():o;return Math.floor(t*Math.max(0,Math.floor(n)))}function e(n,r){if(!Array.isArray(n)||n.length===0)return;const o=a(n.length);return n[o]}export{e as p};

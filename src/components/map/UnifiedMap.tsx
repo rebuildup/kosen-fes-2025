@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { CAMPUS_MAP_BOUNDS } from "../../data/buildings";
-import amenities from "../../data/mapAmenities";
+import amenities from "../../data/mapAmenities.json";
 import { useSimpleMapZoomPan } from "../../hooks/useMapZoomPan";
 import ZoomControls from "./ZoomControls";
 
@@ -411,7 +411,7 @@ const SimpleMap = ({
           )}
 
           {/* 施設アメニティ（トイレ・ゴミ箱など） */}
-          {amenities.map((a) => {
+          {amenities.map((a: any) => {
             const ax = a.x * CAMPUS_MAP_BOUNDS.width;
             const ay = a.y * CAMPUS_MAP_BOUNDS.height;
             const size = getFixedMarkerSize(10);
