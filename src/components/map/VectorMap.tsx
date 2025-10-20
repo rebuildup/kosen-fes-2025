@@ -12,7 +12,7 @@ import { useLanguage } from "../../context/LanguageContext";
 import { CAMPUS_MAP_BOUNDS } from "../../data/buildings";
 import { UnifiedCard } from "../../shared/components/ui/UnifiedCard";
 import type { Item } from "../../types/common";
-import { MapPin, ClusterPin, HighlightPin, getPointColor } from "./MapPin";
+import { ClusterPin, getPointColor, HighlightPin, MapPin } from "./MapPin";
 import ZoomControls from "./ZoomControls";
 
 const ADJUSTED_MAP_BOUNDS = {
@@ -402,11 +402,11 @@ const VectorMap: React.FC<VectorMapProps> = ({
       const newY = centerY - actualHeight / 2;
 
       console.log("[ZOOM IN]", {
-        prev: { x: prev.x, y: prev.y, width: prev.width, height: prev.height },
+        actualSize: { actualHeight, actualWidth },
         center: { centerX, centerY },
-        newSize: { newWidth, newHeight },
-        actualSize: { actualWidth, actualHeight },
         newPos: { newX, newY },
+        newSize: { newHeight, newWidth },
+        prev: { height: prev.height, width: prev.width, x: prev.x, y: prev.y },
         wasLimited: newWidth !== actualWidth || newHeight !== actualHeight,
       });
 
@@ -447,11 +447,11 @@ const VectorMap: React.FC<VectorMapProps> = ({
       const newY = centerY - actualHeight / 2;
 
       console.log("[ZOOM OUT]", {
-        prev: { x: prev.x, y: prev.y, width: prev.width, height: prev.height },
+        actualSize: { actualHeight, actualWidth },
         center: { centerX, centerY },
-        newSize: { newWidth, newHeight },
-        actualSize: { actualWidth, actualHeight },
         newPos: { newX, newY },
+        newSize: { newHeight, newWidth },
+        prev: { height: prev.height, width: prev.width, x: prev.x, y: prev.y },
         wasLimited: newWidth !== actualWidth || newHeight !== actualHeight,
       });
 
@@ -602,6 +602,7 @@ const VectorMap: React.FC<VectorMapProps> = ({
       viewBox.height,
       isShiftPressed,
       screenToSVG,
+      getSVGContentRect,
     ],
   );
 
@@ -802,6 +803,7 @@ const VectorMap: React.FC<VectorMapProps> = ({
       screenToSVG,
       minZoom,
       maxZoom,
+      getSVGContentRect,
       viewBox.width,
       viewBox.height,
       getTouchDistance,
@@ -1546,7 +1548,7 @@ const VectorMap: React.FC<VectorMapProps> = ({
     // クラスター同士の重複チェックと非表示判定
     const visiblePositions = positions.map((pos) => {
       // クラスターは常に表示する（非表示判定を無効化）
-      return { ...pos, visible: true, showLabel: false };
+      return { ...pos, showLabel: false, visible: true };
     });
 
     // ラベル表示の条件をチェック（連鎖的な左右反転で最大化）
@@ -1557,13 +1559,13 @@ const VectorMap: React.FC<VectorMapProps> = ({
       direction: "left" | "right",
     ) => {
       return {
+        height: LABEL_HEIGHT,
+        width: LABEL_WIDTH,
         x:
           direction === "right"
             ? pos.screenPosition.x + 32
             : pos.screenPosition.x - 32 - LABEL_WIDTH,
         y: pos.screenPosition.y - LABEL_HEIGHT / 2,
-        width: LABEL_WIDTH,
-        height: LABEL_HEIGHT,
       };
     };
 
@@ -1592,14 +1594,13 @@ const VectorMap: React.FC<VectorMapProps> = ({
       }>,
     ) => {
       // ピンとの重なりチェック
-      for (let j = 0; j < visiblePositions.length; j++) {
-        if (selfIndex === j || !visiblePositions[j].visible) continue;
-        const otherPos = visiblePositions[j];
+      for (const [j, otherPos] of visiblePositions.entries()) {
+        if (selfIndex === j || !otherPos.visible) continue;
         const pinRect = {
+          height: 32,
+          width: 24,
           x: otherPos.screenPosition.x - 12,
           y: otherPos.screenPosition.y - 16,
-          width: 24,
-          height: 32,
         };
         if (rectanglesOverlap(rect, pinRect, 2)) {
           return false;
@@ -1643,7 +1644,7 @@ const VectorMap: React.FC<VectorMapProps> = ({
       // この配置が有効かチェック
       if (isValidPlacement(targetRect, targetIndex, labels)) {
         return [
-          { index: targetIndex, direction: targetDirection, rect: targetRect },
+          { direction: targetDirection, index: targetIndex, rect: targetRect },
         ];
       }
 
@@ -1675,8 +1676,8 @@ const VectorMap: React.FC<VectorMapProps> = ({
           return [
             ...chainResult,
             {
-              index: targetIndex,
               direction: targetDirection,
+              index: targetIndex,
               rect: targetRect,
             },
           ];
@@ -1703,8 +1704,8 @@ const VectorMap: React.FC<VectorMapProps> = ({
       .map((pos, index) => {
         const dx = pos.screenPosition.x - viewportCenterX;
         const dy = pos.screenPosition.y - viewportCenterY;
-        const distance = Math.sqrt(dx * dx + dy * dy);
-        return { index, distance };
+        const distance = Math.hypot(dx, dy);
+        return { distance, index };
       })
       .sort((a, b) => a.distance - b.distance)
       .map((item) => item.index);
@@ -1722,8 +1723,8 @@ const VectorMap: React.FC<VectorMapProps> = ({
       let labelRect = calculateLabelRect(pos, defaultDirection);
       if (isValidPlacement(labelRect, i, confirmedLabels)) {
         confirmedLabels.push({
-          index: i,
           direction: defaultDirection,
+          index: i,
           rect: labelRect,
         });
         continue;
@@ -1733,8 +1734,8 @@ const VectorMap: React.FC<VectorMapProps> = ({
       labelRect = calculateLabelRect(pos, oppositeDirection);
       if (isValidPlacement(labelRect, i, confirmedLabels)) {
         confirmedLabels.push({
-          index: i,
           direction: oppositeDirection,
+          index: i,
           rect: labelRect,
         });
         continue;
@@ -1752,7 +1753,7 @@ const VectorMap: React.FC<VectorMapProps> = ({
 
       if (chainResult) {
         // 連鎖反転に成功：影響を受けたラベルを更新
-        const newLabel = chainResult[chainResult.length - 1];
+        const newLabel = chainResult.at(-1);
         const updates = chainResult.slice(0, -1);
 
         // 既存のラベルを更新
@@ -1766,7 +1767,9 @@ const VectorMap: React.FC<VectorMapProps> = ({
         }
 
         // 新しいラベルを追加
-        confirmedLabels.push(newLabel);
+        if (newLabel) {
+          confirmedLabels.push(newLabel);
+        }
         continue;
       }
 
@@ -1781,7 +1784,7 @@ const VectorMap: React.FC<VectorMapProps> = ({
 
       if (chainResult) {
         // 連鎖反転に成功
-        const newLabel = chainResult[chainResult.length - 1];
+        const newLabel = chainResult.at(-1);
         const updates = chainResult.slice(0, -1);
 
         for (const update of updates) {
@@ -1793,7 +1796,9 @@ const VectorMap: React.FC<VectorMapProps> = ({
           }
         }
 
-        confirmedLabels.push(newLabel);
+        if (newLabel) {
+          confirmedLabels.push(newLabel);
+        }
         continue;
       }
 
@@ -1809,9 +1814,9 @@ const VectorMap: React.FC<VectorMapProps> = ({
     return visiblePositions.map((pos, index) => {
       const direction = labelMap.get(index);
       const showLabel = direction !== undefined;
-      return { ...pos, showLabel, labelPosition: direction };
+      return { ...pos, labelPosition: direction, showLabel };
     });
-  }, [clusters, svgToScreen, viewBox.width]);
+  }, [clusters, svgToScreen, viewBox.width, viewBox.height]);
 
   // ハイライトポイントのスクリーン座標
   const highlightScreenPosition = useMemo(() => {
@@ -2261,21 +2266,21 @@ const VectorMap: React.FC<VectorMapProps> = ({
         <div
           className="map-pins-layer"
           style={{
-            position: "absolute",
-            inset: 0,
-            pointerEvents: "none",
-            opacity: 1, // 常に表示（非表示機能を無効化）
-            transform: "translateZ(0)", // GPU加速を有効化
             backfaceVisibility: "hidden", // GPU加速の最適化
+            inset: 0,
+            opacity: 1, // 常に表示（非表示機能を無効化）
+            pointerEvents: "none",
+            position: "absolute",
+            transform: "translateZ(0)", // GPU加速を有効化
           }}
         >
           {pinsScreenPositions.map(
             ({
               cluster,
-              screenPosition,
-              visible,
-              showLabel,
               labelPosition,
+              screenPosition,
+              showLabel,
+              visible,
             }) => {
               // クラスターが非表示の場合はスキップ
               if (!visible) return null;
@@ -2331,14 +2336,14 @@ const VectorMap: React.FC<VectorMapProps> = ({
                 string,
                 { count: number; color: string }
               > = {};
-              cluster.points.forEach((p) => {
-                if (p.type === "location") return;
+              for (const p of cluster.points) {
+                if (p.type === "location") continue;
                 const baseColor = p.color || getPointColor(p.type);
                 if (!typeCounts[p.type]) {
-                  typeCounts[p.type] = { count: 0, color: baseColor };
+                  typeCounts[p.type] = { color: baseColor, count: 0 };
                 }
                 typeCounts[p.type].count += 1;
-              });
+              }
               // 表示順と日本語ラベル
               const typeOrder = [
                 "exhibit",
@@ -2348,9 +2353,9 @@ const VectorMap: React.FC<VectorMapProps> = ({
                 "trash",
               ];
               const typeLabels: Record<string, string> = {
+                event: "イベント",
                 exhibit: "展示",
                 stall: "露店",
-                event: "イベント",
                 toilet: "トイレ",
                 trash: "ゴミ箱",
               };
@@ -2362,8 +2367,8 @@ const VectorMap: React.FC<VectorMapProps> = ({
               );
               const segmentSources = [...orderedTypes, ...extraTypes];
               const typeSegments = segmentSources.map((type) => ({
-                count: typeCounts[type].count,
                 color: typeCounts[type].color,
+                count: typeCounts[type].count,
               }));
               const labelContent =
                 segmentSources.length > 0
@@ -2375,9 +2380,9 @@ const VectorMap: React.FC<VectorMapProps> = ({
                           style={{
                             color: typeCounts[type].color,
                             display: "inline",
-                            whiteSpace: "nowrap",
                             marginRight:
                               index === segmentSources.length - 1 ? 0 : 8,
+                            whiteSpace: "nowrap",
                           }}
                         >
                           {`${typeCounts[type].count}件の${label}`}
@@ -2395,9 +2400,7 @@ const VectorMap: React.FC<VectorMapProps> = ({
                   id={cluster.id}
                   position={screenPosition}
                   count={cluster.count}
-                  label={
-                    showLabel && labelContent ? labelContent : undefined
-                  }
+                  label={showLabel && labelContent ? labelContent : undefined}
                   labelPosition={
                     screenPosition.x > viewBox.width / 2 ? "left" : "right"
                   }
@@ -2449,8 +2452,8 @@ const VectorMap: React.FC<VectorMapProps> = ({
             {/* Content Card */}
             <div
               style={{
-                width: "240px",
                 position: "relative",
+                width: "240px",
               }}
             >
               {/* カードと背景を重ねる領域 */}
@@ -2463,20 +2466,20 @@ const VectorMap: React.FC<VectorMapProps> = ({
                 <div
                   className="card-background pointer-events-none absolute rounded-lg shadow-xl transition-all duration-200"
                   style={{
-                    border: "2px solid white",
-                    padding: "2px",
                     background:
                       selectedPoint.contentItem.type === "event"
                         ? "#EA4335"
                         : selectedPoint.contentItem.type === "exhibit"
                           ? "#4285F4"
                           : "#FF6B35",
+                    border: "2px solid white",
+                    bottom: "-6px",
+                    left: "-6px",
+                    padding: "2px",
+                    right: "-6px",
+                    top: "-6px",
                     transform: "translateY(0)",
                     zIndex: 0,
-                    top: "-6px",
-                    left: "-6px",
-                    right: "-6px",
-                    bottom: "-6px",
                   }}
                 />
                 {/* カードコンテンツ - カード自体がホバーを検知 */}
@@ -2534,8 +2537,8 @@ const VectorMap: React.FC<VectorMapProps> = ({
             <div
               className="overflow-hidden rounded-xl bg-white/50 shadow-2xl backdrop-blur-sm"
               style={{
-                width: "100%",
                 border: "1px solid rgba(255, 255, 255, 0.5)",
+                width: "100%",
               }}
             >
               {/* Header - アイコン別の件数表示 */}
@@ -2595,8 +2598,8 @@ const VectorMap: React.FC<VectorMapProps> = ({
                 style={{
                   maxHeight: "300px",
                   overflowY: "auto", // スタイルでスクロールを制御
-                  scrollbarWidth: "thin",
                   scrollbarColor: "rgba(0, 0, 0, 0.2) transparent",
+                  scrollbarWidth: "thin",
                 }}
               >
                 <div className="space-y-1.5">
@@ -2628,16 +2631,16 @@ const VectorMap: React.FC<VectorMapProps> = ({
                             <div
                               className="cluster-card-background pointer-events-none absolute rounded-lg transition-all duration-200"
                               style={{
-                                border: "2px solid white",
-                                padding: "2px",
                                 background: accentColor,
-                                transform: "translateY(0)",
-                                boxShadow: "0 2px 8px rgba(0, 0, 0, 0.15)",
-                                zIndex: 0,
-                                top: "-8px",
-                                left: "-8px",
-                                right: "-8px",
+                                border: "2px solid white",
                                 bottom: "-8px",
+                                boxShadow: "0 2px 8px rgba(0, 0, 0, 0.15)",
+                                left: "-8px",
+                                padding: "2px",
+                                right: "-8px",
+                                top: "-8px",
+                                transform: "translateY(0)",
+                                zIndex: 0,
                               }}
                             />
                             {/* カードコンテンツ - カード自体がホバーを検知 */}
@@ -2693,4 +2696,3 @@ const VectorMap: React.FC<VectorMapProps> = ({
 };
 
 export default VectorMap;
-

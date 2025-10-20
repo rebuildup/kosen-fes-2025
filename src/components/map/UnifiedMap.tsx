@@ -411,70 +411,72 @@ const SimpleMap = ({
           )}
 
           {/* 施設アメニティ（トイレ・ゴミ箱など） */}
-          {amenities.map((a: any) => {
-            const ax = a.x * CAMPUS_MAP_BOUNDS.width;
-            const ay = a.y * CAMPUS_MAP_BOUNDS.height;
-            const size = getFixedMarkerSize(10);
-            if (a.type === "toilet") {
-              return (
-                <g key={a.id} pointerEvents="auto" className="map-amenity">
-                  <rect
-                    x={ax - size / 2}
-                    y={ay - size / 2}
-                    width={size}
-                    height={size}
-                    rx={2}
-                    fill="#1da1f2"
-                    stroke="white"
-                    strokeWidth={getFixedStrokeWidth(1.5)}
-                    opacity={0.95}
-                  />
-                  <text
-                    x={ax}
-                    y={ay + size / 4}
-                    textAnchor="middle"
-                    fontSize={getFixedTextSize() - 2}
-                    fontWeight={700}
-                    fill="white"
-                    className="map-text-ultra-quality"
-                  >
-                    WC
-                  </text>
-                </g>
-              );
-            }
+          {amenities.map(
+            (a: { id: string; x: number; y: number; type: string }) => {
+              const ax = a.x * CAMPUS_MAP_BOUNDS.width;
+              const ay = a.y * CAMPUS_MAP_BOUNDS.height;
+              const size = getFixedMarkerSize(10);
+              if (a.type === "toilet") {
+                return (
+                  <g key={a.id} pointerEvents="auto" className="map-amenity">
+                    <rect
+                      x={ax - size / 2}
+                      y={ay - size / 2}
+                      width={size}
+                      height={size}
+                      rx={2}
+                      fill="#1da1f2"
+                      stroke="white"
+                      strokeWidth={getFixedStrokeWidth(1.5)}
+                      opacity={0.95}
+                    />
+                    <text
+                      x={ax}
+                      y={ay + size / 4}
+                      textAnchor="middle"
+                      fontSize={getFixedTextSize() - 2}
+                      fontWeight={700}
+                      fill="white"
+                      className="map-text-ultra-quality"
+                    >
+                      WC
+                    </text>
+                  </g>
+                );
+              }
 
-            if (a.type === "trash") {
-              return (
-                <g key={a.id} pointerEvents="auto" className="map-amenity">
-                  <rect
-                    x={ax - size / 2}
-                    y={ay - size / 2}
-                    width={size}
-                    height={size}
-                    rx={2}
-                    fill="#10b981"
-                    stroke="white"
-                    strokeWidth={getFixedStrokeWidth(1.5)}
-                    opacity={0.95}
-                  />
-                  <text
-                    x={ax}
-                    y={ay + size / 4}
-                    textAnchor="middle"
-                    fontSize={getFixedTextSize() - 2}
-                    fontWeight={700}
-                    fill="white"
-                    className="map-text-ultra-quality"
-                  >
-                    🗑
-                  </text>
-                </g>
-              );
-            }
+              if (a.type === "trash") {
+                return (
+                  <g key={a.id} pointerEvents="auto" className="map-amenity">
+                    <rect
+                      x={ax - size / 2}
+                      y={ay - size / 2}
+                      width={size}
+                      height={size}
+                      rx={2}
+                      fill="#10b981"
+                      stroke="white"
+                      strokeWidth={getFixedStrokeWidth(1.5)}
+                      opacity={0.95}
+                    />
+                    <text
+                      x={ax}
+                      y={ay + size / 4}
+                      textAnchor="middle"
+                      fontSize={getFixedTextSize() - 2}
+                      fontWeight={700}
+                      fill="white"
+                      className="map-text-ultra-quality"
+                    >
+                      🗑
+                    </text>
+                  </g>
+                );
+              }
 
-            return null;
-          })}
+              return null;
+            },
+          )}
         </svg>
       </div>
       {/* レジェンド */}

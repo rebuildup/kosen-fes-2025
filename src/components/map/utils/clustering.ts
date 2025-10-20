@@ -35,9 +35,9 @@ export interface ClusterOptions {
 }
 
 export const DEFAULT_CLUSTER_OPTIONS: ClusterOptions = {
-  radius: 50,
-  minPoints: 2,
   enabled: true,
+  minPoints: 2,
+  radius: 50,
 };
 
 // ============================================================================
@@ -129,10 +129,10 @@ export function clusterPoints(
     // Create cluster if enough points, otherwise treat as single
     if (nearbyPoints.length >= opts.minPoints) {
       clusters.push({
-        id: generateClusterId(nearbyPoints),
         coordinates: calculateClusterCenter(nearbyPoints),
-        points: nearbyPoints,
         count: nearbyPoints.length,
+        id: generateClusterId(nearbyPoints),
+        points: nearbyPoints,
       });
     } else {
       singles.push(...nearbyPoints);
@@ -219,10 +219,10 @@ export function dbscanCluster(
 
     if (clusterPoints) {
       clusters.push({
-        id: generateClusterId(clusterPoints),
         coordinates: calculateClusterCenter(clusterPoints),
-        points: clusterPoints,
         count: clusterPoints.length,
+        id: generateClusterId(clusterPoints),
+        points: clusterPoints,
       });
     }
   }
@@ -286,7 +286,7 @@ export function findClusterForPoint(
  */
 export function getClusterTypes(cluster: PointCluster): string[] {
   const types = new Set(cluster.points.map((p) => p.type));
-  return Array.from(types);
+  return [...types];
 }
 
 /**
@@ -309,11 +309,11 @@ export function getClusterBounds(cluster: PointCluster): {
   const maxY = Math.max(...ys);
 
   return {
-    minX,
-    maxX,
-    minY,
-    maxY,
-    width: maxX - minX,
     height: maxY - minY,
+    maxX,
+    maxY,
+    minX,
+    minY,
+    width: maxX - minX,
   };
 }

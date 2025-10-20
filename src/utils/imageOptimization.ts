@@ -8,38 +8,38 @@
 export const setupLazyImages = () => {
   const images = document.querySelectorAll("img[data-src]");
 
-  if ("IntersectionObserver" in window) {
+  if ("IntersectionObserver" in globalThis) {
     const imageObserver = new IntersectionObserver(
       (entries, observer) => {
-        entries.forEach((entry) => {
+        for (const entry of entries) {
           if (entry.isIntersecting) {
             const img = entry.target as HTMLImageElement;
             const src = img.dataset.src;
 
             if (src) {
               img.src = src;
-              img.removeAttribute("data-src");
+              delete img.dataset.src;
               observer.unobserve(img);
             }
           }
-        });
+        }
       },
       {
         rootMargin: "50px 0px", // Start loading 50px before image comes into view
       },
     );
 
-    images.forEach((img) => imageObserver.observe(img));
+    for (const img of images) imageObserver.observe(img);
   } else {
     // Fallback for browsers without IntersectionObserver
-    images.forEach((img: Element) => {
+    for (const img of images) {
       const imageElement = img as HTMLImageElement;
       const src = imageElement.dataset.src;
       if (src) {
         imageElement.src = src;
-        imageElement.removeAttribute("data-src");
+        delete imageElement.dataset.src;
       }
-    });
+    }
   }
 };
 
@@ -49,9 +49,12 @@ export const setupLazyImages = () => {
 export const supportsWebP = (): Promise<boolean> => {
   return new Promise((resolve) => {
     const webP = new Image();
-    webP.onload = webP.onerror = () => {
+    webP.addEventListener("load", () => {
       resolve(webP.height === 2);
-    };
+    });
+    webP.addEventListener("error", () => {
+      resolve(webP.height === 2);
+    });
     webP.src =
       "data:image/webp;base64,UklGRjoAAABXRUJQVlA4IC4AAACyAgCdASoCAAIALmk0mk0iIiIiIgBoSygABc6WWgAA/veff/0PP8bA//LwYAAA";
   });
@@ -78,13 +81,13 @@ export const getOptimizedImagePath = async (
  * Preload critical images
  */
 export const preloadCriticalImages = (imageUrls: string[]) => {
-  imageUrls.forEach((url) => {
+  for (const url of imageUrls) {
     const link = document.createElement("link");
     link.rel = "preload";
     link.as = "image";
     link.href = url;
-    document.head.appendChild(link);
-  });
+    document.head.append(link);
+  }
 };
 
 /**
@@ -93,7 +96,7 @@ export const preloadCriticalImages = (imageUrls: string[]) => {
 export const optimizeCardImages = () => {
   const cardImages = document.querySelectorAll(".card-image");
 
-  cardImages.forEach((img: Element) => {
+  for (const img of cardImages) {
     const imageElement = img as HTMLImageElement;
 
     // Add loading attribute for native lazy loading
@@ -105,7 +108,7 @@ export const optimizeCardImages = () => {
     if (!imageElement.hasAttribute("decoding")) {
       imageElement.setAttribute("decoding", "async");
     }
-  });
+  }
 };
 
 /**

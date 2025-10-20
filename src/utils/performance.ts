@@ -7,35 +7,39 @@
  */
 export const measurePerformance = () => {
   // Measure First Contentful Paint (FCP)
-  if ("PerformanceObserver" in window) {
+  if ("PerformanceObserver" in globalThis) {
     const observer = new PerformanceObserver((list) => {
       const entries = list.getEntries();
-      entries.forEach((entry) => {
+      for (const entry of entries) {
         if (entry.entryType === "paint") {
           console.log(`${entry.name}: ${entry.startTime.toFixed(2)}ms`);
         }
-      });
+      }
     });
 
     observer.observe({ entryTypes: ["paint"] });
   }
 
   // Measure Core Web Vitals
-  if ("PerformanceObserver" in window) {
+  if ("PerformanceObserver" in globalThis) {
     // Largest Contentful Paint (LCP)
     const lcpObserver = new PerformanceObserver((list) => {
       const entries = list.getEntries();
-      const lastEntry = entries[entries.length - 1];
-      console.log(`LCP: ${lastEntry.startTime.toFixed(2)}ms`);
+      const lastEntry = entries.at(-1);
+      if (lastEntry) {
+        console.log(`LCP: ${lastEntry.startTime.toFixed(2)}ms`);
+      }
     });
     lcpObserver.observe({ entryTypes: ["largest-contentful-paint"] });
 
     // First Input Delay (FID)
     const fidObserver = new PerformanceObserver((list) => {
       const entries = list.getEntries();
-      entries.forEach((entry: any) => {
-        console.log(`FID: ${entry.processingStart - entry.startTime}ms`);
-      });
+      for (const entry of entries) {
+        console.log(
+          `FID: ${(entry as PerformanceEventTiming).processingStart - entry.startTime}ms`,
+        );
+      }
     });
     fidObserver.observe({ entryTypes: ["first-input"] });
 
@@ -43,11 +47,15 @@ export const measurePerformance = () => {
     let clsValue = 0;
     const clsObserver = new PerformanceObserver((list) => {
       const entries = list.getEntries();
-      entries.forEach((entry: any) => {
-        if (!entry.hadRecentInput) {
-          clsValue += entry.value;
+      for (const entry of entries) {
+        const layoutShiftEntry = entry as PerformanceEntry & {
+          hadRecentInput: boolean;
+          value: number;
+        };
+        if (!layoutShiftEntry.hadRecentInput) {
+          clsValue += layoutShiftEntry.value;
         }
-      });
+      }
       console.log(`CLS: ${clsValue}`);
     });
     clsObserver.observe({ entryTypes: ["layout-shift"] });
@@ -63,7 +71,7 @@ export const preloadCriticalResources = () => {
   criticalCSS.rel = "preload";
   criticalCSS.as = "style";
   criticalCSS.href = "./src/index.css";
-  document.head.appendChild(criticalCSS);
+  document.head.append(criticalCSS);
 
   // Preload critical fonts
   const fontPreload = document.createElement("link");
@@ -72,7 +80,7 @@ export const preloadCriticalResources = () => {
   fontPreload.type = "font/woff2";
   fontPreload.href = "https://use.typekit.net/vhd7uad.css";
   fontPreload.crossOrigin = "anonymous";
-  document.head.appendChild(fontPreload);
+  document.head.append(fontPreload);
 };
 
 /**
@@ -103,7 +111,7 @@ export const initializePerformanceOptimization = () => {
   // Only run in production or when explicitly enabled
   if (
     process.env.NODE_ENV === "production" ||
-    window.location.search.includes("debug=perf")
+    globalThis.location.search.includes("debug=perf")
   ) {
     measurePerformance();
   }

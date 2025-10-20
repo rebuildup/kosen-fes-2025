@@ -35,20 +35,27 @@ const POINT_TYPE_ICONS: Record<string, LucideIcon> = {
   trash: Trash2,
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function getPointColor(type: string): string {
   switch (type) {
-    case "event":
-      return "#EA4335"; // Google Maps red
-    case "exhibit":
-      return "#4285F4"; // Google Maps blue
-    case "stall":
-      return "#FF6B35"; // Orange (better contrast with white)
-    case "toilet":
-      return "#34A853"; // Google Maps green
-    case "trash":
-      return "#9E9E9E"; // Gray
-    default:
-      return "#34A853"; // Google Maps green
+    case "event": {
+      return "#EA4335";
+    } // Google Maps red
+    case "exhibit": {
+      return "#4285F4";
+    } // Google Maps blue
+    case "stall": {
+      return "#FF6B35";
+    } // Orange (better contrast with white)
+    case "toilet": {
+      return "#34A853";
+    } // Google Maps green
+    case "trash": {
+      return "#9E9E9E";
+    } // Gray
+    default: {
+      return "#34A853";
+    } // Google Maps green
   }
 }
 
@@ -88,18 +95,18 @@ export const MapPin: React.FC<MapPinProps> = ({
       tabIndex={0}
       className="map-pin-wrapper"
       style={{
-        position: "absolute",
-        left: `${position.x}px`,
-        top: `${position.y}px`,
-        width: `${PIN_WIDTH}px`,
-        height: `${PIN_HEIGHT}px`,
-        pointerEvents: "auto",
         cursor: "pointer",
+        filter: `drop-shadow(${SHADOW})`,
+        height: `${PIN_HEIGHT}px`,
+        left: `${position.x}px`,
+        pointerEvents: "auto",
+        position: "absolute",
+        top: `${position.y}px`,
         // ピンの下端中央が座標に来るように調整
         transform: `translate(-50%, -100%)`,
         transformOrigin: `${PIN_WIDTH / 2}px ${PIN_HEIGHT}px`,
+        width: `${PIN_WIDTH}px`,
         zIndex: isHovered || isMobileHovered ? 2000 : label ? 500 : 100,
-        filter: `drop-shadow(${SHADOW})`,
       }}
       onClick={onClick}
       onMouseEnter={onMouseEnter}
@@ -111,10 +118,10 @@ export const MapPin: React.FC<MapPinProps> = ({
         height={PIN_HEIGHT}
         viewBox={`0 0 ${PIN_WIDTH} ${PIN_HEIGHT}`}
         style={{
-          position: "absolute",
           left: 0,
-          top: 0,
           overflow: "visible",
+          position: "absolute",
+          top: 0,
         }}
       >
         {/* White rounded pointer - shorter and rounder */}
@@ -149,14 +156,14 @@ export const MapPin: React.FC<MapPinProps> = ({
       {/* Icon overlay - positioned at circle center */}
       <div
         style={{
-          position: "absolute",
+          alignItems: "center",
+          display: "flex",
+          justifyContent: "center",
           left: `${PIN_WIDTH / 2}px`,
+          pointerEvents: "none",
+          position: "absolute",
           top: `${PIN_WIDTH / 2}px`,
           transform: "translate(-50%, -50%)",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          pointerEvents: "none",
         }}
       >
         <IconComponent size={ICON_SIZE} color="white" strokeWidth={2.5} />
@@ -171,12 +178,12 @@ export const MapPin: React.FC<MapPinProps> = ({
             ...(labelPosition === "right"
               ? { left: "32px" }
               : { right: "32px" }),
-            transform: "translateY(-50%)",
-            pointerEvents: "auto", // クリック可能に変更
+            cursor: "pointer", // カーソルをポインターに
             maxWidth: "200px",
             minWidth: "40px",
+            pointerEvents: "auto", // クリック可能に変更
+            transform: "translateY(-50%)",
             zIndex: 1000, // ピンよりも上に表示
-            cursor: "pointer", // カーソルをポインターに
           }}
           onClick={onClick}
           onMouseEnter={onMouseEnter}
@@ -185,10 +192,13 @@ export const MapPin: React.FC<MapPinProps> = ({
           <div
             style={{
               color: baseColor,
+              display: "-webkit-box",
+              fontFamily: "system-ui, -apple-system, sans-serif",
               fontSize: "14px",
               fontWeight: 700,
-              fontFamily: "system-ui, -apple-system, sans-serif",
               lineHeight: "1.4",
+              overflow: "hidden",
+              overflowWrap: "break-word",
               textAlign: labelPosition === "right" ? "left" : "right",
               textShadow: `
                 0 0 2px white,
@@ -198,13 +208,10 @@ export const MapPin: React.FC<MapPinProps> = ({
                 0.5px -0.5px 0px white,
                 -0.5px 0.5px 0px white
               `,
-              display: "-webkit-box",
-              WebkitLineClamp: 2,
               WebkitBoxOrient: "vertical",
-              overflow: "hidden",
+              WebkitLineClamp: 2,
               whiteSpace: "normal",
               wordBreak: "keep-all",
-              overflowWrap: "break-word",
             }}
           >
             {label}
@@ -261,15 +268,15 @@ export const ClusterPin: React.FC<ClusterPinProps> = ({
     const stops: string[] = [];
     let currentAngle = 0;
 
-    normalizedSegments.forEach((segment) => {
+    for (const segment of normalizedSegments) {
       const portion = Math.max(0, Math.min(1, segment.count / count));
       if (portion === 0) {
-        return;
+        continue;
       }
       const nextAngle = Math.min(360, currentAngle + portion * 360);
       stops.push(`${segment.color} ${currentAngle}deg ${nextAngle}deg`);
       currentAngle = nextAngle;
-    });
+    }
 
     if (currentAngle < 360) {
       stops.push(`${CLUSTER_COLOR} ${currentAngle}deg 360deg`);
@@ -286,20 +293,20 @@ export const ClusterPin: React.FC<ClusterPinProps> = ({
       tabIndex={0}
       className="map-cluster-pin"
       style={{
-        position: "absolute",
-        left: `${position.x}px`,
-        top: `${position.y}px`,
-        width: `${PIN_WIDTH}px`,
-        height: `${PIN_HEIGHT}px`,
-        pointerEvents: "auto",
         cursor: "pointer",
+        // Add drop shadow to the container
+        filter: `drop-shadow(${SHADOW})`,
+        height: `${PIN_HEIGHT}px`,
+        left: `${position.x}px`,
+        pointerEvents: "auto",
+        position: "absolute",
+        top: `${position.y}px`,
         // Position at bottom center - same as regular pin
         transform: `translate(-50%, -100%)`,
         transformOrigin: `${PIN_WIDTH / 2}px ${PIN_HEIGHT}px`,
+        width: `${PIN_WIDTH}px`,
         // ラベル付きクラスターピンは常に高いz-index、ホバー時はさらに上
         zIndex: isHovered ? 2001 : label ? 501 : 101,
-        // Add drop shadow to the container
-        filter: `drop-shadow(${SHADOW})`,
       }}
       onClick={onClick}
       onMouseEnter={onMouseEnter}
@@ -311,10 +318,10 @@ export const ClusterPin: React.FC<ClusterPinProps> = ({
         height={PIN_HEIGHT}
         viewBox={`0 0 ${PIN_WIDTH} ${PIN_HEIGHT}`}
         style={{
-          position: "absolute",
           left: 0,
-          top: 0,
           overflow: "visible",
+          position: "absolute",
+          top: 0,
         }}
       >
         {/* White rounded pointer - larger for cluster */}
@@ -340,34 +347,34 @@ export const ClusterPin: React.FC<ClusterPinProps> = ({
       {/* Pie chart circle */}
       <div
         style={{
-          position: "absolute",
-          left: `${PIN_WIDTH / 2}px`,
-          top: `${PIN_WIDTH / 2}px`,
-          width: `${CIRCLE_DIAMETER}px`,
-          height: `${CIRCLE_DIAMETER}px`,
-          transform: "translate(-50%, -50%)",
-          borderRadius: "50%",
           background: pieBackground,
           border: "2px solid white",
+          borderRadius: "50%",
+          height: `${CIRCLE_DIAMETER}px`,
+          left: `${PIN_WIDTH / 2}px`,
           pointerEvents: "none",
+          position: "absolute",
+          top: `${PIN_WIDTH / 2}px`,
+          transform: "translate(-50%, -50%)",
+          width: `${CIRCLE_DIAMETER}px`,
           zIndex: 1,
         }}
       />
       {/* Count display - positioned at circle center */}
       <div
         style={{
-          position: "absolute",
-          left: `${PIN_WIDTH / 2}px`,
-          top: `${PIN_WIDTH / 2}px`,
-          transform: "translate(-50%, -50%)",
-          display: "flex",
           alignItems: "center",
-          justifyContent: "center",
-          pointerEvents: "none",
           color: "white",
+          display: "flex",
+          fontFamily: "system-ui, -apple-system, sans-serif",
           fontSize: "12px",
           fontWeight: 700,
-          fontFamily: "system-ui, -apple-system, sans-serif",
+          justifyContent: "center",
+          left: `${PIN_WIDTH / 2}px`,
+          pointerEvents: "none",
+          position: "absolute",
+          top: `${PIN_WIDTH / 2}px`,
+          transform: "translate(-50%, -50%)",
           userSelect: "none",
           zIndex: 2,
         }}
@@ -384,12 +391,12 @@ export const ClusterPin: React.FC<ClusterPinProps> = ({
             ...(labelPosition === "right"
               ? { left: "32px" }
               : { right: "32px" }),
-            transform: "translateY(-50%)",
-            pointerEvents: "auto", // クリック可能に変更
+            cursor: "pointer", // カーソルをポインターに
             maxWidth: "200px",
             minWidth: "40px",
+            pointerEvents: "auto", // クリック可能に変更
+            transform: "translateY(-50%)",
             zIndex: 1000, // ピンよりも上に表示
-            cursor: "pointer", // カーソルをポインターに
           }}
           onClick={onClick}
           onMouseEnter={onMouseEnter}
@@ -397,10 +404,13 @@ export const ClusterPin: React.FC<ClusterPinProps> = ({
         >
           <div
             style={{
+              display: "-webkit-box",
+              fontFamily: "system-ui, -apple-system, sans-serif",
               fontSize: "14px",
               fontWeight: 700,
-              fontFamily: "system-ui, -apple-system, sans-serif",
               lineHeight: "1.4",
+              overflow: "hidden",
+              overflowWrap: "break-word",
               textAlign: labelPosition === "right" ? "left" : "right",
               textShadow: `
                 0 0 1.5px rgba(255, 255, 255, 0.7),
@@ -409,13 +419,10 @@ export const ClusterPin: React.FC<ClusterPinProps> = ({
                 0.3px -0.3px 0px rgba(255, 255, 255, 0.7),
                 -0.3px 0.3px 0px rgba(255, 255, 255, 0.7)
               `,
-              display: "-webkit-box",
-              WebkitLineClamp: 2,
               WebkitBoxOrient: "vertical",
-              overflow: "hidden",
+              WebkitLineClamp: 2,
               whiteSpace: "normal",
               wordBreak: "keep-all",
-              overflowWrap: "break-word",
             }}
           >
             {label}
@@ -445,56 +452,56 @@ export const HighlightPin: React.FC<HighlightPinProps> = ({ position }) => {
     <div
       className="map-highlight-pin"
       style={{
-        position: "absolute",
-        left: `${position.x}px`,
-        top: `${position.y}px`,
-        width: 0,
         height: 0,
+        left: `${position.x}px`,
         pointerEvents: "none",
+        position: "absolute",
+        top: `${position.y}px`,
         transform: "translate(-50%, -50%)",
+        width: 0,
         zIndex: 999,
       }}
     >
       {/* Pulse animation - visgl style */}
       <div
         style={{
-          position: "absolute",
+          animation: "ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite",
+          backgroundColor: HIGHLIGHT_COLOR,
+          borderRadius: "50%",
+          height: `${PULSE_SIZE}px`,
           left: `${-PULSE_SIZE / 2}px`,
+          opacity: 0.4,
+          position: "absolute",
           top: `${-PULSE_SIZE / 2}px`,
           width: `${PULSE_SIZE}px`,
-          height: `${PULSE_SIZE}px`,
-          borderRadius: "50%",
-          backgroundColor: HIGHLIGHT_COLOR,
-          opacity: 0.4,
-          animation: "ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite",
         }}
       />
 
       {/* Highlight circle */}
       <div
         style={{
-          position: "absolute",
-          left: `${-SIZE / 2}px`,
-          top: `${-SIZE / 2}px`,
-          width: `${SIZE}px`,
-          height: `${SIZE}px`,
-          borderRadius: "50%",
+          alignItems: "center",
           backgroundColor: HIGHLIGHT_COLOR,
           border: "3px solid white",
+          borderRadius: "50%",
           boxShadow: SHADOW,
           display: "flex",
-          alignItems: "center",
+          height: `${SIZE}px`,
           justifyContent: "center",
+          left: `${-SIZE / 2}px`,
+          position: "absolute",
+          top: `${-SIZE / 2}px`,
+          width: `${SIZE}px`,
         }}
       >
         {/* Inner dot */}
         <div
           style={{
-            width: "8px",
-            height: "8px",
-            borderRadius: "50%",
             backgroundColor: "white",
+            borderRadius: "50%",
+            height: "8px",
             opacity: 0.95,
+            width: "8px",
           }}
         />
       </div>

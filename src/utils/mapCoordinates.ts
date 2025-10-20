@@ -11,12 +11,12 @@
  */
 
 import type {
-  Coordinate,
-  ViewBox,
-  MapBounds,
   ContentRect,
+  Coordinate,
   CoordinateValidation,
+  MapBounds,
   PanConstraints,
+  ViewBox,
 } from "../types/map";
 
 // Legacy type aliases for backward compatibility
@@ -96,10 +96,10 @@ export function createViewBox(
   const height = mapBounds.height / zoom;
 
   return {
+    height,
+    width,
     x: centerX - width / 2,
     y: centerY - height / 2,
-    width,
-    height,
   };
 }
 
@@ -115,14 +115,14 @@ export function viewBoxToString(viewBox: ViewBox): string {
  */
 export function parseViewBox(viewBoxStr: string): ViewBox | null {
   const parts = viewBoxStr.trim().split(/\s+/).map(Number);
-  if (parts.length !== 4 || parts.some(isNaN)) {
+  if (parts.length !== 4 || parts.some(Number.isNaN)) {
     return null;
   }
   return {
+    height: parts[3],
+    width: parts[2],
     x: parts[0],
     y: parts[1],
-    width: parts[2],
-    height: parts[3],
   };
 }
 
@@ -156,26 +156,23 @@ export function getCenterFromViewBox(viewBox: ViewBox): Coordinate {
 export function calculatePanConstraints(
   mapBounds: MapBounds,
   viewBox: ViewBox,
-  padding: { left: number; right: number; top: number; bottom: number } = {
-    left: 0.3,
-    right: 0.1,
-    top: 0.3,
-    bottom: 0.1,
-  },
+  padding?: { bottom: number; left: number; right: number; top: number },
 ): PanConstraints {
-  const { width: mapWidth, height: mapHeight } = mapBounds;
+  const { height: mapHeight, width: mapWidth } = mapBounds;
+  const defaultPadding = { bottom: 0.1, left: 0.3, right: 0.1, top: 0.3 };
+  const actualPadding = padding ?? defaultPadding;
 
   // Calculate padding in absolute units
-  const paddingLeft = mapWidth * padding.left;
-  const paddingRight = mapWidth * padding.right;
-  const paddingTop = mapHeight * padding.top;
-  const paddingBottom = mapHeight * padding.bottom;
+  const paddingLeft = mapWidth * actualPadding.left;
+  const paddingRight = mapWidth * actualPadding.right;
+  const paddingTop = mapHeight * actualPadding.top;
+  const paddingBottom = mapHeight * actualPadding.bottom;
 
   return {
+    bottom: mapHeight + paddingBottom - viewBox.height,
     left: -paddingLeft,
     right: mapWidth + paddingRight - viewBox.width,
     top: -paddingTop,
-    bottom: mapHeight + paddingBottom - viewBox.height,
   };
 }
 
@@ -228,12 +225,12 @@ export function getSVGContentRect(
   }
 
   return {
-    x: svgRect.left + offsetX,
-    y: svgRect.top + offsetY,
-    width: contentWidth,
     height: contentHeight,
     offsetX,
     offsetY,
+    width: contentWidth,
+    x: svgRect.left + offsetX,
+    y: svgRect.top + offsetY,
   };
 }
 
@@ -318,12 +315,12 @@ export function validateCoordinate(
   };
 
   return {
-    isValid:
-      !isNaN(coord.x) &&
-      !isNaN(coord.y) &&
-      isFinite(coord.x) &&
-      isFinite(coord.y),
     clamped,
+    isValid:
+      !Number.isNaN(coord.x) &&
+      !Number.isNaN(coord.y) &&
+      Number.isFinite(coord.x) &&
+      Number.isFinite(coord.y),
     outOfBounds: !isInBounds,
   };
 }

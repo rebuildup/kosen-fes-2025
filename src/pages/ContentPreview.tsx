@@ -1141,12 +1141,12 @@ const ContentPreview = () => {
                       formData.coordinates
                         ? [
                             {
-                              id: "selected-coordinate",
                               coordinates: formData.coordinates,
-                              title: "選択された位置",
-                              type: "event" as const,
+                              id: "selected-coordinate",
                               onClick: () => {},
                               onHover: () => {},
+                              title: "選択された位置",
+                              type: "event" as const,
                             },
                           ]
                         : []

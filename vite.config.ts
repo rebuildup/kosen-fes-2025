@@ -4,57 +4,49 @@ import { defineConfig } from "vite";
 
 // https://vite.dev/config/
 export default defineConfig({
+  // 画像の最適化
+  assetsInclude: ["**/*.webp", "**/*.jpg", "**/*.jpeg", "**/*.png"],
   base: "./",
   build: {
     assetsDir: "assets",
+    // チャンクサイズの警告を無効化（手動で制御しているため）
+    chunkSizeWarningLimit: 1000,
+    cssCodeSplit: true, // CSSを分割
+    // 圧縮設定
+    minify: "terser",
+    reportCompressedSize: false, // 圧縮サイズレポートを無効化（ビルド速度向上）
     // バンドルサイズの最適化
     rollupOptions: {
       output: {
         manualChunks: {
-          // React関連を分離
-          react: ["react", "react-dom", "react-router-dom"],
           // アニメーション関連を分離
           animation: ["gsap"],
-          // 日付処理を分離
-          utils: ["date-fns"],
+          // React関連を分離
+          react: ["react", "react-dom", "react-router-dom"],
           // UI関連を分離
           ui: ["lucide-react"],
+          // 日付処理を分離
+          utils: ["date-fns"],
         },
       },
     },
-    // チャンクサイズの警告を無効化（手動で制御しているため）
-    chunkSizeWarningLimit: 1000,
     // ソースマップを本番では無効化
     sourcemap: false,
-    // 圧縮設定
-    minify: "terser",
+    // より積極的な最適化
+    target: "es2015", // より新しいブラウザをターゲット
     terserOptions: {
       compress: {
         drop_console: true,
         drop_debugger: true,
-        pure_funcs: ["console.log", "console.info", "console.debug"],
         passes: 2, // 追加の圧縮パス
-      },
-      mangle: {
-        safari10: true, // Safari 10対応
+        pure_funcs: ["console.log", "console.info", "console.debug"],
       },
       format: {
         comments: false, // コメントを削除
       },
-    },
-    // より積極的な最適化
-    target: "es2015", // より新しいブラウザをターゲット
-    cssCodeSplit: true, // CSSを分割
-    reportCompressedSize: false, // 圧縮サイズレポートを無効化（ビルド速度向上）
-  },
-  plugins: [react(), tailwindcss()],
-  // 画像の最適化
-  assetsInclude: ["**/*.webp", "**/*.jpg", "**/*.jpeg", "**/*.png"],
-  // 開発サーバーの最適化
-  server: {
-    // ホットリロードの最適化
-    hmr: {
-      overlay: false,
+      mangle: {
+        safari10: true, // Safari 10対応
+      },
     },
   },
   // 依存関係の最適化
@@ -66,5 +58,13 @@ export default defineConfig({
       "date-fns",
       "lucide-react",
     ],
+  },
+  plugins: [react(), tailwindcss()],
+  // 開発サーバーの最適化
+  server: {
+    // ホットリロードの最適化
+    hmr: {
+      overlay: false,
+    },
   },
 });

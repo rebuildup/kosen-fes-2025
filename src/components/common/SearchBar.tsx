@@ -158,7 +158,7 @@ const SearchBar = ({
 
     // 検索ページにいる場合は、クエリパラメータをクリアして初期ページに戻る
     // ハッシュルーティングを使用しているため、window.location.hashをチェック
-    if (window.location.hash.includes("/search")) {
+    if (globalThis.location.hash.includes("/search")) {
       // React RouterのnavigateでクリーンなURLに遷移
       navigate("/search", { replace: true });
     }
@@ -173,24 +173,30 @@ const SearchBar = ({
     const baseRounded = showDropdown ? "rounded-t-3xl" : "rounded-full";
     const base = `group relative flex w-full items-center gap-3 ${baseRounded} border border-[var(--border-color)] bg-[var(--bg-secondary)] px-4 shadow-sm transition-all duration-200`;
     switch (variant) {
-      case "large":
+      case "large": {
         return `${base} h-12`;
-      case "inline":
+      }
+      case "inline": {
         return `${base} h-9`;
-      default:
+      }
+      default: {
         return `${base} h-10`;
+      }
     }
   };
 
   // 入力テキストのサイズをバリアントで設定
   const getInputTextSize = () => {
     switch (variant) {
-      case "large":
+      case "large": {
         return "text-base";
-      case "inline":
+      }
+      case "inline": {
         return "text-xs";
-      default:
+      }
+      default: {
         return "text-sm";
+      }
     }
   };
 
