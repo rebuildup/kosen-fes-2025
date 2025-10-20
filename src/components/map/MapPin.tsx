@@ -25,6 +25,8 @@ interface MapPinProps {
   onClick?: (e: React.MouseEvent | React.TouchEvent) => void;
   onMouseEnter?: () => void;
   onMouseLeave?: () => void;
+  onTouchStart?: (e: React.TouchEvent) => void;
+  onTouchEnd?: (e: React.TouchEvent) => void;
 }
 
 const POINT_TYPE_ICONS: Record<string, LucideIcon> = {
@@ -72,6 +74,8 @@ export const MapPin: React.FC<MapPinProps> = ({
   onClick,
   onMouseEnter,
   onMouseLeave,
+  onTouchStart,
+  onTouchEnd,
   position,
   type,
 }) => {
@@ -111,6 +115,8 @@ export const MapPin: React.FC<MapPinProps> = ({
       onClick={onClick}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
+      onTouchStart={onTouchStart}
+      onTouchEnd={onTouchEnd}
     >
       {/* Pin SVG - Google Maps style with white pointer */}
       <svg
@@ -237,6 +243,8 @@ interface ClusterPinProps {
   onClick?: (e: React.MouseEvent | React.TouchEvent) => void;
   onMouseEnter?: () => void;
   onMouseLeave?: () => void;
+  onTouchStart?: (e: React.TouchEvent) => void;
+  onTouchEnd?: (e: React.TouchEvent) => void;
 }
 
 export const ClusterPin: React.FC<ClusterPinProps> = ({
@@ -247,6 +255,8 @@ export const ClusterPin: React.FC<ClusterPinProps> = ({
   onClick,
   onMouseEnter,
   onMouseLeave,
+  onTouchStart,
+  onTouchEnd,
   position,
   typeSegments,
 }) => {
@@ -311,6 +321,8 @@ export const ClusterPin: React.FC<ClusterPinProps> = ({
       onClick={onClick}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
+      onTouchStart={onTouchStart}
+      onTouchEnd={onTouchEnd}
     >
       {/* Pin SVG - same shape as regular pin */}
       <svg

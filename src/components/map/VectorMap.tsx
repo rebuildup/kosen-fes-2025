@@ -692,20 +692,43 @@ const VectorMap: React.FC<VectorMapProps> = ({
         return;
       }
 
+      // Check if touch is over a pin area
+      const pinElements = document.querySelectorAll(".map-pin, .cluster-pin");
+      let isOverPin = false;
+
+      for (const pinElement of pinElements) {
+        const rect = pinElement.getBoundingClientRect();
+        if (
+          e.touches[0].clientX >= rect.left &&
+          e.touches[0].clientX <= rect.right &&
+          e.touches[0].clientY >= rect.top &&
+          e.touches[0].clientY <= rect.bottom
+        ) {
+          isOverPin = true;
+          break;
+        }
+      }
+
+      // If over pin, don't interfere with pin touch events
+      if (isOverPin) {
+        return;
+      }
+
       // Calculate movement distance to detect if this is a gesture
       const deltaX = e.touches[0].clientX - touchStartPos.x;
       const deltaY = e.touches[0].clientY - touchStartPos.y;
       const distance = Math.hypot(deltaX, deltaY);
 
       // If movement is significant, mark as gesture and close card
-      if (distance > 5 && !isTouchGesture) {
+      if (distance > 10 && !isTouchGesture) {
+        // 閾値を5から10に緩和
         setIsTouchGesture(true);
         closeCard();
       }
 
       // Only prevent default if this is clearly a gesture
       if (
-        (isTouchGesture || distance > 5 || e.touches.length > 1) &&
+        (isTouchGesture || distance > 10 || e.touches.length > 1) && // 閾値を5から10に緩和
         e.cancelable
       ) {
         try {
@@ -844,6 +867,28 @@ const VectorMap: React.FC<VectorMapProps> = ({
         return;
       }
 
+      // Check if touch is over a pin area
+      const pinElements = document.querySelectorAll(".map-pin, .cluster-pin");
+      let isOverPin = false;
+
+      for (const pinElement of pinElements) {
+        const rect = pinElement.getBoundingClientRect();
+        if (
+          lastTouch.clientX >= rect.left &&
+          lastTouch.clientX <= rect.right &&
+          lastTouch.clientY >= rect.top &&
+          lastTouch.clientY <= rect.bottom
+        ) {
+          isOverPin = true;
+          break;
+        }
+      }
+
+      // If over pin, don't interfere with pin touch events
+      if (isOverPin) {
+        return;
+      }
+
       // Calculate final movement distance
       const deltaX = lastTouch.clientX - touchStartPos.x;
       const deltaY = lastTouch.clientY - touchStartPos.y;
@@ -852,7 +897,7 @@ const VectorMap: React.FC<VectorMapProps> = ({
       // Check if this was a tap (short duration, minimal movement, single touch)
       const isTap =
         touchDuration < 500 &&
-        totalDistance < 10 &&
+        totalDistance < 15 && // 閾値を10から15に緩和
         !isTouchGesture &&
         e.touches.length === 0;
 
@@ -2269,9 +2314,10 @@ const VectorMap: React.FC<VectorMapProps> = ({
             backfaceVisibility: "hidden", // GPU加速の最適化
             inset: 0,
             opacity: 1, // 常に表示（非表示機能を無効化）
-            pointerEvents: "none",
+            pointerEvents: "auto", // タッチイベントを有効化
             position: "absolute",
             transform: "translateZ(0)", // GPU加速を有効化
+            touchAction: "manipulation", // ピンチズームを許可しつつタップを有効化
           }}
         >
           {pinsScreenPositions.map(
@@ -2323,6 +2369,14 @@ const VectorMap: React.FC<VectorMapProps> = ({
                       } else {
                         handlePointClick(point, e as React.MouseEvent);
                       }
+                    }}
+                    onTouchStart={(e: React.TouchEvent) => {
+                      e.stopPropagation();
+                    }}
+                    onTouchEnd={(e: React.TouchEvent) => {
+                      e.stopPropagation();
+                      e.preventDefault();
+                      handlePointClick(point, undefined, true);
                     }}
                     onMouseEnter={() => handlePointHover(point)}
                     onMouseLeave={() => handlePointHover(null)}
@@ -2414,6 +2468,14 @@ const VectorMap: React.FC<VectorMapProps> = ({
                     } else {
                       handleClusterClick(cluster, e as React.MouseEvent);
                     }
+                  }}
+                  onTouchStart={(e: React.TouchEvent) => {
+                    e.stopPropagation();
+                  }}
+                  onTouchEnd={(e: React.TouchEvent) => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    handleClusterClick(cluster);
                   }}
                 />
               );
