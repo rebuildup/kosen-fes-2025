@@ -100,20 +100,21 @@ function generateStaticHTML(route) {
     );
 
   // Add route-specific preload hints
+  // Use prefetch for non-critical route data to avoid unused-preload warnings
   if (route === "/events") {
     updatedHtml = updatedHtml.replace(
       "</head>",
-      '  <link rel="preload" href="./assets/events.json" as="fetch" crossorigin="anonymous">\n</head>',
+      '  <!-- Non-critical route data: use prefetch instead of preload to avoid unused-preload warnings -->\n  <link rel="prefetch" href="./assets/events.json" as="fetch" crossorigin="anonymous">\n</head>',
     );
   } else if (route === "/exhibits") {
     updatedHtml = updatedHtml.replace(
       "</head>",
-      '  <link rel="preload" href="./assets/exhibits.json" as="fetch" crossorigin="anonymous">\n</head>',
+      '  <!-- Non-critical route data: use prefetch instead of preload to avoid unused-preload warnings -->\n  <link rel="prefetch" href="./assets/exhibits.json" as="fetch" crossorigin="anonymous">\n</head>',
     );
   } else if (route === "/schedule") {
     updatedHtml = updatedHtml.replace(
       "</head>",
-      '  <link rel="preload" href="./assets/events.json" as="fetch" crossorigin="anonymous">\n</head>',
+      '  <!-- Non-critical route data: use prefetch instead of preload to avoid unused-preload warnings -->\n  <link rel="prefetch" href="./assets/events.json" as="fetch" crossorigin="anonymous">\n</head>',
     );
   }
 

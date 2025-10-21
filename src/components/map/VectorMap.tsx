@@ -1451,6 +1451,25 @@ const VectorMap: React.FC<VectorMapProps> = ({
     container.addEventListener("touchend", handleTouchEnd, { passive: false });
     container.addEventListener("wheel", handleWheel, { passive: false });
 
+    // Ensure touchstart is also captured at the container level so that
+    // touches which begin on transparent parts of the pin-layer still
+    // initialize map drag state correctly. We wrap the native TouchEvent
+    // and forward it to the React-style handler. Use passive: true here to
+    // avoid blocking the main thread; handleTouchStart itself does not call
+    // preventDefault.
+    const containerTouchStart = (ev: TouchEvent) => {
+      try {
+        // Forward to React touch handler shape expected by handleTouchStart
+        handleTouchStart(ev as unknown as React.TouchEvent);
+      } catch (err) {
+        // Defensive: swallow errors from mismatched event shapes
+      }
+    };
+
+    container.addEventListener("touchstart", containerTouchStart, {
+      passive: true,
+    });
+
     // Keyboard events for Shift key detection
     document.addEventListener("keydown", handleKeyDown);
     document.addEventListener("keyup", handleKeyUp);
@@ -1458,9 +1477,10 @@ const VectorMap: React.FC<VectorMapProps> = ({
     return () => {
       document.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("mouseup", handleMouseUp);
-      container.removeEventListener("touchmove", handleTouchMove);
-      container.removeEventListener("touchend", handleTouchEnd);
-      container.removeEventListener("wheel", handleWheel);
+  container.removeEventListener("touchmove", handleTouchMove);
+  container.removeEventListener("touchend", handleTouchEnd);
+  container.removeEventListener("wheel", handleWheel);
+  container.removeEventListener("touchstart", containerTouchStart as any);
       document.removeEventListener("keydown", handleKeyDown);
       document.removeEventListener("keyup", handleKeyUp);
     };
@@ -2314,7 +2334,10 @@ const VectorMap: React.FC<VectorMapProps> = ({
             backfaceVisibility: "hidden", // GPU加速の最適化
             inset: 0,
             opacity: 1, // 常に表示（非表示機能を無効化）
-            pointerEvents: "auto", // タッチイベントを有効化
+            // 親レイヤーはデフォルトでポインターイベントを透過させる。
+            // 各ピン要素は個別に pointerEvents: 'auto' を持っているため、
+            // 空白領域のタッチは下の SVG/container に伝播してパン操作が可能になる。
+            pointerEvents: "none",
             position: "absolute",
             transform: "translateZ(0)", // GPU加速を有効化
             touchAction: "manipulation", // ピンチズームを許可しつつタップを有効化
@@ -2363,6 +2386,7 @@ const VectorMap: React.FC<VectorMapProps> = ({
                     isMobileHovered={isMobileHovered}
                     onClick={(e) => {
                       if (e.type === "touchend") {
+                        // treat synthetic touchend click as immediate tap
                         e.stopPropagation();
                         e.preventDefault();
                         handlePointClick(point, undefined, true);
@@ -2370,13 +2394,21 @@ const VectorMap: React.FC<VectorMapProps> = ({
                         handlePointClick(point, e as React.MouseEvent);
                       }
                     }}
-                    onTouchStart={(e: React.TouchEvent) => {
-                      e.stopPropagation();
-                    }}
+                    // Do not stop propagation on touchstart to allow the container
+                    // to receive the initial touch and start pan gestures.
+                    // For touchend, only treat as a point tap when movement was small.
                     onTouchEnd={(e: React.TouchEvent) => {
-                      e.stopPropagation();
-                      e.preventDefault();
-                      handlePointClick(point, undefined, true);
+                      const changed = e.changedTouches && e.changedTouches[0];
+                      if (changed) {
+                        const dx = changed.clientX - touchStartPos.x;
+                        const dy = changed.clientY - touchStartPos.y;
+                        const dist = Math.hypot(dx, dy);
+                        if (dist < 15 && Date.now() - touchStartTime < 500) {
+                          e.stopPropagation();
+                          e.preventDefault();
+                          handlePointClick(point, undefined, true);
+                        }
+                      }
                     }}
                     onMouseEnter={() => handlePointHover(point)}
                     onMouseLeave={() => handlePointHover(null)}
@@ -2469,13 +2501,19 @@ const VectorMap: React.FC<VectorMapProps> = ({
                       handleClusterClick(cluster, e as React.MouseEvent);
                     }
                   }}
-                  onTouchStart={(e: React.TouchEvent) => {
-                    e.stopPropagation();
-                  }}
+                  // allow touchstart to propagate so parent can detect pan
                   onTouchEnd={(e: React.TouchEvent) => {
-                    e.stopPropagation();
-                    e.preventDefault();
-                    handleClusterClick(cluster);
+                    const changed = e.changedTouches && e.changedTouches[0];
+                    if (changed) {
+                      const dx = changed.clientX - touchStartPos.x;
+                      const dy = changed.clientY - touchStartPos.y;
+                      const dist = Math.hypot(dx, dy);
+                      if (dist < 15 && Date.now() - touchStartTime < 500) {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        handleClusterClick(cluster);
+                      }
+                    }
                   }}
                 />
               );

@@ -71,16 +71,15 @@ export const preloadCriticalResources = () => {
   criticalCSS.rel = "preload";
   criticalCSS.as = "style";
   criticalCSS.href = "./src/index.css";
+  // Once preloaded, convert to stylesheet to apply styles without blocking render
+  criticalCSS.onload = function () {
+    criticalCSS.rel = "stylesheet";
+  };
   document.head.append(criticalCSS);
 
   // Preload critical fonts
-  const fontPreload = document.createElement("link");
-  fontPreload.rel = "preload";
-  fontPreload.as = "font";
-  fontPreload.type = "font/woff2";
-  fontPreload.href = "https://use.typekit.net/vhd7uad.css";
-  fontPreload.crossOrigin = "anonymous";
-  document.head.append(fontPreload);
+  // Note: Do NOT preload external font stylesheet as a font resource; that may trigger unused-preload warnings.
+  // Use preconnect + stylesheet in the HTML (index.html) for external fonts instead.
 };
 
 /**

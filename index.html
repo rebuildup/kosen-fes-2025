@@ -75,25 +75,7 @@
       content="https://www2.ube-k.ac.jp/fes2025/og-image.png"
     />
 
-    <!-- Preload critical resources for faster LCP -->
-    <link
-      rel="preload"
-      as="fetch"
-      href="./src/data/events.json"
-      crossorigin="anonymous"
-    />
-    <link
-      rel="preload"
-      as="fetch"
-      href="./src/data/exhibits.json"
-      crossorigin="anonymous"
-    />
-    <link
-      rel="preload"
-      as="fetch"
-      href="./src/data/stalls.json"
-      crossorigin="anonymous"
-    />
+    <!-- Removed aggressive JSON preloads: route-specific data is fetched or prefetched per-route to avoid unused-preload warnings -->
 
     <!-- Preload critical images for faster LCP -->
     <link rel="preload" as="image" href="./images/bands/band-1.webp" />
@@ -104,17 +86,15 @@
     <link rel="preload" as="image" href="./images/events/event-2.webp" />
     <link rel="preload" as="image" href="./images/exhibits/exhibit-2.webp" />
 
-    <!-- Preload critical fonts -->
-    <link
-      rel="preload"
-      as="font"
-      href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap"
-      crossorigin
-    />
+    <!-- Google Fonts: preconnect + preload-as-style with onload swap + noscript fallback -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" onload="this.rel='stylesheet'">
+    <noscript>
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap">
+    </noscript>
 
-    <!-- Preconnect to external domains -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- Preconnect for analytics/domains -->
     <link rel="preconnect" href="https://www.googletagmanager.com" />
     <link rel="preconnect" href="https://www.google-analytics.com" />
 
@@ -150,45 +130,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 
-    <!-- Adobe Fonts (Typekit) - Optimized loading -->
-    <script>
-      // Optimized font loading with faster timeout and better fallback
-      (function (d) {
-        var config = {
-            kitId: "vhd7uad",
-            scriptTimeout: 1500, // Reduced from 3000ms to 1500ms
-            async: true,
-          },
-          h = d.documentElement,
-          t = setTimeout(function () {
-            h.className =
-              h.className.replace(/\bwf-loading\b/g, "") + " wf-inactive";
-          }, config.scriptTimeout),
-          tk = d.createElement("script"),
-          f = false,
-          s = d.getElementsByTagName("script")[0],
-          a;
-
-        // Start with inactive state for faster initial render
-        h.className += " wf-loading";
-
-        // Defer font loading until after critical content loads
-        setTimeout(function () {
-          tk.src = "https://use.typekit.net/" + config.kitId + ".js";
-          tk.async = true;
-          tk.onload = tk.onreadystatechange = function () {
-            a = this.readyState;
-            if (f || (a && a != "complete" && a != "loaded")) return;
-            f = true;
-            clearTimeout(t);
-            try {
-              Typekit.load(config);
-            } catch (e) {}
-          };
-          s.parentNode.insertBefore(tk, s);
-        }, 100); // Small delay to let critical content load first
-      })(document);
-    </script>
+    <!-- Using Google Fonts only; removed Adobe Typekit script -->
 
     <!-- Structured Data: Event - Deferred loading for better performance -->
     <script>
