@@ -567,7 +567,7 @@ const Detail = () => {
                 >
                   {t("detail.related")}
                 </h3>
-                <div className="overflow-x-auto">
+                <div className="overflow-x-auto scrollbar-thin">
                   <div
                     className="flex gap-4 pb-2"
                     style={{ minWidth: "max-content" }}

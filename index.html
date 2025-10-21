@@ -77,14 +77,7 @@
 
     <!-- Removed aggressive JSON preloads: route-specific data is fetched or prefetched per-route to avoid unused-preload warnings -->
 
-    <!-- Preload critical images for faster LCP -->
-    <link rel="preload" as="image" href="./images/bands/band-1.webp" />
-    <link rel="preload" as="image" href="./images/events/event-1.webp" />
-    <link rel="preload" as="image" href="./images/exhibits/exhibit-1.webp" />
-    <link rel="preload" as="image" href="./images/stalls/stall-1.webp" />
-    <link rel="preload" as="image" href="./images/bands/band-2.webp" />
-    <link rel="preload" as="image" href="./images/events/event-2.webp" />
-    <link rel="preload" as="image" href="./images/exhibits/exhibit-2.webp" />
+  <!-- Image prefetch/preload removed: images are lazy-loaded via IntersectionObserver and optimized at runtime -->
 
     <!-- Google Fonts: preconnect + preload-as-style with onload swap + noscript fallback -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
