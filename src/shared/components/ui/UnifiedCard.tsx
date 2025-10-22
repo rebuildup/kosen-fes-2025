@@ -460,10 +460,13 @@ export const UnifiedCard = React.memo(
               </h2>
 
               <div className="flex items-center space-x-4 text-sm text-white opacity-90">
-                <div className="flex items-center space-x-1">
-                  <TimeIcon size={16} />
-                  <span>{item.time}</span>
-                </div>
+                {/* スポンサー以外の場合のみ時間を表示 */}
+                {item.type !== "sponsor" && (
+                  <div className="flex items-center space-x-1">
+                    <TimeIcon size={16} />
+                    <span>{item.time}</span>
+                  </div>
+                )}
                 <div className="flex items-center space-x-1">
                   <LocationIcon size={16} />
                   <span className="truncate text-white">
@@ -490,12 +493,15 @@ export const UnifiedCard = React.memo(
 
                 {/* Meta Information */}
                 <div className="grid grid-cols-1 gap-1 text-xs text-white opacity-80">
-                  <div className="flex items-center space-x-2">
-                    <TimeIcon size={16} />
-                    <span className="text-white">
-                      {item.date} | {item.time}
-                    </span>
-                  </div>
+                  {/* スポンサー以外の場合のみ時間を表示 */}
+                  {item.type !== "sponsor" && (
+                    <div className="flex items-center space-x-2">
+                      <TimeIcon size={16} />
+                      <span className="text-white">
+                        {item.date} | {item.time}
+                      </span>
+                    </div>
+                  )}
 
                   <div className="flex items-center space-x-2">
                     <LocationIcon size={16} />
@@ -636,7 +642,10 @@ export const UnifiedCard = React.memo(
                 transition: "opacity 120ms linear",
               }}
             >
-              <div className="schedule-card-time text-white">{item.time}</div>
+              {/* スポンサー以外の場合のみ時間を表示 */}
+              {item.type !== "sponsor" && (
+                <div className="schedule-card-time text-white">{item.time}</div>
+              )}
               <h3 className="schedule-card-title mb-1 text-white">
                 {formatText(item.title)}
               </h3>
@@ -672,10 +681,13 @@ export const UnifiedCard = React.memo(
                 )}
 
                 <div className="space-y-2 text-sm text-white opacity-80">
-                  <div className="flex items-center gap-2">
-                    <TimeIcon size={16} />
-                    <span className="text-white">{item.time}</span>
-                  </div>
+                  {/* スポンサー以外の場合のみ時間を表示 */}
+                  {item.type !== "sponsor" && (
+                    <div className="flex items-center gap-2">
+                      <TimeIcon size={16} />
+                      <span className="text-white">{item.time}</span>
+                    </div>
+                  )}
                   <div className="flex items-center gap-2">
                     <LocationIcon size={16} />
                     <span className="text-white">
@@ -813,7 +825,10 @@ export const UnifiedCard = React.memo(
                 opacity: isInitialized ? 1 : 0,
               }}
             >
-              <div className="schedule-card-time text-white">{item.time}</div>
+              {/* スポンサー以外の場合のみ時間を表示 */}
+              {item.type !== "sponsor" && (
+                <div className="schedule-card-time text-white">{item.time}</div>
+              )}
               <h3 className="schedule-card-title mb-1 text-white">
                 {formatText(item.title)}
               </h3>
@@ -845,10 +860,13 @@ export const UnifiedCard = React.memo(
                 )}
 
                 <div className="space-y-1 text-sm text-white opacity-80">
-                  <div className="flex items-center gap-2">
-                    <TimeIcon size={16} />
-                    <span className="text-white">{item.time}</span>
-                  </div>
+                  {/* スポンサー以外の場合のみ時間を表示 */}
+                  {item.type !== "sponsor" && (
+                    <div className="flex items-center gap-2">
+                      <TimeIcon size={16} />
+                      <span className="text-white">{item.time}</span>
+                    </div>
+                  )}
                   <div className="flex items-center gap-2">
                     <LocationIcon size={16} />
                     <span className="text-white">
@@ -1127,10 +1145,13 @@ export const UnifiedCard = React.memo(
             </SmartScrollableText>
 
             <div className="space-y-0.5 text-sm text-white opacity-90">
-              <SmartScrollableText className="text-white">
-                {" "}
-                {item.time}
-              </SmartScrollableText>
+              {/* スポンサー以外の場合のみ時間を表示 */}
+              {item.type !== "sponsor" && (
+                <SmartScrollableText className="text-white">
+                  {" "}
+                  {item.time}
+                </SmartScrollableText>
+              )}
               <SmartScrollableText className="text-white">
                 {" "}
                 {item.location}
@@ -1160,12 +1181,15 @@ export const UnifiedCard = React.memo(
               )}
 
               <div className="space-y-1 text-sm text-white opacity-80">
-                <div className="flex items-center gap-2">
-                  <TimeIcon size={16} />
-                  <SmartScrollableText className="text-white">
-                    {item.time}
-                  </SmartScrollableText>
-                </div>
+                {/* スポンサー以外の場合のみ時間を表示 */}
+                {item.type !== "sponsor" && (
+                  <div className="flex items-center gap-2">
+                    <TimeIcon size={16} />
+                    <SmartScrollableText className="text-white">
+                      {item.time}
+                    </SmartScrollableText>
+                  </div>
+                )}
                 <div className="flex items-center gap-2">
                   <LocationIcon size={16} />
                   <SmartScrollableText className="text-white">

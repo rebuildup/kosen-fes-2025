@@ -61,7 +61,7 @@ export const APP_CONFIG = {
     },
     location: "宇部高等専門学校",
     locationEn: "Ube National College of Technology",
-    name: "宇部高専文化祭 2025",
+    name: "宇部高専祭 2025",
     nameEn: "Ube Kosen Festival 2025",
     year: 2025,
   },
@@ -86,10 +86,10 @@ export const APP_CONFIG = {
 
   site: {
     author: "Ube Kosen",
-    description: "宇部高専文化祭 2025 の公式ウェブサイト",
+    description: "宇部高専祭 2025 の公式ウェブサイト",
     descriptionEn: "Official website for Ube Kosen Festival 2025",
     keywords: ["宇部高専", "文化祭", "イベント", "展示", "屋台"],
-    title: "宇部高専文化祭 2025",
+    title: "宇部高専祭 2025",
     titleEn: "Ube Kosen Festival 2025",
     url: "https://festival.ube-k.ac.jp/2025/",
   },

@@ -1,7 +1,7 @@
 {
-  "name": "宇部高専文化祭2025 | Ube Kosen Festival 2025",
+  "name": "宇部高専祭2025 | Ube Kosen Festival 2025",
   "short_name": "宇部高専祭2025",
-  "description": "宇部高専文化祭2025の公式サイト。イベント、展示、屋台の情報を掲載。",
+  "description": "宇部高専祭2025の公式サイト。イベント、展示、屋台の情報を掲載。",
   "lang": "ja",
   "start_url": "./",
   "display": "standalone",

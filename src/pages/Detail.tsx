@@ -396,46 +396,49 @@ const Detail = () => {
               {item.title}
             </h1>
 
-            <div
-              className="grid grid-cols-1 gap-4 rounded-lg p-6 md:grid-cols-3"
-              style={{ backgroundColor: "var(--color-bg-secondary)" }}
-            >
-              <div className="flex items-center gap-2">
-                <span
-                  className="font-medium"
-                  style={{ color: "var(--color-text-primary)" }}
-                >
-                  {t("detail.date")}:
-                </span>
-                <span style={{ color: "var(--color-text-secondary)" }}>
-                  {item.date}
-                </span>
-              </div>
+            {/* スポンサー以外の場合のみ日付、時間、場所を表示 */}
+            {item.type !== "sponsor" && (
+              <div
+                className="grid grid-cols-1 gap-4 rounded-lg p-6 md:grid-cols-3"
+                style={{ backgroundColor: "var(--color-bg-secondary)" }}
+              >
+                <div className="flex items-center gap-2">
+                  <span
+                    className="font-medium"
+                    style={{ color: "var(--color-text-primary)" }}
+                  >
+                    {t("detail.date")}:
+                  </span>
+                  <span style={{ color: "var(--color-text-secondary)" }}>
+                    {item.date}
+                  </span>
+                </div>
 
-              <div className="flex items-center gap-2">
-                <span
-                  className="font-medium"
-                  style={{ color: "var(--color-text-primary)" }}
-                >
-                  {t("detail.time")}:
-                </span>
-                <span style={{ color: "var(--color-text-secondary)" }}>
-                  {item.time}
-                </span>
-              </div>
+                <div className="flex items-center gap-2">
+                  <span
+                    className="font-medium"
+                    style={{ color: "var(--color-text-primary)" }}
+                  >
+                    {t("detail.time")}:
+                  </span>
+                  <span style={{ color: "var(--color-text-secondary)" }}>
+                    {item.time}
+                  </span>
+                </div>
 
-              <div className="flex items-center gap-2">
-                <span
-                  className="font-medium"
-                  style={{ color: "var(--color-text-primary)" }}
-                >
-                  {t("detail.location")}:
-                </span>
-                <span style={{ color: "var(--color-text-secondary)" }}>
-                  {item.location}
-                </span>
+                <div className="flex items-center gap-2">
+                  <span
+                    className="font-medium"
+                    style={{ color: "var(--color-text-primary)" }}
+                  >
+                    {t("detail.location")}:
+                  </span>
+                  <span style={{ color: "var(--color-text-secondary)" }}>
+                    {item.location}
+                  </span>
+                </div>
               </div>
-            </div>
+            )}
 
             {item.imageUrl && (
               <div className="overflow-hidden rounded-lg border border-white/10 bg-white/5">
@@ -448,35 +451,37 @@ const Detail = () => {
               </div>
             )}
 
-            {/* Location Information */}
-            <div
-              className="rounded-lg p-6"
-              style={{ backgroundColor: "var(--color-bg-secondary)" }}
-            >
-              <h3
-                className="mb-4 flex items-center gap-2 text-xl font-semibold"
-                style={{ color: "var(--color-text-primary)" }}
+            {/* Location Information - スポンサー以外の場合のみ表示 */}
+            {item.type !== "sponsor" && (
+              <div
+                className="rounded-lg p-6"
+                style={{ backgroundColor: "var(--color-bg-secondary)" }}
               >
-                {t("detail.location")}
-              </h3>
-              <div className="space-y-2">
-                <p
-                  className="text-lg"
+                <h3
+                  className="mb-4 flex items-center gap-2 text-xl font-semibold"
                   style={{ color: "var(--color-text-primary)" }}
                 >
-                  {item.location}
-                </p>
-                {item.coordinates && (
+                  {t("detail.location")}
+                </h3>
+                <div className="space-y-2">
                   <p
-                    className="text-sm"
-                    style={{ color: "var(--color-text-secondary)" }}
+                    className="text-lg"
+                    style={{ color: "var(--color-text-primary)" }}
                   >
-                    座標: ({item.coordinates.x.toFixed(0)},{" "}
-                    {item.coordinates.y.toFixed(0)})
+                    {item.location}
                   </p>
-                )}
+                  {item.coordinates && (
+                    <p
+                      className="text-sm"
+                      style={{ color: "var(--color-text-secondary)" }}
+                    >
+                      座標: ({item.coordinates.x.toFixed(0)},{" "}
+                      {item.coordinates.y.toFixed(0)})
+                    </p>
+                  )}
+                </div>
               </div>
-            </div>
+            )}
 
             <div
               className="rounded-lg p-6"

@@ -909,17 +909,33 @@ const VectorMap: React.FC<VectorMapProps> = ({
           // Double tap detected - perform zoom
           const svgCoord = screenToSVG(lastTouch.clientX, lastTouch.clientY);
 
-          // ズームレベルサイクル: 1x → 2x → 4x → 8x → 1x
+          // ズームレベルサイクル: 1x → 2x → 4x → 8x → 全画面 → 1x
           const zoomLevels = [1, 2, 4, 8];
           const currentIndex = zoomLevels.findIndex(
             (level) => Math.abs(currentZoomLevel - level) < 0.5,
           );
-          const nextIndex = (currentIndex + 1) % zoomLevels.length;
-          const nextZoomLevel = zoomLevels[nextIndex];
+          
+          if (resolvedFullscreen) {
+            // 全画面表示中は全画面を終了して1xズームに戻る
+            if (fullscreenEnabled && handleFullscreenToggle) {
+              handleFullscreenToggle();
+            }
+            // 1xズームにリセット
+            zoomToPoint(svgCoord, 1);
+            setCurrentZoomLevel(1);
+          } else if (currentIndex === zoomLevels.length - 1) {
+            // 最後のズームレベル（8x）の次は全画面表示
+            if (fullscreenEnabled && handleFullscreenToggle) {
+              handleFullscreenToggle();
+            }
+          } else {
+            const nextIndex = (currentIndex + 1) % zoomLevels.length;
+            const nextZoomLevel = zoomLevels[nextIndex];
 
-          // ダブルタップ位置を中心にズーム
-          zoomToPoint(svgCoord, nextZoomLevel);
-          setCurrentZoomLevel(nextZoomLevel);
+            // ダブルタップ位置を中心にズーム
+            zoomToPoint(svgCoord, nextZoomLevel);
+            setCurrentZoomLevel(nextZoomLevel);
+          }
 
           if (e.cancelable) {
             e.preventDefault();

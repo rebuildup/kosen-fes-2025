@@ -59,6 +59,15 @@ const CampusMapPage = () => {
     }
     return filterItemsByTags(baseItems).filter(isNonSponsorItem);
   }, [baseItems, selectedTags, filterItemsByTags]);
+
+  // マップアメニティの表示制御
+  const shouldShowAmenities = useMemo(() => {
+    // タグ検索時は非表示
+    if (selectedTags.length > 0) {
+      return false;
+    }
+    return true;
+  }, [selectedTags]);
   const locationItems = useMemo(() => {
     const grouped: Record<string, NonSponsorItem[]> = {};
 
@@ -177,17 +186,19 @@ const CampusMapPage = () => {
                               | "stall"
                               | "location",
                           })),
-                        // トイレとゴミ箱
-                        ...amenities.map((amenity) => ({
-                          coordinates: { x: amenity.x, y: amenity.y },
-                          id: amenity.id,
-                          isHovered: false,
-                          isSelected: false,
-                          onClick: () => {},
-                          onHover: () => {},
-                          title: "", // アメニティはラベル非表示
-                          type: amenity.type as "toilet" | "trash",
-                        })),
+                        // トイレとゴミ箱（条件付き表示）
+                        ...(shouldShowAmenities
+                          ? amenities.map((amenity) => ({
+                              coordinates: { x: amenity.x, y: amenity.y },
+                              id: amenity.id,
+                              isHovered: false,
+                              isSelected: false,
+                              onClick: () => {},
+                              onHover: () => {},
+                              title: "", // アメニティはラベル非表示
+                              type: amenity.type as "toilet" | "trash",
+                            }))
+                          : []),
                       ]}
                       height={mapHeight}
                       className="rounded-lg"
