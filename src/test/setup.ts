@@ -2,6 +2,18 @@ import "@testing-library/jest-dom";
 
 import { vi } from "vitest";
 
+// Suppress React Router future flag warnings in tests
+const originalConsoleWarn = console.warn;
+console.warn = (...args) => {
+  if (
+    typeof args[0] === "string" &&
+    args[0].includes("React Router Future Flag Warning")
+  ) {
+    return;
+  }
+  originalConsoleWarn(...args);
+};
+
 // Mock matchMedia
 Object.defineProperty(globalThis, "matchMedia", {
   value: vi.fn().mockImplementation((query) => ({

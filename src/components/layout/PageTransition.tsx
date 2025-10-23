@@ -1,7 +1,7 @@
 import { gsap } from "gsap";
 import type { ReactNode } from "react";
 import { useEffect, useRef } from "react";
-// import { useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 
 import { DURATION, EASE } from "../../utils/animations";
 
@@ -10,14 +10,14 @@ interface PageTransitionProps {
 }
 
 const PageTransition = ({ children }: PageTransitionProps) => {
-  // const { pathname } = useLocation();
+  const { pathname } = useLocation();
   const pageRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const element = pageRef.current;
     if (!element) return;
 
-    // Reset scroll position
+    // Reset scroll position on route change
     window.scrollTo(0, 0);
 
     // Animation timeline
@@ -34,7 +34,7 @@ const PageTransition = ({ children }: PageTransitionProps) => {
     return () => {
       tl.kill();
     };
-  }, []);
+  }, [pathname]);
 
   return <div ref={pageRef}>{children}</div>;
 };

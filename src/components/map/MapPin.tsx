@@ -189,8 +189,7 @@ export const MapPin: React.FC<MapPinProps> = ({
 
       {/* Label - positioned next to pin */}
       {label && (
-        <button
-          type="button"
+        <div
           style={{
             position: "absolute",
             top: `${PIN_WIDTH / 2 + 1}px`,
@@ -206,6 +205,8 @@ export const MapPin: React.FC<MapPinProps> = ({
           onKeyDown={handleKeyDown}
           onMouseEnter={onMouseEnter}
           onMouseLeave={onMouseLeave}
+          role="button"
+          tabIndex={0}
         >
           <div
             style={{
@@ -234,7 +235,7 @@ export const MapPin: React.FC<MapPinProps> = ({
           >
             {label}
           </div>
-        </button>
+        </div>
       )}
     </button>
   );
@@ -419,8 +420,7 @@ export const ClusterPin: React.FC<ClusterPinProps> = ({
 
       {/* Label - positioned next to cluster pin */}
       {label && (
-        <button
-          type="button"
+        <div
           style={{
             position: "absolute",
             top: `${PIN_WIDTH / 2 + 1}px`,
@@ -436,6 +436,8 @@ export const ClusterPin: React.FC<ClusterPinProps> = ({
           onKeyDown={handleKeyDown}
           onMouseEnter={onMouseEnter}
           onMouseLeave={onMouseLeave}
+          role="button"
+          tabIndex={0}
         >
           <div
             style={{
@@ -462,7 +464,7 @@ export const ClusterPin: React.FC<ClusterPinProps> = ({
           >
             {label}
           </div>
-        </button>
+        </div>
       )}
     </button>
   );

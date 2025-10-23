@@ -31,7 +31,9 @@ const Bookmarks = () => {
               <p className="mb-6 text-lg" style={{ color: "var(--color-text-secondary)" }}>
                 {t("bookmarks.empty")}
               </p>
-              <PillButton to="/" className="btn btn-primary">{t("navigation.home")}</PillButton>
+              <PillButton to="/" className="btn btn-primary">
+                {t("navigation.home")}
+              </PillButton>
             </div>
           ) : (
             <BookmarksList />
