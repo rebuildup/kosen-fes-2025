@@ -1,10 +1,10 @@
-import React, { useMemo } from "react";
+import type React from "react";
+import { useMemo } from "react";
 
 import eventsJson from "../../data/events.json";
 import exhibitsJson from "../../data/exhibits.json";
 import stallsJson from "../../data/stalls.json";
-import type { Event, Exhibit, Stall } from "../../types/common";
-import type { Item } from "../../types/common";
+import type { Event, Exhibit, Item, Stall } from "../../types/common";
 import VectorMap from "./VectorMap";
 
 interface Coordinate {
@@ -130,9 +130,7 @@ const VectorMapAdapter: React.FC<VectorMapAdapterProps> = ({
 
     // データから直接すべてのコンテンツポイントを作成（座標がある場合）
     for (const contentItem of allContentData) {
-      const alreadyIncluded = contentItems.some(
-        (ci) => ci.id === contentItem.id,
-      );
+      const alreadyIncluded = contentItems.some((ci) => ci.id === contentItem.id);
       if (contentItem.coordinates && !alreadyIncluded) {
         points.push({
           contentItem: contentItem,

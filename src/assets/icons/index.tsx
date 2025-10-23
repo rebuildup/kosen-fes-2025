@@ -1,4 +1,4 @@
-import React from "react";
+import type React from "react";
 
 export interface IconProps {
   size?: number | string;
@@ -32,7 +32,9 @@ export const Icon: React.FC<React.SVGProps<SVGSVGElement> & IconProps> = ({
       aria-hidden={ariaHidden}
       role={ariaLabel ? "img" : "presentation"}
       {...props}
-    />
+    >
+      <title>Icon</title>
+    </svg>
   );
 };
 

@@ -176,10 +176,8 @@ export const useSimpleMapZoomPan = ({
       if (!containerRef.current) return { x: 0, y: 0 };
 
       const containerRect = containerRef.current.getBoundingClientRect();
-      const x =
-        (screenX - containerRect.left - transform.translateX) / transform.scale;
-      const y =
-        (screenY - containerRect.top - transform.translateY) / transform.scale;
+      const x = (screenX - containerRect.left - transform.translateX) / transform.scale;
+      const y = (screenY - containerRect.top - transform.translateY) / transform.scale;
 
       return {
         x: Math.max(0, Math.min(width, x)),
@@ -318,17 +316,12 @@ export const useSimpleMapZoomPan = ({
         setLastMousePos({ x: e.touches[0].clientX, y: e.touches[0].clientY });
       } else if (e.touches.length === 2) {
         // マルチタッチ：ピンチズーム
-        const distance = getTouchDistance(
-          e.touches as unknown as React.TouchList,
-        );
+        const distance = getTouchDistance(e.touches as unknown as React.TouchList);
         const center = getTouchCenter(e.touches as unknown as React.TouchList);
 
         if (lastTouchDistance > 0) {
           const scaleFactor = distance / lastTouchDistance;
-          const newScale = Math.max(
-            minScale,
-            Math.min(maxScale, transform.scale * scaleFactor),
-          );
+          const newScale = Math.max(minScale, Math.min(maxScale, transform.scale * scaleFactor));
 
           if (newScale !== transform.scale && containerRef.current) {
             const containerRect = containerRef.current.getBoundingClientRect();
@@ -339,10 +332,8 @@ export const useSimpleMapZoomPan = ({
 
             applyTransform({
               scale: newScale,
-              translateX:
-                centerX - (centerX - transform.translateX) * scaleRatio,
-              translateY:
-                centerY - (centerY - transform.translateY) * scaleRatio,
+              translateX: centerX - (centerX - transform.translateX) * scaleRatio,
+              translateY: centerY - (centerY - transform.translateY) * scaleRatio,
             });
           }
         }
@@ -446,10 +437,7 @@ export const useSimpleMapZoomPan = ({
       const mouseY = e.clientY - containerRect.top;
 
       const scaleFactor = e.deltaY > 0 ? 0.9 : 1.1;
-      const newScale = Math.max(
-        minScale,
-        Math.min(maxScale, transform.scale * scaleFactor),
-      );
+      const newScale = Math.max(minScale, Math.min(maxScale, transform.scale * scaleFactor));
 
       if (newScale === transform.scale) return;
 
@@ -489,13 +477,7 @@ export const useSimpleMapZoomPan = ({
       container.removeEventListener("touchend", handleTouchEnd);
       container.removeEventListener("wheel", handleWheel);
     };
-  }, [
-    handleMouseMove,
-    handleMouseUp,
-    handleTouchMove,
-    handleTouchEnd,
-    handleWheel,
-  ]);
+  }, [handleMouseMove, handleMouseUp, handleTouchMove, handleTouchEnd, handleWheel]);
 
   // 初期化
   useEffect(() => {

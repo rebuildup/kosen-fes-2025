@@ -20,11 +20,7 @@ export const EASE = {
 };
 
 // Opacity animations
-export const fadeIn = (
-  element: HTMLElement | string,
-  duration = DURATION.NORMAL,
-  delay = 0,
-) => {
+export const fadeIn = (element: HTMLElement | string, duration = DURATION.NORMAL, delay = 0) => {
   return gsap.fromTo(
     element,
     { autoAlpha: 0 },
@@ -38,10 +34,7 @@ export const fadeIn = (
   );
 };
 
-export const fadeOut = (
-  element: HTMLElement | string,
-  duration = DURATION.NORMAL,
-) => {
+export const fadeOut = (element: HTMLElement | string, duration = DURATION.NORMAL) => {
   return gsap.to(element, {
     autoAlpha: 0,
     duration,
@@ -50,11 +43,7 @@ export const fadeOut = (
 };
 
 // Movement animations
-export const slideInUp = (
-  element: HTMLElement | string,
-  duration = DURATION.NORMAL,
-  delay = 0,
-) => {
+export const slideInUp = (element: HTMLElement | string, duration = DURATION.NORMAL, delay = 0) => {
   return gsap.fromTo(
     element,
     { autoAlpha: 0, y: 30 },

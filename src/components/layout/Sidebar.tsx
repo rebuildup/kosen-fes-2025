@@ -161,6 +161,7 @@ const Sidebar = () => {
                 {t("sidebar.information")}
               </h3>
               <button
+                type="button"
                 onClick={() => toggleSection("info")}
                 className={`flex items-center justify-center rounded-lg p-2 transition-all duration-200 ${
                   expanded === "info"
@@ -181,9 +182,7 @@ const Sidebar = () => {
                       {t("info.festivalDates")}:
                     </span>
                     <br />
-                    <span className="text-[var(--text-secondary)]">
-                      2025/11/08 - 2025/11/09
-                    </span>
+                    <span className="text-[var(--text-secondary)]">2025/11/08 - 2025/11/09</span>
                   </div>
 
                   <div className="text-xs">
@@ -191,9 +190,7 @@ const Sidebar = () => {
                       {t("info.location")}:
                     </span>
                     <br />
-                    <span className="text-[var(--text-secondary)]">
-                      {t("info.schoolName")}
-                    </span>
+                    <span className="text-[var(--text-secondary)]">{t("info.schoolName")}</span>
                   </div>
 
                   <div className="text-xs">
@@ -201,9 +198,7 @@ const Sidebar = () => {
                       {t("info.access")}:
                     </span>
                     <br />
-                    <span className="text-[var(--text-secondary)]">
-                      {t("info.accessInfo")}
-                    </span>
+                    <span className="text-[var(--text-secondary)]">{t("info.accessInfo")}</span>
                   </div>
 
                   <div className="text-xs">
@@ -211,9 +206,7 @@ const Sidebar = () => {
                       {t("info.organizer")}:
                     </span>
                     <br />
-                    <span className="text-[var(--text-secondary)]">
-                      宇部高専祭実行委員会
-                    </span>
+                    <span className="text-[var(--text-secondary)]">宇部高専祭実行委員会</span>
                   </div>
                 </div>
               </div>
@@ -224,6 +217,7 @@ const Sidebar = () => {
           <div className="hidden lg:block xl:hidden">
             <div className="group relative">
               <button
+                type="button"
                 onClick={() => toggleSection("info")}
                 className="glass-button glass-interactive flex w-full items-center justify-center rounded-lg p-3 transition-all duration-200 hover:text-[var(--primary-color)]"
                 title={t("info.title")}

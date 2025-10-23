@@ -12,6 +12,7 @@ import exhibitsJson from "../data/exhibits.json";
 import amenitiesJson from "../data/mapAmenities.json";
 import stallsJson from "../data/stalls.json";
 import type { Event, Exhibit, Item, Stall } from "../types/common";
+
 const events = eventsJson as Event[];
 const exhibits = exhibitsJson as Exhibit[];
 const stalls = stallsJson as Stall[];
@@ -29,9 +30,7 @@ type NonSponsorItem = Event | Exhibit | Stall;
 
 // Type guard to check if an item is a non-sponsor item
 const isNonSponsorItem = (item: Item): item is NonSponsorItem => {
-  return (
-    item.type === "event" || item.type === "exhibit" || item.type === "stall"
-  );
+  return item.type === "event" || item.type === "exhibit" || item.type === "stall";
 };
 
 const CampusMapPage = () => {
@@ -41,10 +40,7 @@ const CampusMapPage = () => {
   const mapHeight = "70vh";
   const [hoveredLocation, setHoveredLocation] = useState<string | null>(null);
   const [selectedLocation, setSelectedLocation] = useState<string | null>(null);
-  const mapEvents = useMemo(
-    () => events.filter((event) => event.showOnMap),
-    [],
-  );
+  const mapEvents = useMemo(() => events.filter((event) => event.showOnMap), []);
   const baseItems = useMemo<NonSponsorItem[]>(
     () => [...mapEvents, ...exhibits, ...stalls],
     [mapEvents],
@@ -72,9 +68,7 @@ const CampusMapPage = () => {
     const grouped: Record<string, NonSponsorItem[]> = {};
 
     for (const location of allLocations) {
-      const itemsAtLocation = filteredItems.filter(
-        (item) => item.location === location,
-      );
+      const itemsAtLocation = filteredItems.filter((item) => item.location === location);
       if (itemsAtLocation.length > 0) {
         grouped[location] = itemsAtLocation;
       }
@@ -102,10 +96,7 @@ const CampusMapPage = () => {
   );
 
   // Get all locations with items - メモ化
-  const locationsWithItems = useMemo(
-    () => Object.keys(locationItems),
-    [locationItems],
-  );
+  const locationsWithItems = useMemo(() => Object.keys(locationItems), [locationItems]);
 
   // コンテンツアイテムのメモ化
   // const mapContentItems = useMemo(
@@ -115,17 +106,11 @@ const CampusMapPage = () => {
 
   return (
     <div className="min-h-screen">
-      <section
-        className="section py-8"
-        style={{ backgroundColor: "var(--color-bg-primary)" }}
-      >
+      <section className="section py-8" style={{ backgroundColor: "var(--color-bg-primary)" }}>
         <div className="mx-auto max-w-7xl">
           {/* Page Title */}
           <div className="mb-8">
-            <h1
-              className="text-3xl font-bold"
-              style={{ color: "var(--color-text-primary)" }}
-            >
+            <h1 className="text-3xl font-bold" style={{ color: "var(--color-text-primary)" }}>
               {t("map.title")}
             </h1>
           </div>
@@ -180,11 +165,7 @@ const CampusMapPage = () => {
                             onClick: () => {},
                             onHover: () => {},
                             title: item.title,
-                            type: item.type as
-                              | "event"
-                              | "exhibit"
-                              | "stall"
-                              | "location",
+                            type: item.type as "event" | "exhibit" | "stall" | "location",
                           })),
                         // トイレとゴミ箱（条件付き表示）
                         ...(shouldShowAmenities

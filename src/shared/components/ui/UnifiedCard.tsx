@@ -1,11 +1,5 @@
 import { gsap } from "gsap";
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 
 import ItemTypeIcon from "../../../components/common/ItemTypeIcon";
@@ -15,6 +9,21 @@ import { useBookmark } from "../../../context/BookmarkContext";
 import { useLanguage } from "../../../context/LanguageContext";
 import type { Item } from "../../../types/common";
 import { DURATION, EASE } from "../../../utils/animations";
+
+// Component for text with intelligent marquee
+const SmartScrollableText = ({
+  children,
+  className = "",
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) => {
+  return (
+    <div className={`overflow-hidden ${className}`}>
+      <div className="truncate">{children}</div>
+    </div>
+  );
+};
 
 interface UnifiedCardProps {
   item: Item;
@@ -198,12 +207,7 @@ export const UnifiedCard = React.memo(
           {
             duration: DURATION.FAST,
             ease: EASE.SMOOTH,
-            scale:
-              variant === "featured"
-                ? 1.08
-                : variant === "timeline"
-                  ? 1.03
-                  : 1.05,
+            scale: variant === "featured" ? 1.08 : variant === "timeline" ? 1.03 : 1.05,
           },
           0,
         );
@@ -361,21 +365,6 @@ export const UnifiedCard = React.memo(
       }
     };
 
-    // Component for text with intelligent marquee
-    const SmartScrollableText = ({
-      children,
-      className = "",
-    }: {
-      children: React.ReactNode;
-      className?: string;
-    }) => {
-      return (
-        <div className={`overflow-hidden ${className}`}>
-          <div className="truncate">{children}</div>
-        </div>
-      );
-    };
-
     // Render Featured Card variant
     if (variant === "featured") {
       const cardContent = (
@@ -391,6 +380,12 @@ export const UnifiedCard = React.memo(
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
           onClick={handleCardClick}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              handleCardClick(e as any);
+            }
+          }}
         >
           {/* Full Background Image */}
           <div className="absolute inset-0 flex items-center justify-center overflow-hidden">
@@ -422,10 +417,7 @@ export const UnifiedCard = React.memo(
           ></div>
 
           {/* Type Badge - After gradient overlay to be visually on top */}
-          <div
-            className="absolute top-2.5 left-2.5 z-20"
-            style={{ mixBlendMode: "difference" }}
-          >
+          <div className="absolute top-2.5 left-2.5 z-20" style={{ mixBlendMode: "difference" }}>
             <span style={{ color: "#eeeeee" }}>
               <ItemTypeIcon type={item.type} size="small" />
             </span>
@@ -433,6 +425,7 @@ export const UnifiedCard = React.memo(
 
           {/* Bookmark Button - After gradient overlay to be visually on top */}
           <button
+            type="button"
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
@@ -440,15 +433,9 @@ export const UnifiedCard = React.memo(
             }}
             className="pointer-events-auto absolute top-1.5 right-2.5 z-[100] transition-all duration-200"
             style={{ color: "#eeeeee", mixBlendMode: "difference" }}
-            aria-label={
-              isBookmarked(item.id)
-                ? t("actions.removeBookmark")
-                : t("actions.bookmark")
-            }
+            aria-label={isBookmarked(item.id) ? t("actions.removeBookmark") : t("actions.bookmark")}
           >
-            <span className="text-base">
-              {isBookmarked(item.id) ? "★" : "☆"}
-            </span>
+            <span className="text-base">{isBookmarked(item.id) ? "★" : "☆"}</span>
           </button>
 
           {/* Content Overlay */}
@@ -469,9 +456,7 @@ export const UnifiedCard = React.memo(
                 )}
                 <div className="flex items-center space-x-1">
                   <LocationIcon size={16} />
-                  <span className="truncate text-white">
-                    {formatText(item.location)}
-                  </span>
+                  <span className="truncate text-white">{formatText(item.location)}</span>
                 </div>
               </div>
             </div>
@@ -505,9 +490,7 @@ export const UnifiedCard = React.memo(
 
                   <div className="flex items-center space-x-2">
                     <LocationIcon size={16} />
-                    <span className="truncate text-white">
-                      {formatText(item.location)}
-                    </span>
+                    <span className="truncate text-white">{formatText(item.location)}</span>
                   </div>
 
                   {organization && (
@@ -580,6 +563,14 @@ export const UnifiedCard = React.memo(
           onClick={handleCardClick}
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              handleCardClick(e as any);
+            }
+          }}
+          role="button"
+          tabIndex={0}
         >
           {/* Full background image */}
           <img
@@ -602,10 +593,7 @@ export const UnifiedCard = React.memo(
           ></div>
 
           {/* Type Badge - After gradient overlay to be visually on top */}
-          <div
-            className="absolute top-2.5 left-2.5 z-20"
-            style={{ mixBlendMode: "difference" }}
-          >
+          <div className="absolute top-2.5 left-2.5 z-20" style={{ mixBlendMode: "difference" }}>
             <span style={{ color: "#eeeeee" }}>
               <ItemTypeIcon type={item.type} size="small" />
             </span>
@@ -613,6 +601,7 @@ export const UnifiedCard = React.memo(
 
           {/* Bookmark Button - After gradient overlay to be visually on top */}
           <button
+            type="button"
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
@@ -620,15 +609,9 @@ export const UnifiedCard = React.memo(
             }}
             className="pointer-events-auto absolute top-1.5 right-2.5 z-[100] transition-all duration-200"
             style={{ color: "#eeeeee", mixBlendMode: "difference" }}
-            aria-label={
-              isBookmarked(item.id)
-                ? t("actions.removeBookmark")
-                : t("actions.bookmark")
-            }
+            aria-label={isBookmarked(item.id) ? t("actions.removeBookmark") : t("actions.bookmark")}
           >
-            <span className="text-base">
-              {isBookmarked(item.id) ? "★" : "☆"}
-            </span>
+            <span className="text-base">{isBookmarked(item.id) ? "★" : "☆"}</span>
           </button>
 
           {/* Content overlay */}
@@ -646,9 +629,7 @@ export const UnifiedCard = React.memo(
               {item.type !== "sponsor" && (
                 <div className="schedule-card-time text-white">{item.time}</div>
               )}
-              <h3 className="schedule-card-title mb-1 text-white">
-                {formatText(item.title)}
-              </h3>
+              <h3 className="schedule-card-title mb-1 text-white">{formatText(item.title)}</h3>
               <div className="flex items-center gap-1 text-xs text-white opacity-80">
                 <LocationIcon size={12} />
                 <span className="truncate">{formatText(item.location)}</span>
@@ -661,18 +642,12 @@ export const UnifiedCard = React.memo(
               style={{
                 display: isInitialized ? (isHovered ? "flex" : "none") : "none",
                 opacity: isInitialized ? (isHovered ? 1 : 0) : 0,
-                pointerEvents: isInitialized
-                  ? isHovered
-                    ? "auto"
-                    : "none"
-                  : "none",
+                pointerEvents: isInitialized ? (isHovered ? "auto" : "none") : "none",
                 transition: "opacity 120ms linear",
               }}
             >
               <div className="scrollbar-thin max-h-full space-y-2 overflow-y-auto pr-2">
-                <h3 className="text-lg font-semibold text-white">
-                  {formatText(item.title)}
-                </h3>
+                <h3 className="text-lg font-semibold text-white">{formatText(item.title)}</h3>
 
                 {showDescription && item.description && (
                   <p className="line-clamp-3 text-sm leading-relaxed text-white opacity-90">
@@ -690,9 +665,7 @@ export const UnifiedCard = React.memo(
                   )}
                   <div className="flex items-center gap-2">
                     <LocationIcon size={16} />
-                    <span className="text-white">
-                      {formatText(item.location)}
-                    </span>
+                    <span className="text-white">{formatText(item.location)}</span>
                   </div>
                   {organization && (
                     <div className="flex items-center gap-2 text-white">
@@ -707,10 +680,7 @@ export const UnifiedCard = React.memo(
                 {showTags && item.tags && item.tags.length > 0 && (
                   <div className="flex flex-wrap gap-1">
                     {item.tags.slice(0, 3).map((tag) => (
-                      <span
-                        key={tag}
-                        className="rounded-full px-2 py-1 text-xs text-white"
-                      >
+                      <span key={tag} className="rounded-full px-2 py-1 text-xs text-white">
                         {tag}
                       </span>
                     ))}
@@ -764,6 +734,14 @@ export const UnifiedCard = React.memo(
           onClick={handleCardClick}
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              handleCardClick(e as any);
+            }
+          }}
+          role="button"
+          tabIndex={0}
         >
           {/* Full background image */}
           <img
@@ -786,10 +764,7 @@ export const UnifiedCard = React.memo(
           ></div>
 
           {/* Type Badge - After gradient overlay to be visually on top */}
-          <div
-            className="absolute top-2.5 left-2.5 z-20"
-            style={{ mixBlendMode: "difference" }}
-          >
+          <div className="absolute top-2.5 left-2.5 z-20" style={{ mixBlendMode: "difference" }}>
             <span style={{ color: "#eeeeee" }}>
               <ItemTypeIcon type={item.type} size="small" />
             </span>
@@ -797,6 +772,7 @@ export const UnifiedCard = React.memo(
 
           {/* Bookmark Button - After gradient overlay to be visually on top */}
           <button
+            type="button"
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
@@ -804,15 +780,9 @@ export const UnifiedCard = React.memo(
             }}
             className="pointer-events-auto absolute top-1.5 right-2.5 z-[100] transition-all duration-200"
             style={{ color: "#eeeeee", mixBlendMode: "difference" }}
-            aria-label={
-              isBookmarked(item.id)
-                ? t("actions.removeBookmark")
-                : t("actions.bookmark")
-            }
+            aria-label={isBookmarked(item.id) ? t("actions.removeBookmark") : t("actions.bookmark")}
           >
-            <span className="text-base">
-              {isBookmarked(item.id) ? "★" : "☆"}
-            </span>
+            <span className="text-base">{isBookmarked(item.id) ? "★" : "☆"}</span>
           </button>
 
           {/* Content overlay */}
@@ -829,9 +799,7 @@ export const UnifiedCard = React.memo(
               {item.type !== "sponsor" && (
                 <div className="schedule-card-time text-white">{item.time}</div>
               )}
-              <h3 className="schedule-card-title mb-1 text-white">
-                {formatText(item.title)}
-              </h3>
+              <h3 className="schedule-card-title mb-1 text-white">{formatText(item.title)}</h3>
               <div className="flex items-center gap-1 text-xs text-white opacity-80">
                 <LocationIcon size={12} />
                 <span className="truncate">{formatText(item.location)}</span>
@@ -849,9 +817,7 @@ export const UnifiedCard = React.memo(
               }}
             >
               <div className="scrollbar-thin max-h-full space-y-2 overflow-y-auto pr-2">
-                <h3 className="text-lg font-semibold text-white">
-                  {formatText(item.title)}
-                </h3>
+                <h3 className="text-lg font-semibold text-white">{formatText(item.title)}</h3>
 
                 {showDescription && item.description && (
                   <p className="line-clamp-3 text-sm leading-relaxed text-white opacity-90">
@@ -869,9 +835,7 @@ export const UnifiedCard = React.memo(
                   )}
                   <div className="flex items-center gap-2">
                     <LocationIcon size={16} />
-                    <span className="text-white">
-                      {formatText(item.location)}
-                    </span>
+                    <span className="text-white">{formatText(item.location)}</span>
                   </div>
                   {organization && (
                     <div className="flex items-center gap-2 text-white">
@@ -938,6 +902,14 @@ export const UnifiedCard = React.memo(
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
           onClick={handleCardClick}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              handleCardClick(e as any);
+            }
+          }}
+          role="button"
+          tabIndex={0}
         >
           {/* Background Image */}
           <div className="absolute inset-0 flex items-center justify-center overflow-hidden">
@@ -969,10 +941,7 @@ export const UnifiedCard = React.memo(
           ></div>
 
           {/* Type Badge - After gradient overlay to be visually on top */}
-          <div
-            className="absolute top-2.5 left-2.5 z-20"
-            style={{ mixBlendMode: "difference" }}
-          >
+          <div className="absolute top-2.5 left-2.5 z-20" style={{ mixBlendMode: "difference" }}>
             <span style={{ color: "#eeeeee" }}>
               <ItemTypeIcon type={item.type} size="small" />
             </span>
@@ -980,6 +949,7 @@ export const UnifiedCard = React.memo(
 
           {/* Bookmark Button - After gradient overlay to be visually on top */}
           <button
+            type="button"
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
@@ -987,15 +957,9 @@ export const UnifiedCard = React.memo(
             }}
             className="pointer-events-auto absolute top-1.5 right-2.5 z-[100] transition-all duration-200"
             style={{ color: "#eeeeee", mixBlendMode: "difference" }}
-            aria-label={
-              isBookmarked(item.id)
-                ? t("actions.removeBookmark")
-                : t("actions.bookmark")
-            }
+            aria-label={isBookmarked(item.id) ? t("actions.removeBookmark") : t("actions.bookmark")}
           >
-            <span className="text-base">
-              {isBookmarked(item.id) ? "★" : "☆"}
-            </span>
+            <span className="text-base">{isBookmarked(item.id) ? "★" : "☆"}</span>
           </button>
 
           {/* Content overlay */}
@@ -1026,9 +990,7 @@ export const UnifiedCard = React.memo(
             >
               <div className="w-full space-y-2 text-center">
                 <div className="overflow-hidden">
-                  <h3
-                    className={`truncate text-base font-semibold whitespace-nowrap text-white`}
-                  >
+                  <h3 className={`truncate text-base font-semibold whitespace-nowrap text-white`}>
                     {formatText(item.title)}
                   </h3>
                 </div>
@@ -1064,14 +1026,20 @@ export const UnifiedCard = React.memo(
         ref={cardRef}
         className={`group relative aspect-[4/3] cursor-pointer overflow-hidden rounded-lg border border-white/10 bg-white/5 transition-all duration-300 ease-[cubic-bezier(0,1,0.5,1)] ${className}`}
         style={{
-          boxShadow: isHovered
-            ? "0 10px 20px rgba(0, 0, 0, 0.15)"
-            : "0 2px 4px rgba(0, 0, 0, 0.1)",
+          boxShadow: isHovered ? "0 10px 20px rgba(0, 0, 0, 0.15)" : "0 2px 4px rgba(0, 0, 0, 0.1)",
           transform: isHovered ? "translateY(-4px)" : "translateY(0)",
         }}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
         onClick={handleCardClick}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            handleCardClick(e as any);
+          }
+        }}
+        role="button"
+        tabIndex={0}
       >
         {/* Background Image */}
         <div className="absolute inset-0 flex items-center justify-center overflow-hidden">
@@ -1103,10 +1071,7 @@ export const UnifiedCard = React.memo(
         ></div>
 
         {/* Type Badge - After gradient overlay to be visually on top */}
-        <div
-          className="absolute top-2.5 left-2.5 z-20"
-          style={{ mixBlendMode: "difference" }}
-        >
+        <div className="absolute top-2.5 left-2.5 z-20" style={{ mixBlendMode: "difference" }}>
           <span style={{ color: "#eeeeee" }}>
             <ItemTypeIcon type={item.type} size="small" />
           </span>
@@ -1114,6 +1079,7 @@ export const UnifiedCard = React.memo(
 
         {/* Bookmark Button - After gradient overlay to be visually on top */}
         <button
+          type="button"
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
@@ -1121,11 +1087,7 @@ export const UnifiedCard = React.memo(
           }}
           className="pointer-events-auto absolute top-1.5 right-2.5 z-[100] transition-all duration-200"
           style={{ color: "#eeeeee", mixBlendMode: "difference" }}
-          aria-label={
-            isBookmarked(item.id)
-              ? t("actions.removeBookmark")
-              : t("actions.bookmark")
-          }
+          aria-label={isBookmarked(item.id) ? t("actions.removeBookmark") : t("actions.bookmark")}
         >
           <span className="text-base">{isBookmarked(item.id) ? "★" : "☆"}</span>
         </button>
@@ -1147,15 +1109,9 @@ export const UnifiedCard = React.memo(
             <div className="space-y-0.5 text-sm text-white opacity-90">
               {/* スポンサー以外の場合のみ時間を表示 */}
               {item.type !== "sponsor" && (
-                <SmartScrollableText className="text-white">
-                  {" "}
-                  {item.time}
-                </SmartScrollableText>
+                <SmartScrollableText className="text-white"> {item.time}</SmartScrollableText>
               )}
-              <SmartScrollableText className="text-white">
-                {" "}
-                {item.location}
-              </SmartScrollableText>
+              <SmartScrollableText className="text-white"> {item.location}</SmartScrollableText>
             </div>
           </div>
           {/* Detailed overlay on hover */}
@@ -1185,16 +1141,12 @@ export const UnifiedCard = React.memo(
                 {item.type !== "sponsor" && (
                   <div className="flex items-center gap-2">
                     <TimeIcon size={16} />
-                    <SmartScrollableText className="text-white">
-                      {item.time}
-                    </SmartScrollableText>
+                    <SmartScrollableText className="text-white">{item.time}</SmartScrollableText>
                   </div>
                 )}
                 <div className="flex items-center gap-2">
                   <LocationIcon size={16} />
-                  <SmartScrollableText className="text-white">
-                    {item.location}
-                  </SmartScrollableText>
+                  <SmartScrollableText className="text-white">{item.location}</SmartScrollableText>
                 </div>
                 {organization && (
                   <div className="flex items-center gap-2 text-white">

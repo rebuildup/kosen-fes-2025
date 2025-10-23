@@ -31,11 +31,9 @@ const TimelineDay = ({
   const calculateDelay = (timeSlotIndex: number, itemIndex: number): number => {
     const baseDelay = 0.08;
     const minDelay = 0.02;
-    const totalItemsBefore = timeSlots
-      .slice(0, timeSlotIndex)
-      .reduce((acc, slot) => {
-        return acc + groupedItems[slot].length;
-      }, 0);
+    const totalItemsBefore = timeSlots.slice(0, timeSlotIndex).reduce((acc, slot) => {
+      return acc + groupedItems[slot].length;
+    }, 0);
     const absoluteIndex = totalItemsBefore + itemIndex;
 
     // Use similar progressive algorithm as CardGrid
@@ -44,7 +42,7 @@ const TimelineDay = ({
     }
 
     const progressFactor = absoluteIndex / (items.length - 1);
-    const curve = Math.pow(1 - progressFactor, 0.8);
+    const curve = (1 - progressFactor) ** 0.8;
     const delay = minDelay + (baseDelay - minDelay) * curve;
     const cumulativeBase = absoluteIndex * minDelay * 0.3;
 
@@ -64,10 +62,7 @@ const TimelineDay = ({
 
   if (items.length === 0) {
     return (
-      <div
-        className="py-12 text-center text-lg"
-        style={{ color: "var(--color-text-secondary)" }}
-      >
+      <div className="py-12 text-center text-lg" style={{ color: "var(--color-text-secondary)" }}>
         {t("schedule.noEvents")}
       </div>
     );
@@ -83,16 +78,10 @@ const TimelineDay = ({
           borderColor: "var(--color-border-primary)",
         }}
       >
-        <h2
-          className="mb-2 text-xl font-semibold"
-          style={{ color: "var(--color-text-primary)" }}
-        >
+        <h2 className="mb-2 text-xl font-semibold" style={{ color: "var(--color-text-primary)" }}>
           {formatDate(date)}
         </h2>
-        <div
-          className="text-sm font-medium"
-          style={{ color: "var(--color-accent)" }}
-        >
+        <div className="text-sm font-medium" style={{ color: "var(--color-accent)" }}>
           {dayName}
         </div>
       </div>
@@ -117,10 +106,7 @@ const TimelineDay = ({
                   >
                     {formatDate(date)}
                   </h2>
-                  <div
-                    className="text-sm font-medium"
-                    style={{ color: "var(--color-accent)" }}
-                  >
+                  <div className="text-sm font-medium" style={{ color: "var(--color-accent)" }}>
                     {dayName}
                   </div>
                 </div>
@@ -149,10 +135,7 @@ const TimelineDay = ({
                       key={`${animationKey}-${item.id}`}
                       className="animate-category-change"
                       style={{
-                        animationDelay: `${calculateDelay(
-                          timeSlotIndex,
-                          itemIndex,
-                        )}s`,
+                        animationDelay: `${calculateDelay(timeSlotIndex, itemIndex)}s`,
                         animationFillMode: "both",
                       }}
                     >
@@ -161,9 +144,7 @@ const TimelineDay = ({
                         variant="timeline"
                         showDescription={true}
                         showTags={true}
-                        onClick={
-                          onItemClick ? () => onItemClick(item) : undefined
-                        }
+                        onClick={onItemClick ? () => onItemClick(item) : undefined}
                       />
                     </div>
                   ))}
@@ -189,10 +170,7 @@ const TimelineDay = ({
                       key={`${animationKey}-mobile-${item.id}`}
                       className="animate-category-change"
                       style={{
-                        animationDelay: `${calculateDelay(
-                          timeSlotIndex,
-                          itemIndex,
-                        )}s`,
+                        animationDelay: `${calculateDelay(timeSlotIndex, itemIndex)}s`,
                         animationFillMode: "both",
                       }}
                     >
@@ -201,9 +179,7 @@ const TimelineDay = ({
                         variant="timeline"
                         showDescription={true}
                         showTags={true}
-                        onClick={
-                          onItemClick ? () => onItemClick(item) : undefined
-                        }
+                        onClick={onItemClick ? () => onItemClick(item) : undefined}
                       />
                     </div>
                   ))}

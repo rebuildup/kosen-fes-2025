@@ -9,7 +9,7 @@ export function highlightSearchQuery(text: string, query: string): ReactNode {
         {parts.map((part, i) =>
           part.toLowerCase() === query.toLowerCase() ? (
             <mark
-              key={i}
+              key={`highlight-${i}-${part.slice(0, 10)}`}
               className="rounded bg-gradient-to-r from-[var(--accent-yellow)] to-[var(--accent-orange)] px-1 text-[var(--text-primary)]"
             >
               {part}

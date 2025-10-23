@@ -114,9 +114,7 @@ export const APP_CONFIG = {
 
 export type AppConfig = typeof APP_CONFIG;
 
-export const isFeatureEnabled = (
-  feature: keyof typeof APP_CONFIG.features,
-): boolean => {
+export const isFeatureEnabled = (feature: keyof typeof APP_CONFIG.features): boolean => {
   return APP_CONFIG.features[feature];
 };
 

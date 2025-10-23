@@ -58,6 +58,7 @@ class ErrorBoundary extends Component<Props, State> {
             )}
             <div className="error-actions">
               <button
+                type="button"
                 onClick={this.handleReset}
                 className="error-action-button primary"
               >

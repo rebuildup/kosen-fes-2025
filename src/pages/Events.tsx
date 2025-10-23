@@ -23,9 +23,7 @@ const Events = () => {
   const { t } = useLanguage();
   const { filterItemsByTags, selectedTags } = useTag();
 
-  const [viewMode, setViewMode] = useState<
-    "default" | "compact" | "grid" | "list"
-  >("default");
+  const [viewMode, setViewMode] = useState<"default" | "compact" | "grid" | "list">("default");
   const [filteredEvents, setFilteredEvents] = useState<Item[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [dateFilter, setDateFilter] = useState<"all" | "day1" | "day2">("all");
@@ -113,9 +111,7 @@ const Events = () => {
                 <TabButtons
                   options={dateOptions}
                   activeValue={dateFilter}
-                  onChange={(value) =>
-                    setDateFilter(value as typeof dateFilter)
-                  }
+                  onChange={(value) => setDateFilter(value as typeof dateFilter)}
                   className="overflow-hidden rounded-lg shadow-sm"
                 />
               </div>

@@ -27,13 +27,11 @@ export const enTranslations: Translations = {
     description: "Save and manage your favorite stages and exhibits",
     empty: "No bookmarks yet",
     itemCount: "items",
-    noBookmarks:
-      "No bookmarks yet. Explore stages and exhibits and bookmark your favorites!",
+    noBookmarks: "No bookmarks yet. Explore stages and exhibits and bookmark your favorites!",
     noCategoryItems: "No bookmarked items in this category",
     noItemsFound: "No items found",
     noItemsOfType: "No bookmarked items of this type",
-    startBookmarking:
-      "Start bookmarking stages and exhibits you're interested in",
+    startBookmarking: "Start bookmarking stages and exhibits you're interested in",
     title: "Bookmarks",
   },
   common: {
@@ -77,11 +75,9 @@ export const enTranslations: Translations = {
     genericErrorMessage: "An error occurred while processing your request.",
     itemNotFound: "Item not found",
     pageNotFound: "Page Not Found",
-    pageNotFoundMessage:
-      "The page you're looking for doesn't exist or has been moved.",
+    pageNotFoundMessage: "The page you're looking for doesn't exist or has been moved.",
     serverError: "Server Error",
-    serverErrorMessage:
-      "We're experiencing issues with our server. Please try again later.",
+    serverErrorMessage: "We're experiencing issues with our server. Please try again later.",
     tryAgain: "Try Again",
   },
   events: {
@@ -124,8 +120,7 @@ export const enTranslations: Translations = {
     schedule: "Schedule",
     search: "Search",
     stalls: "Popular Stalls",
-    subtitle:
-      "The 62nd Ube National College of Technology Festival 2025 Theme is POP!",
+    subtitle: "The 62nd Ube National College of Technology Festival 2025 Theme is POP!",
     timeline: "Timeline",
     title: "Welcome to Ube Kosen Festival 2025",
     viewAll: "View All",
@@ -331,8 +326,7 @@ export const jaTranslations: Translations = {
     pageNotFound: "ページが見つかりません",
     pageNotFoundMessage: "お探しのページは存在しないか、移動されました。",
     serverError: "サーバーエラー",
-    serverErrorMessage:
-      "サーバーに問題が発生しています。後でもう一度お試しください。",
+    serverErrorMessage: "サーバーに問題が発生しています。後でもう一度お試しください。",
     tryAgain: "再試行",
   },
   events: {
@@ -451,8 +445,7 @@ export const jaTranslations: Translations = {
     tagSearchHint: "タグをクリックして検索",
     title: "検索",
     tryDifferentKeywords: "別のキーワードやタグで検索してみてください",
-    tryDifferentQuery:
-      "別のキーワードやフィルターを使って検索してみてください。",
+    tryDifferentQuery: "別のキーワードやフィルターを使って検索してみてください。",
   },
   settings: {
     language: {
@@ -507,25 +500,18 @@ export const jaTranslations: Translations = {
 };
 
 // Function to get translations for a language
-export const getTranslationsForLanguage = (
-  language: Language,
-): Translations => {
+export const getTranslationsForLanguage = (language: Language): Translations => {
   return language === "en" ? enTranslations : jaTranslations;
 };
 
 // Function to get a nested value from translations using dot notation
-export const getTranslationValue = (
-  translations: Translations,
-  key: string,
-): string => {
+export const getTranslationValue = (translations: Translations, key: string): string => {
   const keys = key.split(".");
   let result: Translations | string = translations;
 
   for (const k of keys) {
     if (typeof result === "object" && result !== null) {
-      const value: string | Translations | undefined = (result as Translations)[
-        k
-      ];
+      const value: string | Translations | undefined = (result as Translations)[k];
       if (value === undefined) {
         return key; // Return the key if the translation is not found
       }

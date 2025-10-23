@@ -43,7 +43,7 @@ const Menu = ({ closeButtonRef, setMenuOpen }: MenuProps) => {
   const { t } = useLanguage();
   const { bookmarks } = useBookmark();
   const menuRef = useRef<HTMLDivElement>(null);
-  const backdropRef = useRef<HTMLDivElement>(null);
+  const backdropRef = useRef<HTMLButtonElement>(null);
   const menuContentRef = useRef<HTMLDivElement>(null);
 
   // Handle menu opening animation
@@ -142,11 +142,18 @@ const Menu = ({ closeButtonRef, setMenuOpen }: MenuProps) => {
   return createPortal(
     <div className="mobile-menu-overlay">
       {/* Backdrop */}
-      <div
+      <button
+        type="button"
         ref={backdropRef}
         className="mobile-menu-backdrop"
         onClick={() => closeWithAnimation()}
-      ></div>
+        onKeyDown={(e) => {
+          if (e.key === "Escape") {
+            closeWithAnimation();
+          }
+        }}
+        aria-label="メニューを閉じる"
+      ></button>
 
       {/* Menu Panel */}
       <div ref={menuRef} className="mobile-menu-panel">
@@ -154,6 +161,7 @@ const Menu = ({ closeButtonRef, setMenuOpen }: MenuProps) => {
         <div className="mobile-menu-header">
           <div className="mobile-menu-title">{t("navigation.menu")}</div>
           <button
+            type="button"
             onClick={() => closeWithAnimation()}
             aria-label={t("actions.close")}
             ref={closeButtonRef}
@@ -169,18 +177,14 @@ const Menu = ({ closeButtonRef, setMenuOpen }: MenuProps) => {
         <div ref={menuContentRef} className="mobile-menu-content">
           {/* Main Navigation */}
           <div className="mobile-menu-section">
-            <h3 className="mobile-menu-section-title">
-              {t("navigation.main")}
-            </h3>
+            <h3 className="mobile-menu-section-title">{t("navigation.main")}</h3>
             <nav className="mobile-menu-nav">
               <NavLink
                 to="/"
                 onClick={handleMenuItemClick}
                 end
                 className={({ isActive }) =>
-                  `mobile-menu-nav-item ${
-                    isActive ? "mobile-menu-nav-item-active" : ""
-                  }`
+                  `mobile-menu-nav-item ${isActive ? "mobile-menu-nav-item-active" : ""}`
                 }
               >
                 <span className="mobile-menu-nav-icon">
@@ -193,9 +197,7 @@ const Menu = ({ closeButtonRef, setMenuOpen }: MenuProps) => {
                 to="/events"
                 onClick={handleMenuItemClick}
                 className={({ isActive }) =>
-                  `mobile-menu-nav-item ${
-                    isActive ? "mobile-menu-nav-item-active" : ""
-                  }`
+                  `mobile-menu-nav-item ${isActive ? "mobile-menu-nav-item-active" : ""}`
                 }
               >
                 <span className="mobile-menu-nav-icon">
@@ -208,9 +210,7 @@ const Menu = ({ closeButtonRef, setMenuOpen }: MenuProps) => {
                 to="/exhibits"
                 onClick={handleMenuItemClick}
                 className={({ isActive }) =>
-                  `mobile-menu-nav-item ${
-                    isActive ? "mobile-menu-nav-item-active" : ""
-                  }`
+                  `mobile-menu-nav-item ${isActive ? "mobile-menu-nav-item-active" : ""}`
                 }
               >
                 <span className="mobile-menu-nav-icon">
@@ -223,9 +223,7 @@ const Menu = ({ closeButtonRef, setMenuOpen }: MenuProps) => {
                 to="/schedule"
                 onClick={handleMenuItemClick}
                 className={({ isActive }) =>
-                  `mobile-menu-nav-item ${
-                    isActive ? "mobile-menu-nav-item-active" : ""
-                  }`
+                  `mobile-menu-nav-item ${isActive ? "mobile-menu-nav-item-active" : ""}`
                 }
               >
                 <span className="mobile-menu-nav-icon">
@@ -238,9 +236,7 @@ const Menu = ({ closeButtonRef, setMenuOpen }: MenuProps) => {
                 to="/map"
                 onClick={handleMenuItemClick}
                 className={({ isActive }) =>
-                  `mobile-menu-nav-item ${
-                    isActive ? "mobile-menu-nav-item-active" : ""
-                  }`
+                  `mobile-menu-nav-item ${isActive ? "mobile-menu-nav-item-active" : ""}`
                 }
               >
                 <span className="mobile-menu-nav-icon">
@@ -253,15 +249,9 @@ const Menu = ({ closeButtonRef, setMenuOpen }: MenuProps) => {
 
           {/* Quick Links */}
           <div className="mobile-menu-section">
-            <h3 className="mobile-menu-section-title">
-              {t("navigation.quickLinks")}
-            </h3>
+            <h3 className="mobile-menu-section-title">{t("navigation.quickLinks")}</h3>
             <nav className="mobile-menu-nav">
-              <Link
-                to="/bookmarks"
-                className="mobile-menu-nav-item"
-                onClick={handleMenuItemClick}
-              >
+              <Link to="/bookmarks" className="mobile-menu-nav-item" onClick={handleMenuItemClick}>
                 <span className="mobile-menu-nav-icon">
                   <BookmarkIcon size={18} />
                 </span>
@@ -271,11 +261,7 @@ const Menu = ({ closeButtonRef, setMenuOpen }: MenuProps) => {
                 )}
               </Link>
 
-              <Link
-                to="/search"
-                className="mobile-menu-nav-item"
-                onClick={handleMenuItemClick}
-              >
+              <Link to="/search" className="mobile-menu-nav-item" onClick={handleMenuItemClick}>
                 <span className="mobile-menu-nav-icon">
                   <SearchIcon size={18} />
                 </span>
@@ -290,18 +276,14 @@ const Menu = ({ closeButtonRef, setMenuOpen }: MenuProps) => {
             <div className="mobile-menu-settings">
               <div className="mobile-menu-setting-item">
                 <div className="flex items-center gap-3">
-                  <span className="mobile-menu-setting-label">
-                    {t("settings.theme.title")}
-                  </span>
+                  <span className="mobile-menu-setting-label">{t("settings.theme.title")}</span>
                 </div>
                 <ThemeToggleIcon />
               </div>
 
               <div className="mobile-menu-setting-item">
                 <div className="flex items-center gap-3">
-                  <span className="mobile-menu-setting-label">
-                    {t("settings.language.title")}
-                  </span>
+                  <span className="mobile-menu-setting-label">{t("settings.language.title")}</span>
                 </div>
                 <LanguageToggleIcon />
               </div>

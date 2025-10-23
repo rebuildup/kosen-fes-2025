@@ -2,14 +2,7 @@ import type { MutableRefObject } from "react";
 import { NavLink } from "react-router-dom";
 
 import { useLanguage } from "../../context/LanguageContext";
-import {
-  EventIcon,
-  ExhibitIcon,
-  HomeIcon,
-  MapIcon,
-  MenuIcon,
-  ScheduleIcon,
-} from "../icons";
+import { EventIcon, ExhibitIcon, HomeIcon, MapIcon, MenuIcon, ScheduleIcon } from "../icons";
 
 interface FooterProps {
   setMenuOpen: (open: boolean) => void;
@@ -84,6 +77,7 @@ const Footer = ({ menuButtonRef, setMenuOpen }: FooterProps) => {
         </NavLink>
 
         <button
+          type="button"
           onClick={() => setMenuOpen(true)}
           aria-label={t("navigation.menu")}
           ref={menuButtonRef}

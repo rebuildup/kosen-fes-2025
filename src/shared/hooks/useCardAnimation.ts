@@ -24,9 +24,7 @@ interface UseCardAnimationReturn {
 /**
  * Custom hook for card hover animations
  */
-export const useCardAnimation = (
-  options: UseCardAnimationOptions = {},
-): UseCardAnimationReturn => {
+export const useCardAnimation = (options: UseCardAnimationOptions = {}): UseCardAnimationReturn => {
   const {
     hasMetaSection = true,
     hasTagsSection = false,

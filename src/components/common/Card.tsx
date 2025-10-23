@@ -1,5 +1,6 @@
 import { gsap } from "gsap";
-import React, { useEffect, useRef, useState } from "react";
+import type React from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 
 import { useBookmark } from "../../context/BookmarkContext";
@@ -18,6 +19,30 @@ interface CardProps {
   highlightText?: (text: string) => React.ReactNode;
   onClick?: () => void;
 }
+
+// Component for text with intelligent marquee
+const SmartScrollableText = ({
+  children,
+  className = "",
+  isHovered,
+}: {
+  children: React.ReactNode;
+  className?: string;
+  isHovered: boolean;
+}) => {
+  const textString = typeof children === "string" ? children : String(children);
+  const shouldMarquee = textString.length > 30; // Threshold for marquee
+
+  return (
+    <div className={`overflow-hidden ${className}`}>
+      {shouldMarquee && isHovered ? (
+        <div className="animate-marquee whitespace-nowrap">{children}</div>
+      ) : (
+        <div className="truncate">{children}</div>
+      )}
+    </div>
+  );
+};
 
 const Card = ({
   highlightText,
@@ -278,29 +303,6 @@ const Card = ({
     return getPlaceholderImage();
   };
 
-  // Component for text with intelligent marquee
-  const SmartScrollableText = ({
-    children,
-    className = "",
-  }: {
-    children: React.ReactNode;
-    className?: string;
-  }) => {
-    const textString =
-      typeof children === "string" ? children : String(children);
-    const shouldMarquee = textString.length > 30; // Threshold for marquee
-
-    return (
-      <div className={`overflow-hidden ${className}`}>
-        {shouldMarquee && isHovered ? (
-          <div className="animate-marquee whitespace-nowrap">{children}</div>
-        ) : (
-          <div className="truncate">{children}</div>
-        )}
-      </div>
-    );
-  };
-
   const cardContent = (
     <div
       ref={cardRef}
@@ -324,17 +326,12 @@ const Card = ({
 
       {/* Bookmark Button - Top Right (outside overlay for mix-blend-mode) */}
       <button
+        type="button"
         onClick={handleBookmarkToggle}
         className="pointer-events-auto absolute top-2 right-2 z-20 transition-all duration-200"
-        aria-label={
-          isBookmarked(item.id)
-            ? t("actions.removeBookmark")
-            : t("actions.bookmark")
-        }
+        aria-label={isBookmarked(item.id) ? t("actions.removeBookmark") : t("actions.bookmark")}
       >
-        <span className="card-foreground text-sm">
-          {isBookmarked(item.id) ? "★" : "☆"}
-        </span>
+        <span className="card-foreground text-sm">{isBookmarked(item.id) ? "★" : "☆"}</span>
       </button>
 
       {/* Glassmorphism overlay (use shared .card-gradient-overlay for consistent theming) */}
@@ -344,13 +341,13 @@ const Card = ({
             isHovered ? "opacity-0" : "opacity-100"
           }`}
         >
-          <SmartScrollableText className="mix-diff text-lg font-semibold">
+          <SmartScrollableText className="mix-diff text-lg font-semibold" isHovered={isHovered}>
             {formatText(item.title)}
           </SmartScrollableText>
 
           <div className="space-y-0.5 text-sm opacity-90">
-            <SmartScrollableText> {item.time}</SmartScrollableText>
-            <SmartScrollableText> {item.location}</SmartScrollableText>
+            <SmartScrollableText isHovered={isHovered}> {item.time}</SmartScrollableText>
+            <SmartScrollableText isHovered={isHovered}> {item.location}</SmartScrollableText>
           </div>
         </div>
 
@@ -363,29 +360,27 @@ const Card = ({
           style={{ visibility: isHovered ? "visible" : "hidden" }}
         >
           <div className="space-y-3">
-            <SmartScrollableText className="mix-diff text-lg font-semibold">
+            <SmartScrollableText className="mix-diff text-lg font-semibold" isHovered={isHovered}>
               {formatText(item.title)}
             </SmartScrollableText>
 
             {showDescription && item.description && (
-              <p className="line-clamp-3 text-sm opacity-90">
-                {formatText(item.description)}
-              </p>
+              <p className="line-clamp-3 text-sm opacity-90">{formatText(item.description)}</p>
             )}
 
             <div className="space-y-2 text-sm opacity-80">
               <div className="flex items-center gap-2">
                 <TimeIcon size={16} />
-                <SmartScrollableText>{item.time}</SmartScrollableText>
+                <SmartScrollableText isHovered={isHovered}>{item.time}</SmartScrollableText>
               </div>
               <div className="flex items-center gap-2">
                 <LocationIcon size={16} />
-                <SmartScrollableText>{item.location}</SmartScrollableText>
+                <SmartScrollableText isHovered={isHovered}>{item.location}</SmartScrollableText>
               </div>
               {getOrganization() && (
                 <div className="flex items-center gap-2">
                   <PeopleIcon size={16} />
-                  <SmartScrollableText>
+                  <SmartScrollableText isHovered={isHovered}>
                     {getOrganizationLabel()}: {getOrganization()}
                   </SmartScrollableText>
                 </div>
@@ -399,20 +394,13 @@ const Card = ({
           <div
             ref={tagsRef}
             className={`pointer-events-none absolute right-3 bottom-3 left-3 transition-all duration-300 ${
-              isHovered
-                ? "translate-y-0 opacity-100"
-                : "translate-y-4 opacity-0"
+              isHovered ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"
             }`}
             style={{ visibility: isHovered ? "visible" : "hidden" }}
           >
             <div className="flex flex-wrap gap-1">
               {item.tags.slice(0, 3).map((tagName) => (
-                <Tag
-                  key={tagName}
-                  tag={tagName}
-                  size="small"
-                  interactive={false}
-                />
+                <Tag key={tagName} tag={tagName} size="small" interactive={false} />
               ))}
               {item.tags.length > 3 && (
                 <span className="glass-subtle rounded-full px-2 py-1 text-xs">
@@ -427,7 +415,11 @@ const Card = ({
   );
 
   if (onClick) {
-    return <div onClick={handleCardClick}>{cardContent}</div>;
+    return (
+      <button type="button" onClick={handleCardClick} className="block w-full">
+        {cardContent}
+      </button>
+    );
   }
 
   return (

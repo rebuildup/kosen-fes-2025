@@ -63,9 +63,7 @@ export const supportsWebP = (): Promise<boolean> => {
 /**
  * Convert image path to WebP if supported
  */
-export const getOptimizedImagePath = async (
-  originalPath: string,
-): Promise<string> => {
+export const getOptimizedImagePath = async (originalPath: string): Promise<string> => {
   const webpSupported = await supportsWebP();
 
   if (webpSupported && !originalPath.includes(".webp")) {

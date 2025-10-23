@@ -30,13 +30,10 @@ const BookmarkButton = ({
 
   return (
     <button
-      className={`bookmark-button ${sizeClass} ${
-        isActive ? "bookmarked" : ""
-      } ${className}`}
+      type="button"
+      className={`bookmark-button ${sizeClass} ${isActive ? "bookmarked" : ""} ${className}`}
       onClick={handleClick}
-      aria-label={
-        isActive ? t("actions.removeBookmark") : t("actions.bookmark")
-      }
+      aria-label={isActive ? t("actions.removeBookmark") : t("actions.bookmark")}
       title={isActive ? t("actions.removeBookmark") : t("actions.bookmark")}
     >
       <span className="bookmark-icon">

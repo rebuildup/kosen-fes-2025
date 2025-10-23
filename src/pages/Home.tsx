@@ -7,7 +7,9 @@ import { useData } from "../context/DataContext";
 import { useLanguage } from "../context/LanguageContext";
 import eventsJson from "../data/events.json";
 import type { Event } from "../types/common";
+
 const events = eventsJson as Event[];
+
 import UnifiedCard from "../shared/components/ui/UnifiedCard";
 import { pickRandom } from "../shared/utils/random";
 import type { Item } from "../types/common";
@@ -78,8 +80,7 @@ const convertItemCoreToItem = (itemCore: ItemCore): Item => {
 };
 
 // 画像パスをpublicルート基準に変換
-const toPublicImagePath = (url: string) =>
-  url.replace(/^\.?\/?images\//, "./images/");
+const toPublicImagePath = (url: string) => url.replace(/^\.?\/?images\//, "./images/");
 
 const getRandomAnyImage = () => {
   const images = events
@@ -116,11 +117,7 @@ const Home = () => {
 
   // Update dates when items change
   useEffect(() => {
-    const dates = [
-      ...new Set(
-        [...events, ...exhibits, ...stalls].map((item) => item.date || ""),
-      ),
-    ]
+    const dates = [...new Set([...events, ...exhibits, ...stalls].map((item) => item.date || ""))]
       .filter((date: string) => date !== "")
       .sort((a: string, b: string) => a.localeCompare(b));
 
@@ -133,9 +130,7 @@ const Home = () => {
     const byDate: { [date: string]: Item[] } = {};
 
     for (const date of allDates) {
-      byDate[date] = allItems
-        .filter((item) => item.date === date)
-        .map(convertItemCoreToItem);
+      byDate[date] = allItems.filter((item) => item.date === date).map(convertItemCoreToItem);
     }
 
     setTimelineItems(byDate);
@@ -180,11 +175,7 @@ const Home = () => {
           {/* チケット画像 - 横幅いっぱい */}
           <div className="ticket-preview mb-8">
             <div className="mx-auto max-w-5xl">
-              <img
-                src="./assets/ticket.png"
-                alt="高専祭2025 チケット"
-                className="h-auto w-full"
-              />
+              <img src="./assets/ticket.png" alt="高専祭2025 チケット" className="h-auto w-full" />
             </div>
           </div>
 
@@ -311,11 +302,7 @@ const Home = () => {
             {t("home.popularTags")}
           </h2>
           <div className="w-full overflow-hidden">
-            <TagCloud
-              tags={popularTags}
-              showCount
-              onTagClick={handleTagClick}
-            />
+            <TagCloud tags={popularTags} showCount onTagClick={handleTagClick} />
           </div>
         </div>
       </section>
@@ -398,12 +385,8 @@ const Home = () => {
         {/* テキスト・ボタン */}
         <div className="relative z-30 mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
           <div className="space-y-6 text-center text-white">
-            <h2 className="text-3xl font-bold md:text-4xl">
-              {t("home.ctaTitle")}
-            </h2>
-            <p className="mx-auto max-w-2xl text-xl text-white/90">
-              {t("home.ctaDescription")}
-            </p>
+            <h2 className="text-3xl font-bold md:text-4xl">{t("home.ctaTitle")}</h2>
+            <p className="mx-auto max-w-2xl text-xl text-white/90">{t("home.ctaDescription")}</p>
             <div className="flex flex-col justify-center gap-4 px-8 sm:flex-row">
               <PillButton
                 to="/map"

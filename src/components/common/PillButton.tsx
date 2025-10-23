@@ -13,6 +13,13 @@ interface PillButtonProps {
   external?: boolean;
 }
 
+// Enhanced arrow icon with animation
+const ArrowIcon = () => (
+  <span className="ml-1/2 flex-shrink-0 transition-all duration-200 group-hover:translate-x-1/12">
+    <ArrowRight size={16} />
+  </span>
+);
+
 const PillButton = ({
   children,
   className = "",
@@ -72,13 +79,6 @@ const PillButton = ({
     }
   };
 
-  // Enhanced arrow icon with animation
-  const ArrowIcon = () => (
-    <span className="ml-1/2 flex-shrink-0 transition-all duration-200 group-hover:translate-x-1/12">
-      <ArrowRight size={16} />
-    </span>
-  );
-
   // Button content with animated arrow
   const buttonContent = (
     <>
@@ -118,7 +118,7 @@ const PillButton = ({
 
   // Regular button
   return (
-    <button onClick={onClick} {...commonProps}>
+    <button type="button" onClick={onClick} {...commonProps}>
       {buttonContent}
     </button>
   );

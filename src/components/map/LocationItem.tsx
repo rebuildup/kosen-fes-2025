@@ -31,9 +31,7 @@ const LocationItem = ({
 
   // Group items by type
   const eventItems = items.filter((item) => item.type === "event") as Event[];
-  const exhibitItems = items.filter(
-    (item) => item.type === "exhibit",
-  ) as Exhibit[];
+  const exhibitItems = items.filter((item) => item.type === "exhibit") as Exhibit[];
   const stallItems = items.filter((item) => item.type === "stall") as Stall[];
 
   // Handle item hover
@@ -42,10 +40,12 @@ const LocationItem = ({
   };
 
   return (
-    <div
+    <button
+      type="button"
       onMouseEnter={() => onHover(location)}
       onMouseLeave={() => onHover(null)}
       onClick={() => onSelect(location)}
+      className="w-full text-left"
     >
       <div>
         <h3>{location}</h3>
@@ -159,7 +159,7 @@ const LocationItem = ({
           )}
         </div>
       )}
-    </div>
+    </button>
   );
 };
 

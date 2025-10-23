@@ -13,12 +13,7 @@ interface TabButtonsProps {
   className?: string;
 }
 
-const TabButtons = ({
-  activeValue,
-  className = "",
-  onChange,
-  options,
-}: TabButtonsProps) => {
+const TabButtons = ({ activeValue, className = "", onChange, options }: TabButtonsProps) => {
   const [indicatorStyle, setIndicatorStyle] = useState({
     transform: "translateX(0px)",
     width: 0,
@@ -28,9 +23,7 @@ const TabButtons = ({
 
   // Update indicator position when active value changes
   useEffect(() => {
-    const activeIndex = options.findIndex(
-      (option) => option.value === activeValue,
-    );
+    const activeIndex = options.findIndex((option) => option.value === activeValue);
     const activeButton = buttonsRef.current[activeIndex];
 
     if (activeButton && containerRef.current) {
@@ -64,21 +57,18 @@ const TabButtons = ({
       {/* Tab buttons */}
       {options.map((option, index) => (
         <button
+          type="button"
           key={option.value}
-          ref={(el) => (buttonsRef.current[index] = el)}
+          ref={(el) => {
+            if (el) buttonsRef.current[index] = el;
+          }}
           onClick={() => onChange(option.value)}
           className={`group relative overflow-hidden px-4 py-3 text-sm font-medium transition-all duration-200 ${index === 0 ? "rounded-l-lg" : ""} ${
             index === options.length - 1 ? "rounded-r-lg" : ""
           } ${activeValue === option.value ? "text-white" : "hover:bg-white/5"} `}
           style={{
-            backgroundColor:
-              activeValue === option.value
-                ? "var(--color-accent)"
-                : "transparent",
-            color:
-              activeValue === option.value
-                ? "white"
-                : "var(--color-text-primary)",
+            backgroundColor: activeValue === option.value ? "var(--color-accent)" : "transparent",
+            color: activeValue === option.value ? "white" : "var(--color-text-primary)",
           }}
         >
           {option.label}

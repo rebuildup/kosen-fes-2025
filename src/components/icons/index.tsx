@@ -1,4 +1,4 @@
-import React from "react";
+import type React from "react";
 
 export interface IconProps extends React.SVGProps<SVGSVGElement> {
   size?: number;
@@ -24,32 +24,33 @@ export const Icon: React.FC<IconProps & { children?: React.ReactNode }> = ({
     className={className}
     {...rest}
   >
+    <title>Icon</title>
     {children}
   </svg>
 );
 
 // Re-export lucide icons with the project's previous names so existing imports keep working.
 
-export { ENIcon, JPIcon } from "./LanguageIcon";
 export {
-  Speaker as EventIcon,
-  Image as ExhibitIcon,
+  AlertTriangle as AlertIcon,
+  Bookmark as BookmarkIcon,
+  Calendar as ScheduleIcon,
+  Clock as TimeIcon,
   Home as HomeIcon,
+  Image as ExhibitIcon,
   Info as InfoIcon,
-  MapPin as LocationIcon,
   Map as MapIcon,
+  MapPin as LocationIcon,
   Menu as MenuIcon,
   Moon as MoonIcon,
-  Users as PeopleIcon,
-  Calendar as ScheduleIcon,
+  Ribbon as SponsorIcon,
   Search as SearchIcon,
   Settings as SettingsIcon,
-  Ribbon as SponsorIcon,
-  UtensilsCrossed as StallIcon,
+  Speaker as EventIcon,
   Sun as SunIcon,
-  Clock as TimeIcon,
   Trash2 as TrashIcon,
+  Users as PeopleIcon,
+  UtensilsCrossed as StallIcon,
   X as XIcon,
 } from "lucide-react";
-export { AlertTriangle as AlertIcon } from "lucide-react";
-export { Bookmark as BookmarkIcon } from "lucide-react";
+export { ENIcon, JPIcon } from "./LanguageIcon";

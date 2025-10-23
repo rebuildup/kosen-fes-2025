@@ -23,10 +23,7 @@ export const getItemOrganization = (item: Item): string => {
 /**
  * Get organization label based on item type and translation function
  */
-export const getItemOrganizationLabel = (
-  itemType: string,
-  t: (key: string) => string,
-): string => {
+export const getItemOrganizationLabel = (itemType: string, t: (key: string) => string): string => {
   switch (itemType) {
     case "event": {
       return t("detail.organizer");
@@ -92,18 +89,13 @@ export const itemMatchesSearch = (item: Item, query: string): boolean => {
     ...(item.tags || []),
   ];
 
-  return searchableFields.some((field) =>
-    field?.toLowerCase().includes(searchQuery),
-  );
+  return searchableFields.some((field) => field?.toLowerCase().includes(searchQuery));
 };
 
 /**
  * Check if an item matches the given tags
  */
-export const itemMatchesTags = (
-  item: Item,
-  selectedTags: string[],
-): boolean => {
+export const itemMatchesTags = (item: Item, selectedTags: string[]): boolean => {
   if (selectedTags.length === 0) return true;
   return selectedTags.every((tag) => item.tags?.includes(tag));
 };
@@ -117,9 +109,7 @@ export const filterItems = (
   selectedTags: string[] = [],
 ): Item[] => {
   return items.filter(
-    (item) =>
-      itemMatchesSearch(item, searchQuery) &&
-      itemMatchesTags(item, selectedTags),
+    (item) => itemMatchesSearch(item, searchQuery) && itemMatchesTags(item, selectedTags),
   );
 };
 
@@ -129,8 +119,7 @@ export const filterItems = (
 export const sortItemsByDateTime = (items: Item[]): Item[] => {
   return [...items].sort((a: Item, b: Item) => {
     // First sort by date
-    const dateComparison =
-      new Date(a.date).getTime() - new Date(b.date).getTime();
+    const dateComparison = new Date(a.date).getTime() - new Date(b.date).getTime();
     if (dateComparison !== 0) return dateComparison;
 
     // If dates are equal, sort by time

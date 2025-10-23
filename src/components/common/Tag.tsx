@@ -14,15 +14,7 @@ interface TagProps {
   "aria-selected"?: boolean;
 }
 
-const Tag = ({
-  "aria-selected": ariaSelected,
-  count,
-  interactive = true,
-  onClick,
-  role,
-  size = "medium",
-  tag,
-}: TagProps) => {
+const Tag = ({ count, interactive = true, onClick, role, size = "medium", tag }: TagProps) => {
   const { isTagSelected, selectTag } = useTag();
   const tagRef = useRef<HTMLButtonElement>(null);
 
@@ -111,11 +103,10 @@ const Tag = ({
 
   return (
     <button
+      type="button"
       className={`${baseClasses} ${sizeClasses[size]} ${getTagClasses()}`}
       onClick={handleClick}
-      type="button"
       role={role}
-      aria-selected={ariaSelected === undefined ? isActive : ariaSelected}
       aria-label={ariaLabel}
       ref={tagRef}
     >

@@ -14,10 +14,9 @@ import { pickRandom } from "../shared/utils/random";
 import type { Item } from "../types/common";
 
 function getRandomExhibitOrStallImage() {
-  const images = [
-    ...exhibits.map((e) => e.imageUrl),
-    ...stalls.map((s) => s.imageUrl),
-  ].filter(Boolean);
+  const images = [...exhibits.map((e) => e.imageUrl), ...stalls.map((s) => s.imageUrl)].filter(
+    Boolean,
+  );
   return pickRandom(images) || "";
 }
 
@@ -25,14 +24,10 @@ const Exhibits = () => {
   const { t } = useLanguage();
   const { filterItemsByTags, selectedTags } = useTag();
 
-  const [viewMode, setViewMode] = useState<
-    "default" | "compact" | "grid" | "list"
-  >("default");
+  const [viewMode, setViewMode] = useState<"default" | "compact" | "grid" | "list">("default");
   const [filteredItems, setFilteredItems] = useState<Item[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [categoryFilter, setCategoryFilter] = useState<
-    "all" | "exhibits" | "stalls"
-  >("all");
+  const [categoryFilter, setCategoryFilter] = useState<"all" | "exhibits" | "stalls">("all");
   // Choose a random hero image from exhibits or stalls
 
   const heroImage = useMemo(() => getRandomExhibitOrStallImage(), []);
@@ -52,10 +47,7 @@ const Exhibits = () => {
         filtered = dataManager.getAllStalls();
       } else {
         // "all" - combine both exhibits and stalls
-        filtered = [
-          ...dataManager.getAllExhibits(),
-          ...dataManager.getAllStalls(),
-        ];
+        filtered = [...dataManager.getAllExhibits(), ...dataManager.getAllStalls()];
       }
 
       // Apply tag filtering
@@ -127,9 +119,7 @@ const Exhibits = () => {
                 <TabButtons
                   options={categoryOptions}
                   activeValue={categoryFilter}
-                  onChange={(value) =>
-                    setCategoryFilter(value as typeof categoryFilter)
-                  }
+                  onChange={(value) => setCategoryFilter(value as typeof categoryFilter)}
                   className="overflow-hidden rounded-lg shadow-sm"
                 />
               </div>

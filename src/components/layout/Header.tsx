@@ -1,21 +1,16 @@
-import { useEffect, useState } from "react";
+import { useEffect, useId, useState } from "react";
 import { NavLink } from "react-router-dom";
 
 import { useLanguage } from "../../context/LanguageContext";
 import { useTheme } from "../../context/ThemeContext";
 import Logo from "../common/Logo";
-import {
-  EventIcon,
-  ExhibitIcon,
-  HomeIcon,
-  MapIcon,
-  ScheduleIcon,
-} from "../icons";
+import { EventIcon, ExhibitIcon, HomeIcon, MapIcon, ScheduleIcon } from "../icons";
 
 const Header = () => {
   const { t } = useLanguage();
   const { theme } = useTheme();
   const [scrolled, setScrolled] = useState(false);
+  const mobileMenuId = useId();
 
   // Handle scroll behavior for header styling
   useEffect(() => {
@@ -48,9 +43,7 @@ const Header = () => {
         scrolled ? "glass-bold" : "glass-subtle"
       }`}
       style={{
-        backdropFilter: scrolled
-          ? "blur(18px) saturate(170%)"
-          : "blur(6px) saturate(130%)",
+        backdropFilter: scrolled ? "blur(18px) saturate(170%)" : "blur(6px) saturate(130%)",
         // フォールバック背景色とインラインガラス効果
         backgroundColor:
           theme === "dark"
@@ -63,9 +56,7 @@ const Header = () => {
         borderBottom: `1px solid ${
           theme === "dark" ? "rgba(255, 255, 255, 0.1)" : "rgba(0, 0, 0, 0.1)"
         }`,
-        WebkitBackdropFilter: scrolled
-          ? "blur(18px) saturate(170%)"
-          : "blur(6px) saturate(130%)",
+        WebkitBackdropFilter: scrolled ? "blur(18px) saturate(170%)" : "blur(6px) saturate(130%)",
       }}
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -142,6 +133,7 @@ const Header = () => {
                 strokeWidth="1.5"
                 stroke="currentColor"
               >
+                <title>Icon</title>
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -153,7 +145,7 @@ const Header = () => {
         </div>
 
         {/* Mobile Navigation Menu */}
-        <div className="md:hidden" id="mobile-menu">
+        <div className="md:hidden" id={mobileMenuId}>
           <div className="glass-effect space-y-1 border-t border-[var(--border-color)] px-2 pt-2 pb-3 sm:px-3">
             {navigationItems.map((item) => {
               const IconComponent = item.icon;

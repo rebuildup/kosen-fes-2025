@@ -6,14 +6,16 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build && node scripts/generate-sitemap.js",
-    "lint": "eslint .",
-    "lint:fix": "eslint . --fix",
+    "lint": "biome lint .",
+    "lint:fix": "biome lint --write .",
+    "format": "biome format --write .",
+    "check": "biome check .",
+    "check:fix": "biome check --write .",
     "textlint": "textlint README.md",
     "textlint:fix": "textlint --fix README.md",
     "typecheck": "tsc -b --pretty false",
     "build:silent": "tsc -b --pretty false && vite build --logLevel silent",
     "preview": "vite preview",
-    "format": "prettier --write .",
     "test": "vitest",
     "test:ui": "vitest --ui",
     "test:run": "vitest run",
@@ -30,7 +32,7 @@
     "tailwindcss": "^4.1.10"
   },
   "devDependencies": {
-    "@eslint/js": "^9.17.0",
+    "@biomejs/biome": "^2.2.7",
     "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.0",
@@ -40,37 +42,13 @@
     "@types/node": "^24.0.1",
     "@types/react": "^18.2.55",
     "@types/react-dom": "^18.2.19",
-    "@typescript-eslint/eslint-plugin": "^8.17.0",
-    "@typescript-eslint/parser": "^8.17.0",
     "@vitejs/plugin-react-swc": "^3.8.0",
-    "eslint": "^9.17.0",
-    "eslint-config-prettier": "^10.1.8",
-    "eslint-plugin-import": "^2.32.0",
-    "eslint-plugin-perfectionist": "^4.15.1",
-    "eslint-plugin-prettier": "^5.5.4",
-    "eslint-plugin-react-hooks": "^5.1.0",
-    "eslint-plugin-react-refresh": "^0.4.19",
-    "eslint-plugin-simple-import-sort": "^12.1.1",
-    "eslint-plugin-sonarjs": "^3.0.5",
-    "eslint-plugin-unicorn": "^61.0.2",
-    "globals": "^15.14.0",
     "jsdom": "^27.0.1",
-    "prettier": "^3.6.2",
-    "prettier-plugin-tailwindcss": "^0.7.0",
     "terser": "^5.44.0",
     "textlint": "^15.1.0",
     "typescript": "~5.3.3",
-    "typescript-eslint": "^8.17.0",
     "vite": "^6.3.5",
     "vitest": "^3.2.4"
   },
-  "packageManager": "yarn@4.10.3+sha512.c38cafb5c7bb273f3926d04e55e1d8c9dfa7d9c3ea1f36a4868fa028b9e5f72298f0b7f401ad5eb921749eb012eb1c3bb74bf7503df3ee43fd600d14a018266f",
-  "prettier": {
-    "plugins": [
-      "prettier-plugin-tailwindcss"
-    ],
-    "singleQuote": false,
-    "semi": true,
-    "trailingComma": "all"
-  }
+  "packageManager": "yarn@4.10.3+sha512.c38cafb5c7bb273f3926d04e55e1d8c9dfa7d9c3ea1f36a4868fa028b9e5f72298f0b7f401ad5eb921749eb012eb1c3bb74bf7503df3ee43fd600d14a018266f"
 }

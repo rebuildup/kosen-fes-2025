@@ -1,12 +1,6 @@
 /* eslint-disable react-refresh/only-export-components */
 import type { ReactNode } from "react";
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import { createContext, useCallback, useContext, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import { useData } from "./DataContext";
@@ -119,8 +113,7 @@ export const TagProvider = ({ children }: TagProviderProps) => {
 
     const isSameLength = decodedTags.length === selectedTags.length;
     const isSameOrder =
-      isSameLength &&
-      decodedTags.every((tag, index) => tag === selectedTags[index]);
+      isSameLength && decodedTags.every((tag, index) => tag === selectedTags[index]);
 
     if (!isSameOrder) {
       setSelectedTags(decodedTags);
@@ -131,9 +124,7 @@ export const TagProvider = ({ children }: TagProviderProps) => {
   const toggleTag = useCallback(
     (tag: string) => {
       setSelectedTags((prev) => {
-        const next = prev.includes(tag)
-          ? prev.filter((t) => t !== tag)
-          : [...prev, tag];
+        const next = prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag];
 
         syncTagsWithUrl(next);
         return next;
@@ -176,9 +167,7 @@ export const TagProvider = ({ children }: TagProviderProps) => {
   const filterItemsByTags = useCallback(
     <T extends { tags?: string[] }>(items: T[]): T[] => {
       if (selectedTags.length === 0) return items;
-      return items.filter((item) =>
-        selectedTags.every((tag) => item.tags?.includes(tag)),
-      );
+      return items.filter((item) => selectedTags.every((tag) => item.tags?.includes(tag)));
     },
     [selectedTags],
   );

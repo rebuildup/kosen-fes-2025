@@ -12,9 +12,7 @@ const BookmarksList = () => {
   const { bookmarkedItems, clearAllBookmarks } = useBookmark();
   const { t } = useLanguage();
   const [filter, setFilter] = useState<string>("all");
-  const [viewMode, setViewMode] = useState<
-    "default" | "compact" | "grid" | "list"
-  >("default");
+  const [viewMode, setViewMode] = useState<"default" | "compact" | "grid" | "list">("default");
   const [groupedItems, setGroupedItems] = useState<Record<string, Item[]>>({});
 
   const filterOptions = [
@@ -58,15 +56,12 @@ const BookmarksList = () => {
   const formatDate = (dateStr: string) => {
     try {
       const date = new Date(dateStr);
-      return date.toLocaleDateString(
-        t("language") === "ja" ? "ja-JP" : "en-US",
-        {
-          day: "numeric",
-          month: "long",
-          weekday: "long",
-          year: "numeric",
-        },
-      );
+      return date.toLocaleDateString(t("language") === "ja" ? "ja-JP" : "en-US", {
+        day: "numeric",
+        month: "long",
+        weekday: "long",
+        year: "numeric",
+      });
     } catch (error) {
       console.error("Failed to format bookmark date", error);
       return dateStr;
@@ -80,16 +75,12 @@ const BookmarksList = () => {
         <h3 className="mb-2 text-xl font-semibold text-[var(--text-primary)]">
           {t("bookmarks.empty")}
         </h3>
-        <p className="text-[var(--text-secondary)]">
-          {t("bookmarks.startBookmarking")}
-        </p>
+        <p className="text-[var(--text-secondary)]">{t("bookmarks.startBookmarking")}</p>
       </div>
     );
   }
 
-  const dates = Object.keys(groupedItems).sort((a: string, b: string) =>
-    a.localeCompare(b),
-  );
+  const dates = Object.keys(groupedItems).sort((a: string, b: string) => a.localeCompare(b));
 
   return (
     <div className="space-y-6">
@@ -108,6 +99,7 @@ const BookmarksList = () => {
         <div className="ml-auto flex flex-shrink-0 items-center gap-2">
           <CardListToggle viewMode={viewMode} setViewMode={setViewMode} />
           <button
+            type="button"
             onClick={clearAllBookmarks}
             className="glass-button glass-interactive rounded-lg px-3 py-2 font-medium text-red-500 transition-all duration-200 hover:text-red-600 hover:shadow-lg focus:ring-2 focus:ring-red-500/20 focus:outline-none"
             title="すべて削除"
@@ -120,9 +112,7 @@ const BookmarksList = () => {
       {/* Bookmarked Items */}
       {dates.length === 0 ? (
         <div className="rounded-xl border border-[var(--border-color)] bg-[var(--bg-secondary)] py-8 text-center">
-          <p className="text-[var(--text-secondary)]">
-            {t("bookmarks.noCategoryItems")}
-          </p>
+          <p className="text-[var(--text-secondary)]">{t("bookmarks.noCategoryItems")}</p>
         </div>
       ) : (
         <div className="space-y-8">

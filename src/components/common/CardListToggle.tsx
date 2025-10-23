@@ -10,11 +10,7 @@ interface CardListToggleProps {
   className?: string;
 }
 
-const CardListToggle = ({
-  className = "",
-  setViewMode,
-  viewMode,
-}: CardListToggleProps) => {
+const CardListToggle = ({ className = "", setViewMode, viewMode }: CardListToggleProps) => {
   const { t } = useLanguage();
 
   const viewOptions: TabOption[] = [

@@ -16,9 +16,7 @@ const TagFilter = ({ compact = false, onFilter }: TagFilterProps) => {
   const tagContainerRef = useRef<HTMLDivElement>(null);
 
   // Filter tags by search input
-  const filteredTags = tags.filter((tag) =>
-    tag.toLowerCase().includes(searchValue.toLowerCase()),
-  );
+  const filteredTags = tags.filter((tag) => tag.toLowerCase().includes(searchValue.toLowerCase()));
 
   // タグをクリックした時に検索を実行
   const handleTagClick = (tag: string) => {
@@ -53,6 +51,7 @@ const TagFilter = ({ compact = false, onFilter }: TagFilterProps) => {
                 stroke="currentColor"
                 viewBox="0 0 24 24"
               >
+                <title>Icon</title>
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"

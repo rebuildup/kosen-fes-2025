@@ -14,6 +14,7 @@ import eventsJson from "./events.json";
 import exhibitsJson from "./exhibits.json";
 import sponsorsJson from "./sponsors.json";
 import stallsJson from "./stalls.json";
+
 const events = eventsJson as Event[];
 const exhibits = exhibitsJson as Exhibit[];
 const sponsors = sponsorsJson as Sponsor[];
@@ -66,9 +67,7 @@ const splitEventData = (
   },
 });
 
-const splitExhibitData = (
-  exhibit: Exhibit,
-): { core: ExhibitCore; details: ItemDetails } => ({
+const splitExhibitData = (exhibit: Exhibit): { core: ExhibitCore; details: ItemDetails } => ({
   core: {
     creator: exhibit.creator,
     date: exhibit.date,
@@ -85,9 +84,7 @@ const splitExhibitData = (
   },
 });
 
-const splitStallData = (
-  stall: Stall,
-): { core: StallCore; details: StallDetails } => ({
+const splitStallData = (stall: Stall): { core: StallCore; details: StallDetails } => ({
   core: {
     date: stall.date,
     id: stall.id,
@@ -104,9 +101,7 @@ const splitStallData = (
   },
 });
 
-const splitSponsorData = (
-  sponsor: Sponsor,
-): { core: SponsorCore; details: SponsorDetails } => ({
+const splitSponsorData = (sponsor: Sponsor): { core: SponsorCore; details: SponsorDetails } => ({
   core: {
     date: sponsor.date,
     id: sponsor.id,
@@ -251,8 +246,7 @@ class DataManager {
         ? { description: details.description }
         : { description: "" };
 
-    this.store.exhibitDetails[id] =
-      createDataState<ItemDetails>(exhibitDetails);
+    this.store.exhibitDetails[id] = createDataState<ItemDetails>(exhibitDetails);
 
     return exhibitDetails;
   }
@@ -264,9 +258,7 @@ class DataManager {
       const cachedDetails = cachedState as Partial<StallDetails>;
       return {
         description: cachedState.description,
-        products: Array.isArray(cachedDetails.products)
-          ? cachedDetails.products
-          : [],
+        products: Array.isArray(cachedDetails.products) ? cachedDetails.products : [],
       };
     }
 
@@ -303,17 +295,14 @@ class DataManager {
     this.store.sponsorDetails[id] = createLoadingState<ItemDetails>();
     await new Promise((resolve) => setTimeout(resolve, 100));
 
-    const details = this.detailsCache.get(cacheKey) as
-      | Partial<SponsorDetails>
-      | undefined;
+    const details = this.detailsCache.get(cacheKey) as Partial<SponsorDetails> | undefined;
     const sponsorDetails: SponsorDetails = {
       contactEmail: details?.contactEmail,
       description: details?.description ?? "",
       website: details?.website,
     };
 
-    this.store.sponsorDetails[id] =
-      createDataState<ItemDetails>(sponsorDetails);
+    this.store.sponsorDetails[id] = createDataState<ItemDetails>(sponsorDetails);
 
     return sponsorDetails;
   }
@@ -333,9 +322,7 @@ class DataManager {
     const matchedCores = allItems.filter((item) => {
       return (
         item.title.toLowerCase().includes(normalizedQuery) ||
-        item.tags.some((tag: string) =>
-          tag.toLowerCase().includes(normalizedQuery),
-        ) ||
+        item.tags.some((tag: string) => tag.toLowerCase().includes(normalizedQuery)) ||
         item.location.toLowerCase().includes(normalizedQuery)
       );
     });
@@ -350,9 +337,7 @@ class DataManager {
     if (tags.length === 0) return this.getAllCoreItems();
 
     const allItems = this.getAllCoreItems();
-    return allItems.filter((item) =>
-      tags.every((tag) => item.tags.includes(tag)),
-    );
+    return allItems.filter((item) => tags.every((tag) => item.tags.includes(tag)));
   }
 
   // Bookmarks management
@@ -373,9 +358,7 @@ class DataManager {
   }
 
   removeBookmark(id: string): void {
-    this.store.bookmarks = this.store.bookmarks.filter(
-      (bookmarkId: string) => bookmarkId !== id,
-    );
+    this.store.bookmarks = this.store.bookmarks.filter((bookmarkId: string) => bookmarkId !== id);
     this.saveBookmarks();
   }
 
@@ -399,10 +382,7 @@ class DataManager {
         query,
         ...this.store.searchHistory.filter((q: string) => q !== query),
       ].slice(0, 10); // Keep only last 10
-      localStorage.setItem(
-        "searchHistory",
-        JSON.stringify(this.store.searchHistory),
-      );
+      localStorage.setItem("searchHistory", JSON.stringify(this.store.searchHistory));
     }
   }
 

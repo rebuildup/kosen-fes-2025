@@ -19,13 +19,11 @@ const SelectedTags = () => {
       }}
     >
       <div className="mb-3 flex items-center justify-between">
-        <span
-          className="text-sm font-medium"
-          style={{ color: "var(--color-text-primary)" }}
-        >
+        <span className="text-sm font-medium" style={{ color: "var(--color-text-primary)" }}>
           {t("tags.activeFilters")}:
         </span>
         <button
+          type="button"
           className="cursor-pointer text-xs font-medium transition-colors hover:underline"
           style={{ color: "var(--color-accent)" }}
           onClick={clearTags}

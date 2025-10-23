@@ -7,7 +7,7 @@
 
 import type { LucideIcon } from "lucide-react";
 import { Image, Speaker, Toilet, Trash2, UtensilsCrossed } from "lucide-react";
-import React from "react";
+import type React from "react";
 
 import type { Coordinate } from "../../types/map";
 
@@ -90,13 +90,18 @@ export const MapPin: React.FC<MapPinProps> = ({
   // transform: translate(-50%, -100%) で下端中央がpositionに来る
 
   // Google Maps shadow values - enhanced for better visibility
-  const SHADOW =
-    "0 2px 4px 0 rgba(0, 0, 0, 0.3), 0 4px 8px 2px rgba(0, 0, 0, 0.2)";
+  const SHADOW = "0 2px 4px 0 rgba(0, 0, 0, 0.3), 0 4px 8px 2px rgba(0, 0, 0, 0.2)";
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      onClick?.(e as unknown as React.MouseEvent);
+    }
+  };
 
   return (
-    <div
-      role="button"
-      tabIndex={0}
+    <button
+      type="button"
       className="map-pin-wrapper"
       style={{
         cursor: "pointer",
@@ -111,8 +116,12 @@ export const MapPin: React.FC<MapPinProps> = ({
         transformOrigin: `${PIN_WIDTH / 2}px ${PIN_HEIGHT}px`,
         width: `${PIN_WIDTH}px`,
         zIndex: isHovered || isMobileHovered ? 2000 : label ? 500 : 100,
+        background: "none",
+        border: "none",
+        padding: 0,
       }}
       onClick={onClick}
+      onKeyDown={handleKeyDown}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
       onTouchStart={onTouchStart}
@@ -129,7 +138,10 @@ export const MapPin: React.FC<MapPinProps> = ({
           position: "absolute",
           top: 0,
         }}
+        role="img"
+        aria-label={`${type} pin`}
       >
+        <title>{`${type} pin`}</title>
         {/* White rounded pointer - shorter and rounder */}
         <path
           d="M12 2 
@@ -178,12 +190,12 @@ export const MapPin: React.FC<MapPinProps> = ({
       {/* Label - positioned next to pin */}
       {label && (
         <div
+          role="button"
+          tabIndex={0}
           style={{
             position: "absolute",
             top: `${PIN_WIDTH / 2 + 1}px`,
-            ...(labelPosition === "right"
-              ? { left: "32px" }
-              : { right: "32px" }),
+            ...(labelPosition === "right" ? { left: "32px" } : { right: "32px" }),
             cursor: "pointer", // カーソルをポインターに
             maxWidth: "200px",
             minWidth: "40px",
@@ -192,6 +204,7 @@ export const MapPin: React.FC<MapPinProps> = ({
             zIndex: 1000, // ピンよりも上に表示
           }}
           onClick={onClick}
+          onKeyDown={handleKeyDown}
           onMouseEnter={onMouseEnter}
           onMouseLeave={onMouseLeave}
         >
@@ -224,7 +237,7 @@ export const MapPin: React.FC<MapPinProps> = ({
           </div>
         </div>
       )}
-    </div>
+    </button>
   );
 };
 
@@ -267,11 +280,9 @@ export const ClusterPin: React.FC<ClusterPinProps> = ({
 
   // Google Maps cluster color
   const CLUSTER_COLOR = "#4285F4"; // Google blue
-  const SHADOW =
-    "0 2px 4px 0 rgba(0, 0, 0, 0.3), 0 4px 8px 2px rgba(0, 0, 0, 0.2)";
+  const SHADOW = "0 2px 4px 0 rgba(0, 0, 0, 0.3), 0 4px 8px 2px rgba(0, 0, 0, 0.2)";
 
-  const normalizedSegments =
-    typeSegments?.filter((segment) => segment.count > 0) ?? [];
+  const normalizedSegments = typeSegments?.filter((segment) => segment.count > 0) ?? [];
 
   let pieBackground = CLUSTER_COLOR;
   if (normalizedSegments.length > 0 && count > 0) {
@@ -297,10 +308,16 @@ export const ClusterPin: React.FC<ClusterPinProps> = ({
     }
   }
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      onClick?.(e as unknown as React.MouseEvent);
+    }
+  };
+
   return (
-    <div
-      role="button"
-      tabIndex={0}
+    <button
+      type="button"
       className="map-cluster-pin"
       style={{
         cursor: "pointer",
@@ -317,8 +334,12 @@ export const ClusterPin: React.FC<ClusterPinProps> = ({
         width: `${PIN_WIDTH}px`,
         // ラベル付きクラスターピンは常に高いz-index、ホバー時はさらに上
         zIndex: isHovered ? 2001 : label ? 501 : 101,
+        background: "none",
+        border: "none",
+        padding: 0,
       }}
       onClick={onClick}
+      onKeyDown={handleKeyDown}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
       onTouchStart={onTouchStart}
@@ -335,7 +356,10 @@ export const ClusterPin: React.FC<ClusterPinProps> = ({
           position: "absolute",
           top: 0,
         }}
+        role="img"
+        aria-label={`cluster pin with ${count} items`}
       >
+        <title>{`cluster pin with ${count} items`}</title>
         {/* White rounded pointer - larger for cluster */}
         <path
           d="M14 2 
@@ -397,12 +421,12 @@ export const ClusterPin: React.FC<ClusterPinProps> = ({
       {/* Label - positioned next to cluster pin */}
       {label && (
         <div
+          role="button"
+          tabIndex={0}
           style={{
             position: "absolute",
             top: `${PIN_WIDTH / 2 + 1}px`,
-            ...(labelPosition === "right"
-              ? { left: "32px" }
-              : { right: "32px" }),
+            ...(labelPosition === "right" ? { left: "32px" } : { right: "32px" }),
             cursor: "pointer", // カーソルをポインターに
             maxWidth: "200px",
             minWidth: "40px",
@@ -411,6 +435,7 @@ export const ClusterPin: React.FC<ClusterPinProps> = ({
             zIndex: 1000, // ピンよりも上に表示
           }}
           onClick={onClick}
+          onKeyDown={handleKeyDown}
           onMouseEnter={onMouseEnter}
           onMouseLeave={onMouseLeave}
         >
@@ -441,7 +466,7 @@ export const ClusterPin: React.FC<ClusterPinProps> = ({
           </div>
         </div>
       )}
-    </div>
+    </button>
   );
 };
 
@@ -457,8 +482,7 @@ export const HighlightPin: React.FC<HighlightPinProps> = ({ position }) => {
   const SIZE = 32;
   const PULSE_SIZE = SIZE + 16;
   const HIGHLIGHT_COLOR = "#EA4335"; // Google Maps red
-  const SHADOW =
-    "0 2px 4px 0 rgba(60, 64, 67, 0.3), 0 4px 8px 3px rgba(60, 64, 67, 0.15)";
+  const SHADOW = "0 2px 4px 0 rgba(60, 64, 67, 0.3), 0 4px 8px 3px rgba(60, 64, 67, 0.15)";
 
   return (
     <div

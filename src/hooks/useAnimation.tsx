@@ -1,12 +1,7 @@
 import { gsap } from "gsap";
 import { useEffect, useRef } from "react";
 
-import {
-  cardHoverEffect,
-  DURATION,
-  EASE,
-  staggerFadeIn,
-} from "../utils/animations";
+import { cardHoverEffect, DURATION, EASE, staggerFadeIn } from "../utils/animations";
 
 // Hook for applying animation to an element on mount
 export const useAnimateOnMount = (
@@ -78,11 +73,7 @@ export const useStaggerAnimation = (shouldAnimate = true) => {
 
     const container = containerRef.current;
     const items = container.children;
-    const animation = staggerFadeIn(
-      [...items] as HTMLElement[],
-      0.1,
-      DURATION.NORMAL,
-    );
+    const animation = staggerFadeIn([...items] as HTMLElement[], 0.1, DURATION.NORMAL);
 
     return () => {
       animation.kill();

@@ -17,9 +17,7 @@ function getRandomSponsorImage() {
 const Sponsors = () => {
   const { t } = useLanguage();
 
-  const [viewMode, setViewMode] = useState<
-    "default" | "compact" | "grid" | "list"
-  >("default");
+  const [viewMode, setViewMode] = useState<"default" | "compact" | "grid" | "list">("default");
   const [filteredSponsors, setFilteredSponsors] = useState<Item[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -75,9 +73,7 @@ const Sponsors = () => {
             {/* Simple header with view toggle */}
             <div className="flex flex-col items-start justify-between gap-4 rounded-xl border border-[var(--border-color)] bg-[var(--bg-secondary)] p-6 sm:flex-row sm:items-center">
               <div className="flex items-center gap-4">
-                <h2 className="text-xl font-semibold text-[var(--text-primary)]">
-                  スポンサー一覧
-                </h2>
+                <h2 className="text-xl font-semibold text-[var(--text-primary)]">スポンサー一覧</h2>
                 <span className="rounded-full bg-[var(--primary-color)] px-3 py-1 text-sm font-medium text-white">
                   {filteredSponsors.length} 社
                 </span>

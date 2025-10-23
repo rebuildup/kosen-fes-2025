@@ -1,5 +1,5 @@
 import { Loader2 } from "lucide-react";
-import React from "react";
+import type React from "react";
 
 import { useLanguage } from "../../../context/LanguageContext";
 
@@ -48,8 +48,7 @@ export const LoadingIndicator: React.FC<LoadingIndicatorProps> = ({
   const sizeClasses = getSizeClasses();
 
   return (
-    <div
-      role="status"
+    <output
       aria-live="polite"
       className={`flex flex-col items-center justify-center space-y-3 ${className}`}
     >
@@ -64,7 +63,7 @@ export const LoadingIndicator: React.FC<LoadingIndicatorProps> = ({
       <span className={`${sizeClasses.text} text-gray-600 dark:text-gray-400`}>
         {message || t("common.loadingCards")}
       </span>
-    </div>
+    </output>
   );
 };
 

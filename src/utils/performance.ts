@@ -72,7 +72,7 @@ export const preloadCriticalResources = () => {
   criticalCSS.as = "style";
   criticalCSS.href = "./src/index.css";
   // Once preloaded, convert to stylesheet to apply styles without blocking render
-  criticalCSS.onload = function () {
+  criticalCSS.onload = () => {
     criticalCSS.rel = "stylesheet";
   };
   document.head.append(criticalCSS);
@@ -108,10 +108,7 @@ export const optimizeScrollPerformance = () => {
  */
 export const initializePerformanceOptimization = () => {
   // Only run in production or when explicitly enabled
-  if (
-    process.env.NODE_ENV === "production" ||
-    globalThis.location.search.includes("debug=perf")
-  ) {
+  if (process.env.NODE_ENV === "production" || globalThis.location.search.includes("debug=perf")) {
     measurePerformance();
   }
 

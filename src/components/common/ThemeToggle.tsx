@@ -8,6 +8,7 @@ const ThemeToggle = () => {
 
   return (
     <button
+      type="button"
       onClick={toggleTheme}
       className="theme-toggle flex items-center gap-2 rounded-lg px-3 py-2 transition-colors duration-200 focus:ring-2 focus:ring-[var(--color-accent)]/50 focus:outline-none"
       style={{
@@ -21,18 +22,14 @@ const ThemeToggle = () => {
           <span className="flex-shrink-0">
             <MoonIcon size={16} />
           </span>
-          <span className="text-sm font-medium">
-            {t("settings.theme.dark")}
-          </span>
+          <span className="text-sm font-medium">{t("settings.theme.dark")}</span>
         </>
       ) : (
         <>
           <span className="flex-shrink-0">
             <SunIcon size={16} />
           </span>
-          <span className="text-sm font-medium">
-            {t("settings.theme.light")}
-          </span>
+          <span className="text-sm font-medium">{t("settings.theme.light")}</span>
         </>
       )}
     </button>

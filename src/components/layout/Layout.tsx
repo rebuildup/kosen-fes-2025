@@ -2,7 +2,7 @@ import { gsap } from "gsap";
 import { useEffect, useRef, useState } from "react";
 import { Outlet } from "react-router-dom";
 
-import { useTheme } from "../../context/ThemeContext";
+// import { useTheme } from "../../context/ThemeContext";
 import { DURATION, EASE } from "../../utils/animations";
 import Footer from "./Footer";
 import Header from "./Header";
@@ -13,7 +13,7 @@ import Sidebar from "./Sidebar";
 const Layout = () => {
   const [isMobile, setIsMobile] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-  const { theme } = useTheme();
+  // const { theme } = useTheme();
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const menuCloseButtonRef = useRef<HTMLButtonElement>(null);
   const layoutRef = useRef<HTMLDivElement>(null);
@@ -44,7 +44,7 @@ const Layout = () => {
         ease: EASE.SMOOTH,
       });
     }
-  }, [theme]);
+  }, []);
 
   // Prevent body scroll when menu is open
   useEffect(() => {
@@ -154,9 +154,7 @@ const Layout = () => {
       </div>
 
       {/* Mobile Footer - only shown on mobile */}
-      {isMobile && (
-        <Footer setMenuOpen={toggleMenu} menuButtonRef={menuButtonRef} />
-      )}
+      {isMobile && <Footer setMenuOpen={toggleMenu} menuButtonRef={menuButtonRef} />}
 
       {/* Mobile Menu - only shown when opened on mobile */}
       {isMobile && menuOpen && (

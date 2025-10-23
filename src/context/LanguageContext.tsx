@@ -3,10 +3,7 @@ import type { ComponentType, ReactNode } from "react";
 import { createContext, useContext, useEffect, useState } from "react";
 
 import type { Language, Translations } from "../utils/translations";
-import {
-  getTranslationsForLanguage,
-  getTranslationValue,
-} from "../utils/translations";
+import { getTranslationsForLanguage, getTranslationValue } from "../utils/translations";
 
 interface LanguageContextType {
   language: Language;
@@ -74,9 +71,7 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
   };
 
   return (
-    <LanguageContext.Provider
-      value={{ language, setLanguage, t, translations }}
-    >
+    <LanguageContext.Provider value={{ language, setLanguage, t, translations }}>
       {children}
     </LanguageContext.Provider>
   );

@@ -98,8 +98,7 @@ const buildingPolygons = [
   {
     id: "_地域共同テクノセンター",
     name: "地域共同テクノセンター",
-    points:
-      "425.708 641.56 307.8605 638.2678 308.815 567.6285 425.708 571.6079 425.708 641.56",
+    points: "425.708 641.56 307.8605 638.2678 308.815 567.6285 425.708 571.6079 425.708 641.56",
     rooms: ["共同研究室", "技術相談室"],
   },
   {
@@ -226,14 +225,9 @@ export function getBuildingByName(locationName: string): Building | undefined {
 }
 
 // Helper function to get building coordinates for a location string
-export function getBuildingCoordinates(
-  locationName: string,
-): { x: number; y: number } | undefined {
+export function getBuildingCoordinates(locationName: string): { x: number; y: number } | undefined {
   if (!locationName || typeof locationName !== "string") {
-    console.warn(
-      "Invalid location name provided to getBuildingCoordinates:",
-      locationName,
-    );
+    console.warn("Invalid location name provided to getBuildingCoordinates:", locationName);
     return undefined;
   }
 
@@ -324,31 +318,19 @@ export function getBuildingCoordinates(
           // Check if location contains pattern or pattern contains location (case insensitive)
           const locationLower = locationName.toLowerCase();
           const patternLower = pattern.toLowerCase();
-          return (
-            locationLower.includes(patternLower) ||
-            patternLower.includes(locationLower)
-          );
+          return locationLower.includes(patternLower) || patternLower.includes(locationLower);
         })
       ) {
-        console.info(
-          `Using fallback coordinates for location: ${locationName}`,
-        );
+        console.info(`Using fallback coordinates for location: ${locationName}`);
         return fallback.coords;
       }
     }
 
     // Final fallback - default central position
-    console.warn(
-      `No coordinates found for location: ${locationName}, using default position`,
-    );
+    console.warn(`No coordinates found for location: ${locationName}, using default position`);
     return { x: 1000, y: 700 }; // Central area of the map
   } catch (error) {
-    console.error(
-      "Error in getBuildingCoordinates:",
-      error,
-      "Location:",
-      locationName,
-    );
+    console.error("Error in getBuildingCoordinates:", error, "Location:", locationName);
     return { x: 1000, y: 700 }; // Fallback to center
   }
 }

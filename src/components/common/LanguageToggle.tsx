@@ -5,6 +5,7 @@ const LanguageToggle = () => {
 
   return (
     <button
+      type="button"
       onClick={() => setLanguage(language === "en" ? "ja" : "en")}
       className="flex items-center gap-2 rounded-lg px-3 py-2 transition-all duration-200 focus:ring-2 focus:ring-[var(--color-accent)]/50 focus:outline-none"
       style={{
@@ -18,9 +19,7 @@ const LanguageToggle = () => {
         e.currentTarget.style.backgroundColor = "var(--color-bg-secondary)";
       }}
       aria-label={
-        language === "en"
-          ? t("settings.language.switchToJa")
-          : t("settings.language.switchToEn")
+        language === "en" ? t("settings.language.switchToJa") : t("settings.language.switchToEn")
       }
     >
       {language === "en" ? (

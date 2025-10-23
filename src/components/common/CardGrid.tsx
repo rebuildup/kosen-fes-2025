@@ -39,9 +39,7 @@ const CardGrid = ({
   // Animation state for smooth transitions
   const [animationKey, setAnimationKey] = useState(0);
   const [prevItemsHash, setPrevItemsHash] = useState<string>("");
-  const [animationType, setAnimationType] = useState<"variant" | "content">(
-    "variant",
-  );
+  const [animationType, setAnimationType] = useState<"variant" | "content">("variant");
 
   // Filter items by type if specified
   const filteredItems = useMemo(() => {
@@ -56,8 +54,7 @@ const CardGrid = ({
 
   // Trigger animation when items change (category/filter change)
   useEffect(() => {
-    const shouldAnimate =
-      prevItemsHash !== "" && prevItemsHash !== currentItemsHash;
+    const shouldAnimate = prevItemsHash !== "" && prevItemsHash !== currentItemsHash;
 
     if (shouldAnimate) {
       setAnimationType("content");
@@ -73,7 +70,7 @@ const CardGrid = ({
   useEffect(() => {
     setAnimationType("variant");
     setAnimationKey((prev) => prev + 1);
-  }, [variant]);
+  }, []);
 
   // Get default empty message based on filter type
   const getDefaultEmptyMessage = () => {
@@ -156,7 +153,7 @@ const CardGrid = ({
 
     // Smooth curve that starts at baseDelay and approaches minDelay
     // Using exponential decay curve: starts high, decreases gradually
-    const curve = Math.pow(1 - progressFactor, 0.8);
+    const curve = (1 - progressFactor) ** 0.8;
     const delay = minDelay + (baseDelay - minDelay) * curve;
 
     // Add cumulative delay based on index but with diminishing returns
@@ -172,9 +169,7 @@ const CardGrid = ({
           if (animationType === "content") {
             return "animate-category-change";
           }
-          return variant === "list"
-            ? "animate-card-enter-list"
-            : "animate-card-enter";
+          return variant === "list" ? "animate-card-enter-list" : "animate-card-enter";
         };
 
         return (

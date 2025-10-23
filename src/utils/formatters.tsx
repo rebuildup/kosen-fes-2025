@@ -76,10 +76,7 @@ export const getTypeLabel = (
 /**
  * Safely highlight text with a search query
  */
-export const highlightSearchQuery = (
-  text: string,
-  query: string,
-): ReactNode => {
+export const highlightSearchQuery = (text: string, query: string): ReactNode => {
   if (!query.trim() || !text) return <>{text}</>;
 
   try {
@@ -88,7 +85,7 @@ export const highlightSearchQuery = (
       <>
         {parts.map((part, i) =>
           part.toLowerCase() === query.toLowerCase() ? (
-            <mark key={i}>{part}</mark>
+            <mark key={`formatter-${i}-${part.slice(0, 10)}`}>{part}</mark>
           ) : (
             part
           ),

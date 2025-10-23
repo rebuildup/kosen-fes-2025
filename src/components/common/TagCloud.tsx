@@ -56,7 +56,10 @@ const TagCloud = ({
           ))}
 
           {maxTags && displayTags.length > maxTags && (
-            <button className="rounded-full border border-[var(--border-color)] bg-[var(--bg-secondary)] px-3 py-2 text-xs text-[var(--text-secondary)] transition-all duration-200 hover:border-[var(--primary-color)] hover:bg-[var(--bg-tertiary)] hover:text-[var(--primary-color)]">
+            <button
+              type="button"
+              className="rounded-full border border-[var(--border-color)] bg-[var(--bg-secondary)] px-3 py-2 text-xs text-[var(--text-secondary)] transition-all duration-200 hover:border-[var(--primary-color)] hover:bg-[var(--bg-tertiary)] hover:text-[var(--primary-color)]"
+            >
               {t("tags.showMore")} ({displayTags.length - maxTags}+)
             </button>
           )}

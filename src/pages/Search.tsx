@@ -12,15 +12,16 @@ import exhibitsJson from "../data/exhibits.json";
 import sponsorsJson from "../data/sponsors.json";
 import stallsJson from "../data/stalls.json";
 import type { Event, Exhibit, Sponsor, Stall } from "../types/common";
+
 const events = eventsJson as Event[];
 const exhibits = exhibitsJson as Exhibit[];
 const sponsors = sponsorsJson as Sponsor[];
 const stalls = stallsJson as Stall[];
+
 import { pickRandom } from "../shared/utils/random";
 
 // 画像パスをpublicルート基準に変換
-const toPublicImagePath = (url: string) =>
-  url.replace(/^\.?\/?images\//, "./images/");
+const toPublicImagePath = (url: string) => url.replace(/^\.?\/?images\//, "./images/");
 
 // Choose a random hero image from all content types
 function getRandomAnyContentImage() {
@@ -36,8 +37,7 @@ function getRandomAnyContentImage() {
 }
 
 const Search = () => {
-  const { performSearch, searchQuery, searchResults, setSearchQuery } =
-    useSearch();
+  const { performSearch, searchQuery, searchResults, setSearchQuery } = useSearch();
   const { selectedTags } = useTag();
   const { t } = useLanguage();
   const location = useLocation();
@@ -45,9 +45,7 @@ const Search = () => {
 
   // Check if there are active search results or selected tags
   const hasActiveSearch =
-    searchQuery.trim().length > 0 ||
-    selectedTags.length > 0 ||
-    searchResults.length > 0;
+    searchQuery.trim().length > 0 || selectedTags.length > 0 || searchResults.length > 0;
 
   // Extract search query and tag from URL when location changes
   useEffect(() => {

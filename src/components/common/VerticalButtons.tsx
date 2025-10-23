@@ -22,27 +22,19 @@ const VerticalButtons = ({
     <div className={`flex flex-col gap-1 ${className}`}>
       {options.map((option) => (
         <button
+          type="button"
           key={option.value}
           onClick={() => onChange(option.value)}
           className={`group relative flex items-center justify-center gap-2 overflow-hidden rounded-lg px-3 py-2 font-medium transition-all duration-200 ${
-            activeValue === option.value
-              ? "text-white shadow-md"
-              : "hover:shadow-sm"
+            activeValue === option.value ? "text-white shadow-md" : "hover:shadow-sm"
           } `}
           style={{
             backgroundColor:
-              activeValue === option.value
-                ? "var(--color-accent)"
-                : "var(--color-bg-secondary)",
+              activeValue === option.value ? "var(--color-accent)" : "var(--color-bg-secondary)",
             border: `1px solid ${
-              activeValue === option.value
-                ? "var(--color-accent)"
-                : "var(--color-border-primary)"
+              activeValue === option.value ? "var(--color-accent)" : "var(--color-border-primary)"
             }`,
-            color:
-              activeValue === option.value
-                ? "white"
-                : "var(--color-text-primary)",
+            color: activeValue === option.value ? "white" : "var(--color-text-primary)",
           }}
           aria-label={option.ariaLabel || option.label}
           title={option.ariaLabel || option.label}

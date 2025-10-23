@@ -4,12 +4,7 @@ import ItemTypeIcon from "../components/common/ItemTypeIcon";
 import PillButton from "../components/common/PillButton";
 import Tag from "../components/common/Tag";
 import ThemeToggleIcon from "../components/common/ThemeToggleIcon";
-import {
-  InfoIcon,
-  LocationIcon,
-  SettingsIcon,
-  XIcon,
-} from "../components/icons";
+import { InfoIcon, LocationIcon, SettingsIcon, XIcon } from "../components/icons";
 import VectorMap from "../components/map/VectorMap";
 import TimelineDay from "../components/schedule/TimelineDay";
 import { useData } from "../context/DataContext";
@@ -84,7 +79,7 @@ const formatTimeInput = (value: string): string => {
 
   // HH:MM形式に自動フォーマット
   if (cleaned.length === 2 && !cleaned.includes(":")) {
-    return cleaned + ":";
+    return `${cleaned}:`;
   }
 
   // 最大5文字（HH:MM）
@@ -95,7 +90,7 @@ const formatTimeInput = (value: string): string => {
   // コロンが複数ある場合は最初のもののみ残す
   const parts = cleaned.split(":");
   if (parts.length > 2) {
-    return parts[0] + ":" + parts[1];
+    return `${parts[0]}:${parts[1]}`;
   }
 
   return cleaned;
@@ -180,8 +175,7 @@ const ContentPreview = () => {
   const [newTag, setNewTag] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  const [activeTagCategory, setActiveTagCategory] =
-    useState<string>("contentTypes");
+  const [activeTagCategory, setActiveTagCategory] = useState<string>("contentTypes");
 
   // 上のgetContentGuideを使用
 
@@ -214,12 +208,7 @@ const ContentPreview = () => {
     if (typeTag && !formData.tags.includes(typeTag)) {
       setFormData((prev) => ({
         ...prev,
-        tags: [
-          typeTag,
-          ...prev.tags.filter(
-            (tag) => !PREDEFINED_TAGS.contentTypes.includes(tag),
-          ),
-        ],
+        tags: [typeTag, ...prev.tags.filter((tag) => !PREDEFINED_TAGS.contentTypes.includes(tag))],
       }));
     }
 
@@ -287,10 +276,7 @@ const ContentPreview = () => {
   }, [formData.type, formData.tags]);
 
   // Handle form changes
-  const handleInputChange = <K extends keyof FormData>(
-    field: K,
-    value: FormData[K],
-  ) => {
+  const handleInputChange = <K extends keyof FormData>(field: K, value: FormData[K]) => {
     setFormData((prev) => ({
       ...prev,
       [field]: value,
@@ -332,9 +318,7 @@ const ContentPreview = () => {
   const toggleTag = (tag: string) => {
     setFormData((prev) => ({
       ...prev,
-      tags: prev.tags.includes(tag)
-        ? prev.tags.filter((t) => t !== tag)
-        : [...prev.tags, tag],
+      tags: prev.tags.includes(tag) ? prev.tags.filter((t) => t !== tag) : [...prev.tags, tag],
     }));
   };
 
@@ -377,10 +361,7 @@ const ContentPreview = () => {
       imageUrl: formData.imagePreviewUrl || "./images/events/event-1.jpg",
       location: formData.location || "未設定",
       tags: formData.tags.length > 0 ? formData.tags : ["プレビュー"],
-      time:
-        formData.type === "sponsor"
-          ? "常時"
-          : `${formData.startTime} - ${formData.endTime}`,
+      time: formData.type === "sponsor" ? "常時" : `${formData.startTime} - ${formData.endTime}`,
       title: formData.title || "プレビュータイトル",
     };
 
@@ -440,12 +421,12 @@ const ContentPreview = () => {
       baseItem,
       {
         ...baseItem,
-        id: baseItem.id + "_2",
+        id: `${baseItem.id}_2`,
         title: baseItem.title,
       },
       {
         ...baseItem,
-        id: baseItem.id + "_3",
+        id: `${baseItem.id}_3`,
         title: baseItem.title,
       },
     ];
@@ -455,18 +436,12 @@ const ContentPreview = () => {
   const guide = getContentGuide(formData.type);
 
   return (
-    <div
-      className="min-h-screen"
-      style={{ backgroundColor: "var(--bg-primary)" }}
-    >
+    <div className="min-h-screen" style={{ backgroundColor: "var(--bg-primary)" }}>
       <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8 text-center sm:mb-12 lg:mb-16">
           <div className="mb-8 flex items-center justify-center gap-4">
-            <div
-              className="glass-effect rounded-full p-3"
-              style={{ color: "var(--text-primary)" }}
-            >
+            <div className="glass-effect rounded-full p-3" style={{ color: "var(--text-primary)" }}>
               <SettingsIcon size={32} />
             </div>
             <h1
@@ -477,10 +452,7 @@ const ContentPreview = () => {
             </h1>
             <ThemeToggleIcon />
           </div>
-          <p
-            className="text-base sm:text-lg lg:text-xl"
-            style={{ color: "var(--text-secondary)" }}
-          >
+          <p className="text-base sm:text-lg lg:text-xl" style={{ color: "var(--text-secondary)" }}>
             掲載内容とプレビューを確認し、Formsに回答してください
           </p>
         </div>
@@ -500,12 +472,12 @@ const ContentPreview = () => {
             <div className="space-y-8 sm:space-y-12">
               {/* Content Type Selection */}
               <div>
-                <label
+                <div
                   className="mb-4 block text-base font-semibold sm:mb-6 sm:text-lg"
                   style={{ color: "var(--text-primary)" }}
                 >
                   コンテンツタイプ
-                </label>
+                </div>
                 <div className="flex flex-wrap gap-2">
                   {[
                     { label: "イベント", value: "event" },
@@ -514,10 +486,9 @@ const ContentPreview = () => {
                     { label: "スポンサー", value: "sponsor" },
                   ].map((type) => (
                     <button
+                      type="button"
                       key={type.value}
-                      onClick={() =>
-                        handleInputChange("type", type.value as ContentType)
-                      }
+                      onClick={() => handleInputChange("type", type.value as ContentType)}
                       className={`group relative flex items-center gap-2 overflow-hidden rounded-lg px-3 py-2 text-xs font-medium transition-all duration-200 sm:px-4 sm:text-sm ${
                         formData.type === type.value
                           ? "text-[var(--primary-color)]"
@@ -552,12 +523,12 @@ const ContentPreview = () => {
 
               {/* Title */}
               <div>
-                <label
+                <div
                   className="mb-3 block text-base font-semibold sm:mb-4 sm:text-lg"
                   style={{ color: "var(--text-primary)" }}
                 >
                   タイトル
-                </label>
+                </div>
                 <input
                   type="text"
                   value={formData.title}
@@ -570,27 +541,21 @@ const ContentPreview = () => {
                     color: "var(--text-primary)",
                   }}
                 />
-                {errors.title && (
-                  <p className="mt-2 text-sm text-red-500">{errors.title}</p>
-                )}
+                {errors.title && <p className="mt-2 text-sm text-red-500">{errors.title}</p>}
               </div>
 
               {/* Description */}
               <div>
-                <label
+                <div
                   className="mb-3 block text-base font-semibold sm:mb-4 sm:text-lg"
                   style={{ color: "var(--text-primary)" }}
                 >
                   説明
-                </label>
+                </div>
                 <textarea
                   value={formData.description}
-                  onChange={(e) =>
-                    handleInputChange("description", e.target.value)
-                  }
-                  placeholder={
-                    guide.description || "詳細な説明を入力してください"
-                  }
+                  onChange={(e) => handleInputChange("description", e.target.value)}
+                  placeholder={guide.description || "詳細な説明を入力してください"}
                   rows={6}
                   className={`glass-effect w-full resize-none rounded-xl border-2 px-3 py-2 text-base transition-all focus:ring-2 focus:ring-[var(--primary-color)] sm:px-4 sm:py-3 sm:text-lg ${
                     errors.description ? "border-red-500" : "border-transparent"
@@ -600,21 +565,19 @@ const ContentPreview = () => {
                   }}
                 />
                 {errors.description && (
-                  <p className="mt-2 text-sm text-red-500">
-                    {errors.description}
-                  </p>
+                  <p className="mt-2 text-sm text-red-500">{errors.description}</p>
                 )}
               </div>
 
               {/* Date and Time Section */}
               <div className="space-y-8">
                 <div>
-                  <label
+                  <div
                     className="mb-3 block text-base font-semibold sm:mb-4 sm:text-lg"
                     style={{ color: "var(--text-primary)" }}
                   >
                     開催日
-                  </label>
+                  </div>
                   {formData.type === "sponsor" ? (
                     <input
                       type="text"
@@ -629,43 +592,35 @@ const ContentPreview = () => {
                   ) : (
                     <select
                       value={formData.date}
-                      onChange={(e) =>
-                        handleInputChange("date", e.target.value)
-                      }
+                      onChange={(e) => handleInputChange("date", e.target.value)}
                       className="glass-effect w-full rounded-xl border-2 border-transparent px-3 py-2 text-base transition-all focus:ring-2 focus:ring-[var(--primary-color)] sm:px-4 sm:py-3 sm:text-lg"
                       style={{
                         color: "var(--text-primary)",
                       }}
                     >
-                      <option value="2025-11-08">
-                        1日目（2025年11月8日・土）
-                      </option>
-                      <option value="2025-11-09">
-                        2日目（2025年11月9日・日）
-                      </option>
-                      <option value="2025-11-08,2025-11-09">
-                        両日（11月8日・9日）
-                      </option>
+                      <option value="2025-11-08">1日目（2025年11月8日・土）</option>
+                      <option value="2025-11-09">2日目（2025年11月9日・日）</option>
+                      <option value="2025-11-08,2025-11-09">両日（11月8日・9日）</option>
                     </select>
                   )}
                 </div>
 
                 {formData.type !== "sponsor" && (
                   <div>
-                    <label
+                    <div
                       className="mb-3 block text-base font-semibold sm:mb-4 sm:text-lg"
                       style={{ color: "var(--text-primary)" }}
                     >
                       時間
-                    </label>
+                    </div>
                     <div className="grid grid-cols-1 gap-4 sm:gap-6 md:grid-cols-2">
                       <div>
-                        <label
+                        <div
                           className="mb-2 block text-sm font-medium"
                           style={{ color: "var(--text-secondary)" }}
                         >
                           開始時間
-                        </label>
+                        </div>
                         <input
                           type="text"
                           value={formData.startTime}
@@ -678,27 +633,23 @@ const ContentPreview = () => {
                           pattern="^([01]?\d|2[0-3]):([0-5]\d)$"
                           maxLength={5}
                           className={`glass-effect w-full rounded-xl border-2 px-3 py-2 text-base transition-all focus:ring-2 focus:ring-[var(--primary-color)] sm:px-4 sm:py-3 sm:text-lg ${
-                            errors.startTime
-                              ? "border-red-500"
-                              : "border-transparent"
+                            errors.startTime ? "border-red-500" : "border-transparent"
                           }`}
                           style={{
                             color: "var(--text-primary)",
                           }}
                         />
                         {errors.startTime && (
-                          <p className="mt-1 text-xs text-red-500">
-                            {errors.startTime}
-                          </p>
+                          <p className="mt-1 text-xs text-red-500">{errors.startTime}</p>
                         )}
                       </div>
                       <div>
-                        <label
+                        <div
                           className="mb-2 block text-sm font-medium"
                           style={{ color: "var(--text-secondary)" }}
                         >
                           終了時間
-                        </label>
+                        </div>
                         <input
                           type="text"
                           value={formData.endTime}
@@ -711,18 +662,14 @@ const ContentPreview = () => {
                           pattern="^([01]?\d|2[0-3]):([0-5]\d)$"
                           maxLength={5}
                           className={`glass-effect w-full rounded-xl border-2 px-3 py-2 text-base transition-all focus:ring-2 focus:ring-[var(--primary-color)] sm:px-4 sm:py-3 sm:text-lg ${
-                            errors.endTime
-                              ? "border-red-500"
-                              : "border-transparent"
+                            errors.endTime ? "border-red-500" : "border-transparent"
                           }`}
                           style={{
                             color: "var(--text-primary)",
                           }}
                         />
                         {errors.endTime && (
-                          <p className="mt-1 text-xs text-red-500">
-                            {errors.endTime}
-                          </p>
+                          <p className="mt-1 text-xs text-red-500">{errors.endTime}</p>
                         )}
                       </div>
                     </div>
@@ -733,18 +680,16 @@ const ContentPreview = () => {
               {/* Location */}
               {formData.type !== "sponsor" && (
                 <div>
-                  <label
+                  <div
                     className="mb-3 block text-base font-semibold sm:mb-4 sm:text-lg"
                     style={{ color: "var(--text-primary)" }}
                   >
                     場所
-                  </label>
+                  </div>
                   <input
                     type="text"
                     value={formData.location}
-                    onChange={(e) =>
-                      handleInputChange("location", e.target.value)
-                    }
+                    onChange={(e) => handleInputChange("location", e.target.value)}
                     placeholder={guide.location || "場所を入力してください"}
                     className={`glass-effect w-full rounded-xl border-2 px-3 py-2 text-base transition-all focus:ring-2 focus:ring-[var(--primary-color)] sm:px-4 sm:py-3 sm:text-lg ${
                       errors.location ? "border-red-500" : "border-transparent"
@@ -754,9 +699,7 @@ const ContentPreview = () => {
                     }}
                   />
                   {errors.location && (
-                    <p className="mt-2 text-sm text-red-500">
-                      {errors.location}
-                    </p>
+                    <p className="mt-2 text-sm text-red-500">{errors.location}</p>
                   )}
                 </div>
               )}
@@ -765,18 +708,16 @@ const ContentPreview = () => {
               {formData.type === "event" && (
                 <div className="space-y-8">
                   <div>
-                    <label
+                    <div
                       className="mb-3 block text-base font-semibold sm:mb-4 sm:text-lg"
                       style={{ color: "var(--text-primary)" }}
                     >
                       主催者
-                    </label>
+                    </div>
                     <input
                       type="text"
                       value={formData.organizer || ""}
-                      onChange={(e) =>
-                        handleInputChange("organizer", e.target.value)
-                      }
+                      onChange={(e) => handleInputChange("organizer", e.target.value)}
                       placeholder={guide.organizer || "主催者名"}
                       className="glass-effect w-full rounded-xl border-2 border-transparent px-3 py-2 text-base transition-all focus:ring-2 focus:ring-[var(--primary-color)] sm:px-4 sm:py-3 sm:text-lg"
                       style={{
@@ -785,20 +726,17 @@ const ContentPreview = () => {
                     />
                   </div>
                   <div>
-                    <label
+                    <div
                       className="mb-3 block text-base font-semibold sm:mb-4 sm:text-lg"
                       style={{ color: "var(--text-primary)" }}
                     >
                       開催時間（分）
-                    </label>
+                    </div>
                     <input
                       type="number"
                       value={formData.duration || 60}
                       onChange={(e) =>
-                        handleInputChange(
-                          "duration",
-                          Number.parseInt(e.target.value),
-                        )
+                        handleInputChange("duration", Number.parseInt(e.target.value, 10))
                       }
                       placeholder="60"
                       className="glass-effect w-full rounded-xl border-2 border-transparent px-3 py-2 text-base transition-all focus:ring-2 focus:ring-[var(--primary-color)] sm:px-4 sm:py-3 sm:text-lg"
@@ -812,18 +750,16 @@ const ContentPreview = () => {
 
               {formData.type === "exhibit" && (
                 <div>
-                  <label
+                  <div
                     className="mb-3 block text-base font-semibold sm:mb-4 sm:text-lg"
                     style={{ color: "var(--text-primary)" }}
                   >
                     制作者
-                  </label>
+                  </div>
                   <input
                     type="text"
                     value={formData.creator || ""}
-                    onChange={(e) =>
-                      handleInputChange("creator", e.target.value)
-                    }
+                    onChange={(e) => handleInputChange("creator", e.target.value)}
                     placeholder={guide.creator || "制作者名"}
                     className="glass-effect w-full rounded-xl border-2 border-transparent px-3 py-2 text-base transition-all focus:ring-2 focus:ring-[var(--primary-color)] sm:px-4 sm:py-3 sm:text-lg"
                     style={{
@@ -836,18 +772,16 @@ const ContentPreview = () => {
               {formData.type === "stall" && (
                 <div className="space-y-8">
                   <div>
-                    <label
+                    <div
                       className="mb-3 block text-base font-semibold sm:mb-4 sm:text-lg"
                       style={{ color: "var(--text-primary)" }}
                     >
                       運営者
-                    </label>
+                    </div>
                     <input
                       type="text"
                       value={formData.organizer || ""}
-                      onChange={(e) =>
-                        handleInputChange("organizer", e.target.value)
-                      }
+                      onChange={(e) => handleInputChange("organizer", e.target.value)}
                       placeholder={guide.organizer || "運営者名"}
                       className="glass-effect w-full rounded-xl border-2 border-transparent px-3 py-2 text-base transition-all focus:ring-2 focus:ring-[var(--primary-color)] sm:px-4 sm:py-3 sm:text-lg"
                       style={{
@@ -856,35 +790,28 @@ const ContentPreview = () => {
                     />
                   </div>
                   <div>
-                    <label
+                    <div
                       className="mb-3 block text-base font-semibold sm:mb-4 sm:text-lg"
                       style={{ color: "var(--text-primary)" }}
                     >
                       商品・メニュー
-                    </label>
+                    </div>
                     <input
                       type="text"
                       value={formData.products?.join(", ") || ""}
                       onChange={(e) =>
                         handleInputChange(
                           "products",
-                          e.target.value
-                            .split(", ")
-                            .filter((item) => item.trim()),
+                          e.target.value.split(", ").filter((item) => item.trim()),
                         )
                       }
-                      placeholder={
-                        guide.products?.join(", ") || "商品1, 商品2, 商品3"
-                      }
+                      placeholder={guide.products?.join(", ") || "商品1, 商品2, 商品3"}
                       className="glass-effect w-full rounded-xl border-2 border-transparent px-3 py-2 text-base transition-all focus:ring-2 focus:ring-[var(--primary-color)] sm:px-4 sm:py-3 sm:text-lg"
                       style={{
                         color: "var(--text-primary)",
                       }}
                     />
-                    <p
-                      className="mt-2 text-sm"
-                      style={{ color: "var(--text-secondary)" }}
-                    >
+                    <p className="mt-2 text-sm" style={{ color: "var(--text-secondary)" }}>
                       商品はカンマ区切りで入力してください
                     </p>
                   </div>
@@ -893,18 +820,16 @@ const ContentPreview = () => {
 
               {formData.type === "sponsor" && (
                 <div>
-                  <label
+                  <div
                     className="mb-3 block text-base font-semibold sm:mb-4 sm:text-lg"
                     style={{ color: "var(--text-primary)" }}
                   >
                     ウェブサイト
-                  </label>
+                  </div>
                   <input
                     type="url"
                     value={formData.website || ""}
-                    onChange={(e) =>
-                      handleInputChange("website", e.target.value)
-                    }
+                    onChange={(e) => handleInputChange("website", e.target.value)}
                     placeholder={guide.website || "https://example.com"}
                     className="glass-effect w-full rounded-xl border-2 border-transparent px-3 py-2 text-base transition-all focus:ring-2 focus:ring-[var(--primary-color)] sm:px-4 sm:py-3 sm:text-lg"
                     style={{
@@ -916,12 +841,12 @@ const ContentPreview = () => {
 
               {/* Image Upload */}
               <div>
-                <label
+                <div
                   className="mb-3 block text-base font-semibold sm:mb-4 sm:text-lg"
                   style={{ color: "var(--text-primary)" }}
                 >
                   画像ファイル
-                </label>
+                </div>
                 <input
                   type="file"
                   accept="image/*"
@@ -933,9 +858,7 @@ const ContentPreview = () => {
                     color: "var(--text-primary)",
                   }}
                 />
-                {errors.image && (
-                  <p className="mt-2 text-sm text-red-500">{errors.image}</p>
-                )}
+                {errors.image && <p className="mt-2 text-sm text-red-500">{errors.image}</p>}
                 {formData.imagePreviewUrl && (
                   <div className="mt-4">
                     <img
@@ -949,12 +872,12 @@ const ContentPreview = () => {
 
               {/* Tags */}
               <div>
-                <label
+                <div
                   className="mb-4 block text-base font-semibold sm:mb-6 sm:text-lg"
                   style={{ color: "var(--text-primary)" }}
                 >
                   タグ選択
-                </label>
+                </div>
 
                 {/* Tag category selector */}
                 <div className="mb-6 flex flex-wrap gap-2">
@@ -965,6 +888,7 @@ const ContentPreview = () => {
                     { key: "food", label: "食べ物" },
                   ].map((category) => (
                     <button
+                      type="button"
                       key={category.key}
                       onClick={() => setActiveTagCategory(category.key)}
                       className={`group relative flex items-center gap-2 overflow-hidden rounded-lg px-3 py-2 text-xs font-medium transition-all duration-200 sm:px-4 sm:text-sm ${
@@ -1004,9 +928,7 @@ const ContentPreview = () => {
                     <PillButton
                       key={tag}
                       onClick={() => toggleTag(tag)}
-                      variant={
-                        formData.tags.includes(tag) ? "primary" : "secondary"
-                      }
+                      variant={formData.tags.includes(tag) ? "primary" : "secondary"}
                       size="sm"
                       className="transition-all duration-300"
                     >
@@ -1037,6 +959,7 @@ const ContentPreview = () => {
                         >
                           {tag}
                           <button
+                            type="button"
                             onClick={() => toggleTag(tag)}
                             className="rounded-full p-1 transition-colors hover:bg-white/20"
                             style={{ color: "inherit" }}
@@ -1062,12 +985,7 @@ const ContentPreview = () => {
                     }}
                     onKeyPress={(e) => e.key === "Enter" && addNewTag()}
                   />
-                  <PillButton
-                    onClick={addNewTag}
-                    variant="primary"
-                    size="md"
-                    className="px-6"
-                  >
+                  <PillButton onClick={addNewTag} variant="primary" size="md" className="px-6">
                     追加
                   </PillButton>
                 </div>
@@ -1075,18 +993,16 @@ const ContentPreview = () => {
 
               {/* Map Coordinate Selection */}
               <div>
-                <label
+                <div
                   className="mb-3 flex items-center gap-3 text-base font-semibold sm:mb-4 sm:text-lg"
                   style={{ color: "var(--text-primary)" }}
                 >
                   <LocationIcon size={24} />
                   マップ上の位置選択
-                </label>
+                </div>
 
                 {errors.coordinates && (
-                  <p className="mb-4 text-sm text-red-500">
-                    {errors.coordinates}
-                  </p>
+                  <p className="mb-4 text-sm text-red-500">{errors.coordinates}</p>
                 )}
 
                 {/* Coordinate display */}
@@ -1110,6 +1026,7 @@ const ContentPreview = () => {
                         </p>
                       </div>
                       <button
+                        type="button"
                         onClick={() => handleCoordinateSelect({ x: 0, y: 0 })}
                         className="rounded-lg p-2 transition-all hover:bg-[var(--bg-secondary)]"
                         style={{ color: "var(--text-secondary)" }}
@@ -1183,6 +1100,7 @@ const ContentPreview = () => {
                 { key: "schedule", label: "スケジュール" },
               ].map((mode) => (
                 <button
+                  type="button"
                   key={mode.key}
                   onClick={() => setPreviewMode(mode.key as PreviewMode)}
                   className={`group relative flex items-center gap-2 overflow-hidden rounded-lg px-3 py-2 text-xs font-medium transition-all duration-200 sm:px-4 sm:text-sm ${
@@ -1219,10 +1137,7 @@ const ContentPreview = () => {
             {/* Preview Content */}
             {previewMode === "card" && (
               <div>
-                <h3
-                  className="mb-3 text-lg font-semibold"
-                  style={{ color: "var(--text-primary)" }}
-                >
+                <h3 className="mb-3 text-lg font-semibold" style={{ color: "var(--text-primary)" }}>
                   カードプレビュー
                 </h3>
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -1243,10 +1158,7 @@ const ContentPreview = () => {
             {/* Detail Preview - Full implementation as before */}
             {previewMode === "detail" && (
               <div>
-                <h3
-                  className="mb-3 text-lg font-semibold"
-                  style={{ color: "var(--text-primary)" }}
-                >
+                <h3 className="mb-3 text-lg font-semibold" style={{ color: "var(--text-primary)" }}>
                   詳細ページプレビュー
                 </h3>
                 <div className="max-h-[600px] space-y-6 overflow-y-auto">
@@ -1266,10 +1178,7 @@ const ContentPreview = () => {
                     </span>
                   </div>
 
-                  <h1
-                    className="mb-4 text-2xl font-bold"
-                    style={{ color: "var(--text-primary)" }}
-                  >
+                  <h1 className="mb-4 text-2xl font-bold" style={{ color: "var(--text-primary)" }}>
                     {previewItem.title}
                   </h1>
 
@@ -1278,39 +1187,24 @@ const ContentPreview = () => {
                     style={{ backgroundColor: "var(--bg-primary)" }}
                   >
                     <div className="flex items-center gap-2">
-                      <span
-                        className="font-medium"
-                        style={{ color: "var(--text-primary)" }}
-                      >
+                      <span className="font-medium" style={{ color: "var(--text-primary)" }}>
                         日付:
                       </span>
-                      <span style={{ color: "var(--text-secondary)" }}>
-                        {previewItem.date}
-                      </span>
+                      <span style={{ color: "var(--text-secondary)" }}>{previewItem.date}</span>
                     </div>
 
                     <div className="flex items-center gap-2">
-                      <span
-                        className="font-medium"
-                        style={{ color: "var(--text-primary)" }}
-                      >
+                      <span className="font-medium" style={{ color: "var(--text-primary)" }}>
                         時間:
                       </span>
-                      <span style={{ color: "var(--text-secondary)" }}>
-                        {previewItem.time}
-                      </span>
+                      <span style={{ color: "var(--text-secondary)" }}>{previewItem.time}</span>
                     </div>
 
                     <div className="flex items-center gap-2">
-                      <span
-                        className="font-medium"
-                        style={{ color: "var(--text-primary)" }}
-                      >
+                      <span className="font-medium" style={{ color: "var(--text-primary)" }}>
                         場所:
                       </span>
-                      <span style={{ color: "var(--text-secondary)" }}>
-                        {previewItem.location}
-                      </span>
+                      <span style={{ color: "var(--text-secondary)" }}>{previewItem.location}</span>
                     </div>
                   </div>
 
@@ -1354,20 +1248,14 @@ const ContentPreview = () => {
                           showControls={true}
                         />
                       </div>
-                      <p
-                        className="mt-2 text-sm"
-                        style={{ color: "var(--text-secondary)" }}
-                      >
+                      <p className="mt-2 text-sm" style={{ color: "var(--text-secondary)" }}>
                         座標: X={formData.coordinates.x.toFixed(1)}, Y=
                         {formData.coordinates.y.toFixed(1)}
                       </p>
                     </div>
                   )}
 
-                  <div
-                    className="rounded-lg p-4"
-                    style={{ backgroundColor: "var(--bg-primary)" }}
-                  >
+                  <div className="rounded-lg p-4" style={{ backgroundColor: "var(--bg-primary)" }}>
                     <p
                       className="text-base leading-relaxed"
                       style={{ color: "var(--text-primary)" }}
@@ -1390,10 +1278,7 @@ const ContentPreview = () => {
                       </h3>
                       <div className="space-y-3">
                         <div className="flex items-center gap-2">
-                          <span
-                            className="font-medium"
-                            style={{ color: "var(--text-primary)" }}
-                          >
+                          <span className="font-medium" style={{ color: "var(--text-primary)" }}>
                             主催者:
                           </span>
                           <span style={{ color: "var(--text-secondary)" }}>
@@ -1401,10 +1286,7 @@ const ContentPreview = () => {
                           </span>
                         </div>
                         <div className="flex items-center gap-2">
-                          <span
-                            className="font-medium"
-                            style={{ color: "var(--text-primary)" }}
-                          >
+                          <span className="font-medium" style={{ color: "var(--text-primary)" }}>
                             開催時間:
                           </span>
                           <span style={{ color: "var(--text-secondary)" }}>
@@ -1430,10 +1312,7 @@ const ContentPreview = () => {
                       </h3>
                       <div className="space-y-3">
                         <div className="flex items-center gap-2">
-                          <span
-                            className="font-medium"
-                            style={{ color: "var(--text-primary)" }}
-                          >
+                          <span className="font-medium" style={{ color: "var(--text-primary)" }}>
                             制作者:
                           </span>
                           <span style={{ color: "var(--text-secondary)" }}>
@@ -1441,10 +1320,7 @@ const ContentPreview = () => {
                           </span>
                         </div>
                         <div className="flex items-center gap-2">
-                          <span
-                            className="font-medium"
-                            style={{ color: "var(--text-primary)" }}
-                          >
+                          <span className="font-medium" style={{ color: "var(--text-primary)" }}>
                             展示時間:
                           </span>
                           <span style={{ color: "var(--text-secondary)" }}>
@@ -1470,10 +1346,7 @@ const ContentPreview = () => {
                       </h3>
                       <div className="space-y-3">
                         <div className="flex items-center gap-2">
-                          <span
-                            className="font-medium"
-                            style={{ color: "var(--text-primary)" }}
-                          >
+                          <span className="font-medium" style={{ color: "var(--text-primary)" }}>
                             運営者:
                           </span>
                           <span style={{ color: "var(--text-secondary)" }}>
@@ -1481,18 +1354,14 @@ const ContentPreview = () => {
                           </span>
                         </div>
                         <div>
-                          <span
-                            className="font-medium"
-                            style={{ color: "var(--text-primary)" }}
-                          >
+                          <span className="font-medium" style={{ color: "var(--text-primary)" }}>
                             提供商品:
                           </span>
                           <div className="mt-2 flex flex-wrap gap-2">
-                            {formData.products &&
-                            formData.products.length > 0 ? (
-                              formData.products.map((product, index) => (
+                            {formData.products && formData.products.length > 0 ? (
+                              formData.products.map((product) => (
                                 <span
-                                  key={index}
+                                  key={product}
                                   className="rounded px-2 py-1 text-sm"
                                   style={{
                                     backgroundColor: "var(--bg-tertiary)",
@@ -1503,17 +1372,12 @@ const ContentPreview = () => {
                                 </span>
                               ))
                             ) : (
-                              <span style={{ color: "var(--text-secondary)" }}>
-                                未設定
-                              </span>
+                              <span style={{ color: "var(--text-secondary)" }}>未設定</span>
                             )}
                           </div>
                         </div>
                         <div className="flex items-center gap-2">
-                          <span
-                            className="font-medium"
-                            style={{ color: "var(--text-primary)" }}
-                          >
+                          <span className="font-medium" style={{ color: "var(--text-primary)" }}>
                             営業時間:
                           </span>
                           <span style={{ color: "var(--text-secondary)" }}>
@@ -1539,10 +1403,7 @@ const ContentPreview = () => {
                       </h3>
                       <div className="space-y-3">
                         <div className="flex items-center gap-2">
-                          <span
-                            className="font-medium"
-                            style={{ color: "var(--text-primary)" }}
-                          >
+                          <span className="font-medium" style={{ color: "var(--text-primary)" }}>
                             ウェブサイト:
                           </span>
                           {formData.website ? (
@@ -1556,9 +1417,7 @@ const ContentPreview = () => {
                               {formData.website}
                             </a>
                           ) : (
-                            <span style={{ color: "var(--text-secondary)" }}>
-                              未設定
-                            </span>
+                            <span style={{ color: "var(--text-secondary)" }}>未設定</span>
                           )}
                         </div>
                       </div>
@@ -1574,26 +1433,21 @@ const ContentPreview = () => {
                         タグ
                       </h3>
                       <div className="flex flex-wrap gap-2">
-                        {previewItem.tags.map((tag, idx) => (
-                          <Tag key={idx} tag={tag} interactive={false} />
+                        {previewItem.tags.map((tag) => (
+                          <Tag key={tag} tag={tag} interactive={false} />
                         ))}
                       </div>
                     </div>
                   )}
 
-                  <div
-                    className="rounded-lg p-4"
-                    style={{ backgroundColor: "var(--bg-primary)" }}
-                  >
+                  <div className="rounded-lg p-4" style={{ backgroundColor: "var(--bg-primary)" }}>
                     <h3
                       className="mb-3 text-lg font-semibold"
                       style={{ color: "var(--text-primary)" }}
                     >
                       マップ
                     </h3>
-                    <p style={{ color: "var(--text-secondary)" }}>
-                      {previewItem.location}
-                    </p>
+                    <p style={{ color: "var(--text-secondary)" }}>{previewItem.location}</p>
                   </div>
                 </div>
               </div>
@@ -1602,29 +1456,22 @@ const ContentPreview = () => {
             {/* Schedule Preview */}
             {previewMode === "schedule" && previewItem.type !== "sponsor" && (
               <div>
-                <h3
-                  className="mb-3 text-lg font-semibold"
-                  style={{ color: "var(--text-primary)" }}
-                >
+                <h3 className="mb-3 text-lg font-semibold" style={{ color: "var(--text-primary)" }}>
                   スケジュール表示プレビュー
                 </h3>
-                <div
-                  className="rounded-lg p-4"
-                  style={{ backgroundColor: "var(--bg-primary)" }}
-                >
+                <div className="rounded-lg p-4" style={{ backgroundColor: "var(--bg-primary)" }}>
                   <TimelineDay
                     date={previewItem.date}
-                    items={
-                      generatePreviewItems() as (Event | Exhibit | Stall)[]
-                    }
+                    items={generatePreviewItems() as (Event | Exhibit | Stall)[]}
                     timeSlots={[previewItem.time.split(" - ")[0]]}
                     groupedItems={{
-                      [previewItem.time.split(" - ")[0]]:
-                        generatePreviewItems() as (Event | Exhibit | Stall)[],
+                      [previewItem.time.split(" - ")[0]]: generatePreviewItems() as (
+                        | Event
+                        | Exhibit
+                        | Stall
+                      )[],
                     }}
-                    dayName={
-                      previewItem.date === "2025-11-08" ? "1日目" : "2日目"
-                    }
+                    dayName={previewItem.date === "2025-11-08" ? "1日目" : "2日目"}
                     animationKey={0}
                     onItemClick={() => setPreviewMode("detail")}
                   />
@@ -1646,8 +1493,7 @@ const ContentPreview = () => {
                 className="mb-6 text-base leading-relaxed sm:mb-8 sm:text-lg"
                 style={{ color: "var(--text-secondary)" }}
               >
-                プレビューで内容を確認できました。
-                問題がなければ下のボタンからMicrosoft
+                プレビューで内容を確認できました。 問題がなければ下のボタンからMicrosoft
                 Formsで正式に申請してください。
               </p>
               <PillButton

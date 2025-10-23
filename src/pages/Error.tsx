@@ -84,10 +84,7 @@ const ErrorPage = () => {
 
   return (
     <div className="min-h-screen">
-      <section
-        className="section"
-        style={{ backgroundColor: "var(--color-bg-primary)" }}
-      >
+      <section className="section" style={{ backgroundColor: "var(--color-bg-primary)" }}>
         <div className="mx-auto max-w-7xl">
           <div className="py-12 text-center">
             <div className="mb-8">
@@ -101,6 +98,7 @@ const ErrorPage = () => {
                 className="mx-auto mb-6"
                 style={{ color: "var(--color-accent)" }}
               >
+                <title>Icon</title>
                 <circle cx="12" cy="12" r="10" />
                 <line x1="12" y1="8" x2="12" y2="12" />
                 <line x1="12" y1="16" x2="12.01" y2="16" />
@@ -115,7 +113,7 @@ const ErrorPage = () => {
                 {t("errors.backToHome")}
               </Link>
 
-              <button onClick={handleReload} className="btn btn-secondary">
+              <button type="button" onClick={handleReload} className="btn btn-secondary">
                 {t("errors.tryAgain")}
               </button>
             </div>

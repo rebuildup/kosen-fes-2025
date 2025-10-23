@@ -51,13 +51,7 @@ export default defineConfig({
   },
   // 依存関係の最適化
   optimizeDeps: {
-    include: [
-      "react",
-      "react-dom",
-      "react-router-dom",
-      "date-fns",
-      "lucide-react",
-    ],
+    include: ["react", "react-dom", "react-router-dom", "date-fns", "lucide-react"],
   },
   plugins: [react(), tailwindcss()],
   // 開発サーバーの最適化

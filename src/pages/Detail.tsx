@@ -13,10 +13,12 @@ import exhibitsJson from "../data/exhibits.json";
 import sponsorsJson from "../data/sponsors.json";
 import stallsJson from "../data/stalls.json";
 import type { Event, Exhibit, Item, Sponsor, Stall } from "../types/common";
+
 const events = eventsJson as Event[];
 const exhibits = exhibitsJson as Exhibit[];
 const sponsors = sponsorsJson as Sponsor[];
 const stalls = stallsJson as Stall[];
+
 import UnifiedCard from "../shared/components/ui/UnifiedCard";
 import { formatDuration } from "../utils/formatters";
 
@@ -77,9 +79,9 @@ const Detail = () => {
         const related = allItems
           .filter(
             (otherItem) =>
-              otherItem.id !== foundItem!.id &&
+              otherItem.id !== foundItem?.id &&
               otherItem.tags &&
-              otherItem.tags.some((tag) => foundItem!.tags?.includes(tag)),
+              otherItem.tags.some((tag) => foundItem?.tags?.includes(tag)),
           )
           .slice(0, 6); // Limit to 6 items
         setRelatedItems(related);
@@ -111,16 +113,10 @@ const Detail = () => {
   // Loading state
   if (loading) {
     return (
-      <div
-        className="min-h-screen"
-        style={{ backgroundColor: "var(--color-bg-primary)" }}
-      >
+      <div className="min-h-screen" style={{ backgroundColor: "var(--color-bg-primary)" }}>
         <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
           <div className="py-12 text-center">
-            <p
-              className="text-lg"
-              style={{ color: "var(--color-text-primary)" }}
-            >
+            <p className="text-lg" style={{ color: "var(--color-text-primary)" }}>
               {t("loading")}
             </p>
           </div>
@@ -132,19 +128,14 @@ const Detail = () => {
   // Error state
   if (error || !item) {
     return (
-      <div
-        className="min-h-screen"
-        style={{ backgroundColor: "var(--color-bg-primary)" }}
-      >
+      <div className="min-h-screen" style={{ backgroundColor: "var(--color-bg-primary)" }}>
         <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
           <div className="py-12 text-center">
-            <p
-              className="mb-6 text-lg"
-              style={{ color: "var(--color-text-primary)" }}
-            >
+            <p className="mb-6 text-lg" style={{ color: "var(--color-text-primary)" }}>
               {t("errors.itemNotFound")}
             </p>
             <button
+              type="button"
               onClick={handleBack}
               className="rounded-lg px-6 py-3 font-medium transition-all duration-200 hover:scale-105"
               style={{
@@ -166,10 +157,7 @@ const Detail = () => {
       case "event": {
         const eventItem = item as Event;
         return (
-          <div
-            className="rounded-lg p-6"
-            style={{ backgroundColor: "var(--color-bg-secondary)" }}
-          >
+          <div className="rounded-lg p-6" style={{ backgroundColor: "var(--color-bg-secondary)" }}>
             <h3
               className="mb-4 text-xl font-semibold"
               style={{ color: "var(--color-text-primary)" }}
@@ -178,28 +166,17 @@ const Detail = () => {
             </h3>
             <div className="space-y-3">
               <div className="flex items-center gap-2">
-                <span
-                  className="font-medium"
-                  style={{ color: "var(--color-text-primary)" }}
-                >
+                <span className="font-medium" style={{ color: "var(--color-text-primary)" }}>
                   {t("detail.organizer")}:
                 </span>
-                <span style={{ color: "var(--color-text-secondary)" }}>
-                  {eventItem.organizer}
-                </span>
+                <span style={{ color: "var(--color-text-secondary)" }}>{eventItem.organizer}</span>
               </div>
               <div className="flex items-center gap-2">
-                <span
-                  className="font-medium"
-                  style={{ color: "var(--color-text-primary)" }}
-                >
+                <span className="font-medium" style={{ color: "var(--color-text-primary)" }}>
                   {t("detail.duration")}:
                 </span>
                 <span style={{ color: "var(--color-text-secondary)" }}>
-                  {formatDuration(
-                    eventItem.duration,
-                    t("language") as "ja" | "en",
-                  )}
+                  {formatDuration(eventItem.duration, t("language") as "ja" | "en")}
                 </span>
               </div>
             </div>
@@ -209,10 +186,7 @@ const Detail = () => {
       case "exhibit": {
         const exhibitItem = item as Exhibit;
         return (
-          <div
-            className="rounded-lg p-6"
-            style={{ backgroundColor: "var(--color-bg-secondary)" }}
-          >
+          <div className="rounded-lg p-6" style={{ backgroundColor: "var(--color-bg-secondary)" }}>
             <h3
               className="mb-4 text-xl font-semibold"
               style={{ color: "var(--color-text-primary)" }}
@@ -221,15 +195,10 @@ const Detail = () => {
             </h3>
             <div className="space-y-3">
               <div className="flex items-center gap-2">
-                <span
-                  className="font-medium"
-                  style={{ color: "var(--color-text-primary)" }}
-                >
+                <span className="font-medium" style={{ color: "var(--color-text-primary)" }}>
                   {t("detail.creator")}:
                 </span>
-                <span style={{ color: "var(--color-text-secondary)" }}>
-                  {exhibitItem.creator}
-                </span>
+                <span style={{ color: "var(--color-text-secondary)" }}>{exhibitItem.creator}</span>
               </div>
             </div>
           </div>
@@ -238,10 +207,7 @@ const Detail = () => {
       case "stall": {
         const stallItem = item as Stall;
         return (
-          <div
-            className="rounded-lg p-6"
-            style={{ backgroundColor: "var(--color-bg-secondary)" }}
-          >
+          <div className="rounded-lg p-6" style={{ backgroundColor: "var(--color-bg-secondary)" }}>
             <h3
               className="mb-4 text-xl font-semibold"
               style={{ color: "var(--color-text-primary)" }}
@@ -250,16 +216,13 @@ const Detail = () => {
             </h3>
             <div className="space-y-3">
               <div>
-                <span
-                  className="font-medium"
-                  style={{ color: "var(--color-text-primary)" }}
-                >
+                <span className="font-medium" style={{ color: "var(--color-text-primary)" }}>
                   {t("detail.products")}:
                 </span>
                 <div className="mt-2 flex flex-wrap gap-2">
                   {stallItem.products.map((product, index) => (
                     <span
-                      key={index}
+                      key={`${stallItem.id}-product-${index}`}
                       className="rounded px-2 py-1 text-sm"
                       style={{
                         backgroundColor: "var(--color-bg-tertiary)",
@@ -278,10 +241,7 @@ const Detail = () => {
       case "sponsor": {
         const sponsorItem = item as Sponsor;
         return (
-          <div
-            className="rounded-lg p-6"
-            style={{ backgroundColor: "var(--color-bg-secondary)" }}
-          >
+          <div className="rounded-lg p-6" style={{ backgroundColor: "var(--color-bg-secondary)" }}>
             <h3
               className="mb-4 text-xl font-semibold"
               style={{ color: "var(--color-text-primary)" }}
@@ -290,10 +250,7 @@ const Detail = () => {
             </h3>
             <div className="space-y-3">
               <div className="flex items-center gap-2">
-                <span
-                  className="font-medium"
-                  style={{ color: "var(--color-text-primary)" }}
-                >
+                <span className="font-medium" style={{ color: "var(--color-text-primary)" }}>
                   {t("detail.website")}:
                 </span>
                 <a
@@ -338,10 +295,7 @@ const Detail = () => {
 
   return (
     <div className="min-h-screen">
-      <section
-        className="section"
-        style={{ backgroundColor: "var(--color-bg-primary)" }}
-      >
+      <section className="section" style={{ backgroundColor: "var(--color-bg-primary)" }}>
         <div className="mx-auto max-w-7xl">
           <div className="mb-8 flex items-center justify-between">
             <PillButton onClick={handleBack} variant="secondary">
@@ -352,6 +306,7 @@ const Detail = () => {
             </PillButton>
 
             <button
+              type="button"
               onClick={handleBookmarkToggle}
               className={`flex h-12 w-12 items-center justify-center rounded-full transition-all duration-200 hover:scale-110 focus:ring-2 focus:ring-offset-2 focus:outline-none ${
                 isBookmarked(item.id)
@@ -359,19 +314,11 @@ const Detail = () => {
                   : "border border-[var(--border-color)] bg-[var(--bg-secondary)] text-[var(--text-secondary)] hover:bg-[var(--bg-tertiary)] hover:text-[var(--text-primary)] focus:ring-[var(--primary-color)]"
               }`}
               aria-label={
-                isBookmarked(item.id)
-                  ? t("actions.removeBookmark")
-                  : t("actions.bookmark")
+                isBookmarked(item.id) ? t("actions.removeBookmark") : t("actions.bookmark")
               }
-              title={
-                isBookmarked(item.id)
-                  ? t("actions.removeBookmark")
-                  : t("actions.bookmark")
-              }
+              title={isBookmarked(item.id) ? t("actions.removeBookmark") : t("actions.bookmark")}
             >
-              <span className="text-xl">
-                {isBookmarked(item.id) ? "★" : "☆"}
-              </span>
+              <span className="text-xl">{isBookmarked(item.id) ? "★" : "☆"}</span>
             </button>
           </div>
 
@@ -389,10 +336,7 @@ const Detail = () => {
               </span>
             </div>
 
-            <h1
-              className="mb-6 text-3xl font-bold"
-              style={{ color: "var(--color-text-primary)" }}
-            >
+            <h1 className="mb-6 text-3xl font-bold" style={{ color: "var(--color-text-primary)" }}>
               {item.title}
             </h1>
 
@@ -403,39 +347,24 @@ const Detail = () => {
                 style={{ backgroundColor: "var(--color-bg-secondary)" }}
               >
                 <div className="flex items-center gap-2">
-                  <span
-                    className="font-medium"
-                    style={{ color: "var(--color-text-primary)" }}
-                  >
+                  <span className="font-medium" style={{ color: "var(--color-text-primary)" }}>
                     {t("detail.date")}:
                   </span>
-                  <span style={{ color: "var(--color-text-secondary)" }}>
-                    {item.date}
-                  </span>
+                  <span style={{ color: "var(--color-text-secondary)" }}>{item.date}</span>
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <span
-                    className="font-medium"
-                    style={{ color: "var(--color-text-primary)" }}
-                  >
+                  <span className="font-medium" style={{ color: "var(--color-text-primary)" }}>
                     {t("detail.time")}:
                   </span>
-                  <span style={{ color: "var(--color-text-secondary)" }}>
-                    {item.time}
-                  </span>
+                  <span style={{ color: "var(--color-text-secondary)" }}>{item.time}</span>
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <span
-                    className="font-medium"
-                    style={{ color: "var(--color-text-primary)" }}
-                  >
+                  <span className="font-medium" style={{ color: "var(--color-text-primary)" }}>
                     {t("detail.location")}:
                   </span>
-                  <span style={{ color: "var(--color-text-secondary)" }}>
-                    {item.location}
-                  </span>
+                  <span style={{ color: "var(--color-text-secondary)" }}>{item.location}</span>
                 </div>
               </div>
             )}
@@ -464,19 +393,12 @@ const Detail = () => {
                   {t("detail.location")}
                 </h3>
                 <div className="space-y-2">
-                  <p
-                    className="text-lg"
-                    style={{ color: "var(--color-text-primary)" }}
-                  >
+                  <p className="text-lg" style={{ color: "var(--color-text-primary)" }}>
                     {item.location}
                   </p>
                   {item.coordinates && (
-                    <p
-                      className="text-sm"
-                      style={{ color: "var(--color-text-secondary)" }}
-                    >
-                      座標: ({item.coordinates.x.toFixed(0)},{" "}
-                      {item.coordinates.y.toFixed(0)})
+                    <p className="text-sm" style={{ color: "var(--color-text-secondary)" }}>
+                      座標: ({item.coordinates.x.toFixed(0)}, {item.coordinates.y.toFixed(0)})
                     </p>
                   )}
                 </div>
@@ -487,10 +409,7 @@ const Detail = () => {
               className="rounded-lg p-6"
               style={{ backgroundColor: "var(--color-bg-secondary)" }}
             >
-              <p
-                className="text-lg leading-relaxed"
-                style={{ color: "var(--color-text-primary)" }}
-              >
+              <p className="text-lg leading-relaxed" style={{ color: "var(--color-text-primary)" }}>
                 {item.description}
               </p>
             </div>
@@ -507,7 +426,7 @@ const Detail = () => {
                 </h3>
                 <div className="flex flex-wrap gap-2">
                   {item.tags.map((tag, idx) => (
-                    <Tag key={idx} tag={tag} onClick={handleTagClick} />
+                    <Tag key={`${item.id}-tag-${idx}`} tag={tag} onClick={handleTagClick} />
                   ))}
                 </div>
               </div>
@@ -542,11 +461,7 @@ const Detail = () => {
                               onClick: () => {},
                               onHover: () => {},
                               title: item.title,
-                              type: item.type as
-                                | "event"
-                                | "exhibit"
-                                | "stall"
-                                | "location",
+                              type: item.type as "event" | "exhibit" | "stall" | "location",
                             },
                           ]
                         : []
@@ -573,17 +488,10 @@ const Detail = () => {
                   {t("detail.related")}
                 </h3>
                 <div className="overflow-x-auto scrollbar-thin">
-                  <div
-                    className="flex gap-4 pb-2"
-                    style={{ minWidth: "max-content" }}
-                  >
+                  <div className="flex gap-4 pb-2" style={{ minWidth: "max-content" }}>
                     {relatedItems.map((relatedItem) => (
                       <div key={relatedItem.id} className="w-64 flex-shrink-0">
-                        <UnifiedCard
-                          item={relatedItem}
-                          showTags={true}
-                          variant="compact"
-                        />
+                        <UnifiedCard item={relatedItem} showTags={true} variant="compact" />
                       </div>
                     ))}
                   </div>

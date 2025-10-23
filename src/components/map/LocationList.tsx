@@ -53,10 +53,7 @@ const LocationList = ({
       </h2>
 
       {sortedLocations.length === 0 ? (
-        <div
-          className="py-8 text-center"
-          style={{ color: "var(--color-text-secondary)" }}
-        >
+        <div className="py-8 text-center" style={{ color: "var(--color-text-secondary)" }}>
           {t("map.noLocations")}
         </div>
       ) : (
@@ -70,9 +67,10 @@ const LocationList = ({
               if (!firstItem) return null;
 
               return (
-                <div
+                <button
+                  type="button"
                   key={location}
-                  className={`w-80 flex-shrink-0`}
+                  className={`w-80 flex-shrink-0 text-left`}
                   onMouseEnter={() => onLocationHover(location)}
                   onMouseLeave={() => onLocationHover(null)}
                   onClick={() => onLocationSelect(location)}
@@ -98,49 +96,30 @@ const LocationList = ({
                     <div className="absolute right-2 bottom-2 rounded-lg bg-black/80 px-2 py-1">
                       <div className="text-xs text-white">
                         {(() => {
-                          const eventCount = items.filter(
-                            (item) => item.type === "event",
-                          ).length;
+                          const eventCount = items.filter((item) => item.type === "event").length;
                           const exhibitCount = items.filter(
                             (item) => item.type === "exhibit",
                           ).length;
-                          const stallCount = items.filter(
-                            (item) => item.type === "stall",
-                          ).length;
+                          const stallCount = items.filter((item) => item.type === "stall").length;
 
                           return (
                             <div className="flex items-center gap-3">
                               {eventCount > 0 && (
-                                <div
-                                  className="flex items-center gap-1"
-                                  aria-label={`${eventCount} イベント`}
-                                >
+                                <div className="flex items-center gap-1">
                                   <EventIcon size={14} />
-                                  <span className="text-xs text-white">
-                                    {eventCount}
-                                  </span>
+                                  <span className="text-xs text-white">{eventCount}</span>
                                 </div>
                               )}
                               {exhibitCount > 0 && (
-                                <div
-                                  className="flex items-center gap-1"
-                                  aria-label={`${exhibitCount} 展示`}
-                                >
+                                <div className="flex items-center gap-1">
                                   <ExhibitIcon size={14} />
-                                  <span className="text-xs text-white">
-                                    {exhibitCount}
-                                  </span>
+                                  <span className="text-xs text-white">{exhibitCount}</span>
                                 </div>
                               )}
                               {stallCount > 0 && (
-                                <div
-                                  className="flex items-center gap-1"
-                                  aria-label={`${stallCount} 出店`}
-                                >
+                                <div className="flex items-center gap-1">
                                   <PeopleIcon size={14} />
-                                  <span className="text-xs text-white">
-                                    {stallCount}
-                                  </span>
+                                  <span className="text-xs text-white">{stallCount}</span>
                                 </div>
                               )}
                             </div>
@@ -149,7 +128,7 @@ const LocationList = ({
                       </div>
                     </div>
                   </div>
-                </div>
+                </button>
               );
             })}
           </div>

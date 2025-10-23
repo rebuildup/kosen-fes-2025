@@ -18,23 +18,15 @@ const NotFound = () => {
 
   return (
     <div className="min-h-screen">
-      <section
-        className="section"
-        style={{ backgroundColor: "var(--color-bg-primary)" }}
-      >
+      <section className="section" style={{ backgroundColor: "var(--color-bg-primary)" }}>
         <div className="mx-auto max-w-7xl">
           <div className="py-12 text-center">
-            <div
-              className="mb-8 text-6xl font-bold"
-              style={{ color: "var(--color-accent)" }}
-            >
+            <div className="mb-8 text-6xl font-bold" style={{ color: "var(--color-accent)" }}>
               404
             </div>
 
             <h1 className="section-title">{t("errors.pageNotFound")}</h1>
-            <p className="section-subtitle">
-              {t("errors.pageNotFoundMessage")}
-            </p>
+            <p className="section-subtitle">{t("errors.pageNotFoundMessage")}</p>
 
             <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
               <Link to="/" className="btn btn-primary">

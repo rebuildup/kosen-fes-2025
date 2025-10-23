@@ -10,18 +10,9 @@ interface SidebarLinkProps {
   compact?: boolean; // Add compact mode support
 }
 
-const SidebarLink = ({
-  badge,
-  compact = false,
-  icon,
-  label,
-  onClick,
-  to,
-}: SidebarLinkProps) => {
+const SidebarLink = ({ badge, compact = false, icon, label, onClick, to }: SidebarLinkProps) => {
   const location = useLocation();
-  const isActive =
-    location.pathname === to ||
-    (to !== "/" && location.pathname.startsWith(to));
+  const isActive = location.pathname === to || (to !== "/" && location.pathname.startsWith(to));
 
   return (
     <Link
@@ -46,18 +37,14 @@ const SidebarLink = ({
             {icon}
           </span>
         )}
-        <span className={`font-medium ${compact ? "lg:hidden xl:block" : ""}`}>
-          {label}
-        </span>
+        <span className={`font-medium ${compact ? "lg:hidden xl:block" : ""}`}>{label}</span>
       </div>
 
       {badge !== undefined && (
         <span
           className={`inline-flex items-center justify-center rounded-full px-2 py-1 text-xs leading-none font-bold text-white shadow-sm ${compact ? "lg:hidden xl:flex" : ""} `}
           style={{
-            background: isActive
-              ? "var(--instagram-gradient)"
-              : "var(--primary-color)",
+            background: isActive ? "var(--instagram-gradient)" : "var(--primary-color)",
           }}
         >
           {badge}

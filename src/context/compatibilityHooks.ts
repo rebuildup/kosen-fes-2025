@@ -25,13 +25,7 @@ export const useSearchCompat = () => {
 
 // Adapter for useBookmark hook
 export const useBookmarkCompat = () => {
-  const {
-    addBookmark,
-    bookmarks,
-    getBookmarkedItems,
-    isBookmarked,
-    removeBookmark,
-  } = useData();
+  const { addBookmark, bookmarks, getBookmarkedItems, isBookmarked, removeBookmark } = useData();
 
   return {
     addBookmark,
@@ -69,9 +63,7 @@ export const useTagCompat = () => {
     },
     filterItemsByTags: <T extends { tags: string[] }>(items: T[]): T[] => {
       if (selectedTags.length === 0) return items;
-      return items.filter((item) =>
-        selectedTags.some((tag) => item.tags.includes(tag)),
-      );
+      return items.filter((item) => selectedTags.some((tag) => item.tags.includes(tag)));
     },
     isTagSelected: (tag: string) => selectedTags.includes(tag),
     popularTags: getPopularTags(),

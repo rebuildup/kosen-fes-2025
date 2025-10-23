@@ -34,25 +34,20 @@ const BookmarkButton = ({
     }
   };
 
-  const ariaLabel = isActive
-    ? t("actions.removeBookmark")
-    : t("actions.bookmark");
+  const ariaLabel = isActive ? t("actions.removeBookmark") : t("actions.bookmark");
 
-  const buttonText = isActive
-    ? t("actions.removeBookmark")
-    : t("actions.bookmark");
+  const buttonText = isActive ? t("actions.removeBookmark") : t("actions.bookmark");
 
   const sizeClass = `bookmark-button-${size}`;
 
   return (
     <button
-      className={`bookmark-button ${sizeClass} ${
-        isActive ? "bookmarked" : ""
-      } ${className}`}
+      type="button"
+      className={`bookmark-button ${sizeClass} ${isActive ? "bookmarked" : ""} ${className}`}
       onClick={handleClick}
       onKeyDown={handleKeyDown}
       aria-label={ariaLabel}
-      aria-pressed={isActive}
+      aria-checked={isActive}
       title={ariaLabel}
       role="switch"
     >

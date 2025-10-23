@@ -40,9 +40,7 @@ interface DataContextType {
     language: string;
     theme: "light" | "dark";
   };
-  updatePreferences: (
-    prefs: Partial<{ language: string; theme: "light" | "dark" }>,
-  ) => void;
+  updatePreferences: (prefs: Partial<{ language: string; theme: "light" | "dark" }>) => void;
 
   // Tags
   getAllTags: () => string[];
@@ -80,20 +78,14 @@ export const DataProvider = ({ children }: DataProviderProps) => {
   const [mapData] = useState<MapData | null>(() => dataManager.getMapData());
 
   // User data
-  const [bookmarks, setBookmarks] = useState<string[]>(() =>
-    dataManager.getBookmarks(),
-  );
+  const [bookmarks, setBookmarks] = useState<string[]>(() => dataManager.getBookmarks());
   const [searchHistory, setSearchHistory] = useState<string[]>(() =>
     dataManager.getSearchHistory(),
   );
-  const [preferences, setPreferences] = useState(() =>
-    dataManager.getPreferences(),
-  );
+  const [preferences, setPreferences] = useState(() => dataManager.getPreferences());
 
   // Loading states for details
-  const [detailsLoading, setDetailsLoading] = useState<Record<string, boolean>>(
-    {},
-  );
+  const [detailsLoading, setDetailsLoading] = useState<Record<string, boolean>>({});
 
   // Tags computation
   const [allTags, setAllTags] = useState<string[]>([]);
@@ -106,19 +98,19 @@ export const DataProvider = ({ children }: DataProviderProps) => {
     const counts: Record<string, number> = {};
 
     for (const item of allItems) {
-      for (const tag of item.tags) {
-        if (!counts[tag]) {
-          counts[tag] = 0;
-          tags.push(tag);
+      if (item.tags && Array.isArray(item.tags)) {
+        for (const tag of item.tags) {
+          if (!counts[tag]) {
+            counts[tag] = 0;
+            tags.push(tag);
+          }
+          counts[tag]++;
         }
-        counts[tag]++;
       }
     }
 
     tags = [...tags].sort();
-    const popular = [...tags]
-      .sort((a: string, b: string) => counts[b] - counts[a])
-      .slice(0, 10);
+    const popular = [...tags].sort((a: string, b: string) => counts[b] - counts[a]).slice(0, 10);
 
     setAllTags(tags);
     setTagCounts(counts);
@@ -136,10 +128,7 @@ export const DataProvider = ({ children }: DataProviderProps) => {
   };
 
   // Get item details
-  const getItemDetails = async (
-    id: string,
-    type: string,
-  ): Promise<ItemDetails | null> => {
+  const getItemDetails = async (id: string, type: string): Promise<ItemDetails | null> => {
     const loadingKey = `${type}-${id}`;
     setDetailsLoading((prev) => ({ ...prev, [loadingKey]: true }));
 
@@ -201,9 +190,7 @@ export const DataProvider = ({ children }: DataProviderProps) => {
   };
 
   // Preferences
-  const updatePreferences = (
-    prefs: Partial<{ language: string; theme: "light" | "dark" }>,
-  ) => {
+  const updatePreferences = (prefs: Partial<{ language: string; theme: "light" | "dark" }>) => {
     dataManager.updatePreferences(prefs);
     setPreferences(dataManager.getPreferences());
   };
@@ -257,7 +244,5 @@ export const DataProvider = ({ children }: DataProviderProps) => {
     updatePreferences,
   };
 
-  return (
-    <DataContext.Provider value={contextValue}>{children}</DataContext.Provider>
-  );
+  return <DataContext.Provider value={contextValue}>{children}</DataContext.Provider>;
 };

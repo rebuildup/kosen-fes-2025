@@ -1,12 +1,6 @@
 /* eslint-disable react-refresh/only-export-components */
 import type { ReactNode } from "react";
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import { createContext, useCallback, useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { dataManager } from "../data/dataManager";
@@ -53,9 +47,7 @@ export const SearchProvider = ({ children }: SearchProviderProps) => {
   const navigate = useNavigate();
 
   // Get recent searches (last 5 unique searches)
-  const recentSearches = [...new Set(searchHistory)]
-    .slice(0, 5)
-    .filter(Boolean);
+  const recentSearches = [...new Set(searchHistory)].slice(0, 5).filter(Boolean);
 
   // Save search history to localStorage when it changes
   useEffect(() => {

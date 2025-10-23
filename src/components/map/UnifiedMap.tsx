@@ -119,21 +119,12 @@ const SimpleMap = ({
     (e: React.MouseEvent<SVGSVGElement>) => {
       if (isDragging) return;
 
-      if (
-        (mode === "interactive" || allowCoordinateSelection) &&
-        onCoordinateSelect
-      ) {
+      if ((mode === "interactive" || allowCoordinateSelection) && onCoordinateSelect) {
         const svgPoint = screenToSVG(e.clientX, e.clientY);
         onCoordinateSelect(svgPoint);
       }
     },
-    [
-      isDragging,
-      mode,
-      allowCoordinateSelection,
-      onCoordinateSelect,
-      screenToSVG,
-    ],
+    [isDragging, mode, allowCoordinateSelection, onCoordinateSelect, screenToSVG],
   );
 
   // 固定サイズ計算 - ズームに関係なく常に読みやすいサイズ
@@ -177,13 +168,11 @@ const SimpleMap = ({
 
   if (svgLoadError) {
     return (
-      <div
-        className={`flex items-center justify-center ${className}`}
-        style={{ height }}
-      >
+      <div className={`flex items-center justify-center ${className}`} style={{ height }}>
         <div className="text-center">
           <p className="mb-2 text-red-500">{svgLoadError}</p>
           <button
+            type="button"
             onClick={() => globalThis.location.reload()}
             className="rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
           >
@@ -196,10 +185,7 @@ const SimpleMap = ({
 
   if (!svgContent) {
     return (
-      <div
-        className={`flex items-center justify-center ${className}`}
-        style={{ height }}
-      >
+      <div className={`flex items-center justify-center ${className}`} style={{ height }}>
         <div className="text-center">
           <div className="mx-auto mb-2 h-8 w-8 animate-spin rounded-full border-b-2 border-blue-500"></div>
           <p>マップを読み込み中...</p>
@@ -236,6 +222,8 @@ const SimpleMap = ({
       {/* マップコンテンツ */}
       <div
         ref={contentRef}
+        role="img"
+        aria-label="キャンパスマップ"
         style={{
           backfaceVisibility: "hidden",
           height: CAMPUS_MAP_BOUNDS.height,
@@ -247,6 +235,12 @@ const SimpleMap = ({
         }}
         onMouseDown={handleMouseDown}
         onTouchStart={handleTouchStart}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            handleMouseDown(e as unknown as React.MouseEvent);
+          }
+        }}
       >
         {/* ベースSVGマップ */}
         <svg
@@ -255,6 +249,12 @@ const SimpleMap = ({
           width={CAMPUS_MAP_BOUNDS.width}
           height={CAMPUS_MAP_BOUNDS.height}
           onClick={handleSVGClick}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              handleSVGClick(e as unknown as React.MouseEvent<SVGSVGElement>);
+            }
+          }}
           style={{
             display: "block",
             imageRendering: "crisp-edges",
@@ -263,6 +263,7 @@ const SimpleMap = ({
           }}
           dangerouslySetInnerHTML={{ __html: svgContent }}
         />
+        <title>Icon</title>
 
         {/* オーバーレイSVG（マーカーなど） */}
         <svg
@@ -278,6 +279,7 @@ const SimpleMap = ({
             top: 0,
           }}
         >
+          <title>Icon</title>
           {/* コンテンツアイテムマーカー */}
           {contentItems.map((item) => (
             <g key={item.id}>
@@ -312,9 +314,7 @@ const SimpleMap = ({
                   strokeWidth: getFixedStrokeWidth(1.2),
                 }}
               >
-                {item.title.length > 8
-                  ? item.title.slice(0, 8) + "..."
-                  : item.title}
+                {item.title.length > 8 ? `${item.title.slice(0, 8)}...` : item.title}
               </text>
             </g>
           ))}
@@ -344,9 +344,7 @@ const SimpleMap = ({
                   strokeWidth: getFixedStrokeWidth(1.2),
                 }}
               >
-                {marker.location.length > 6
-                  ? marker.location.slice(0, 6) + "..."
-                  : marker.location}
+                {marker.location.length > 6 ? `${marker.location.slice(0, 6)}...` : marker.location}
               </text>
             </g>
           ))}
@@ -411,72 +409,70 @@ const SimpleMap = ({
           )}
 
           {/* 施設アメニティ（トイレ・ゴミ箱など） */}
-          {amenities.map(
-            (a: { id: string; x: number; y: number; type: string }) => {
-              const ax = a.x * CAMPUS_MAP_BOUNDS.width;
-              const ay = a.y * CAMPUS_MAP_BOUNDS.height;
-              const size = getFixedMarkerSize(10);
-              if (a.type === "toilet") {
-                return (
-                  <g key={a.id} pointerEvents="auto" className="map-amenity">
-                    <rect
-                      x={ax - size / 2}
-                      y={ay - size / 2}
-                      width={size}
-                      height={size}
-                      rx={2}
-                      fill="#1da1f2"
-                      stroke="white"
-                      strokeWidth={getFixedStrokeWidth(1.5)}
-                      opacity={0.95}
-                    />
-                    <text
-                      x={ax}
-                      y={ay + size / 4}
-                      textAnchor="middle"
-                      fontSize={getFixedTextSize() - 2}
-                      fontWeight={700}
-                      fill="white"
-                      className="map-text-ultra-quality"
-                    >
-                      WC
-                    </text>
-                  </g>
-                );
-              }
+          {amenities.map((a: { id: string; x: number; y: number; type: string }) => {
+            const ax = a.x * CAMPUS_MAP_BOUNDS.width;
+            const ay = a.y * CAMPUS_MAP_BOUNDS.height;
+            const size = getFixedMarkerSize(10);
+            if (a.type === "toilet") {
+              return (
+                <g key={a.id} pointerEvents="auto" className="map-amenity">
+                  <rect
+                    x={ax - size / 2}
+                    y={ay - size / 2}
+                    width={size}
+                    height={size}
+                    rx={2}
+                    fill="#1da1f2"
+                    stroke="white"
+                    strokeWidth={getFixedStrokeWidth(1.5)}
+                    opacity={0.95}
+                  />
+                  <text
+                    x={ax}
+                    y={ay + size / 4}
+                    textAnchor="middle"
+                    fontSize={getFixedTextSize() - 2}
+                    fontWeight={700}
+                    fill="white"
+                    className="map-text-ultra-quality"
+                  >
+                    WC
+                  </text>
+                </g>
+              );
+            }
 
-              if (a.type === "trash") {
-                return (
-                  <g key={a.id} pointerEvents="auto" className="map-amenity">
-                    <rect
-                      x={ax - size / 2}
-                      y={ay - size / 2}
-                      width={size}
-                      height={size}
-                      rx={2}
-                      fill="#10b981"
-                      stroke="white"
-                      strokeWidth={getFixedStrokeWidth(1.5)}
-                      opacity={0.95}
-                    />
-                    <text
-                      x={ax}
-                      y={ay + size / 4}
-                      textAnchor="middle"
-                      fontSize={getFixedTextSize() - 2}
-                      fontWeight={700}
-                      fill="white"
-                      className="map-text-ultra-quality"
-                    >
-                      🗑
-                    </text>
-                  </g>
-                );
-              }
+            if (a.type === "trash") {
+              return (
+                <g key={a.id} pointerEvents="auto" className="map-amenity">
+                  <rect
+                    x={ax - size / 2}
+                    y={ay - size / 2}
+                    width={size}
+                    height={size}
+                    rx={2}
+                    fill="#10b981"
+                    stroke="white"
+                    strokeWidth={getFixedStrokeWidth(1.5)}
+                    opacity={0.95}
+                  />
+                  <text
+                    x={ax}
+                    y={ay + size / 4}
+                    textAnchor="middle"
+                    fontSize={getFixedTextSize() - 2}
+                    fontWeight={700}
+                    fill="white"
+                    className="map-text-ultra-quality"
+                  >
+                    🗑
+                  </text>
+                </g>
+              );
+            }
 
-              return null;
-            },
-          )}
+            return null;
+          })}
         </svg>
       </div>
       {/* レジェンド */}

@@ -5,11 +5,7 @@
  * on the map for better visual clarity and performance.
  */
 
-import type {
-  Coordinate,
-  InteractivePoint,
-  PointCluster,
-} from "../../../types/map";
+import type { Coordinate, InteractivePoint, PointCluster } from "../../../types/map";
 import { calculateDistance } from "../../../utils/mapCoordinates";
 
 // ============================================================================
@@ -115,10 +111,7 @@ export function clusterPoints(
         continue;
       }
 
-      const distance = calculateDistance(
-        point.coordinates,
-        otherPoint.coordinates,
-      );
+      const distance = calculateDistance(point.coordinates, otherPoint.coordinates);
 
       if (distance <= opts.radius) {
         nearbyPoints.push(otherPoint);
@@ -170,9 +163,7 @@ export function dbscanCluster(
   };
 
   // Expand cluster from seed point
-  const expandCluster = (
-    seedPoint: InteractivePoint,
-  ): InteractivePoint[] | null => {
+  const expandCluster = (seedPoint: InteractivePoint): InteractivePoint[] | null => {
     const neighbors = getNeighbors(seedPoint);
 
     if (neighbors.length < opts.minPoints - 1) {
@@ -184,7 +175,8 @@ export function dbscanCluster(
     clustered.add(seedPoint.id);
 
     while (queue.length > 0) {
-      const point = queue.shift()!;
+      const point = queue.shift();
+      if (!point) continue;
 
       if (clustered.has(point.id)) {
         continue;
@@ -245,8 +237,7 @@ export function adaptiveCluster(
   // Scale radius inversely with zoom
   // At high zoom (zoomed in), use smaller radius
   // At low zoom (zoomed out), use larger radius
-  const scaledRadius =
-    (baseOptions.radius || DEFAULT_CLUSTER_OPTIONS.radius) / zoomLevel;
+  const scaledRadius = (baseOptions.radius || DEFAULT_CLUSTER_OPTIONS.radius) / zoomLevel;
 
   const options: ClusterOptions = {
     ...DEFAULT_CLUSTER_OPTIONS,
@@ -264,10 +255,7 @@ export function adaptiveCluster(
 /**
  * Check if a point is within a cluster
  */
-export function isPointInCluster(
-  point: InteractivePoint,
-  cluster: PointCluster,
-): boolean {
+export function isPointInCluster(point: InteractivePoint, cluster: PointCluster): boolean {
   return cluster.points.some((p) => p.id === point.id);
 }
 

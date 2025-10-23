@@ -6,6 +6,7 @@ const LanguageToggleIcon = () => {
 
   return (
     <button
+      type="button"
       onClick={() => setLanguage(language === "en" ? "ja" : "en")}
       className="rounded-lg p-2 transition-all duration-200 focus:ring-2 focus:ring-[var(--color-accent)]/50 focus:outline-none"
       style={{
@@ -19,9 +20,7 @@ const LanguageToggleIcon = () => {
         e.currentTarget.style.backgroundColor = "var(--color-bg-secondary)";
       }}
       aria-label={
-        language === "en"
-          ? t("settings.language.switchToJa")
-          : t("settings.language.switchToEn")
+        language === "en" ? t("settings.language.switchToJa") : t("settings.language.switchToEn")
       }
       title={language === "en" ? "日本語に切り替え" : "Switch to English"}
     >

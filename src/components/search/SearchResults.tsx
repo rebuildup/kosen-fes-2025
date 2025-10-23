@@ -24,9 +24,7 @@ const SearchResults = () => {
   const { selectedTags } = useTag();
   const { filterByTags } = useData();
 
-  const [viewMode, setViewMode] = useState<
-    "default" | "compact" | "grid" | "list"
-  >("default");
+  const [viewMode, setViewMode] = useState<"default" | "compact" | "grid" | "list">("default");
   const [filteredResults, setFilteredResults] = useState<FilteredResults>({
     events: [],
     exhibits: [],
@@ -37,9 +35,7 @@ const SearchResults = () => {
   const filterItemsBySelectedTags = useCallback(
     (items: Item[]) => {
       if (selectedTags.length === 0) return items;
-      return items.filter((item) =>
-        selectedTags.every((tag) => item.tags?.includes(tag)),
-      );
+      return items.filter((item) => selectedTags.every((tag) => item.tags?.includes(tag)));
     },
     [selectedTags],
   );
@@ -51,15 +47,11 @@ const SearchResults = () => {
 
     if (!normalizedQuery) {
       baseResults =
-        selectedTags.length > 0
-          ? (filterByTags(selectedTags) as unknown as Item[])
-          : [];
+        selectedTags.length > 0 ? (filterByTags(selectedTags) as unknown as Item[]) : [];
     }
 
     const tagFilteredResults =
-      selectedTags.length > 0
-        ? filterItemsBySelectedTags(baseResults)
-        : baseResults;
+      selectedTags.length > 0 ? filterItemsBySelectedTags(baseResults) : baseResults;
 
     // Group results by type
     const groupedResults: FilteredResults = {
@@ -90,28 +82,18 @@ const SearchResults = () => {
     }
 
     setFilteredResults(groupedResults);
-  }, [
-    searchResults,
-    filterItemsBySelectedTags,
-    selectedTags,
-    searchQuery,
-    filterByTags,
-  ]);
+  }, [searchResults, filterItemsBySelectedTags, selectedTags, searchQuery, filterByTags]);
 
   // Highlight matching text: use module function
 
   const totalResults =
-    filteredResults.events.length +
-    filteredResults.exhibits.length +
-    filteredResults.stalls.length;
+    filteredResults.events.length + filteredResults.exhibits.length + filteredResults.stalls.length;
 
   if (isSearching) {
     return (
       <div className="py-12 text-center">
         <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-4 border-[var(--primary-color)] border-t-transparent"></div>
-        <span className="text-[var(--text-secondary)]">
-          {t("search.searching")}
-        </span>
+        <span className="text-[var(--text-secondary)]">{t("search.searching")}</span>
       </div>
     );
   }
@@ -132,9 +114,7 @@ const SearchResults = () => {
         <h2 className="mb-2 text-xl font-semibold text-[var(--text-primary)]">
           {t("search.noResults")}
         </h2>
-        <p className="text-[var(--text-secondary)]">
-          {t("search.tryDifferentKeywords")}
-        </p>
+        <p className="text-[var(--text-secondary)]">{t("search.tryDifferentKeywords")}</p>
       </div>
     );
   }
@@ -186,9 +166,7 @@ const SearchResults = () => {
                 variant={viewMode}
                 showTags={true}
                 showDescription={viewMode === "list"}
-                highlightText={(text) =>
-                  highlightSearchQuery(text, searchQuery)
-                }
+                highlightText={(text) => highlightSearchQuery(text, searchQuery)}
                 emptyMessage={t("events.noEventsFound")}
                 filterType="all"
               />
@@ -202,8 +180,7 @@ const SearchResults = () => {
               <div
                 className="h-8 w-1 rounded-full"
                 style={{
-                  background:
-                    "linear-gradient(to bottom, var(--accent-blue), var(--accent-teal))",
+                  background: "linear-gradient(to bottom, var(--accent-blue), var(--accent-teal))",
                 }}
               ></div>
               <ExhibitIcon size={24} style={{ color: "var(--accent-blue)" }} />
@@ -222,9 +199,7 @@ const SearchResults = () => {
                 variant={viewMode}
                 showTags={true}
                 showDescription={viewMode === "list"}
-                highlightText={(text) =>
-                  highlightSearchQuery(text, searchQuery)
-                }
+                highlightText={(text) => highlightSearchQuery(text, searchQuery)}
                 emptyMessage={t("exhibits.noExhibits")}
                 filterType="all"
               />
@@ -238,8 +213,7 @@ const SearchResults = () => {
               <div
                 className="h-8 w-1 rounded-full"
                 style={{
-                  background:
-                    "linear-gradient(to bottom, var(--accent-orange), var(--accent-red))",
+                  background: "linear-gradient(to bottom, var(--accent-orange), var(--accent-red))",
                 }}
               ></div>
               <StallIcon size={24} style={{ color: "var(--accent-orange)" }} />
@@ -258,9 +232,7 @@ const SearchResults = () => {
                 variant={viewMode}
                 showTags={true}
                 showDescription={viewMode === "list"}
-                highlightText={(text) =>
-                  highlightSearchQuery(text, searchQuery)
-                }
+                highlightText={(text) => highlightSearchQuery(text, searchQuery)}
                 emptyMessage={t("exhibits.noStalls")}
                 filterType="all"
               />

@@ -7,15 +7,14 @@ import { useLanguage } from "../context/LanguageContext";
 import { useTag } from "../context/TagContext";
 import eventsJson from "../data/events.json";
 import type { Event, Item } from "../types/common";
+
 const events = eventsJson as Event[];
 
 const isEventItem = (item: Item): item is Event => item.type === "event";
 
 function getStartMinutes(timeRange: string) {
   const [start] = timeRange.split(" - ");
-  const [hours, minutes] = start
-    .split(":")
-    .map((value) => Number.parseInt(value, 10));
+  const [hours, minutes] = start.split(":").map((value) => Number.parseInt(value, 10));
   return hours * 60 + minutes;
 }
 
@@ -60,9 +59,7 @@ const TimeSchedule = () => {
 
   // Get all events sorted by time for each day
   useEffect(() => {
-    const scheduleEvents = events.filter(
-      (eventItem) => eventItem.showOnSchedule,
-    );
+    const scheduleEvents = events.filter((eventItem) => eventItem.showOnSchedule);
 
     const day1Date = "2025-11-08";
     const day2Date = "2025-11-09";
@@ -85,16 +82,13 @@ const TimeSchedule = () => {
           return eventItem.dayAvailability === day;
         })
         .map((eventItem) =>
-          eventItem.dayAvailability === "both"
-            ? { ...eventItem, date: targetDate }
-            : eventItem,
+          eventItem.dayAvailability === "both" ? { ...eventItem, date: targetDate } : eventItem,
         );
 
       const taggedEvents = filterByTags(eventsForDay);
 
       return [...taggedEvents].sort(
-        (a: Event, b: Event) =>
-          getStartMinutes(a.time) - getStartMinutes(b.time),
+        (a: Event, b: Event) => getStartMinutes(a.time) - getStartMinutes(b.time),
       );
     };
 
@@ -123,20 +117,13 @@ const TimeSchedule = () => {
 
   // Get time slots in chronological order
   const getOrderedTimeSlots = (items: Event[]) => {
-    const timeSlots = [
-      ...new Set(items.map((item) => item.time.split(" - ")[0])),
-    ];
-    return [...timeSlots].sort(
-      (a: string, b: string) => getStartMinutes(a) - getStartMinutes(b),
-    );
+    const timeSlots = [...new Set(items.map((item) => item.time.split(" - ")[0]))];
+    return [...timeSlots].sort((a: string, b: string) => getStartMinutes(a) - getStartMinutes(b));
   };
 
   return (
     <div className="min-h-screen">
-      <section
-        className="section"
-        style={{ backgroundColor: "var(--color-bg-primary)" }}
-      >
+      <section className="section" style={{ backgroundColor: "var(--color-bg-primary)" }}>
         <div className="mx-auto max-w-7xl">
           <h1 className="section-title">{t("schedule.title")}</h1>
 
@@ -144,68 +131,52 @@ const TimeSchedule = () => {
             {/* Day selector */}
             <div className="scrollbar-thin flex space-x-2 overflow-x-auto">
               <button
+                type="button"
                 onClick={() => setSelectedDay("day1")}
                 className={`rounded-lg px-16 py-3 text-sm font-medium text-nowrap transition-all duration-200 ${
                   selectedDay === "day1" ? "text-white" : ""
                 }`}
                 style={{
                   backgroundColor:
-                    selectedDay === "day1"
-                      ? "var(--color-accent)"
-                      : "var(--color-bg-secondary)",
+                    selectedDay === "day1" ? "var(--color-accent)" : "var(--color-bg-secondary)",
                   borderColor:
-                    selectedDay === "day1"
-                      ? "var(--color-accent)"
-                      : "var(--color-border-primary)",
-                  color:
-                    selectedDay === "day1"
-                      ? "white"
-                      : "var(--color-text-primary)",
+                    selectedDay === "day1" ? "var(--color-accent)" : "var(--color-border-primary)",
+                  color: selectedDay === "day1" ? "white" : "var(--color-text-primary)",
                 }}
                 onMouseEnter={(e) => {
                   if (selectedDay !== "day1") {
-                    e.currentTarget.style.backgroundColor =
-                      "var(--color-bg-tertiary)";
+                    e.currentTarget.style.backgroundColor = "var(--color-bg-tertiary)";
                   }
                 }}
                 onMouseLeave={(e) => {
                   if (selectedDay !== "day1") {
-                    e.currentTarget.style.backgroundColor =
-                      "var(--color-bg-secondary)";
+                    e.currentTarget.style.backgroundColor = "var(--color-bg-secondary)";
                   }
                 }}
               >
                 {t("schedule.day1")}
               </button>
               <button
+                type="button"
                 onClick={() => setSelectedDay("day2")}
                 className={`rounded-lg px-16 py-3 font-medium text-nowrap transition-all duration-200 ${
                   selectedDay === "day2" ? "text-white" : ""
                 }`}
                 style={{
                   backgroundColor:
-                    selectedDay === "day2"
-                      ? "var(--color-accent)"
-                      : "var(--color-bg-secondary)",
+                    selectedDay === "day2" ? "var(--color-accent)" : "var(--color-bg-secondary)",
                   borderColor:
-                    selectedDay === "day2"
-                      ? "var(--color-accent)"
-                      : "var(--color-border-primary)",
-                  color:
-                    selectedDay === "day2"
-                      ? "white"
-                      : "var(--color-text-primary)",
+                    selectedDay === "day2" ? "var(--color-accent)" : "var(--color-border-primary)",
+                  color: selectedDay === "day2" ? "white" : "var(--color-text-primary)",
                 }}
                 onMouseEnter={(e) => {
                   if (selectedDay !== "day2") {
-                    e.currentTarget.style.backgroundColor =
-                      "var(--color-bg-tertiary)";
+                    e.currentTarget.style.backgroundColor = "var(--color-bg-tertiary)";
                   }
                 }}
                 onMouseLeave={(e) => {
                   if (selectedDay !== "day2") {
-                    e.currentTarget.style.backgroundColor =
-                      "var(--color-bg-secondary)";
+                    e.currentTarget.style.backgroundColor = "var(--color-bg-secondary)";
                   }
                 }}
               >

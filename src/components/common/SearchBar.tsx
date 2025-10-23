@@ -1,4 +1,5 @@
-import React, { useEffect, useRef, useState } from "react";
+import type React from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { useLanguage } from "../../context/LanguageContext";
@@ -21,8 +22,7 @@ const SearchBar = ({
   variant = "default",
 }: SearchBarProps) => {
   const { t } = useLanguage();
-  const { performSearch, recentSearches, searchQuery, setSearchQuery } =
-    useSearch();
+  const { performSearch, recentSearches, searchQuery, setSearchQuery } = useSearch();
   const navigate = useNavigate();
 
   const [localQuery, setLocalQuery] = useState(searchQuery);
@@ -103,9 +103,7 @@ const SearchBar = ({
     switch (e.key) {
       case "ArrowDown": {
         e.preventDefault();
-        setHighlightedIndex((prev) =>
-          prev < suggestions.length - 1 ? prev + 1 : prev,
-        );
+        setHighlightedIndex((prev) => (prev < suggestions.length - 1 ? prev + 1 : prev));
         break;
       }
       case "ArrowUp": {
@@ -223,19 +221,15 @@ const SearchBar = ({
         <form
           onSubmit={handleSubmit}
           className="flex w-full items-center gap-2"
-          role="search"
           aria-label={t("actions.search")}
         >
           {/* Search Icon */}
-          <SearchIcon
-            size={getIconSize()}
-            className="shrink-0 text-[var(--text-secondary)]"
-          />
+          <SearchIcon size={getIconSize()} className="shrink-0 text-[var(--text-secondary)]" />
 
           {/* Input Field */}
           <input
             ref={inputRef}
-            type="text"
+            type="search"
             value={localQuery}
             onChange={handleInputChange}
             onKeyDown={handleKeyDown}
@@ -244,9 +238,7 @@ const SearchBar = ({
             placeholder={placeholder || t("search.placeholder")}
             className={`peer w-full border-0 bg-transparent py-0 leading-tight ${getInputTextSize()} text-sm placeholder-[var(--text-secondary)] outline-none`}
             autoComplete="off"
-            role="searchbox"
             aria-label={t("search.placeholder")}
-            aria-expanded={showDropdown}
             aria-haspopup="listbox"
           />
 
@@ -266,6 +258,7 @@ const SearchBar = ({
                 viewBox="0 0 24 24"
                 xmlns="http://www.w3.org/2000/svg"
               >
+                <title>Icon</title>
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -284,14 +277,11 @@ const SearchBar = ({
           ref={dropdownRef}
           className="absolute top-full right-0 left-0 z-50 -mt-px max-h-64 overflow-y-auto rounded-b-3xl border border-t-0 border-[var(--border-color)] bg-[var(--bg-secondary)] shadow-sm"
         >
-          <div
-            className="py-2"
-            role="listbox"
-            aria-label={t("search.suggestions")}
-          >
+          <div className="py-2" role="listbox" aria-label={t("search.suggestions")}>
             {suggestions.map((suggestion, index) => (
               <button
-                key={index}
+                type="button"
+                key={suggestion}
                 onClick={() => handleSuggestionClick(suggestion)}
                 className={`flex w-full items-center gap-3 px-4 py-2.5 text-left transition-all duration-200 ${
                   highlightedIndex === index
@@ -301,10 +291,7 @@ const SearchBar = ({
                 role="option"
                 aria-selected={highlightedIndex === index}
               >
-                <SearchIcon
-                  size={16}
-                  className="text-[var(--text-secondary)]"
-                />
+                <SearchIcon size={16} className="text-[var(--text-secondary)]" />
                 <span className="flex-1">{suggestion}</span>
                 <span className="text-xs text-[var(--text-secondary)]">
                   {t("search.recentSearches")}
