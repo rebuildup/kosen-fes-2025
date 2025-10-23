@@ -95,7 +95,7 @@ const Exhibits = () => {
         <div
           className="absolute inset-0 opacity-10"
           style={{ background: "var(--instagram-gradient)" }}
-        ></div>
+        />
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h1 className="mb-4 text-4xl font-bold text-[var(--text-primary)] md:text-5xl">

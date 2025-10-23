@@ -78,9 +78,9 @@ export const TagProvider = ({ children }: TagProviderProps) => {
         return;
       }
 
-      const target = `${location.pathname}${
-        nextSearch ? `?${nextSearch}` : ""
-      }${location.hash ?? ""}`;
+      const target = `${location.pathname}${nextSearch ? `?${nextSearch}` : ""}${
+        location.hash ?? ""
+      }`;
 
       navigate(target, { replace: options?.replace ?? true });
     },

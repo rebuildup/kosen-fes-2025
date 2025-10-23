@@ -105,7 +105,7 @@ export const itemMatchesTags = (item: Item, selectedTags: string[]): boolean => 
  */
 export const filterItems = (
   items: Item[],
-  searchQuery: string = "",
+  searchQuery = "",
   selectedTags: string[] = [],
 ): Item[] => {
   return items.filter(
@@ -133,17 +133,14 @@ export const sortItemsByDateTime = (items: Item[]): Item[] => {
  * Group items by date
  */
 export const groupItemsByDate = (items: Item[]): Record<string, Item[]> => {
-  return items.reduce(
-    (groups, item) => {
-      const date = item.date;
-      if (!groups[date]) {
-        groups[date] = [];
-      }
-      groups[date].push(item);
-      return groups;
-    },
-    {} as Record<string, Item[]>,
-  );
+  return items.reduce((groups, item) => {
+    const date = item.date;
+    if (!groups[date]) {
+      groups[date] = [];
+    }
+    groups[date].push(item);
+    return groups;
+  }, {} as Record<string, Item[]>);
 };
 
 /**

@@ -187,7 +187,7 @@ const SimpleMap = ({
     return (
       <div className={`flex items-center justify-center ${className}`} style={{ height }}>
         <div className="text-center">
-          <div className="mx-auto mb-2 h-8 w-8 animate-spin rounded-full border-b-2 border-blue-500"></div>
+          <div className="mx-auto mb-2 h-8 w-8 animate-spin rounded-full border-b-2 border-blue-500" />
           <p>マップを読み込み中...</p>
         </div>
       </div>
@@ -202,8 +202,8 @@ const SimpleMap = ({
         cursor: isDragging
           ? "grabbing"
           : allowCoordinateSelection || mode === "interactive"
-            ? "crosshair"
-            : "grab",
+          ? "crosshair"
+          : "grab",
         height,
       }}
     >
@@ -261,6 +261,7 @@ const SimpleMap = ({
             shapeRendering: "geometricPrecision",
             textRendering: "geometricPrecision",
           }}
+          // biome-ignore lint/security/noDangerouslySetInnerHtml: SVG content is loaded from static file
           dangerouslySetInnerHTML={{ __html: svgContent }}
         />
         <title>Icon</title>
@@ -291,10 +292,10 @@ const SimpleMap = ({
                   item.type === "event"
                     ? "#405de6"
                     : item.type === "exhibit"
-                      ? "#8b5cf6"
-                      : item.type === "stall"
-                        ? "#fcaf45"
-                        : "#8e8e8e"
+                    ? "#8b5cf6"
+                    : item.type === "stall"
+                    ? "#fcaf45"
+                    : "#8e8e8e"
                 }
                 stroke="white"
                 strokeWidth={getFixedStrokeWidth(2)}

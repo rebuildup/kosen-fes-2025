@@ -18,7 +18,7 @@ export const setupLazyImages = () => {
 
             if (src) {
               img.src = src;
-              delete img.dataset.src;
+              img.dataset.src = undefined;
               observer.unobserve(img);
             }
           }
@@ -37,7 +37,7 @@ export const setupLazyImages = () => {
       const src = imageElement.dataset.src;
       if (src) {
         imageElement.src = src;
-        delete imageElement.dataset.src;
+        imageElement.dataset.src = undefined;
       }
     }
   }

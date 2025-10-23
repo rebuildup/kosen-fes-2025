@@ -175,7 +175,7 @@ const Home = () => {
           {/* チケット画像 - 横幅いっぱい */}
           <div className="ticket-preview mb-8">
             <div className="mx-auto max-w-5xl">
-              <img src="./assets/ticket.png" alt="高専祭2025 チケット" className="h-auto w-full" />
+              <img src="./assets/ticket.webp" alt="高専祭2025 チケット" className="h-auto w-full" />
             </div>
           </div>
 
@@ -379,9 +379,9 @@ const Home = () => {
         <div
           className="absolute inset-0 z-10 opacity-50"
           style={{ background: "var(--instagram-gradient)" }}
-        ></div>
+        />
         {/* 黒半透明（さらに薄め） */}
-        <div className="absolute inset-0 z-20 bg-black/5"></div>
+        <div className="absolute inset-0 z-20 bg-black/5" />
         {/* テキスト・ボタン */}
         <div className="relative z-30 mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
           <div className="space-y-6 text-center text-white">

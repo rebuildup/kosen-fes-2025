@@ -120,7 +120,7 @@ const TimelineDay = ({
                   <div
                     className="h-3 w-3 rounded-full"
                     style={{ backgroundColor: "var(--color-accent)" }}
-                  ></div>
+                  />
                   <div
                     className="text-lg font-semibold"
                     style={{ color: "var(--color-text-primary)" }}
@@ -191,7 +191,7 @@ const TimelineDay = ({
                 <div
                   className="absolute top-8 bottom-0 left-1.5 hidden w-0.5 md:block"
                   style={{ backgroundColor: "var(--color-border-secondary)" }}
-                ></div>
+                />
               )}
             </div>
           </div>

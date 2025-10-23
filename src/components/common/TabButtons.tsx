@@ -63,9 +63,11 @@ const TabButtons = ({ activeValue, className = "", onChange, options }: TabButto
             if (el) buttonsRef.current[index] = el;
           }}
           onClick={() => onChange(option.value)}
-          className={`group relative overflow-hidden px-4 py-3 text-sm font-medium transition-all duration-200 ${index === 0 ? "rounded-l-lg" : ""} ${
-            index === options.length - 1 ? "rounded-r-lg" : ""
-          } ${activeValue === option.value ? "text-white" : "hover:bg-white/5"} `}
+          className={`group relative overflow-hidden px-4 py-3 text-sm font-medium transition-all duration-200 ${
+            index === 0 ? "rounded-l-lg" : ""
+          } ${index === options.length - 1 ? "rounded-r-lg" : ""} ${
+            activeValue === option.value ? "text-white" : "hover:bg-white/5"
+          } `}
           style={{
             backgroundColor: activeValue === option.value ? "var(--color-accent)" : "transparent",
             color: activeValue === option.value ? "white" : "var(--color-text-primary)",

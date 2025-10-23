@@ -119,11 +119,11 @@ const BookmarksList = () => {
           {dates.map((date: string) => (
             <div key={date} className="space-y-4">
               <div className="flex items-center gap-3">
-                <div className="h-8 w-1 rounded-full bg-gradient-to-b from-[var(--accent-purple)] to-[var(--accent-pink)]"></div>
+                <div className="h-8 w-1 rounded-full bg-gradient-to-b from-[var(--accent-purple)] to-[var(--accent-pink)]" />
                 <h3 className="text-xl font-semibold text-[var(--text-primary)]">
                   {formatDate(date)}
                 </h3>
-                <div className="h-px flex-1 bg-[var(--border-color)]"></div>
+                <div className="h-px flex-1 bg-[var(--border-color)]" />
                 <span className="rounded-full bg-[var(--bg-secondary)] px-3 py-1 text-sm text-[var(--text-secondary)]">
                   {groupedItems[date].length} 件
                 </span>

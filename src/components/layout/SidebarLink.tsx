@@ -42,7 +42,9 @@ const SidebarLink = ({ badge, compact = false, icon, label, onClick, to }: Sideb
 
       {badge !== undefined && (
         <span
-          className={`inline-flex items-center justify-center rounded-full px-2 py-1 text-xs leading-none font-bold text-white shadow-sm ${compact ? "lg:hidden xl:flex" : ""} `}
+          className={`inline-flex items-center justify-center rounded-full px-2 py-1 text-xs leading-none font-bold text-white shadow-sm ${
+            compact ? "lg:hidden xl:flex" : ""
+          } `}
           style={{
             background: isActive ? "var(--instagram-gradient)" : "var(--primary-color)",
           }}

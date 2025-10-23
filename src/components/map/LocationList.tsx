@@ -70,7 +70,7 @@ const LocationList = ({
                 <button
                   type="button"
                   key={location}
-                  className={`w-80 flex-shrink-0 text-left`}
+                  className={"w-80 flex-shrink-0 text-left"}
                   onMouseEnter={() => onLocationHover(location)}
                   onMouseLeave={() => onLocationHover(null)}
                   onClick={() => onLocationSelect(location)}

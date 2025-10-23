@@ -153,7 +153,7 @@ const Menu = ({ closeButtonRef, setMenuOpen }: MenuProps) => {
           }
         }}
         aria-label="メニューを閉じる"
-      ></button>
+      />
 
       {/* Menu Panel */}
       <div ref={menuRef} className="mobile-menu-panel">

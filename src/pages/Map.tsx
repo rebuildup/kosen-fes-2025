@@ -155,10 +155,16 @@ const CampusMapPage = () => {
                       points={[
                         // フィルタリングされたイベント・展示・露店
                         ...filteredItems
-                          .filter((item) => item.coordinates)
+                          .filter(
+                            (
+                              item,
+                            ): item is typeof item & {
+                              coordinates: NonNullable<typeof item.coordinates>;
+                            } => item.coordinates !== undefined,
+                          )
                           .map((item) => ({
                             contentItem: item,
-                            coordinates: item.coordinates!,
+                            coordinates: item.coordinates,
                             id: item.id,
                             isHovered: false,
                             isSelected: false,

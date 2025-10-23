@@ -448,7 +448,7 @@ const VectorMap: React.FC<VectorMapProps> = ({
   }, [points, mode, initialZoom, startInteraction, endInteraction]);
 
   const zoomToPoint = useCallback(
-    (point: Coordinate, zoomLevel: number = 2) => {
+    (point: Coordinate, zoomLevel = 2) => {
       startInteraction();
       const targetWidth = CAMPUS_MAP_BOUNDS.width / zoomLevel;
       const targetHeight = CAMPUS_MAP_BOUNDS.height / zoomLevel;
@@ -1065,7 +1065,7 @@ const VectorMap: React.FC<VectorMapProps> = ({
 
   // カードの最適な表示位置を計算する関数
   const calculateCardPosition = useCallback(
-    (pointCoordinates: Coordinate, screenEvent?: React.MouseEvent, isCluster: boolean = false) => {
+    (pointCoordinates: Coordinate, screenEvent?: React.MouseEvent, isCluster = false) => {
       if (!containerRef.current) return { placement: "bottom", x: 0, y: 0 };
 
       const containerRect = containerRef.current.getBoundingClientRect();
@@ -1073,7 +1073,8 @@ const VectorMap: React.FC<VectorMapProps> = ({
       const cardHeight = isCluster ? 300 : 200;
       const margin = 20;
 
-      let baseX: number, baseY: number;
+      let baseX: number;
+      let baseY: number;
 
       if (screenEvent) {
         baseX = screenEvent.clientX - containerRect.left;
@@ -1544,7 +1545,7 @@ const VectorMap: React.FC<VectorMapProps> = ({
     // ラベル表示の条件をチェック（連鎖的な左右反転で最大化）
 
     // ラベル矩形を計算する関数
-    const calculateLabelRect = (pos: (typeof visiblePositions)[0], direction: "left" | "right") => {
+    const calculateLabelRect = (pos: typeof visiblePositions[0], direction: "left" | "right") => {
       return {
         height: LABEL_HEIGHT,
         width: LABEL_WIDTH,
@@ -2405,8 +2406,8 @@ const VectorMap: React.FC<VectorMapProps> = ({
                       selectedPoint.contentItem.type === "event"
                         ? "#EA4335"
                         : selectedPoint.contentItem.type === "exhibit"
-                          ? "#4285F4"
-                          : "#FF6B35",
+                        ? "#4285F4"
+                        : "#FF6B35",
                     border: "2px solid white",
                     bottom: "-6px",
                     left: "-6px",
@@ -2418,10 +2419,9 @@ const VectorMap: React.FC<VectorMapProps> = ({
                   }}
                 />
                 {/* カードコンテンツ - カード自体がホバーを検知 */}
-                <div
+                <button
+                  type="button"
                   className="card-content"
-                  role="button"
-                  tabIndex={0}
                   style={{
                     display: "contents",
                   }}
@@ -2458,7 +2458,7 @@ const VectorMap: React.FC<VectorMapProps> = ({
                     showDescription={true}
                     showAnimation={false}
                   />
-                </div>
+                </button>
               </div>
             </div>
           </div>
@@ -2493,16 +2493,13 @@ const VectorMap: React.FC<VectorMapProps> = ({
               >
                 {(() => {
                   // 各タイプの件数をカウント
-                  const counts = selectedCluster.reduce(
-                    (acc, point) => {
-                      if (point.contentItem) {
-                        const type = point.contentItem.type;
-                        acc[type] = (acc[type] || 0) + 1;
-                      }
-                      return acc;
-                    },
-                    {} as Record<string, number>,
-                  );
+                  const counts = selectedCluster.reduce((acc, point) => {
+                    if (point.contentItem) {
+                      const type = point.contentItem.type;
+                      acc[type] = (acc[type] || 0) + 1;
+                    }
+                    return acc;
+                  }, {} as Record<string, number>);
 
                   return (
                     <>
@@ -2554,8 +2551,8 @@ const VectorMap: React.FC<VectorMapProps> = ({
                         point.contentItem?.type === "event"
                           ? "#EA4335" // ピンと同じ赤
                           : point.contentItem?.type === "exhibit"
-                            ? "#4285F4" // ピンと同じ青
-                            : "#FF6B35"; // ピンと同じオレンジ (stall)
+                          ? "#4285F4" // ピンと同じ青
+                          : "#FF6B35"; // ピンと同じオレンジ (stall)
 
                       return (
                         <div
@@ -2587,10 +2584,9 @@ const VectorMap: React.FC<VectorMapProps> = ({
                               }}
                             />
                             {/* カードコンテンツ - カード自体がホバーを検知 */}
-                            <div
+                            <button
+                              type="button"
                               className="cluster-card-content"
-                              role="button"
-                              tabIndex={0}
                               style={{
                                 display: "contents",
                               }}
@@ -2627,7 +2623,7 @@ const VectorMap: React.FC<VectorMapProps> = ({
                                 showAnimation={false}
                                 className="border-0"
                               />
-                            </div>
+                            </button>
                           </div>
                         </div>
                       );

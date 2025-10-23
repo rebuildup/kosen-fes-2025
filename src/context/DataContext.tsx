@@ -198,7 +198,7 @@ export const DataProvider = ({ children }: DataProviderProps) => {
   // Tag functions
   const getAllTags = (): string[] => allTags;
 
-  const getPopularTags = (limit: number = 10): string[] => {
+  const getPopularTags = (limit = 10): string[] => {
     return popularTags.slice(0, limit);
   };
 

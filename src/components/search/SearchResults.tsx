@@ -92,7 +92,7 @@ const SearchResults = () => {
   if (isSearching) {
     return (
       <div className="py-12 text-center">
-        <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-4 border-[var(--primary-color)] border-t-transparent"></div>
+        <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-4 border-[var(--primary-color)] border-t-transparent" />
         <span className="text-[var(--text-secondary)]">{t("search.searching")}</span>
       </div>
     );
@@ -149,12 +149,12 @@ const SearchResults = () => {
                   background:
                     "linear-gradient(to bottom, var(--accent-purple), var(--accent-pink))",
                 }}
-              ></div>
+              />
               <EventIcon size={24} style={{ color: "var(--accent-purple)" }} />
               <h3 className="text-xl font-semibold text-[var(--text-primary)]">
                 {t("navigation.events")}
               </h3>
-              <div className="h-px flex-1 bg-[var(--border-color)]"></div>
+              <div className="h-px flex-1 bg-[var(--border-color)]" />
               <span className="rounded-full bg-[var(--bg-secondary)] px-3 py-1 text-sm text-[var(--text-secondary)]">
                 {filteredResults.events.length} {t("search.items")}
               </span>
@@ -182,12 +182,12 @@ const SearchResults = () => {
                 style={{
                   background: "linear-gradient(to bottom, var(--accent-blue), var(--accent-teal))",
                 }}
-              ></div>
+              />
               <ExhibitIcon size={24} style={{ color: "var(--accent-blue)" }} />
               <h3 className="text-xl font-semibold text-[var(--text-primary)]">
                 {t("exhibits.filters.exhibits")}
               </h3>
-              <div className="h-px flex-1 bg-[var(--border-color)]"></div>
+              <div className="h-px flex-1 bg-[var(--border-color)]" />
               <span className="rounded-full bg-[var(--bg-secondary)] px-3 py-1 text-sm text-[var(--text-secondary)]">
                 {filteredResults.exhibits.length} {t("search.items")}
               </span>
@@ -215,12 +215,12 @@ const SearchResults = () => {
                 style={{
                   background: "linear-gradient(to bottom, var(--accent-orange), var(--accent-red))",
                 }}
-              ></div>
+              />
               <StallIcon size={24} style={{ color: "var(--accent-orange)" }} />
               <h3 className="text-xl font-semibold text-[var(--text-primary)]">
                 {t("exhibits.filters.stalls")}
               </h3>
-              <div className="h-px flex-1 bg-[var(--border-color)]"></div>
+              <div className="h-px flex-1 bg-[var(--border-color)]" />
               <span className="rounded-full bg-[var(--bg-secondary)] px-3 py-1 text-sm text-[var(--text-secondary)]">
                 {filteredResults.stalls.length} {t("search.items")}
               </span>

@@ -275,7 +275,7 @@ export function svgToScreen(
 export function validateCoordinate(
   coord: Coordinate,
   mapBounds: MapBounds,
-  margin: number = 2,
+  margin = 2,
 ): CoordinateValidation {
   const marginX = mapBounds.width * margin;
   const marginY = mapBounds.height * margin;
@@ -466,7 +466,7 @@ export function calculateSmoothZoom(
   currentViewState: MapViewState,
   targetZoom: number,
   fixedPoint?: Point,
-  steps: number = 60,
+  steps = 60,
 ): MapViewState[] {
   const states: MapViewState[] = [];
 

@@ -112,7 +112,7 @@ export const MapPin: React.FC<MapPinProps> = ({
         position: "absolute",
         top: `${position.y}px`,
         // ピンの下端中央が座標に来るように調整
-        transform: `translate(-50%, -100%)`,
+        transform: "translate(-50%, -100%)",
         transformOrigin: `${PIN_WIDTH / 2}px ${PIN_HEIGHT}px`,
         width: `${PIN_WIDTH}px`,
         zIndex: isHovered || isMobileHovered ? 2000 : label ? 500 : 100,
@@ -189,9 +189,8 @@ export const MapPin: React.FC<MapPinProps> = ({
 
       {/* Label - positioned next to pin */}
       {label && (
-        <div
-          role="button"
-          tabIndex={0}
+        <button
+          type="button"
           style={{
             position: "absolute",
             top: `${PIN_WIDTH / 2 + 1}px`,
@@ -235,7 +234,7 @@ export const MapPin: React.FC<MapPinProps> = ({
           >
             {label}
           </div>
-        </div>
+        </button>
       )}
     </button>
   );
@@ -329,7 +328,7 @@ export const ClusterPin: React.FC<ClusterPinProps> = ({
         position: "absolute",
         top: `${position.y}px`,
         // Position at bottom center - same as regular pin
-        transform: `translate(-50%, -100%)`,
+        transform: "translate(-50%, -100%)",
         transformOrigin: `${PIN_WIDTH / 2}px ${PIN_HEIGHT}px`,
         width: `${PIN_WIDTH}px`,
         // ラベル付きクラスターピンは常に高いz-index、ホバー時はさらに上
@@ -420,9 +419,8 @@ export const ClusterPin: React.FC<ClusterPinProps> = ({
 
       {/* Label - positioned next to cluster pin */}
       {label && (
-        <div
-          role="button"
-          tabIndex={0}
+        <button
+          type="button"
           style={{
             position: "absolute",
             top: `${PIN_WIDTH / 2 + 1}px`,
@@ -464,7 +462,7 @@ export const ClusterPin: React.FC<ClusterPinProps> = ({
           >
             {label}
           </div>
-        </div>
+        </button>
       )}
     </button>
   );

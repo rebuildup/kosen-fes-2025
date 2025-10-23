@@ -72,7 +72,7 @@ const Search = () => {
         <div
           className="absolute inset-0 opacity-10"
           style={{ background: "var(--instagram-gradient)" }}
-        ></div>
+        />
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             {/* Title and subtitle - only show when no active search */}

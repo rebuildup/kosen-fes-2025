@@ -373,8 +373,8 @@ const ContentPreview = () => {
             formData.date === "2025-11-08"
               ? "day1"
               : formData.date === "2025-11-09"
-                ? "day2"
-                : "both",
+              ? "day2"
+              : "both",
           duration: formData.duration || 60,
           organizer: formData.organizer || "主催者未設定",
           showOnMap: true,
@@ -630,7 +630,7 @@ const ContentPreview = () => {
                             handleInputChange("startTime", formatted);
                           }}
                           placeholder="10:00"
-                          pattern="^([01]?\d|2[0-3]):([0-5]\d)$"
+                          pattern="^([01]?d|2[0-3]):([0-5]d)$"
                           maxLength={5}
                           className={`glass-effect w-full rounded-xl border-2 px-3 py-2 text-base transition-all focus:ring-2 focus:ring-[var(--primary-color)] sm:px-4 sm:py-3 sm:text-lg ${
                             errors.startTime ? "border-red-500" : "border-transparent"
@@ -659,7 +659,7 @@ const ContentPreview = () => {
                             handleInputChange("endTime", formatted);
                           }}
                           placeholder="17:00"
-                          pattern="^([01]?\d|2[0-3]):([0-5]\d)$"
+                          pattern="^([01]?d|2[0-3]):([0-5]d)$"
                           maxLength={5}
                           className={`glass-effect w-full rounded-xl border-2 px-3 py-2 text-base transition-all focus:ring-2 focus:ring-[var(--primary-color)] sm:px-4 sm:py-3 sm:text-lg ${
                             errors.endTime ? "border-red-500" : "border-transparent"
