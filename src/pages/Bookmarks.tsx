@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Link } from "react-router-dom";
+import PillButton from "../components/common/PillButton";
 
 import BookmarksList from "../components/bookmarks/BookmarksList";
 import { useBookmark } from "../context/BookmarkContext";
@@ -31,9 +31,7 @@ const Bookmarks = () => {
               <p className="mb-6 text-lg" style={{ color: "var(--color-text-secondary)" }}>
                 {t("bookmarks.empty")}
               </p>
-              <Link to="/" className="btn btn-primary">
-                {t("navigation.home")}
-              </Link>
+              <PillButton to="/" className="btn btn-primary">{t("navigation.home")}</PillButton>
             </div>
           ) : (
             <BookmarksList />

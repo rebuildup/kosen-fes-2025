@@ -133,7 +133,7 @@ const TimelineDay = ({
                   {groupedItems[timeSlot].map((item, itemIndex) => (
                     <div
                       key={`${animationKey}-${item.id}`}
-                      className="animate-category-change"
+                      className={"animate-card-enter-list"}
                       style={{
                         animationDelay: `${calculateDelay(timeSlotIndex, itemIndex)}s`,
                         animationFillMode: "both",
@@ -168,7 +168,7 @@ const TimelineDay = ({
                   {groupedItems[timeSlot].map((item, itemIndex) => (
                     <div
                       key={`${animationKey}-mobile-${item.id}`}
-                      className="animate-category-change"
+                      className={"animate-card-enter-list"}
                       style={{
                         animationDelay: `${calculateDelay(timeSlotIndex, itemIndex)}s`,
                         animationFillMode: "both",

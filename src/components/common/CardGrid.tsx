@@ -66,11 +66,11 @@ const CardGrid = ({
     }
   }, [currentItemsHash, prevItemsHash]);
 
-  // Trigger animation when variant changes
+  // Trigger animation when variant (display mode) or columns change -> always animate on mode switch
   useEffect(() => {
     setAnimationType("variant");
     setAnimationKey((prev) => prev + 1);
-  }, []);
+  }, [variant, columns]);
 
   // Get default empty message based on filter type
   const getDefaultEmptyMessage = () => {
