@@ -170,23 +170,6 @@
     "products": ["もみじ饅頭"]
   },
   {
-    "id": "stall-11",
-    "type": "stall",
-    "title": "篠田研究室 油そば",
-    "description": "篠田研究室の露店です",
-    "imageUrl": "./images/stalls/stall-11.webp",
-    "date": "2025-11-08",
-    "time": "10:00 - 18:00",
-    "location": "機電棟 付近",
-    "coordinates": {
-      "x": 450,
-      "y": 770
-    },
-    "tags": ["露店", "食べ物", "油そば", "機電棟"],
-    "organizer": "篠田研究室",
-    "products": ["油そば"]
-  },
-  {
     "id": "stall-11-1",
     "type": "stall",
     "title": "Advanced course 豚汁",
