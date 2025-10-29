@@ -202,8 +202,8 @@ const SimpleMap = ({
         cursor: isDragging
           ? "grabbing"
           : allowCoordinateSelection || mode === "interactive"
-          ? "crosshair"
-          : "grab",
+            ? "crosshair"
+            : "grab",
         height,
       }}
     >
@@ -261,7 +261,6 @@ const SimpleMap = ({
             shapeRendering: "geometricPrecision",
             textRendering: "geometricPrecision",
           }}
-          // biome-ignore lint/security/noDangerouslySetInnerHtml: SVG content is loaded from static file
           dangerouslySetInnerHTML={{ __html: svgContent }}
         />
         <title>Icon</title>
@@ -292,10 +291,10 @@ const SimpleMap = ({
                   item.type === "event"
                     ? "#405de6"
                     : item.type === "exhibit"
-                    ? "#8b5cf6"
-                    : item.type === "stall"
-                    ? "#fcaf45"
-                    : "#8e8e8e"
+                      ? "#8b5cf6"
+                      : item.type === "stall"
+                        ? "#fcaf45"
+                        : "#8e8e8e"
                 }
                 stroke="white"
                 strokeWidth={getFixedStrokeWidth(2)}

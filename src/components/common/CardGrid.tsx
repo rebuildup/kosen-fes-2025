@@ -70,7 +70,7 @@ const CardGrid = ({
   useEffect(() => {
     setAnimationType("variant");
     setAnimationKey((prev) => prev + 1);
-  }, [variant, columns]);
+  }, []);
 
   // Get default empty message based on filter type
   const getDefaultEmptyMessage = () => {

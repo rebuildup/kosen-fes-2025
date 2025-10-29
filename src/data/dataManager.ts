@@ -15,10 +15,33 @@ import exhibitsJson from "./exhibits.json";
 import sponsorsJson from "./sponsors.json";
 import stallsJson from "./stalls.json";
 
-const events = eventsJson as Event[];
-const exhibits = exhibitsJson as Exhibit[];
-const sponsors = sponsorsJson as Sponsor[];
-const stalls = stallsJson as Stall[];
+const normalizeTags = (tags: unknown): string[] => {
+  if (!Array.isArray(tags)) return [];
+
+  return tags
+    .map((tag) => (typeof tag === "string" ? tag.trim() : ""))
+    .filter((tag): tag is string => Boolean(tag));
+};
+
+type WithOptionalTags<T> = T & { tags?: unknown };
+
+const withNormalizedTags = <T extends { tags?: unknown }>(item: T): T & { tags: string[] } => ({
+  ...item,
+  tags: normalizeTags(item.tags),
+});
+
+const events = (eventsJson as WithOptionalTags<Event>[]).map((event) =>
+  withNormalizedTags(event),
+) as Event[];
+const exhibits = (exhibitsJson as WithOptionalTags<Exhibit>[]).map((exhibit) =>
+  withNormalizedTags(exhibit),
+) as Exhibit[];
+const sponsors = (sponsorsJson as WithOptionalTags<Sponsor>[]).map((sponsor) =>
+  withNormalizedTags(sponsor),
+) as Sponsor[];
+const stalls = (stallsJson as WithOptionalTags<Stall>[]).map((stall) =>
+  withNormalizedTags(stall),
+) as Stall[];
 
 type StallDetails = ItemDetails & { products: string[] };
 type SponsorDetails = ItemDetails & { website?: string; contactEmail?: string };

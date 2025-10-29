@@ -19,20 +19,25 @@ React + TypeScript + Vite を使って構築されています。開発者向け
 - スタイリング: Tailwind CSS
 - アニメーション: GSAP
 - ルーティング: react-router-dom
+- コード品質: Biome（リンター・フォーマッター）
+- パッケージマネージャー: pnpm
 
 ## 必要な環境
 - Node.js 16 以上
-- npm または yarn
+- pnpm（推奨）または npm
 
 （推奨: Node.js のバージョン管理には nvm / asdf などを利用してください）
 
 ## 主要スクリプト（package.json）
-- `npm run dev` — 開発サーバを起動（Vite）
-- `npm run build` — 本番ビルド（TypeScript コンパイル + Vite ビルド + サイトマップ生成）
-- `npm run preview` — ビルド成果のローカルプレビュー（Vite preview）
-- `npm run typecheck` — TypeScript の型チェック（tsc）
-- `npm run test` — ユニットテスト（Vitest）
-- `npm run lint` — Rome による静的チェック
+- `pnpm run dev` — 開発サーバを起動（Vite）
+- `pnpm run build` — 本番ビルド（TypeScript コンパイル + Vite ビルド + サイトマップ生成）
+- `pnpm run build:static` — 静的サイト生成（ビルド + 全ルートのHTML生成）
+- `pnpm run preview` — ビルド成果のローカルプレビュー（Vite preview）
+- `pnpm run typecheck` — TypeScript の型チェック（tsc）
+- `pnpm run test` — ユニットテスト（Vitest）
+- `pnpm run lint` — Biome による静的チェック（リンター）
+- `pnpm run lint:fix` — Biome による自動修正
+- `pnpm run format` — Biome によるコードフォーマット
 
 ## ローカルでのセットアップと実行
 1. リポジトリをクローン
@@ -45,35 +50,48 @@ cd kosen-fes-2025
 2. 依存インストール
 
 ```bash
-npm install
+pnpm install
 # または
-yarn install
+npm install
 ```
 
 3. 開発サーバ起動
 
 ```bash
-npm run dev
+pnpm run dev
 # ブラウザで http://localhost:5173 を開く
 ```
 
 4. 本番用ビルド（確認）
 
 ```bash
-npm run build
-npm run preview
+# 通常のビルド（サイトマップ生成まで）
+pnpm run build
+pnpm run preview
+
+# 静的サイト生成（全ルートのHTML生成）
+pnpm run build:static
+pnpm run preview
 ```
 
 5. 型チェック
 
 ```bash
-npm run typecheck
+pnpm run typecheck
 ```
 
 6. テスト
 
 ```bash
-npm run test
+pnpm run test
+```
+
+7. コード品質チェック
+
+```bash
+pnpm run lint      # リンター実行
+pnpm run lint:fix  # 自動修正
+pnpm run format    # フォーマット
 ```
 
 ---
@@ -126,6 +144,14 @@ npm run test
 ## 開発時の注意点 / デバッグ
 - カード表示方式の切替やタグフィルタによるリスト更新時にアニメーションを発火させるため、`CardGrid` は内部で `animationKey` を更新して要素の key を変化させています。
 - スケジュール（Timeline）ページはカードのアニメーションをリスト表示と合わせるように調整済みです。
+
+## コード品質管理
+- **Biome**: リンター・フォーマッターとして使用
+  - `pnpm run lint` でコード品質チェック
+  - `pnpm run lint:fix` で自動修正
+  - `pnpm run format` でコードフォーマット
+- **TypeScript**: 型チェック（`pnpm run typecheck`）
+- **Vitest**: ユニットテスト（`pnpm run test`）
 
 ## ライセンス
 このリポジトリのソースコードは MIT ライセンスの下で配布されています（LICENSE を参照）。

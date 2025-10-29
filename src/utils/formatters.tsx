@@ -30,20 +30,19 @@ export const formatDuration = (minutes: number, language: Language): string => {
   if (language === "ja") {
     if (hours === 0) {
       return `${mins}分`;
-    } else if (mins === 0) {
+    }
+    if (mins === 0) {
       return `${hours}時間`;
-    } else {
-      return `${hours}時間${mins}分`;
     }
-  } else {
-    if (hours === 0) {
-      return `${mins} min`;
-    } else if (mins === 0) {
-      return `${hours} hr`;
-    } else {
-      return `${hours} hr ${mins} min`;
-    }
+    return `${hours}時間${mins}分`;
   }
+  if (hours === 0) {
+    return `${mins} min`;
+  }
+  if (mins === 0) {
+    return `${hours} hr`;
+  }
+  return `${hours} hr ${mins} min`;
 };
 
 /**

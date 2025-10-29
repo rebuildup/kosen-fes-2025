@@ -910,52 +910,51 @@ const VectorMap: React.FC<VectorMapProps> = ({
             e.preventDefault();
           }
           return;
-        } else {
-          // Single tap - allow it to propagate to click handlers
-          // Don't prevent default for single taps to allow click events
-          setLastTapTime(now);
-
-          // Simulate a click event for touch devices
-          if (svgRef.current && mode === "interactive" && onMapClick) {
-            // Use the same coordinate calculation method as mouse clicks for consistency
-            const svgRect = svgRef.current.getBoundingClientRect();
-            const relativeX = lastTouch.clientX - svgRect.left;
-            const relativeY = lastTouch.clientY - svgRect.top;
-
-            // Calculate the actual content area within SVG element (considering preserveAspectRatio)
-            const contentRect = getSVGContentRect(svgRect);
-
-            // Adjust relative coordinates to account for letterboxing/pillarboxing
-            const adjustedRelativeX = relativeX - contentRect.offsetX;
-            const adjustedRelativeY = relativeY - contentRect.offsetY;
-
-            // ALWAYS use content area aware transformation for consistent accuracy
-            // Content Areaを考慮した座標変換を常に使用 (same as handleSVGClick for consistency)
-            const svgX = viewBox.x + (adjustedRelativeX / contentRect.width) * viewBox.width;
-            const svgY = viewBox.y + (adjustedRelativeY / contentRect.height) * viewBox.height;
-
-            // Apply coordinate limits and precision (same as mouse handler)
-            const mapClickMargin = Math.max(CAMPUS_MAP_BOUNDS.width, CAMPUS_MAP_BOUNDS.height) * 2;
-            const clampedX = Math.max(
-              -mapClickMargin,
-              Math.min(CAMPUS_MAP_BOUNDS.width + mapClickMargin, svgX),
-            );
-            const clampedY = Math.max(
-              -mapClickMargin,
-              Math.min(CAMPUS_MAP_BOUNDS.height + mapClickMargin, svgY),
-            );
-
-            const preciseX = Math.round(clampedX * 100) / 100;
-            const preciseY = Math.round(clampedY * 100) / 100;
-
-            // Add a small delay to ensure this doesn't conflict with point clicks
-            setTimeout(() => {
-              onMapClick({ x: preciseX, y: preciseY });
-            }, 10);
-          }
-
-          return; // Don't prevent default for single taps
         }
+        // Single tap - allow it to propagate to click handlers
+        // Don't prevent default for single taps to allow click events
+        setLastTapTime(now);
+
+        // Simulate a click event for touch devices
+        if (svgRef.current && mode === "interactive" && onMapClick) {
+          // Use the same coordinate calculation method as mouse clicks for consistency
+          const svgRect = svgRef.current.getBoundingClientRect();
+          const relativeX = lastTouch.clientX - svgRect.left;
+          const relativeY = lastTouch.clientY - svgRect.top;
+
+          // Calculate the actual content area within SVG element (considering preserveAspectRatio)
+          const contentRect = getSVGContentRect(svgRect);
+
+          // Adjust relative coordinates to account for letterboxing/pillarboxing
+          const adjustedRelativeX = relativeX - contentRect.offsetX;
+          const adjustedRelativeY = relativeY - contentRect.offsetY;
+
+          // ALWAYS use content area aware transformation for consistent accuracy
+          // Content Areaを考慮した座標変換を常に使用 (same as handleSVGClick for consistency)
+          const svgX = viewBox.x + (adjustedRelativeX / contentRect.width) * viewBox.width;
+          const svgY = viewBox.y + (adjustedRelativeY / contentRect.height) * viewBox.height;
+
+          // Apply coordinate limits and precision (same as mouse handler)
+          const mapClickMargin = Math.max(CAMPUS_MAP_BOUNDS.width, CAMPUS_MAP_BOUNDS.height) * 2;
+          const clampedX = Math.max(
+            -mapClickMargin,
+            Math.min(CAMPUS_MAP_BOUNDS.width + mapClickMargin, svgX),
+          );
+          const clampedY = Math.max(
+            -mapClickMargin,
+            Math.min(CAMPUS_MAP_BOUNDS.height + mapClickMargin, svgY),
+          );
+
+          const preciseX = Math.round(clampedX * 100) / 100;
+          const preciseY = Math.round(clampedY * 100) / 100;
+
+          // Add a small delay to ensure this doesn't conflict with point clicks
+          setTimeout(() => {
+            onMapClick({ x: preciseX, y: preciseY });
+          }, 10);
+        }
+
+        return; // Don't prevent default for single taps
       }
 
       // Only prevent default for gestures
@@ -1230,21 +1229,20 @@ const VectorMap: React.FC<VectorMapProps> = ({
           setMobileHoveredPoint(null);
           setLastMobileTapPointId(null);
           return;
-        } else {
-          // First tap - show hover (mobile card display)
-          setMobileHoveredPoint(point.id);
-          setLastMobileTapPointId(point.id);
-          setLastMobileTapTime(now);
-
-          // Show content card like hover
-          setSelectedPoint(point);
-          setSelectedCluster(null); // クラスターを閉じる
-
-          // カードの最適な表示位置を計算
-          const position = calculateCardPosition(point.coordinates, screenEvent, false);
-          setCardPosition(position);
-          return;
         }
+        // First tap - show hover (mobile card display)
+        setMobileHoveredPoint(point.id);
+        setLastMobileTapPointId(point.id);
+        setLastMobileTapTime(now);
+
+        // Show content card like hover
+        setSelectedPoint(point);
+        setSelectedCluster(null); // クラスターを閉じる
+
+        // カードの最適な表示位置を計算
+        const position = calculateCardPosition(point.coordinates, screenEvent, false);
+        setCardPosition(position);
+        return;
       }
 
       // Desktop behavior or non-mobile tap
@@ -1545,7 +1543,7 @@ const VectorMap: React.FC<VectorMapProps> = ({
     // ラベル表示の条件をチェック（連鎖的な左右反転で最大化）
 
     // ラベル矩形を計算する関数
-    const calculateLabelRect = (pos: typeof visiblePositions[0], direction: "left" | "right") => {
+    const calculateLabelRect = (pos: (typeof visiblePositions)[0], direction: "left" | "right") => {
       return {
         height: LABEL_HEIGHT,
         width: LABEL_WIDTH,
@@ -2406,8 +2404,8 @@ const VectorMap: React.FC<VectorMapProps> = ({
                       selectedPoint.contentItem.type === "event"
                         ? "#EA4335"
                         : selectedPoint.contentItem.type === "exhibit"
-                        ? "#4285F4"
-                        : "#FF6B35",
+                          ? "#4285F4"
+                          : "#FF6B35",
                     border: "2px solid white",
                     bottom: "-6px",
                     left: "-6px",
@@ -2493,13 +2491,16 @@ const VectorMap: React.FC<VectorMapProps> = ({
               >
                 {(() => {
                   // 各タイプの件数をカウント
-                  const counts = selectedCluster.reduce((acc, point) => {
-                    if (point.contentItem) {
-                      const type = point.contentItem.type;
-                      acc[type] = (acc[type] || 0) + 1;
-                    }
-                    return acc;
-                  }, {} as Record<string, number>);
+                  const counts = selectedCluster.reduce(
+                    (acc, point) => {
+                      if (point.contentItem) {
+                        const type = point.contentItem.type;
+                        acc[type] = (acc[type] || 0) + 1;
+                      }
+                      return acc;
+                    },
+                    {} as Record<string, number>,
+                  );
 
                   return (
                     <>
@@ -2551,8 +2552,8 @@ const VectorMap: React.FC<VectorMapProps> = ({
                         point.contentItem?.type === "event"
                           ? "#EA4335" // ピンと同じ赤
                           : point.contentItem?.type === "exhibit"
-                          ? "#4285F4" // ピンと同じ青
-                          : "#FF6B35"; // ピンと同じオレンジ (stall)
+                            ? "#4285F4" // ピンと同じ青
+                            : "#FF6B35"; // ピンと同じオレンジ (stall)
 
                       return (
                         <div

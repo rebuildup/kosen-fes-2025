@@ -1,6 +1,7 @@
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react-swc";
 import { defineConfig } from "vite";
+import path from "node:path";
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -54,6 +55,18 @@ export default defineConfig({
     include: ["react", "react-dom", "react-router-dom", "date-fns", "lucide-react"],
   },
   plugins: [react(), tailwindcss()],
+  // パスエイリアス
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "./src"),
+    },
+  },
+  // テスト設定
+  test: {
+    environment: "jsdom",
+    globals: true,
+    setupFiles: ["./src/test/setup.ts"],
+  },
   // 開発サーバーの最適化
   server: {
     // ホットリロードの最適化

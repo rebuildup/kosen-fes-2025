@@ -205,8 +205,7 @@ export const MapPin: React.FC<MapPinProps> = ({
           onKeyDown={handleKeyDown}
           onMouseEnter={onMouseEnter}
           onMouseLeave={onMouseLeave}
-          role="button"
-          tabIndex={0}
+          role="presentation"
         >
           <div
             style={{
@@ -436,8 +435,7 @@ export const ClusterPin: React.FC<ClusterPinProps> = ({
           onKeyDown={handleKeyDown}
           onMouseEnter={onMouseEnter}
           onMouseLeave={onMouseLeave}
-          role="button"
-          tabIndex={0}
+          role="presentation"
         >
           <div
             style={{

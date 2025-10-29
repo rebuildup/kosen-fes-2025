@@ -373,8 +373,8 @@ const ContentPreview = () => {
             formData.date === "2025-11-08"
               ? "day1"
               : formData.date === "2025-11-09"
-              ? "day2"
-              : "both",
+                ? "day2"
+                : "both",
           duration: formData.duration || 60,
           organizer: formData.organizer || "主催者未設定",
           showOnMap: true,

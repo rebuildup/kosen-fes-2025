@@ -133,14 +133,17 @@ export const sortItemsByDateTime = (items: Item[]): Item[] => {
  * Group items by date
  */
 export const groupItemsByDate = (items: Item[]): Record<string, Item[]> => {
-  return items.reduce((groups, item) => {
-    const date = item.date;
-    if (!groups[date]) {
-      groups[date] = [];
-    }
-    groups[date].push(item);
-    return groups;
-  }, {} as Record<string, Item[]>);
+  return items.reduce(
+    (groups, item) => {
+      const date = item.date;
+      if (!groups[date]) {
+        groups[date] = [];
+      }
+      groups[date].push(item);
+      return groups;
+    },
+    {} as Record<string, Item[]>,
+  );
 };
 
 /**

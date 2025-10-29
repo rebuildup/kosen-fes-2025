@@ -1,7 +1,6 @@
 import { gsap } from "gsap";
 import type { ReactNode } from "react";
 import { useEffect, useRef } from "react";
-import { useLocation } from "react-router-dom";
 
 import { DURATION, EASE } from "../../utils/animations";
 
@@ -10,7 +9,6 @@ interface PageTransitionProps {
 }
 
 const PageTransition = ({ children }: PageTransitionProps) => {
-  const { pathname } = useLocation();
   const pageRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -34,7 +32,7 @@ const PageTransition = ({ children }: PageTransitionProps) => {
     return () => {
       tl.kill();
     };
-  }, [pathname]);
+  }, []);
 
   return <div ref={pageRef}>{children}</div>;
 };

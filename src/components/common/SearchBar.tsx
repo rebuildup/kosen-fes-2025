@@ -169,7 +169,7 @@ const SearchBar = ({
   // 入力欄の高さをバリアントで統一（角丸はサジェスト表示時に変化）
   const getShellClasses = () => {
     const baseRounded = showDropdown ? "rounded-t-3xl" : "rounded-full";
-    const base = `group relative flex w-full items-center gap-3 ${baseRounded} border border-[var(--border-color)] bg-[var(--bg-secondary)] px-4 shadow-sm transition-all duration-200`;
+    const base = `group relative flex w-full items-center gap-3 ${baseRounded} border border-(--border-color) bg-(--bg-secondary) px-4 shadow-sm transition-all duration-200`;
     switch (variant) {
       case "large": {
         return `${base} h-12`;
@@ -224,7 +224,7 @@ const SearchBar = ({
           aria-label={t("actions.search")}
         >
           {/* Search Icon */}
-          <SearchIcon size={getIconSize()} className="shrink-0 text-[var(--text-secondary)]" />
+          <SearchIcon size={getIconSize()} className="shrink-0 text-(--text-secondary)" />
 
           {/* Input Field */}
           <input
@@ -236,7 +236,7 @@ const SearchBar = ({
             onFocus={handleFocus}
             onBlur={handleBlur}
             placeholder={placeholder || t("search.placeholder")}
-            className={`peer w-full border-0 bg-transparent py-0 leading-tight ${getInputTextSize()} text-sm placeholder-[var(--text-secondary)] outline-none`}
+            className={`peer w-full border-0 bg-transparent py-0 leading-tight ${getInputTextSize()} text-sm placeholder-(--text-secondary) outline-none`}
             autoComplete="off"
             aria-label={t("search.placeholder")}
             aria-haspopup="listbox"
@@ -247,7 +247,7 @@ const SearchBar = ({
             <button
               type="button"
               onClick={handleClear}
-              className="rounded-full p-1.5 text-[var(--text-secondary)] transition-all duration-200 hover:bg-[var(--bg-primary)] hover:text-[var(--text-primary)]"
+              className="rounded-full p-1.5 text-(--text-secondary) transition-all duration-200 hover:bg-(--bg-primary) hover:text-(--text-primary)"
               aria-label={t("actions.clear")}
               title={t("actions.clear")}
             >
@@ -275,9 +275,9 @@ const SearchBar = ({
       {showDropdown && suggestions.length > 0 && (
         <div
           ref={dropdownRef}
-          className="absolute top-full right-0 left-0 z-50 -mt-px max-h-64 overflow-y-auto rounded-b-3xl border border-t-0 border-[var(--border-color)] bg-[var(--bg-secondary)] shadow-sm"
+          className="absolute top-full right-0 left-0 z-50 -mt-px max-h-64 overflow-y-auto rounded-b-3xl border border-t-0 border-(--border-color) bg-(--bg-secondary) shadow-sm"
         >
-          <div className="py-2" role="listbox" aria-label={t("search.suggestions")}>
+          <div className="py-2" role="presentation" aria-label={t("search.suggestions")}>
             {suggestions.map((suggestion, index) => (
               <button
                 type="button"
@@ -285,15 +285,14 @@ const SearchBar = ({
                 onClick={() => handleSuggestionClick(suggestion)}
                 className={`flex w-full items-center gap-3 px-4 py-2.5 text-left transition-all duration-200 ${
                   highlightedIndex === index
-                    ? "bg-[var(--bg-tertiary)] text-[var(--primary-color)]"
-                    : "text-[var(--text-primary)] hover:bg-[var(--bg-primary)]"
+                    ? "bg-(--bg-tertiary) text-(--primary-color)"
+                    : "text-(--text-primary) hover:bg-(--bg-primary)"
                 }`}
-                role="option"
                 aria-selected={highlightedIndex === index}
               >
-                <SearchIcon size={16} className="text-[var(--text-secondary)]" />
+                <SearchIcon size={16} className="text-(--text-secondary)" />
                 <span className="flex-1">{suggestion}</span>
-                <span className="text-xs text-[var(--text-secondary)]">
+                <span className="text-xs text-(--text-secondary)">
                   {t("search.recentSearches")}
                 </span>
               </button>

@@ -204,11 +204,11 @@ const Card = ({
   const getTypeLabel = () => {
     if (item.type === "event") {
       return t("detail.event");
-    } else if (item.type === "exhibit") {
-      return t("detail.exhibit");
-    } else {
-      return t("detail.stall");
     }
+    if (item.type === "exhibit") {
+      return t("detail.exhibit");
+    }
+    return t("detail.stall");
   };
 
   // Handle card click

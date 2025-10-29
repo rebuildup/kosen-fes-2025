@@ -73,7 +73,8 @@ const Exhibits = () => {
   const getEmptyMessage = () => {
     if (categoryFilter === "exhibits") {
       return t("exhibits.noExhibits");
-    } else if (categoryFilter === "stalls") {
+    }
+    if (categoryFilter === "stalls") {
       return t("exhibits.noStalls");
     }
     return t("exhibits.noExhibits");

@@ -194,8 +194,8 @@ export const UnifiedCard = React.memo(
           variant === "featured"
             ? "0 12px 24px rgba(0, 0, 0, 0.2)"
             : variant === "timeline"
-            ? "0 6px 16px rgba(0, 0, 0, 0.12)"
-            : "0 8px 20px rgba(0, 0, 0, 0.15)",
+              ? "0 6px 16px rgba(0, 0, 0, 0.12)"
+              : "0 8px 20px rgba(0, 0, 0, 0.15)",
         duration: DURATION.FAST,
         ease: EASE.SMOOTH,
       });
@@ -354,13 +354,13 @@ export const UnifiedCard = React.memo(
           }`;
         }
         case "compact": {
-          return `${baseClasses} aspect-[4/3]`;
+          return `${baseClasses} aspect-4/3`;
         }
         case "list": {
           return `${baseClasses} flex gap-4 h-32`;
         }
         default: {
-          return `${baseClasses} aspect-[4/3]`;
+          return `${baseClasses} aspect-4/3`;
         }
       }
     };
@@ -431,7 +431,7 @@ export const UnifiedCard = React.memo(
               e.stopPropagation();
               handleBookmarkClick(e);
             }}
-            className="pointer-events-auto absolute top-1.5 right-2.5 z-[100] transition-all duration-200"
+            className="pointer-events-auto absolute top-1.5 right-2.5 z-100 transition-all duration-200"
             style={{ color: "#eeeeee", mixBlendMode: "difference" }}
             aria-label={isBookmarked(item.id) ? t("actions.removeBookmark") : t("actions.bookmark")}
           >
@@ -553,7 +553,6 @@ export const UnifiedCard = React.memo(
     // Render Timeline Card variant
     if (variant === "timeline") {
       const cardContent = (
-        // biome-ignore lint/a11y/noStaticElementInteractions: Card is interactive with onClick handler
         <div
           ref={cardRef}
           className={`${getCardClasses()} ${className}`}
@@ -606,7 +605,7 @@ export const UnifiedCard = React.memo(
               e.stopPropagation();
               handleBookmarkClick(e);
             }}
-            className="pointer-events-auto absolute top-1.5 right-2.5 z-[100] transition-all duration-200"
+            className="pointer-events-auto absolute top-1.5 right-2.5 z-100 transition-all duration-200"
             style={{ color: "#eeeeee", mixBlendMode: "difference" }}
             aria-label={isBookmarked(item.id) ? t("actions.removeBookmark") : t("actions.bookmark")}
           >
@@ -721,7 +720,6 @@ export const UnifiedCard = React.memo(
     // Render List variant (same as timeline with dual animation)
     if (variant === "list") {
       const cardContent = (
-        // biome-ignore lint/a11y/noStaticElementInteractions: Card is interactive with onClick handler
         <div
           ref={cardRef}
           className={`schedule-card group relative cursor-pointer overflow-hidden rounded-lg border transition-all duration-500 ease-[cubic-bezier(0,1,0.5,1)] ${
@@ -776,7 +774,7 @@ export const UnifiedCard = React.memo(
               e.stopPropagation();
               handleBookmarkClick(e);
             }}
-            className="pointer-events-auto absolute top-1.5 right-2.5 z-[100] transition-all duration-200"
+            className="pointer-events-auto absolute top-1.5 right-2.5 z-100 transition-all duration-200"
             style={{ color: "#eeeeee", mixBlendMode: "difference" }}
             aria-label={isBookmarked(item.id) ? t("actions.removeBookmark") : t("actions.bookmark")}
           >
@@ -851,7 +849,7 @@ export const UnifiedCard = React.memo(
                     className="scrollbar-hide flex gap-1 overflow-x-auto"
                   >
                     {item.tags.map((tagName) => (
-                      <span key={tagName} className="flex-shrink-0 text-white">
+                      <span key={tagName} className="shrink-0 text-white">
                         <Tag tag={tagName} size="small" interactive={false} />
                       </span>
                     ))}
@@ -888,10 +886,9 @@ export const UnifiedCard = React.memo(
     // Render Compact variant (simplified - title only with hover details button)
     if (variant === "compact") {
       const cardContent = (
-        // biome-ignore lint/a11y/noStaticElementInteractions: Card is interactive with onClick handler
         <div
           ref={cardRef}
-          className={`group relative aspect-[4/3] cursor-pointer overflow-hidden rounded-lg border border-white/10 bg-white/5 transition-all duration-300 ease-[cubic-bezier(0,1,0.5,1)] ${className}`}
+          className={`group relative aspect-4/3 cursor-pointer overflow-hidden rounded-lg border border-white/10 bg-white/5 transition-all duration-300 ease-[cubic-bezier(0,1,0.5,1)] ${className}`}
           style={{
             boxShadow: isHovered
               ? "0 10px 20px rgba(0, 0, 0, 0.15)"
@@ -952,7 +949,7 @@ export const UnifiedCard = React.memo(
               e.stopPropagation();
               handleBookmarkClick(e);
             }}
-            className="pointer-events-auto absolute top-1.5 right-2.5 z-[100] transition-all duration-200"
+            className="pointer-events-auto absolute top-1.5 right-2.5 z-100 transition-all duration-200"
             style={{ color: "#eeeeee", mixBlendMode: "difference" }}
             aria-label={isBookmarked(item.id) ? t("actions.removeBookmark") : t("actions.bookmark")}
           >
@@ -1019,10 +1016,9 @@ export const UnifiedCard = React.memo(
 
     // Render Default/Grid variant (glassmorphism style like original Card.tsx)
     const cardContent = (
-      // biome-ignore lint/a11y/noStaticElementInteractions: Card is interactive with onClick handler
       <div
         ref={cardRef}
-        className={`group relative aspect-[4/3] cursor-pointer overflow-hidden rounded-lg border border-white/10 bg-white/5 transition-all duration-300 ease-[cubic-bezier(0,1,0.5,1)] ${className}`}
+        className={`group relative aspect-4/3 cursor-pointer overflow-hidden rounded-lg border border-white/10 bg-white/5 transition-all duration-300 ease-[cubic-bezier(0,1,0.5,1)] ${className}`}
         style={{
           boxShadow: isHovered ? "0 10px 20px rgba(0, 0, 0, 0.15)" : "0 2px 4px rgba(0, 0, 0, 0.1)",
           transform: isHovered ? "translateY(-4px)" : "translateY(0)",
@@ -1081,7 +1077,7 @@ export const UnifiedCard = React.memo(
             e.stopPropagation();
             handleBookmarkClick(e);
           }}
-          className="pointer-events-auto absolute top-1.5 right-2.5 z-[100] transition-all duration-200"
+          className="pointer-events-auto absolute top-1.5 right-2.5 z-100 transition-all duration-200"
           style={{ color: "#eeeeee", mixBlendMode: "difference" }}
           aria-label={isBookmarked(item.id) ? t("actions.removeBookmark") : t("actions.bookmark")}
         >
@@ -1170,7 +1166,7 @@ export const UnifiedCard = React.memo(
                 style={{ msOverflowStyle: "none", scrollbarWidth: "none" }}
               >
                 {item.tags.map((tagName) => (
-                  <span key={tagName} className="flex-shrink-0">
+                  <span key={tagName} className="shrink-0">
                     <Tag tag={tagName} size="small" interactive={false} />
                   </span>
                 ))}
