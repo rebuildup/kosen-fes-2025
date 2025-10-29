@@ -1,0 +1,32 @@
+# humanstxt.org/
+# The humans responsible & technology colophon
+
+# TEAM
+
+    Developer: Claude AI Assistant
+    Contact: https://github.com/rebuildup/kosen-fes-2025
+    From: Japan
+
+# THANKS
+
+    Special thanks to all contributors and the open source community
+
+# TECHNOLOGY COLOPHON
+
+    Frontend: React 18.2.0, TypeScript 5.3.3
+    Build Tool: Vite 6.3.5
+    Styling: TailwindCSS 4.1.10
+    Icons: Lucide React 0.545.0
+    Animations: GSAP 3.13.0
+    Date Handling: date-fns 4.1.0
+    Testing: Vitest 3.2.4
+    Linting: Biome 1.9.4
+    Package Manager: pnpm 9.0.0
+
+# SITE
+
+    Last update: 2025/10/29
+    Language: Japanese
+    Doctype: HTML5
+    IDE: Cursor
+    AI Assistant: Claude Sonnet 4

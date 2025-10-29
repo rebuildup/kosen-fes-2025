@@ -1,0 +1,44 @@
+User-agent: *
+Allow: /
+
+# サイトマップの場所
+Sitemap: https://www2.ube-k.ac.jp/fes2025/sitemap.xml
+
+# クロール頻度の調整（必要に応じて）
+Crawl-delay: 1
+
+# 特定のディレクトリやファイルを除外する場合（現在は除外なし）
+# Disallow: /admin/
+# Disallow: /private/
+
+# 特定のファイルタイプを許可
+Allow: *.css
+Allow: *.js
+Allow: *.png
+Allow: *.jpg
+Allow: *.jpeg
+Allow: *.webp
+Allow: *.svg
+Allow: *.ico
+Allow: *.woff
+Allow: *.woff2
+Allow: *.ttf
+Allow: *.eot
+
+# 検索エンジン向けの追加情報
+# サイトの主要コンテンツ
+Allow: /events
+Allow: /exhibits
+Allow: /schedule
+Allow: /map
+Allow: /search
+Allow: /bookmarks
+Allow: /sponsors
+
+# 詳細ページ
+Allow: /detail/
+
+# 静的リソース
+Allow: /assets/
+Allow: /icons/
+Allow: /images/

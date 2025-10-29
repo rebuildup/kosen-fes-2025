@@ -1,0 +1,10 @@
+Contact: mailto:webmaster@ube-k.ac.jp
+Contact: https://www.ube-k.ac.jp/contact
+Expires: 2026-12-31T23:59:59.000Z
+Encryption: https://www.ube-k.ac.jp/pgp-key.txt
+Preferred-Languages: ja, en
+Canonical: https://www2.ube-k.ac.jp/fes2025/.well-known/security.txt
+Policy: https://www.ube-k.ac.jp/security-policy
+
+# 宇部高専祭2025ウェブサイトのセキュリティポリシー
+# セキュリティに関する問題を発見された場合は、上記の連絡先までご報告ください。
