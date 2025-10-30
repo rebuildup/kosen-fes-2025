@@ -34,17 +34,35 @@
       content="宇部高専,文化祭,学園祭,イベント,展示,屋台,2025,山口県,宇部,高等専門学校,高専,技術,文化,祭り,Ube Kosen,festival"
     />
     <meta name="author" content="宇部工業高等専門学校" />
-    <meta name="robots" content="index, follow" />
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+    <meta name="googlebot" content="index, follow" />
+    <meta name="bingbot" content="index, follow" />
+    
+    <!-- 追加のSEOメタタグ -->
+    <meta name="revisit-after" content="1 days" />
+    <meta name="rating" content="general" />
+    <meta name="distribution" content="global" />
+    <meta name="language" content="ja" />
+    <meta name="geo.region" content="JP-35" />
+    <meta name="geo.placename" content="宇部市" />
+    <meta name="geo.position" content="33.9344;131.2486" />
+    <meta name="ICBM" content="33.9344, 131.2486" />
+    
+    <!-- イベント関連のメタタグ -->
+    <meta name="event:start_time" content="2025-11-08T10:00:00+09:00" />
+    <meta name="event:end_time" content="2025-11-09T18:00:00+09:00" />
+    <meta name="event:location" content="宇部工業高等専門学校" />
 
     <!-- SEO and Canonical -->
-    <link rel="canonical" href="" />
-    <link rel="alternate" hreflang="ja" href="" />
-    <link rel="alternate" hreflang="en" href="./en/" />
+    <link rel="canonical" href="https://www2.ube-k.ac.jp/fes2025/" />
+    <link rel="alternate" hreflang="ja" href="https://www2.ube-k.ac.jp/fes2025/" />
+    <link rel="alternate" hreflang="en" href="https://www2.ube-k.ac.jp/fes2025/en/" />
+    <link rel="alternate" hreflang="x-default" href="https://www2.ube-k.ac.jp/fes2025/" />
 
     <!-- Open Graph Meta Tags -->
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="宇部高専祭2025" />
-    <meta property="og:url" content="" />
+    <meta property="og:url" content="https://www2.ube-k.ac.jp/fes2025/" />
     <meta
       property="og:title"
       content="宇部高専祭2025 | Ube Kosen Festival 2025"
@@ -65,15 +83,18 @@
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="宇部高専祭2025" />
+    <meta name="twitter:site" content="@ube_kosen" />
+    <meta name="twitter:creator" content="@ube_kosen" />
+    <meta name="twitter:title" content="宇部高専祭2025 | Ube Kosen Festival 2025" />
     <meta
       name="twitter:description"
-      content="宇部高専祭2025の公式サイト テーマはPOP! イベント/展示/屋台の情報を掲載"
+      content="宇部高専祭2025の公式サイト テーマはPOP! イベント/展示/屋台の情報を掲載 2025年11月8日、9日開催予定"
     />
     <meta
       name="twitter:image"
       content="https://www2.ube-k.ac.jp/fes2025/og-image.png"
     />
+    <meta name="twitter:image:alt" content="宇部高専祭2025の公式サイト" />
 
     <!-- Removed aggressive JSON preloads: route-specific data is fetched or prefetched per-route to avoid unused-preload warnings -->
 
@@ -105,6 +126,13 @@
       href="./icons/apple-touch-icon.png"
     />
     <link rel="manifest" href="./site.webmanifest" />
+    
+    <!-- 追加のSEOリンク -->
+    <link rel="alternate" type="application/rss+xml" title="宇部高専祭2025 RSS" href="./rss.xml" />
+    <link rel="alternate" type="application/atom+xml" title="宇部高専祭2025 Atom" href="./atom.xml" />
+    <link rel="sitemap" type="application/xml" title="Sitemap" href="./sitemap.xml" />
+    <link rel="author" href="./humans.txt" />
+    <link rel="security.txt" href="./.well-known/security.txt" />
 
     <!-- Theme and App Config -->
     <meta name="theme-color" content="#ffffff" />
@@ -122,6 +150,19 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    
+    <!-- 追加のSEO要素 -->
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="msapplication-TileColor" content="#3136ef" />
+    <meta name="msapplication-config" content="./browserconfig.xml" />
+    <meta name="apple-mobile-web-app-orientations" content="portrait" />
+    <meta name="apple-touch-fullscreen" content="yes" />
+    
+    <!-- DNS Prefetch for better performance -->
+    <link rel="dns-prefetch" href="//fonts.googleapis.com" />
+    <link rel="dns-prefetch" href="//fonts.gstatic.com" />
+    <link rel="dns-prefetch" href="//www.googletagmanager.com" />
+    <link rel="dns-prefetch" href="//www.google-analytics.com" />
 
     <!-- Using Google Fonts only; removed Adobe Typekit script -->
 
@@ -161,8 +202,8 @@
               name: "宇部工業高等専門学校",
               url: "https://www.ube-k.ac.jp/",
             },
-            url: "",
-            image: "./og-image.png",
+            url: "https://www2.ube-k.ac.jp/fes2025/",
+            image: "https://www2.ube-k.ac.jp/fes2025/og-image.png",
             eventStatus: "https://schema.org/EventScheduled",
             eventAttendanceMode:
               "https://schema.org/OfflineEventAttendanceMode",
@@ -173,6 +214,21 @@
               availability: "https://schema.org/InStock",
             },
             inLanguage: ["ja", "en"],
+            keywords: "宇部高専,文化祭,学園祭,イベント,展示,屋台,2025,山口県,宇部,高等専門学校,高専,技術,文化,祭り",
+            audience: {
+              "@type": "Audience",
+              audienceType: "一般公開"
+            },
+            isAccessibleForFree: true,
+            maximumAttendeeCapacity: 5000,
+            typicalAgeRange: "全年齢",
+            eventSchedule: {
+              "@type": "Schedule",
+              startDate: "2025-11-08T10:00:00+09:00",
+              endDate: "2025-11-09T18:00:00+09:00",
+              repeatFrequency: "P1Y",
+              scheduleTimezone: "Asia/Tokyo"
+            }
           },
           {
             "@context": "https://schema.org",
@@ -197,7 +253,7 @@
             "@context": "https://schema.org",
             "@type": "WebSite",
             name: "宇部高専祭2025",
-            url: "",
+            url: "https://www2.ube-k.ac.jp/fes2025/",
             description:
               "宇部高専祭2025の公式サイト テーマはPOP! イベント/展示/屋台の情報を掲載",
             inLanguage: ["ja", "en"],
@@ -210,6 +266,74 @@
               target: "./search?q={search_term_string}",
               "query-input": "required name=search_term_string",
             },
+          },
+          {
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              {
+                "@type": "ListItem",
+                position: 1,
+                name: "ホーム",
+                item: "https://www2.ube-k.ac.jp/fes2025/"
+              },
+              {
+                "@type": "ListItem",
+                position: 2,
+                name: "イベント",
+                item: "https://www2.ube-k.ac.jp/fes2025/#/events"
+              },
+              {
+                "@type": "ListItem",
+                position: 3,
+                name: "展示・屋台",
+                item: "https://www2.ube-k.ac.jp/fes2025/#/exhibits"
+              },
+              {
+                "@type": "ListItem",
+                position: 4,
+                name: "会場マップ",
+                item: "https://www2.ube-k.ac.jp/fes2025/#/map"
+              }
+            ]
+          },
+          {
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            mainEntity: [
+              {
+                "@type": "Question",
+                name: "宇部高専祭2025の開催日時は？",
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: "2025年11月8日（土）10:00-18:00、11月9日（日）10:00-18:00に開催予定です。"
+                }
+              },
+              {
+                "@type": "Question",
+                name: "入場料はかかりますか？",
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: "入場料は無料です。どなたでもお気軽にお越しください。"
+                }
+              },
+              {
+                "@type": "Question",
+                name: "会場はどこですか？",
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: "宇部工業高等専門学校（山口県宇部市常盤台2-14-1）で開催されます。"
+                }
+              },
+              {
+                "@type": "Question",
+                name: "駐車場はありますか？",
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: "学校の駐車場をご利用いただけますが、台数に限りがあります。公共交通機関のご利用をお勧めします。"
+                }
+              }
+            ]
           },
         ];
 
@@ -260,9 +384,9 @@
         `);
       });
     </script>
-    <script type="module" crossorigin src="./assets/index-Gvxr3h80.js"></script>
-    <link rel="modulepreload" crossorigin href="./assets/react-BiDznpw8.js">
-    <link rel="modulepreload" crossorigin href="./assets/ui-DfargGwq.js">
+    <script type="module" crossorigin src="./assets/index-B4ZMLk0T.js"></script>
+    <link rel="modulepreload" crossorigin href="./assets/react-DptwHfsC.js">
+    <link rel="modulepreload" crossorigin href="./assets/ui-9eKVU0xZ.js">
     <link rel="modulepreload" crossorigin href="./assets/animation-BGH1bKEe.js">
     <link rel="stylesheet" crossorigin href="./assets/index-CkKWKw7I.css">
     <!-- Non-critical route data: use prefetch instead of preload to avoid unused-preload warnings -->
@@ -270,6 +394,6 @@
 </head>
 
   <body>
-    <div id="root"></div>
+    <div id="root"></div>
   </body>
 </html>

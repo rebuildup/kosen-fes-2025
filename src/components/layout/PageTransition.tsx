@@ -15,9 +15,6 @@ const PageTransition = ({ children }: PageTransitionProps) => {
     const element = pageRef.current;
     if (!element) return;
 
-    // Reset scroll position on route change
-    window.scrollTo(0, 0);
-
     // Animation timeline
     const tl = gsap.timeline();
 

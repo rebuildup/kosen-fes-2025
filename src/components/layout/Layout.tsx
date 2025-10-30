@@ -1,6 +1,6 @@
 import { gsap } from "gsap";
 import { useEffect, useRef, useState } from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet, ScrollRestoration } from "react-router-dom";
 
 // import { useTheme } from "../../context/ThemeContext";
 import { DURATION, EASE } from "../../utils/animations";
@@ -8,6 +8,7 @@ import Footer from "./Footer";
 import Header from "./Header";
 import Menu from "./Menu";
 import PageTransition from "./PageTransition";
+import ScrollManager from "./ScrollManager";
 import Sidebar from "./Sidebar";
 
 const Layout = () => {
@@ -117,6 +118,8 @@ const Layout = () => {
       ref={layoutRef}
       className="min-h-screen bg-[var(--bg-primary)] text-[var(--text-primary)] transition-all duration-300"
     >
+      <ScrollRestoration />
+      <ScrollManager />
       {/* Header - only shown on desktop */}
       {!isMobile && <Header />}
 
