@@ -1,7 +1,8 @@
-# Kosen Fes 2025 — 公式サイト（開発者向け）
+# Kosen Fes 2025 — 宇部高専祭公式サイト
 
 このリポジトリは宇部高専祭 2025 の公式ウェブサイトのフロントエンドです。
-React + TypeScript + Vite を使って構築されています。開発者向けにセットアップ手順、主要なスクリプト、ディレクトリ構成、コンテンツ追加方法をまとめています。
+React + TypeScript + Viteで構築しています。
+セットアップ手順、主要なスクリプト、ディレクトリ構成、コンテンツ追加方法をまとめます。
 
 ## 目次
 - 概要
@@ -24,20 +25,17 @@ React + TypeScript + Vite を使って構築されています。開発者向け
 
 ## 必要な環境
 - Node.js 16 以上
-- pnpm（推奨）または npm
-
-（推奨: Node.js のバージョン管理には nvm / asdf などを利用してください）
+- pnpmまたは npm
 
 ## 主要スクリプト（package.json）
-- `pnpm run dev` — 開発サーバを起動（Vite）
-- `pnpm run build` — 本番ビルド（TypeScript コンパイル + Vite ビルド + サイトマップ生成）
-- `pnpm run build:static` — 静的サイト生成（ビルド + 全ルートのHTML生成）
-- `pnpm run preview` — ビルド成果のローカルプレビュー（Vite preview）
-- `pnpm run typecheck` — TypeScript の型チェック（tsc）
-- `pnpm run test` — ユニットテスト（Vitest）
-- `pnpm run lint` — Biome による静的チェック（リンター）
-- `pnpm run lint:fix` — Biome による自動修正
-- `pnpm run format` — Biome によるコードフォーマット
+- `pnpm dev` — 開発サーバを起動（Vite）
+- `pnpm build` — 本番ビルド（TypeScript コンパイル + Vite ビルド + サイトマップ生成）
+- `pnpm preview` — ビルド成果のローカルプレビュー（Vite preview）
+- `pnpm typecheck` — TypeScript の型チェック（tsc）
+- `pnpm test` — ユニットテスト（Vitest）
+- `pnpm lint` — Biome による静的チェック（リンター）
+- `pnpm lint:fix` — Biome による自動修正
+- `pnpm format` — Biome によるコードフォーマット
 
 ## ローカルでのセットアップと実行
 1. リポジトリをクローン
@@ -58,32 +56,27 @@ npm install
 3. 開発サーバ起動
 
 ```bash
-pnpm run dev
+pnpm dev
 # ブラウザで http://localhost:5173 を開く
 ```
 
 4. 本番用ビルド（確認）
 
 ```bash
-# 通常のビルド（サイトマップ生成まで）
-pnpm run build
-pnpm run preview
-
-# 静的サイト生成（全ルートのHTML生成）
-pnpm run build:static
-pnpm run preview
+pnpm build
+pnpm preview
 ```
 
 5. 型チェック
 
 ```bash
-pnpm run typecheck
+pnpm typecheck
 ```
 
 6. テスト
 
 ```bash
-pnpm run test
+pnpm test
 ```
 
 7. コード品質チェック
