@@ -307,7 +307,7 @@ const Menu = ({ closeButtonRef, setMenuOpen }: MenuProps) => {
               <p className="mobile-menu-info-item pl-4 text-xs">
                 <strong>{t("info.organizer")}:</strong>
                 <br />
-                宇部高専祭実行委員会
+                {t("info.fesorganizer")}
               </p>
             </div>
           </div>

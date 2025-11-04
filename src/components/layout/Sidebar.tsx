@@ -206,7 +206,7 @@ const Sidebar = () => {
                       {t("info.organizer")}:
                     </span>
                     <br />
-                    <span className="text-[var(--text-secondary)]">宇部高専祭実行委員会</span>
+                    <span className="text-[var(--text-secondary)]">{t("info.fesorganizer")}</span>
                   </div>
                 </div>
               </div>
