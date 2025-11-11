@@ -129,6 +129,8 @@ export const enTranslations: Translations = {
     viewMap: "View Map",
     viewSchedule: "View Schedule",
     viewTicket: "View Ticket",
+    end:"Ube KOSEN 2025 has ended",
+    thanks:"Thank you for visiting."
   },
   info: {
     access: "Access",
@@ -378,6 +380,8 @@ export const jaTranslations: Translations = {
     viewMap: "マップを表示",
     viewSchedule: "スケジュールを見る",
     viewTicket: "チケットを見る",
+    end:"宇部高専祭2025は終了しました",
+    thanks:"ご来場ありがとうございました"
   },
   info: {
     access: "アクセス",

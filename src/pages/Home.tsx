@@ -162,6 +162,14 @@ const Home = () => {
       {/* Hero Section */}
       <section className="bg-[var(--bg-primary)] py-12">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="mb-8 text-center">
+            <h1 className="mb-4 text-3xl font-bold text-[var(--text-primary)] md:text-4xl lg:text-5xl">
+              {t("home.end")}
+            </h1>
+            <p className="mx-auto mb-6 max-w-3xl text-lg text-[var(--text-secondary)] md:text-xl">
+              {t("home.thanks")}
+            </p>
+          </div>
           {/* タイトルとサブタイトル */}
           <div className="mb-8 text-center">
             <h1 className="mb-4 text-3xl font-bold text-[var(--text-primary)] md:text-4xl lg:text-5xl">
@@ -268,7 +276,7 @@ const Home = () => {
             <h2 className="section-title flex items-center gap-3 text-[var(--text-primary)]">
               {t("home.stalls")}
             </h2>
-            <PillButton to="/stalls" variant="secondary">
+            <PillButton to="/exhibits" variant="secondary">
               {t("home.viewAll")}
             </PillButton>
           </div>
