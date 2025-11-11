@@ -162,13 +162,19 @@ const Home = () => {
       {/* Hero Section */}
       <section className="bg-[var(--bg-primary)] py-12">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="mb-8 text-center">
-            <h1 className="mb-4 text-3xl font-bold text-[var(--text-primary)] md:text-4xl lg:text-5xl">
-              {t("home.end")}
-            </h1>
-            <p className="mx-auto mb-6 max-w-3xl text-lg text-[var(--text-secondary)] md:text-xl">
-              {t("home.thanks")}
-            </p>
+          <div className="mb-8 flex justify-center">
+            <div
+              role="contentinfo"
+              aria-label={t("home.thanks")}
+              className="mx-auto w-full max-w-3xl rounded-lg bg-gradient-to-r from-white/40 via-white/20 to-white/30 p-6 shadow-md backdrop-blur-sm"
+            >
+              <h1 className="mb-2 text-3xl font-extrabold leading-tight text-[var(--text-primary)] md:text-4xl lg:text-5xl">
+                {t("home.end")}
+              </h1>
+              <p className="mx-auto mb-0 max-w-3xl text-base text-[var(--text-secondary)] md:text-lg">
+                {t("home.thanks")}
+              </p>
+            </div>
           </div>
           {/* タイトルとサブタイトル */}
           <div className="mb-8 text-center">
