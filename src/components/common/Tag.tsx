@@ -17,12 +17,20 @@ interface TagProps {
 const Tag = ({ count, interactive = true, onClick, role, size = "medium", tag }: TagProps) => {
   const { isTagSelected, selectTag } = useTag();
   const tagRef = useRef<HTMLButtonElement>(null);
+  const isFirstRender = useRef(true);
 
   const isActive = isTagSelected(tag);
 
   // Apply animation when tag becomes active or inactive
+  // Skip animation on initial render to improve performance
   useEffect(() => {
     if (!tagRef.current) return;
+
+    // Skip animation on first render to avoid heavy load on Firefox/Safari
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
 
     if (isActive) {
       // Animation for when tag becomes active with scale and glow effect
